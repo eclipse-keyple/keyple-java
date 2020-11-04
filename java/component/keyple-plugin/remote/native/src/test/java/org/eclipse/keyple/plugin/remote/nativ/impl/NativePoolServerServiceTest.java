@@ -23,6 +23,7 @@ import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
@@ -72,7 +73,11 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
     // test
     service =
         (NativePoolServerServiceImpl)
-            new NativePoolServerServiceFactory().builder().withAsyncNode(asyncServer).getService();
+            new NativePoolServerServiceFactory()
+                .builder()
+                .withAsyncNode(asyncServer)
+                .withPoolPlugins(poolPluginMock.getName())
+                .getService();
 
     assertThat(service).isNotNull();
     assertThat(service).isEqualTo(NativePoolServerServiceImpl.getInstance());
@@ -83,7 +88,11 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
     // test
     service =
         (NativePoolServerServiceImpl)
-            new NativePoolServerServiceFactory().builder().withSyncNode().getService();
+            new NativePoolServerServiceFactory()
+                .builder()
+                .withSyncNode()
+                .withPoolPlugins(poolPluginMock.getName())
+                .getService();
 
     assertThat(service).isNotNull();
     assertThat(service).isEqualTo(NativePoolServerServiceImpl.getInstance());
@@ -94,7 +103,51 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
     // test
     service =
         (NativePoolServerServiceImpl)
-            new NativePoolServerServiceFactory().builder().withAsyncNode(null).getService();
+            new NativePoolServerServiceFactory()
+                .builder()
+                .withAsyncNode(null)
+                .withPoolPlugins(poolPluginMock.getName())
+                .getService();
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void buildService_withNoPluginName_throwIAE() {
+    // test
+    service =
+        (NativePoolServerServiceImpl)
+            new NativePoolServerServiceFactory()
+                .builder()
+                .withAsyncNode(null)
+                .withPoolPlugins()
+                .getService();
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void buildService_withWrong_pluginType_throwIAE() {
+    final String readerMockName = "readerPlugin";
+    SeProxyService.getInstance()
+        .registerPlugin(
+            new PluginFactory() {
+              @Override
+              public String getPluginName() {
+                return readerMockName;
+              }
+
+              @Override
+              public ReaderPlugin getPlugin() {
+                ReaderPlugin plugin = Mockito.mock(ReaderPlugin.class);
+                return plugin;
+              }
+            });
+
+    // test
+    service =
+        (NativePoolServerServiceImpl)
+            new NativePoolServerServiceFactory()
+                .builder()
+                .withAsyncNode(null)
+                .withPoolPlugins(poolPluginMock.getName(), readerMockName)
+                .getService();
   }
 
   @Test
@@ -118,14 +171,14 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
   }
 
   @Test
-  public void onAllocateReader_withNoPlugin_shouldThrow_AllocationException() {
+  public void onAllocateReader_withNoPlugin_shouldThrow_KPNFE() {
     SeProxyService.getInstance().unregisterPlugin(poolPluginName);
     KeypleMessageDto request = getAllocateReaderDto();
     NativePoolServerUtils.getAsyncNode().onMessage(getAllocateReaderDto());
 
     response = captureResponse();
     assertMetadataMatches(request, response);
-    assertThat(getExceptionFromDto(response)).isInstanceOf(KeypleAllocationReaderException.class);
+    assertThat(getExceptionFromDto(response)).isInstanceOf(KeyplePluginNotFoundException.class);
   }
 
   @Test
@@ -157,15 +210,13 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
   }
 
   @Test
-  public void onGroupReferences_withNoPlugin_shouldReturn_emptyList() {
-    SeProxyService.getInstance().unregisterPlugin(poolPluginMock.getName());
-
+  public void onGroupReferences_shouldPropagate_AllocationError() {
     KeypleMessageDto request = getGroupReferencesDto();
     NativePoolServerUtils.getAsyncNode().onMessage(request);
 
     response = captureResponse();
     assertMetadataMatches(request, response);
-    assertThat(getReferenceGroupFromDto(response)).isEmpty();
+    assertThat(getReferenceGroupFromDto(response)).containsExactly(groupReference);
   }
 
   @Test
@@ -207,7 +258,11 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
 
     service =
         (NativePoolServerServiceImpl)
-            new NativePoolServerServiceFactory().builder().withAsyncNode(asyncServer).getService();
+            new NativePoolServerServiceFactory()
+                .builder()
+                .withAsyncNode(asyncServer)
+                .withPoolPlugins(poolPluginMock.getName())
+                .getService();
   }
 
   private KeypleMessageDto getAllocateReaderDto() {

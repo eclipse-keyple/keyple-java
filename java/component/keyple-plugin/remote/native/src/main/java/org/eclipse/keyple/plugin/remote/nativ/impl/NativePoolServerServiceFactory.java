@@ -11,6 +11,9 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.nativ.impl;
 
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
+import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remote.core.KeypleServerAsync;
 import org.eclipse.keyple.plugin.remote.nativ.NativePoolServerService;
@@ -55,7 +58,7 @@ public final class NativePoolServerServiceFactory {
      * @return next configuration step
      * @since 1.0
      */
-    BuilderStep withAsyncNode(KeypleServerAsync endpoint);
+    PluginStep withAsyncNode(KeypleServerAsync endpoint);
 
     /**
      * Configure the service with a sync server
@@ -63,32 +66,60 @@ public final class NativePoolServerServiceFactory {
      * @return next configuration step
      * @since 1.0
      */
-    BuilderStep withSyncNode();
+    PluginStep withSyncNode();
   }
 
-  private static class Step implements NodeStep, BuilderStep {
+  public interface PluginStep {
+
+    /**
+     * Configure the service with one or more {@link ReaderPoolPlugin} plugin(s).
+     *
+     * @param poolPluginNames one or more reader plugin names of ReaderPoolPlugin
+     * @return next configuration step
+     */
+    BuilderStep withPoolPlugins(String... poolPluginNames);
+  }
+
+  private static class Step implements NodeStep, BuilderStep, PluginStep {
 
     private KeypleServerAsync asyncEndpoint;
+    private String[] poolPluginNames;
 
     private Step() {}
 
     @Override
-    public BuilderStep withAsyncNode(KeypleServerAsync endpoint) {
+    public PluginStep withAsyncNode(KeypleServerAsync endpoint) {
       Assert.getInstance().notNull(endpoint, "endpoint");
       this.asyncEndpoint = endpoint;
       return this;
     }
 
     @Override
-    public BuilderStep withSyncNode() {
+    public PluginStep withSyncNode() {
+      return this;
+    }
+
+    @Override
+    public BuilderStep withPoolPlugins(String... poolPluginNames) {
+      Assert.getInstance().notNull(poolPluginNames, "poolPluginNames");
+      // verify that each plugin is instance of ReaderPoolPlugin
+      for (String poolPluginName : poolPluginNames) {
+        ReaderPlugin plugin = SeProxyService.getInstance().getPlugin(poolPluginName);
+        if (!(plugin instanceof ReaderPoolPlugin)) {
+          throw new IllegalArgumentException(
+              "Invalid plugin type for plugin "
+                  + poolPluginName
+                  + ", only ReaderPoolPlugin are valid");
+        }
+      }
+      this.poolPluginNames = poolPluginNames;
       return this;
     }
 
     @Override
     public NativePoolServerService getService() {
       NativePoolServerServiceImpl nativePoolServerServiceImpl =
-          NativePoolServerServiceImpl.createInstance();
-
+          NativePoolServerServiceImpl.createInstance(poolPluginNames);
       if (asyncEndpoint != null) {
         nativePoolServerServiceImpl.bindServerAsyncNode(asyncEndpoint);
         logger.info("Create a new NativePoolServerService with a async server");

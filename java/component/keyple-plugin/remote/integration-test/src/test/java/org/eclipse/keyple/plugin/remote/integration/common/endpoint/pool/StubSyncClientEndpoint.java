@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.plugin.remote.integration.common.endpoint;
+package org.eclipse.keyple.plugin.remote.integration.common.endpoint.pool;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -20,14 +20,16 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleRuntimeException;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.eclipse.keyple.plugin.remote.core.KeypleClientSync;
 import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.integration.common.endpoint.StubNetworkConnectionException;
 import org.eclipse.keyple.plugin.remote.integration.common.util.JacksonParser;
-import org.eclipse.keyple.plugin.remote.virtual.impl.RemoteServerUtils;
+import org.eclipse.keyple.plugin.remote.nativ.impl.NativePoolServerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Stub implementation of a {@link KeypleClientSync}. It simulates synchronous invocation to a
- * remote server.
+ * Stub implementation of a {@link KeypleClientSync} for a {@link
+ * org.eclipse.keyple.plugin.remote.virtual.RemotePoolClientPlugin}. It simulates synchronous
+ * invocation to a remote server.
  */
 public class StubSyncClientEndpoint implements KeypleClientSync {
 
@@ -75,7 +77,7 @@ public class StubSyncClientEndpoint implements KeypleClientSync {
       public String call() throws Exception {
         // Send the dto to the sync node
         List<KeypleMessageDto> responses =
-            RemoteServerUtils.getSyncNode().onRequest(JacksonParser.fromJson(data));
+            NativePoolServerUtils.getSyncNode().onRequest(JacksonParser.fromJson(data));
 
         return JacksonParser.toJson(responses);
       }

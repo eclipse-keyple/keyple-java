@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.plugin.remote.integration.common.endpoint;
+package org.eclipse.keyple.plugin.remote.integration.common.endpoint.pool;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,8 +18,9 @@ import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remote.core.KeypleServerAsync;
+import org.eclipse.keyple.plugin.remote.integration.common.endpoint.StubNetworkConnectionException;
 import org.eclipse.keyple.plugin.remote.integration.common.util.JacksonParser;
-import org.eclipse.keyple.plugin.remote.virtual.impl.RemoteServerUtils;
+import org.eclipse.keyple.plugin.remote.nativ.impl.NativePoolServerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +48,7 @@ public class StubAsyncServerEndpoint implements KeypleServerAsync {
   public void close(String sessionId) {
     messageCounts.remove(sessionId);
     clients.remove(sessionId);
-    RemoteServerUtils.getAsyncNode().onClose(sessionId);
+    NativePoolServerUtils.getAsyncNode().onClose(sessionId);
   }
 
   /**
@@ -62,7 +63,7 @@ public class StubAsyncServerEndpoint implements KeypleServerAsync {
         new Runnable() {
           @Override
           public void run() {
-            RemoteServerUtils.getAsyncNode().onMessage(message);
+            NativePoolServerUtils.getAsyncNode().onMessage(message);
           }
         });
   }
@@ -83,7 +84,7 @@ public class StubAsyncServerEndpoint implements KeypleServerAsync {
             try {
               client.onMessage(data);
             } catch (Throwable t) {
-              RemoteServerUtils.getAsyncNode().onError(msg.getSessionId(), t);
+              NativePoolServerUtils.getAsyncNode().onError(msg.getSessionId(), t);
             }
           }
         });
