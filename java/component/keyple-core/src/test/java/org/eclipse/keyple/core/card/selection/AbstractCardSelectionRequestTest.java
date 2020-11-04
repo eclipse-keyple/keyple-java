@@ -18,7 +18,7 @@ import org.eclipse.keyple.core.card.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.core.card.command.CardCommand;
 import org.eclipse.keyple.core.card.message.ApduRequest;
 import org.eclipse.keyple.core.card.message.CardRequest;
-import org.eclipse.keyple.core.card.message.SelectionResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
@@ -56,8 +56,8 @@ public class AbstractCardSelectionRequestTest {
     List<AbstractApduCommandBuilder> builders = testCardSelectionRequest.getCommandBuilders();
     assertThat(builders.get(0)).isEqualTo(builder1);
     assertThat(builders.get(1)).isEqualTo(builder2);
-    CardRequest selectionRequest = testCardSelectionRequest.getSelectionRequest().getCardRequest();
-    List<ApduRequest> apduRequests = selectionRequest.getApduRequests();
+    CardRequest cardRequest = testCardSelectionRequest.getSelectionRequest().getCardRequest();
+    List<ApduRequest> apduRequests = cardRequest.getApduRequests();
     assertThat(apduRequests.get(0)).isEqualTo(apduRequest1);
     assertThat(apduRequests.get(1)).isEqualTo(apduRequest2);
   }
@@ -69,7 +69,7 @@ public class AbstractCardSelectionRequestTest {
     }
 
     @Override
-    protected AbstractSmartCard parse(SelectionResponse selectionResponse) {
+    protected AbstractSmartCard parse(CardSelectionResponse cardSelectionResponse) {
       return null;
     }
   }

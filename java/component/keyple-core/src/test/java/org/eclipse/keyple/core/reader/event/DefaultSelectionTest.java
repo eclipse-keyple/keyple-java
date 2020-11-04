@@ -17,10 +17,10 @@ import static org.mockito.Mockito.doThrow;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.eclipse.keyple.core.card.message.CardSelectionRequest;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.card.message.ChannelControl;
 import org.eclipse.keyple.core.card.message.DefaultSelectionsRequest;
-import org.eclipse.keyple.core.card.message.SelectionRequest;
-import org.eclipse.keyple.core.card.message.SelectionResponse;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
 import org.eclipse.keyple.core.plugin.reader.AbsObservableLocalReaderTest;
 import org.eclipse.keyple.core.plugin.reader.BlankObservableLocalReader;
@@ -62,14 +62,14 @@ public class DefaultSelectionTest {
         (BlankObservableLocalReader) AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
 
     // configure parameters
-    List<SelectionRequest> selections = new ArrayList<SelectionRequest>();
+    List<CardSelectionRequest> selections = new ArrayList<CardSelectionRequest>();
     MultiSelectionProcessing multi = MultiSelectionProcessing.PROCESS_ALL;
     ChannelControl channel = ChannelControl.CLOSE_AFTER;
     ObservableReader.NotificationMode mode = ObservableReader.NotificationMode.ALWAYS;
 
     // mock return matching selection
-    List<SelectionResponse> responses = getNotMatchingResponses();
-    doReturn(responses).when(r).transmitSelectionRequests(selections, multi, channel);
+    List<CardSelectionResponse> responses = getNotMatchingResponses();
+    doReturn(responses).when(r).transmitCardSelectionRequests(selections, multi, channel);
 
     // test
     r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel), mode);
@@ -91,15 +91,15 @@ public class DefaultSelectionTest {
         (BlankObservableLocalReader) AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
 
     // configure parameters
-    List<SelectionRequest> selections = new ArrayList<SelectionRequest>();
+    List<CardSelectionRequest> selections = new ArrayList<CardSelectionRequest>();
     MultiSelectionProcessing multi = MultiSelectionProcessing.PROCESS_ALL;
     ChannelControl channel = ChannelControl.CLOSE_AFTER;
     ObservableReader.NotificationMode mode = ObservableReader.NotificationMode.MATCHED_ONLY;
 
     // mock
     // return success selection
-    List<SelectionResponse> responses = AbsObservableLocalReaderTest.getMatchingResponses();
-    doReturn(responses).when(r).transmitSelectionRequests(selections, multi, channel);
+    List<CardSelectionResponse> responses = AbsObservableLocalReaderTest.getMatchingResponses();
+    doReturn(responses).when(r).transmitCardSelectionRequests(selections, multi, channel);
 
     // test
     r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel), mode);
@@ -120,7 +120,7 @@ public class DefaultSelectionTest {
         (BlankObservableLocalReader) AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
 
     // configure parameters
-    List<SelectionRequest> selections = new ArrayList<SelectionRequest>();
+    List<CardSelectionRequest> selections = new ArrayList<CardSelectionRequest>();
     MultiSelectionProcessing multi = MultiSelectionProcessing.PROCESS_ALL;
     ChannelControl channel = ChannelControl.CLOSE_AFTER;
     ObservableReader.NotificationMode mode = ObservableReader.NotificationMode.MATCHED_ONLY;
@@ -128,7 +128,7 @@ public class DefaultSelectionTest {
     // mock return matching selection
     doReturn(getNotMatchingResponses())
         .when(r)
-        .transmitSelectionRequests(selections, multi, channel);
+        .transmitCardSelectionRequests(selections, multi, channel);
 
     // test
     r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel), mode);
@@ -146,7 +146,7 @@ public class DefaultSelectionTest {
         (BlankObservableLocalReader) AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
 
     // configure parameters
-    List<SelectionRequest> selections = new ArrayList<SelectionRequest>();
+    List<CardSelectionRequest> selections = new ArrayList<CardSelectionRequest>();
     MultiSelectionProcessing multi = MultiSelectionProcessing.PROCESS_ALL;
     ChannelControl channel = ChannelControl.CLOSE_AFTER;
     ObservableReader.NotificationMode mode = ObservableReader.NotificationMode.ALWAYS;
@@ -154,7 +154,7 @@ public class DefaultSelectionTest {
     // throw IO
     doThrow(new KeypleReaderIOException("io error when selecting"))
         .when(r)
-        .transmitSelectionRequests(selections, multi, channel);
+        .transmitCardSelectionRequests(selections, multi, channel);
 
     // test
     r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel), mode);

@@ -12,8 +12,8 @@
 package org.eclipse.keyple.core.service.event;
 
 import java.util.List;
+import org.eclipse.keyple.core.card.message.CardSelectionRequest;
 import org.eclipse.keyple.core.card.message.ChannelControl;
-import org.eclipse.keyple.core.card.message.SelectionRequest;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
 
 /**
@@ -49,5 +49,5 @@ public abstract class AbstractDefaultSelectionsRequest {
    * @return A not empty list.
    * @since 0.9
    */
-  protected abstract List<SelectionRequest> getSelectionRequests();
+  protected abstract List<CardSelectionRequest> getSelectionRequests();
 }

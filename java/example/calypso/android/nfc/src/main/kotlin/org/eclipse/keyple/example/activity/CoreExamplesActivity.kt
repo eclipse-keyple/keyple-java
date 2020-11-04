@@ -20,7 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.eclipse.keyple.core.card.command.AbstractApduCommandBuilder
-import org.eclipse.keyple.core.card.message.SelectionResponse
+import org.eclipse.keyple.core.card.message.CardSelectionResponse
 import org.eclipse.keyple.core.card.selection.AbstractCardSelectionRequest
 import org.eclipse.keyple.core.card.selection.AbstractSmartCard
 import org.eclipse.keyple.core.card.selection.CardSelection
@@ -397,11 +397,11 @@ class CoreExamplesActivity : AbstractExampleActivity() {
      * Create a new class extending AbstractCardSelectionRequest
      */
     inner class GenericCardSelectionRequest(cardSelector: CardSelector) : AbstractCardSelectionRequest<AbstractApduCommandBuilder>(cardSelector) {
-        override fun parse(selectionResponse: SelectionResponse): AbstractSmartCard {
+        override fun parse(CardSelectionResponse: CardSelectionResponse): AbstractSmartCard {
             class GenericSmartCard(
-                selectionResponse: SelectionResponse
-            ) : AbstractSmartCard(selectionResponse)
-            return GenericSmartCard(selectionResponse)
+                CardSelectionResponse: CardSelectionResponse
+            ) : AbstractSmartCard(CardSelectionResponse)
+            return GenericSmartCard(CardSelectionResponse)
         }
     }
 }

@@ -22,8 +22,8 @@ import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.card.message.ApduRequest;
 import org.eclipse.keyple.core.card.message.CardRequest;
 import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionRequest;
 import org.eclipse.keyple.core.card.message.ChannelControl;
-import org.eclipse.keyple.core.card.message.SelectionRequest;
 import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
@@ -211,7 +211,8 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
    *
    * An Exception will be thrown.
    */
-  public static List<SelectionRequest> getPartialRequestList(AbstractLocalReader r, int scenario) {
+  public static List<CardSelectionRequest> getPartialRequestList(
+      AbstractLocalReader r, int scenario) {
 
     CardSelector.AtrFilter atrFilter = new CardSelector.AtrFilter(ATR);
     CardSelector selector =
@@ -244,56 +245,56 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     poApduRequests3.add(apduKO);
     poApduRequests3.add(apduOK);
 
-    SelectionRequest cardRequest1 =
-        new SelectionRequest(selector, new CardRequest(poApduRequests1));
-    SelectionRequest cardRequest2 =
-        new SelectionRequest(selector, new CardRequest(poApduRequests2));
+    CardSelectionRequest cardRequest1 =
+        new CardSelectionRequest(selector, new CardRequest(poApduRequests1));
+    CardSelectionRequest cardRequest2 =
+        new CardSelectionRequest(selector, new CardRequest(poApduRequests2));
 
-    SelectionRequest cardRequest4 =
-        new SelectionRequest(failSelector, new CardRequest(poApduRequests1));
+    CardSelectionRequest cardRequest4 =
+        new CardSelectionRequest(failSelector, new CardRequest(poApduRequests1));
 
     /* This CardRequest fails at step 3 */
-    SelectionRequest cardRequest3 =
-        new SelectionRequest(selector, new CardRequest(poApduRequests3));
+    CardSelectionRequest cardRequest3 =
+        new CardSelectionRequest(selector, new CardRequest(poApduRequests3));
 
-    List<SelectionRequest> selectionRequests = new ArrayList<SelectionRequest>();
+    List<CardSelectionRequest> cardSelectionRequests = new ArrayList<CardSelectionRequest>();
 
     switch (scenario) {
       case 0:
         /* 0 response Set */
-        selectionRequests.add(cardRequest3); // fails
-        selectionRequests.add(cardRequest1); // succeeds
-        selectionRequests.add(cardRequest2); // succeeds
+        cardSelectionRequests.add(cardRequest3); // fails
+        cardSelectionRequests.add(cardRequest1); // succeeds
+        cardSelectionRequests.add(cardRequest2); // succeeds
         break;
       case 1:
         /* 1 response Set */
-        selectionRequests.add(cardRequest1); // succeeds
-        selectionRequests.add(cardRequest3); // fails
-        selectionRequests.add(cardRequest2); // succeeds
+        cardSelectionRequests.add(cardRequest1); // succeeds
+        cardSelectionRequests.add(cardRequest3); // fails
+        cardSelectionRequests.add(cardRequest2); // succeeds
         break;
       case 2:
         /* 2 responses Set */
-        selectionRequests.add(cardRequest1); // succeeds
-        selectionRequests.add(cardRequest2); // succeeds
-        selectionRequests.add(cardRequest3); // fails
+        cardSelectionRequests.add(cardRequest1); // succeeds
+        cardSelectionRequests.add(cardRequest2); // succeeds
+        cardSelectionRequests.add(cardRequest3); // fails
         break;
       case 3:
         /* 3 responses Set */
-        selectionRequests.add(cardRequest1); // succeeds
-        selectionRequests.add(cardRequest2); // succeeds
-        selectionRequests.add(cardRequest4); // selection fails
+        cardSelectionRequests.add(cardRequest1); // succeeds
+        cardSelectionRequests.add(cardRequest2); // succeeds
+        cardSelectionRequests.add(cardRequest4); // selection fails
         break;
       case 4:
         /* 3 responses Set */
-        selectionRequests.add(cardRequest1); // succeeds
+        cardSelectionRequests.add(cardRequest1); // succeeds
         break;
       default:
     }
 
-    return selectionRequests;
+    return cardSelectionRequests;
   }
 
-  public static SelectionRequest getPartialRequest(AbstractLocalReader r, int scenario) {
+  public static CardSelectionRequest getPartialRequest(AbstractLocalReader r, int scenario) {
 
     /*
      * CardSelector.AtrFilter atrFilter = new CardSelector.AtrFilter(ATR); CardSelector selector = new
@@ -333,7 +334,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
         break;
     }
 
-    return new SelectionRequest(aidSelector, new CardRequest(poApduRequests));
+    return new CardSelectionRequest(aidSelector, new CardRequest(poApduRequests));
   }
   /*
    * Partial response: multiple read records commands, one is not defined in the StubSE

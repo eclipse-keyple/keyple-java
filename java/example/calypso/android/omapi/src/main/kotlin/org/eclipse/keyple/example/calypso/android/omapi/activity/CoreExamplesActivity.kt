@@ -14,9 +14,9 @@ package org.eclipse.keyple.example.calypso.android.omapi.activity
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_core_examples.eventRecyclerView
 import kotlinx.android.synthetic.main.activity_core_examples.toolbar
+import org.eclipse.keyple.core.card.message.CardSelectionRequest
 import org.eclipse.keyple.core.card.message.ChannelControl
 import org.eclipse.keyple.core.card.message.ProxyReader
-import org.eclipse.keyple.core.card.message.SelectionRequest
 import org.eclipse.keyple.core.card.selection.CardSelection
 import org.eclipse.keyple.core.card.selection.CardSelector
 import org.eclipse.keyple.core.card.selection.CardSelector.AidSelector
@@ -74,17 +74,17 @@ class CoreExamplesActivity : ExamplesActivity() {
                     val cardSelector = CardSelector.builder()
                             .aidSelector(AidSelector.builder().aidToSelect(poAid).build())
                             .build()
-                    val selectionRequest = SelectionRequest(cardSelector, null)
-                    val selectionRequests = ArrayList<SelectionRequest>()
-                    selectionRequests.add(selectionRequest)
+                    val cardSelectionRequest = CardSelectionRequest(cardSelector, null)
+                    val cardSelectionRequests = ArrayList<CardSelectionRequest>()
+                    cardSelectionRequests.add(cardSelectionRequest)
 
                     addActionEvent("Sending CardRequest to select: $poAid")
                     try {
-                        val selectionResponses = (it.value as ProxyReader).transmitSelectionRequests(selectionRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+                        val cardSelectionResponses = (it.value as ProxyReader).transmitCardSelectionRequests(cardSelectionRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
 
-                        if (selectionResponses[0]?.selectionStatus?.hasMatched() == true) {
+                        if (cardSelectionResponses[0]?.selectionStatus?.hasMatched() == true) {
                             addResultEvent("The selection of the PO has succeeded.")
-                            addResultEvent("Application FCI = ${ByteArrayUtil.toHex(selectionResponses[0].selectionStatus.fci.bytes)}")
+                            addResultEvent("Application FCI = ${ByteArrayUtil.toHex(cardSelectionResponses[0].selectionStatus.fci.bytes)}")
                         } else {
                             addResultEvent("The selection of the PO Failed")
                         }

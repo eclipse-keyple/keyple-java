@@ -16,7 +16,7 @@ import java.util.List;
 import org.eclipse.keyple.calypso.command.po.parser.security.PoGetChallengeRespPars;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.card.message.CardResponse;
-import org.eclipse.keyple.core.card.message.SelectionResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.card.message.SelectionStatus;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
@@ -45,14 +45,14 @@ public class PoGetChallengeRespParsTest {
     List<ApduResponse> responses = new ArrayList<ApduResponse>();
     ApduResponse apduResponse = new ApduResponse(response, null);
     responses.add(apduResponse);
-    SelectionResponse selectionResponse =
-        new SelectionResponse(
+    CardSelectionResponse cardSelectionResponse =
+        new CardSelectionResponse(
             new SelectionStatus(null, new ApduResponse(ByteArrayUtil.fromHex("9000"), null), true),
             new CardResponse(true, responses));
 
     PoGetChallengeRespPars apduResponseParser =
         new PoGetChallengeRespPars(
-            selectionResponse.getCardResponse().getApduResponses().get(0), null);
+            cardSelectionResponse.getCardResponse().getApduResponses().get(0), null);
     Assert.assertArrayEquals(response, apduResponseParser.getApduResponse().getBytes());
     Assert.assertEquals("Success", apduResponseParser.getStatusInformation());
   }

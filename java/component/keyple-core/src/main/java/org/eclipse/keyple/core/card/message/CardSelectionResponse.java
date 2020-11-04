@@ -15,21 +15,21 @@ import java.io.Serializable;
 
 /**
  * This POJO is used to transport data from a card obtained in response to a {@link
- * SelectionRequest}.
+ * CardSelectionRequest}.
  *
  * <p>These data are the selection status and the responses ({@link SelectionStatus}), if any, to
  * the APDUs sent to the card (a list of {@link ApduResponse}).
  *
  * @since 1.0
  */
-public final class SelectionResponse implements Serializable {
+public final class CardSelectionResponse implements Serializable {
 
   private final SelectionStatus selectionStatus;
   private final CardResponse cardResponse;
 
   /**
-   * Builds the SelectionResponse from the {@link SelectionStatus} and a {@link CardResponse} (list
-   * of {@link ApduResponse}).
+   * Builds the CardSelectionResponse from the {@link SelectionStatus} and a {@link CardResponse}
+   * (list of {@link ApduResponse}).
    *
    * <p>selectionStatus may be null (response to a non-selecting request)<br>
    * apduResponses may be empty but should not be null.
@@ -38,7 +38,7 @@ public final class SelectionResponse implements Serializable {
    * @param cardResponse A {@link CardResponse} (must be not null).
    * @since 0.9
    */
-  public SelectionResponse(SelectionStatus selectionStatus, CardResponse cardResponse) {
+  public CardSelectionResponse(SelectionStatus selectionStatus, CardResponse cardResponse) {
 
     this.selectionStatus = selectionStatus;
     this.cardResponse = cardResponse;
@@ -66,7 +66,7 @@ public final class SelectionResponse implements Serializable {
 
   @Override
   public String toString() {
-    return "SelectionResponse{"
+    return "CardSelectionResponse{"
         + "selectionStatus="
         + selectionStatus
         + ", cardResponse="
@@ -79,7 +79,7 @@ public final class SelectionResponse implements Serializable {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    SelectionResponse that = (SelectionResponse) o;
+    CardSelectionResponse that = (CardSelectionResponse) o;
 
     if (!selectionStatus.equals(that.selectionStatus)) return false;
     return cardResponse != null
