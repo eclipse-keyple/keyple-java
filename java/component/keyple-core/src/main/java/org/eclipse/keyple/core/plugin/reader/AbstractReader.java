@@ -97,7 +97,7 @@ public abstract class AbstractReader implements ProxyReader {
       MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl) {
 
-    List<CardSelectionResponse> cardSelectionRespons;
+    List<CardSelectionResponse> cardSelectionResponses;
 
     if (logger.isDebugEnabled()) {
       long timeStamp = System.nanoTime();
@@ -111,7 +111,7 @@ public abstract class AbstractReader implements ProxyReader {
     }
 
     try {
-      cardSelectionRespons =
+      cardSelectionResponses =
           processCardSelectionRequests(
               cardSelectionRequests, multiSelectionProcessing, channelControl);
     } catch (KeypleReaderIOException ex) {
@@ -134,11 +134,11 @@ public abstract class AbstractReader implements ProxyReader {
       logger.debug(
           "[{}] transmit => CARDRESPONSELIST = {}, elapsed {} ms.",
           this.getName(),
-          cardSelectionRespons,
+          cardSelectionResponses,
           elapsed10ms / 10.0);
     }
 
-    return cardSelectionRespons;
+    return cardSelectionResponses;
   }
 
   /**

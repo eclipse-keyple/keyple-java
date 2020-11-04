@@ -141,9 +141,9 @@ public class CardSelectionTest extends CoreBaseTest {
     CardSelection cardSelection = createCardSelection();
 
     AbstractDefaultSelectionsResponse defaultSelectionsResponse;
-    List<CardSelectionResponse> cardSelectionRespons = new ArrayList<CardSelectionResponse>();
+    List<CardSelectionResponse> cardSelectionResponses = new ArrayList<CardSelectionResponse>();
 
-    defaultSelectionsResponse = new DefaultSelectionsResponse(cardSelectionRespons);
+    defaultSelectionsResponse = new DefaultSelectionsResponse(cardSelectionResponses);
 
     SelectionsResult selectionsResult = null;
     try {
@@ -163,7 +163,7 @@ public class CardSelectionTest extends CoreBaseTest {
 
     // create a selection response
     AbstractDefaultSelectionsResponse defaultSelectionsResponse;
-    List<CardSelectionResponse> cardSelectionRespons = new ArrayList<CardSelectionResponse>();
+    List<CardSelectionResponse> cardSelectionResponses = new ArrayList<CardSelectionResponse>();
 
     ApduResponse apduResponse =
         new ApduResponse(
@@ -182,9 +182,9 @@ public class CardSelectionTest extends CoreBaseTest {
     CardSelectionResponse cardSelectionResponse =
         new CardSelectionResponse(selectionStatus, new CardResponse(true, apduResponses));
 
-    cardSelectionRespons.add(cardSelectionResponse);
+    cardSelectionResponses.add(cardSelectionResponse);
 
-    defaultSelectionsResponse = new DefaultSelectionsResponse(cardSelectionRespons);
+    defaultSelectionsResponse = new DefaultSelectionsResponse(cardSelectionResponses);
 
     // process the selection response with the CardSelection
     SelectionsResult selectionsResult = null;
@@ -209,7 +209,7 @@ public class CardSelectionTest extends CoreBaseTest {
 
     // create a selection response
     AbstractDefaultSelectionsResponse defaultSelectionsResponse;
-    List<CardSelectionResponse> cardSelectionRespons = new ArrayList<CardSelectionResponse>();
+    List<CardSelectionResponse> cardSelectionResponses = new ArrayList<CardSelectionResponse>();
 
     ApduResponse apduResponse =
         new ApduResponse(
@@ -228,9 +228,9 @@ public class CardSelectionTest extends CoreBaseTest {
     CardSelectionResponse cardSelectionResponse =
         new CardSelectionResponse(selectionStatus, new CardResponse(true, apduResponses));
 
-    cardSelectionRespons.add(cardSelectionResponse);
+    cardSelectionResponses.add(cardSelectionResponse);
 
-    defaultSelectionsResponse = new DefaultSelectionsResponse(cardSelectionRespons);
+    defaultSelectionsResponse = new DefaultSelectionsResponse(cardSelectionResponses);
 
     // process the selection response with the CardSelection
     SelectionsResult selectionsResult = null;
