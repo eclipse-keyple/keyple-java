@@ -406,7 +406,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
   }
 
   /**
-   * Local implementation of {@link AbstractReader#processSelectionRequests(List,
+   * Local implementation of {@link AbstractReader#processCardSelectionRequests(List,
    * MultiSelectionProcessing, ChannelControl)}
    *
    * <p>{@inheritDoc}<br>
@@ -414,12 +414,12 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * @since 0.9
    */
   @Override
-  protected final List<CardSelectionResponse> processSelectionRequests(
+  protected final List<CardSelectionResponse> processCardSelectionRequests(
       List<CardSelectionRequest> cardSelectionRequests,
       MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl) {
 
-    List<CardSelectionResponse> cardSelectionRespons = new ArrayList<CardSelectionResponse>();
+    List<CardSelectionResponse> cardSelectionResponses = new ArrayList<CardSelectionResponse>();
 
     /* Open the physical channel if needed, determine the current protocol */
     if (!isPhysicalChannelOpen()) {
@@ -431,26 +431,27 @@ public abstract class AbstractLocalReader extends AbstractReader {
       /* process the CardRequest and append the CardResponse list */
       CardSelectionResponse cardSelectionResponse;
       try {
-        cardSelectionResponse = processSelectionRequest(cardSelectionRequest);
+        cardSelectionResponse = processCardSelectionRequest(cardSelectionRequest);
       } catch (KeypleReaderIOException ex) {
         /*
          * The process has been interrupted. We launch a KeypleReaderException with
          * the responses collected so far.
          * Add the latest (and partial) CardResponse to the current list.
          */
-        List<CardResponse> cardResponses = new ArrayList<CardResponse>();
-        cardResponses.add(ex.getCardResponse());
+        cardSelectionResponses.add(
+            new CardSelectionResponse(
+                new SelectionStatus(null, null, false), ex.getCardResponse()));
         /* Build a List of CardResponse with the available data. */
-        ex.setCardResponses(cardResponses);
+        ex.setCardSelectionResponses(cardSelectionResponses);
         if (logger.isDebugEnabled()) {
           logger.debug(
-              "[{}] processSelectionRequests => transmit : process interrupted, collect previous responses {}",
+              "[{}] processCardSelectionRequests => transmit : process interrupted, collect previous responses {}",
               this.getName(),
-              cardResponses);
+              cardSelectionResponses);
         }
         throw ex;
       }
-      cardSelectionRespons.add(cardSelectionResponse);
+      cardSelectionResponses.add(cardSelectionResponse);
       if (multiSelectionProcessing == MultiSelectionProcessing.PROCESS_ALL) {
         /* multi CardRequest case: just close the logical channel and go on with the next selection. */
         closeLogicalChannel();
@@ -467,11 +468,11 @@ public abstract class AbstractLocalReader extends AbstractReader {
       releaseChannel();
     }
 
-    return cardSelectionRespons;
+    return cardSelectionResponses;
   }
 
   /**
-   * Local implementation of {@link AbstractReader#processSelectionRequests(List,
+   * Local implementation of {@link AbstractReader#processCardSelectionRequests(List,
    * MultiSelectionProcessing, ChannelControl)}
    *
    * <p>{@inheritDoc}<br>
@@ -636,11 +637,12 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * @return A not null {@link CardSelectionResponse}.
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @throws IllegalStateException in case of configuration inconsistency.
-   * @see #processSelectionRequests(List, MultiSelectionProcessing, ChannelControl)
+   * @see #processCardSelectionRequests(List, MultiSelectionProcessing, ChannelControl)
    * @see #processCardRequest(CardRequest, ChannelControl)
    * @since 0.9
    */
-  private CardSelectionResponse processSelectionRequest(CardSelectionRequest cardSelectionRequest) {
+  private CardSelectionResponse processCardSelectionRequest(
+      CardSelectionRequest cardSelectionRequest) {
 
     SelectionStatus selectionStatus = processSelection(cardSelectionRequest.getCardSelector());
     if (!selectionStatus.hasMatched()) {
@@ -666,7 +668,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * @return cardResponse A not null {@link CardResponse}.
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @throws IllegalStateException in case of configuration inconsistency.
-   * @see #processSelectionRequests(List, MultiSelectionProcessing, ChannelControl)
+   * @see #processCardSelectionRequests(List, MultiSelectionProcessing, ChannelControl)
    * @see #processCardRequest(CardRequest, ChannelControl)
    * @since 0.9
    */

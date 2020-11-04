@@ -83,7 +83,7 @@ public final class DefaultSelectionsRequest extends AbstractDefaultSelectionsReq
   }
 
   /** {@inheritDoc} */
-  public final List<CardSelectionRequest> getSelectionRequests() {
+  public final List<CardSelectionRequest> getCardSelectionRequests() {
     return cardSelectionRequests;
   }
 }

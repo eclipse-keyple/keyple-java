@@ -406,7 +406,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
       try {
         List<CardSelectionResponse> cardSelectionRespons =
             transmitCardSelectionRequests(
-                defaultSelectionsRequest.getSelectionRequests(),
+                defaultSelectionsRequest.getCardSelectionRequests(),
                 defaultSelectionsRequest.getMultiSelectionProcessing(),
                 defaultSelectionsRequest.getChannelControl());
 

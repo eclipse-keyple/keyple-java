@@ -23,8 +23,10 @@ import org.eclipse.keyple.core.card.message.ApduRequest;
 import org.eclipse.keyple.core.card.message.CardRequest;
 import org.eclipse.keyple.core.card.message.CardResponse;
 import org.eclipse.keyple.core.card.message.CardSelectionRequest;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.card.message.ChannelControl;
 import org.eclipse.keyple.core.card.selection.CardSelector;
+import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
@@ -59,92 +61,105 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
 
   @Test
   public void transmit_partial_response_set_0() throws Exception {
-    //    AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
-    //
-    //    // init Request
-    //    List<CardRequest> cardRequests = getPartialRequestList(reader, 0);
-    //    try {
-    //      // test
-    //      reader.processCardRequests(
-    //          cardRequests, MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
-    //      fail("A KeypleReaderIOException was expected");
-    //    } catch (KeypleReaderIOException ex) {
-    //      assertThat(ex.getCardResponses().size()).isEqualTo(1);
-    //      assertThat(ex.getCardResponses().get(0).getApduResponses().size()).isEqualTo(2);
-    //    }
+    AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
+
+    // init Request
+    List<CardSelectionRequest> cardSelectionRequests = getPartialRequestList(reader, 0);
+    try {
+      // test
+      reader.processCardSelectionRequests(
+          cardSelectionRequests, MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
+      fail("A KeypleReaderIOException was expected");
+    } catch (KeypleReaderIOException ex) {
+      assertThat(ex.getCardSelectionResponses().size()).isEqualTo(1);
+      assertThat(ex.getCardSelectionResponses().get(0).getCardResponse().getApduResponses().size())
+          .isEqualTo(2);
+    }
   }
 
   @Test
   public void transmit_partial_response_set_1() throws Exception {
-    //    AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
-    //
-    //    List<CardRequest> cardRequests = getPartialRequestList(reader, 1);
-    //    try {
-    //      // test
-    //      reader.processCardRequests(
-    //          cardRequests, MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
-    //      fail("A KeypleReaderIOException was expected");
-    //    } catch (KeypleReaderIOException ex) {
-    //      assertThat(ex.getCardResponses().size()).isEqualTo(2);
-    //      assertThat(ex.getCardResponses().get(0).getApduResponses().size()).isEqualTo(4);
-    //      assertThat(ex.getCardResponses().get(1).getApduResponses().size()).isEqualTo(2);
-    //      assertThat(ex.getCardResponses().get(1).getApduResponses().size()).isEqualTo(2);
-    //    }
+    AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
+
+    List<CardSelectionRequest> cardSelectionRequests = getPartialRequestList(reader, 1);
+    try {
+      // test
+      reader.processCardSelectionRequests(
+          cardSelectionRequests, MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
+      fail("A KeypleReaderIOException was expected");
+    } catch (KeypleReaderIOException ex) {
+      assertThat(ex.getCardSelectionResponses().size()).isEqualTo(2);
+      assertThat(ex.getCardSelectionResponses().get(0).getCardResponse().getApduResponses().size())
+          .isEqualTo(4);
+      assertThat(ex.getCardSelectionResponses().get(1).getCardResponse().getApduResponses().size())
+          .isEqualTo(2);
+    }
   }
 
   @Test
   public void transmit_partial_response_set_2() throws Exception {
-    //    AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
-    //
-    //    List<CardRequest> cardRequests = getPartialRequestList(reader, 2);
-    //    try {
-    //      // test
-    //      reader.processCardRequests(
-    //          cardRequests, MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
-    //      fail("A KeypleReaderIOException was expected");
-    //    } catch (KeypleReaderIOException ex) {
-    //      assertThat(ex.getCardResponses().size()).isEqualTo(3);
-    //      assertThat(ex.getCardResponses().get(0).getApduResponses().size()).isEqualTo(4);
-    //      assertThat(ex.getCardResponses().get(1).getApduResponses().size()).isEqualTo(4);
-    //      assertThat(ex.getCardResponses().get(2).getApduResponses().size()).isEqualTo(2);
-    //    }
+    AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
+
+    List<CardSelectionRequest> cardSelectionRequests = getPartialRequestList(reader, 2);
+    try {
+      // test
+      reader.processCardSelectionRequests(
+          cardSelectionRequests, MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
+      fail("A KeypleReaderIOException was expected");
+    } catch (KeypleReaderIOException ex) {
+      assertThat(ex.getCardSelectionResponses().size()).isEqualTo(3);
+      assertThat(ex.getCardSelectionResponses().get(0).getCardResponse().getApduResponses().size())
+          .isEqualTo(4);
+      assertThat(ex.getCardSelectionResponses().get(1).getCardResponse().getApduResponses().size())
+          .isEqualTo(4);
+      assertThat(ex.getCardSelectionResponses().get(2).getCardResponse().getApduResponses().size())
+          .isEqualTo(2);
+    }
   }
 
   @Test
   public void transmit_partial_response_set_3() throws Exception {
-    //    AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
-    //
-    //    List<CardRequest> cardRequests = getPartialRequestList(reader, 3);
-    //    try {
-    //      // test
-    //      List<CardResponse> responses =
-    //          reader.processCardRequests(
-    //              cardRequests, MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
-    //      assertThat(responses.size()).isEqualTo(3);
-    //      assertThat(responses.get(0).getApduResponses().size()).isEqualTo(4);
-    //      assertThat(responses.get(1).getApduResponses().size()).isEqualTo(4);
-    //      assertThat(responses.get(2).getApduResponses().size()).isEqualTo(0);
-    //
-    //    } catch (KeypleReaderException ex) {
-    //      fail("Should not throw exception");
-    //    }
+    AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
+
+    List<CardSelectionRequest> cardSelectionRequests = getPartialRequestList(reader, 3);
+    try {
+      // test
+      List<CardSelectionResponse> cardSelectionResponses =
+          reader.processCardSelectionRequests(
+              cardSelectionRequests,
+              MultiSelectionProcessing.PROCESS_ALL,
+              ChannelControl.CLOSE_AFTER);
+      assertThat(cardSelectionResponses.size()).isEqualTo(3);
+      assertThat(cardSelectionResponses.get(0).getCardResponse().getApduResponses().size())
+          .isEqualTo(4);
+      assertThat(cardSelectionResponses.get(1).getCardResponse().getApduResponses().size())
+          .isEqualTo(4);
+      assertThat(cardSelectionResponses.get(2).getCardResponse().getApduResponses().size())
+          .isEqualTo(0);
+
+    } catch (KeypleReaderException ex) {
+      fail("Should not throw exception");
+    }
   }
 
   @Test
   public void transmit_first_match() throws Exception {
-    //    AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
-    //
-    //    List<CardRequest> cardRequests = getPartialRequestList(reader, 3);
-    //    try {
-    //      // test
-    //      List<CardResponse> responses =
-    //          reader.processCardRequests(
-    //              cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
-    //      assertThat(responses.size()).isEqualTo(1);
-    //      assertThat(responses.get(0).getApduResponses().size()).isEqualTo(4);
-    //    } catch (KeypleReaderException ex) {
-    //      fail("Should not throw exception");
-    //    }
+    AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
+
+    List<CardSelectionRequest> cardSelectionRequests = getPartialRequestList(reader, 3);
+    try {
+      // test
+      List<CardSelectionResponse> cardSelectionResponses =
+          reader.processCardSelectionRequests(
+              cardSelectionRequests,
+              MultiSelectionProcessing.FIRST_MATCH,
+              ChannelControl.CLOSE_AFTER);
+      assertThat(cardSelectionResponses.size()).isEqualTo(1);
+      assertThat(cardSelectionResponses.get(0).getCardResponse().getApduResponses().size())
+          .isEqualTo(4);
+    } catch (KeypleReaderException ex) {
+      fail("Should not throw exception");
+    }
   }
 
   @Test

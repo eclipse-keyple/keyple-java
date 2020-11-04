@@ -446,13 +446,13 @@ public class StubReaderTest extends BaseStubTest {
               Assert.assertEquals(ReaderEvent.EventType.CARD_MATCHED, event.getEventType());
               Assert.assertTrue(
                   ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                      .getSelectionResponses()
+                      .getCardSelectionResponses()
                       .get(0)
                       .getSelectionStatus()
                       .hasMatched());
               Assert.assertArrayEquals(
                   ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                      .getSelectionResponses()
+                      .getCardSelectionResponses()
                       .get(0)
                       .getSelectionStatus()
                       .getAtr()
@@ -479,7 +479,7 @@ public class StubReaderTest extends BaseStubTest {
 
               Assert.assertArrayEquals(
                   ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                      .getSelectionResponses()
+                      .getCardSelectionResponses()
                       .get(0)
                       .getSelectionStatus()
                       .getFci()
@@ -622,7 +622,7 @@ public class StubReaderTest extends BaseStubTest {
               // card has not match
               Assert.assertFalse(
                   ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                      .getSelectionResponses()
+                      .getCardSelectionResponses()
                       .get(0)
                       .getSelectionStatus()
                       .hasMatched());
@@ -905,8 +905,9 @@ public class StubReaderTest extends BaseStubTest {
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
-      Assert.assertEquals(1, ex.getCardResponses().size());
-      Assert.assertEquals(2, ex.getCardResponses().get(0).getApduResponses().size());
+      Assert.assertEquals(1, ex.getCardSelectionResponses().size());
+      Assert.assertEquals(
+          2, ex.getCardSelectionResponses().get(0).getCardResponse().getApduResponses().size());
     }
   }
 
@@ -940,10 +941,13 @@ public class StubReaderTest extends BaseStubTest {
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
-      Assert.assertEquals(2, ex.getCardResponses().size());
-      Assert.assertEquals(4, ex.getCardResponses().get(0).getApduResponses().size());
-      Assert.assertEquals(2, ex.getCardResponses().get(1).getApduResponses().size());
-      Assert.assertEquals(2, ex.getCardResponses().get(1).getApduResponses().size());
+      Assert.assertEquals(2, ex.getCardSelectionResponses().size());
+      Assert.assertEquals(
+          4, ex.getCardSelectionResponses().get(0).getCardResponse().getApduResponses().size());
+      Assert.assertEquals(
+          2, ex.getCardSelectionResponses().get(1).getCardResponse().getApduResponses().size());
+      Assert.assertEquals(
+          2, ex.getCardSelectionResponses().get(1).getCardResponse().getApduResponses().size());
     }
   }
 
@@ -977,10 +981,13 @@ public class StubReaderTest extends BaseStubTest {
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
-      Assert.assertEquals(3, ex.getCardResponses().size());
-      Assert.assertEquals(4, ex.getCardResponses().get(0).getApduResponses().size());
-      Assert.assertEquals(4, ex.getCardResponses().get(1).getApduResponses().size());
-      Assert.assertEquals(2, ex.getCardResponses().get(2).getApduResponses().size());
+      Assert.assertEquals(3, ex.getCardSelectionResponses().size());
+      Assert.assertEquals(
+          4, ex.getCardSelectionResponses().get(0).getCardResponse().getApduResponses().size());
+      Assert.assertEquals(
+          4, ex.getCardSelectionResponses().get(1).getCardResponse().getApduResponses().size());
+      Assert.assertEquals(
+          2, ex.getCardSelectionResponses().get(2).getCardResponse().getApduResponses().size());
     }
   }
 
