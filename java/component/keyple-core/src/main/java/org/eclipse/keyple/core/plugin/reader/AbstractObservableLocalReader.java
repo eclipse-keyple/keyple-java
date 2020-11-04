@@ -404,13 +404,13 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
        */
       boolean aCardMatched = false;
       try {
-        List<CardSelectionResponse> cardSelectionRespons =
+        List<CardSelectionResponse> cardSelectionResponses =
             transmitCardSelectionRequests(
                 defaultSelectionsRequest.getCardSelectionRequests(),
                 defaultSelectionsRequest.getMultiSelectionProcessing(),
                 defaultSelectionsRequest.getChannelControl());
 
-        for (CardSelectionResponse cardSelectionResponse : cardSelectionRespons) {
+        for (CardSelectionResponse cardSelectionResponse : cardSelectionResponses) {
           if (cardSelectionResponse != null
               && cardSelectionResponse.getSelectionStatus().hasMatched()) {
             if (logger.isTraceEnabled()) {
@@ -428,7 +428,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
                 getPluginName(),
                 getName(),
                 ReaderEvent.EventType.CARD_MATCHED,
-                new DefaultSelectionsResponse(cardSelectionRespons));
+                new DefaultSelectionsResponse(cardSelectionResponses));
           } else {
             if (logger.isTraceEnabled()) {
               logger.trace(
@@ -446,7 +446,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
                 getPluginName(),
                 getName(),
                 ReaderEvent.EventType.CARD_MATCHED,
-                new DefaultSelectionsResponse(cardSelectionRespons));
+                new DefaultSelectionsResponse(cardSelectionResponses));
           } else {
             /*
              * the card didn't match, notify an CARD_INSERTED event with the received
@@ -456,13 +456,13 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
               logger.trace(
                   "[{}] none of {} default selection matched",
                   getName(),
-                  cardSelectionRespons.size());
+                  cardSelectionResponses.size());
             }
             return new ReaderEvent(
                 getPluginName(),
                 getName(),
                 ReaderEvent.EventType.CARD_INSERTED,
-                new DefaultSelectionsResponse(cardSelectionRespons));
+                new DefaultSelectionsResponse(cardSelectionResponses));
           }
         }
       } catch (KeypleReaderException e) {

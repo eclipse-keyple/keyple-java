@@ -210,12 +210,12 @@ public final class CardSelection {
     }
 
     /* Communicate with the card to do the selection */
-    List<CardSelectionResponse> cardSelectionRespons =
+    List<CardSelectionResponse> cardSelectionResponses =
         ((ProxyReader) reader)
             .transmitCardSelectionRequests(
                 cardSelectionRequests, multiSelectionProcessing, channelControl);
 
-    return processSelection(new DefaultSelectionsResponse(cardSelectionRespons));
+    return processSelection(new DefaultSelectionsResponse(cardSelectionResponses));
   }
 
   /**

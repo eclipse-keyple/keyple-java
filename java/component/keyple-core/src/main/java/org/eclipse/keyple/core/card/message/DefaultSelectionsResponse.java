@@ -28,7 +28,7 @@ import org.eclipse.keyple.core.service.event.ReaderEvent;
  */
 public final class DefaultSelectionsResponse extends AbstractDefaultSelectionsResponse {
 
-  private final List<CardSelectionResponse> cardSelectionRespons;
+  private final List<CardSelectionResponse> cardSelectionResponses;
 
   /**
    * Builds a DefaultSelectionsResponse from the list of {@link CardSelectionResponse} received from
@@ -48,15 +48,15 @@ public final class DefaultSelectionsResponse extends AbstractDefaultSelectionsRe
    * results in a response. In the latter case, the {@link CardSelectionResponse} list may be
    * shorter than the {@link CardRequest} list.
    *
-   * @param cardSelectionRespons A list of {@link CardSelectionResponse} (should not be null).
+   * @param cardSelectionResponses A list of {@link CardSelectionResponse} (should not be null).
    * @since 0.9
    */
-  public DefaultSelectionsResponse(List<CardSelectionResponse> cardSelectionRespons) {
-    this.cardSelectionRespons = cardSelectionRespons;
+  public DefaultSelectionsResponse(List<CardSelectionResponse> cardSelectionResponses) {
+    this.cardSelectionResponses = cardSelectionResponses;
   }
 
   /** {@inheritDoc} */
   public final List<CardSelectionResponse> getCardSelectionResponses() {
-    return cardSelectionRespons;
+    return cardSelectionResponses;
   }
 }

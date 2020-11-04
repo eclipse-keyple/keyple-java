@@ -68,8 +68,10 @@ public class DefaultSelectionTest {
     ObservableReader.NotificationMode mode = ObservableReader.NotificationMode.ALWAYS;
 
     // mock return matching selection
-    List<CardSelectionResponse> responses = getNotMatchingResponses();
-    doReturn(responses).when(r).transmitCardSelectionRequests(selections, multi, channel);
+    List<CardSelectionResponse> cardSelectionResponses = getNotMatchingResponses();
+    doReturn(cardSelectionResponses)
+        .when(r)
+        .transmitCardSelectionRequests(selections, multi, channel);
 
     // test
     r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel), mode);
@@ -78,7 +80,7 @@ public class DefaultSelectionTest {
     // assert
     Assert.assertEquals(ReaderEvent.EventType.CARD_INSERTED, event.getEventType());
     Assert.assertEquals(
-        responses, event.getDefaultSelectionsResponse().getCardSelectionResponses());
+        cardSelectionResponses, event.getDefaultSelectionsResponse().getCardSelectionResponses());
     Assert.assertEquals(PLUGIN_NAME, event.getPluginName());
     Assert.assertEquals(READER_NAME, event.getReaderName());
   }
@@ -99,8 +101,11 @@ public class DefaultSelectionTest {
 
     // mock
     // return success selection
-    List<CardSelectionResponse> responses = AbsObservableLocalReaderTest.getMatchingResponses();
-    doReturn(responses).when(r).transmitCardSelectionRequests(selections, multi, channel);
+    List<CardSelectionResponse> cardSelectionResponses =
+        AbsObservableLocalReaderTest.getMatchingResponses();
+    doReturn(cardSelectionResponses)
+        .when(r)
+        .transmitCardSelectionRequests(selections, multi, channel);
 
     // test
     r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel), mode);
@@ -108,7 +113,7 @@ public class DefaultSelectionTest {
 
     Assert.assertEquals(ReaderEvent.EventType.CARD_MATCHED, event.getEventType());
     Assert.assertEquals(
-        responses, event.getDefaultSelectionsResponse().getCardSelectionResponses());
+        cardSelectionResponses, event.getDefaultSelectionsResponse().getCardSelectionResponses());
     Assert.assertEquals(PLUGIN_NAME, event.getPluginName());
     Assert.assertEquals(READER_NAME, event.getReaderName());
   }

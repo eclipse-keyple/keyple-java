@@ -344,11 +344,11 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
   }
 
   public static List<CardSelectionResponse> getCardSelectionResponses() {
-    List<CardSelectionResponse> responses = new ArrayList<CardSelectionResponse>();
-    responses.add(
+    List<CardSelectionResponse> cardSelectionResponses = new ArrayList<CardSelectionResponse>();
+    cardSelectionResponses.add(
         new CardSelectionResponse(
             CardSelectionResponseTest.getASelectionStatus(),
             CardSelectionResponseTest.getACardResponse()));
-    return responses;
+    return cardSelectionResponses;
   }
 }

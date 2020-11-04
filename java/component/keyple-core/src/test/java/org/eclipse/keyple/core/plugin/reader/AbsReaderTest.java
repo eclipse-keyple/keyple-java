@@ -89,7 +89,7 @@ public class AbsReaderTest extends CoreBaseTest {
   public void ts_transmit() throws Exception {
     AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
     List<CardSelectionRequest> cardSelectionRequests = getSelectionRequestList();
-    List<CardSelectionResponse> responses =
+    List<CardSelectionResponse> cardSelectionResponses =
         r.transmitCardSelectionRequests(
             cardSelectionRequests,
             MultiSelectionProcessing.FIRST_MATCH,
@@ -99,7 +99,7 @@ public class AbsReaderTest extends CoreBaseTest {
             cardSelectionRequests,
             MultiSelectionProcessing.FIRST_MATCH,
             ChannelControl.CLOSE_AFTER);
-    Assert.assertNotNull(responses);
+    Assert.assertNotNull(cardSelectionResponses);
   }
 
   /*
