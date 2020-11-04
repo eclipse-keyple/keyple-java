@@ -25,9 +25,9 @@ import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
 import org.eclipse.keyple.core.card.message.AnswerToReset;
 import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.card.message.ChannelControl;
 import org.eclipse.keyple.core.card.message.ProxyReader;
-import org.eclipse.keyple.core.card.message.SelectionResponse;
 import org.eclipse.keyple.core.card.message.SelectionStatus;
 import org.eclipse.keyple.core.card.selection.CardResource;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
@@ -114,34 +114,34 @@ public class ManagedSamResourceManagerDefaultTest extends CalypsoBaseTest {
    * Helpers
    */
 
-  SelectionResponse samSelectionSuccess() {
+  CardSelectionResponse samSelectionSuccess() {
     SelectionStatus selectionStatus = Mockito.mock(SelectionStatus.class);
     when(selectionStatus.hasMatched()).thenReturn(true);
     when(selectionStatus.getAtr())
         .thenReturn(new AnswerToReset(ByteArrayUtil.fromHex(CalypsoSamTest.ATR1)));
 
-    SelectionResponse selectionResponse = Mockito.mock(SelectionResponse.class);
-    when(selectionResponse.getSelectionStatus()).thenReturn(selectionStatus);
+    CardSelectionResponse cardSelectionResponse = Mockito.mock(CardSelectionResponse.class);
+    when(cardSelectionResponse.getSelectionStatus()).thenReturn(selectionStatus);
     CardResponse cardResponse = Mockito.mock(CardResponse.class);
     when(cardResponse.isLogicalChannelOpen()).thenReturn(true);
-    when(selectionResponse.getCardResponse()).thenReturn(cardResponse);
+    when(cardSelectionResponse.getCardResponse()).thenReturn(cardResponse);
 
-    return selectionResponse;
+    return cardSelectionResponse;
   }
 
   // get a sam manager spy with a selectable sam
   SamResourceManagerDefault srmSpy(String samFilter) {
 
-    List<SelectionResponse> selectionResponses = new ArrayList<SelectionResponse>();
-    selectionResponses.add(samSelectionSuccess());
+    List<CardSelectionResponse> cardSelectionResponses = new ArrayList<CardSelectionResponse>();
+    cardSelectionResponses.add(samSelectionSuccess());
 
     // create a mock reader
     ProxyReader reader = Mockito.mock(ProxyReader.class);
     when(reader.getName()).thenReturn(SAM_READER_NAME);
     when(reader.isCardPresent()).thenReturn(true);
-    doReturn(selectionResponses)
+    doReturn(cardSelectionResponses)
         .when(reader)
-        .transmitSelectionRequests(
+        .transmitCardSelectionRequests(
             any(List.class), any(MultiSelectionProcessing.class), any(ChannelControl.class));
 
     // create a list of mock readers

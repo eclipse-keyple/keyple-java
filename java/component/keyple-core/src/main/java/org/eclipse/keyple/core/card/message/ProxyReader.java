@@ -20,16 +20,16 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 /**
  * Defines the methods of a {@link Reader} for communicating with cards.
  *
- * <p>Exchanges are made using {@link SelectionRequest}/{@link CardRequest} which in return result
- * in {@link SelectionResponse}/{@link CardResponse}. <br>
- * The {@link SelectionRequest} includes the card selection data and an optional APDU list.<br>
- * The {@link SelectionRequest} contains the result of the selection and the optional responses to
- * the APDUs.
+ * <p>Exchanges are made using {@link CardSelectionRequest}/{@link CardRequest} which in return
+ * result in {@link CardSelectionResponse}/{@link CardResponse}. <br>
+ * The {@link CardSelectionRequest} includes the card selection data and an optional APDU list.<br>
+ * The {@link CardSelectionRequest} contains the result of the selection and the optional responses
+ * to the APDUs.
  *
  * <p>The {@link CardRequest} are transmitted individually ({@link #transmitCardRequest(CardRequest,
- * ChannelControl)} or by a list {@link #transmitSelectionRequests(List, MultiSelectionProcessing,
- * ChannelControl)} allowing applications to provide several selection patterns with various
- * options.
+ * ChannelControl)} or by a list {@link #transmitCardSelectionRequests(List,
+ * MultiSelectionProcessing, ChannelControl)} allowing applications to provide several selection
+ * patterns with various options.
  *
  * <p>{@link #releaseChannel()} is used to control the closing of logical and physical channels
  * taking into account the observation mechanisms potentially in progress.
@@ -39,21 +39,21 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 public interface ProxyReader extends Reader {
 
   /**
-   * Transmits the list of {@link SelectionRequest } and gets in return a list of {@link
-   * SelectionResponse}.
+   * Transmits the list of {@link CardSelectionRequest } and gets in return a list of {@link
+   * CardSelectionResponse}.
    *
-   * <p>The actual processing of each {@link SelectionRequest} is similar to that performed by
+   * <p>The actual processing of each {@link CardSelectionRequest} is similar to that performed by
    * {@link #transmitCardRequest(CardRequest, ChannelControl)} (see this method for further
    * explanation of how the process works).
    *
    * <p>If the multiSelectionProcessing parameter equals to {@link
-   * MultiSelectionProcessing#FIRST_MATCH}, the iteration over the {@link SelectionRequest} list is
-   * interrupted at the first processing that leads to an open logical channel state. In this case,
-   * the list of {@link SelectionResponse} may be shorter than the list of {@link SelectionRequest}
-   * provided as input.
+   * MultiSelectionProcessing#FIRST_MATCH}, the iteration over the {@link CardSelectionRequest} list
+   * is interrupted at the first processing that leads to an open logical channel state. In this
+   * case, the list of {@link CardSelectionResponse} may be shorter than the list of {@link
+   * CardSelectionRequest} provided as input.
    *
    * <p>If it equals to {@link MultiSelectionProcessing#PROCESS_ALL}, all the {@link
-   * SelectionRequest} are processed and the logical channel is closed after each process.<br>
+   * CardSelectionRequest} are processed and the logical channel is closed after each process.<br>
    * The physical channel is managed by the ChannelControl parameter as in {@link
    * #transmitCardRequest(CardRequest, ChannelControl)}.
    *
@@ -61,7 +61,7 @@ public interface ProxyReader extends Reader {
    * previously with the method {@link Reader#activateProtocol(String, String)}. An
    * IllegalStateException exception will be thrown in case of inconsistency.
    *
-   * @param selectionRequests A not empty list of {@link SelectionRequest}.
+   * @param cardSelectionRequests A not empty list of {@link CardSelectionRequest}.
    * @param multiSelectionProcessing The multi card processing flag (must be not null).
    * @param channelControl indicates if the physical channel has to be closed at the end of the
    *     processing (must be not null).
@@ -71,8 +71,8 @@ public interface ProxyReader extends Reader {
    * @throws IllegalStateException in case of configuration inconsistency.
    * @since 0.9
    */
-  List<SelectionResponse> transmitSelectionRequests(
-      List<SelectionRequest> selectionRequests,
+  List<CardSelectionResponse> transmitCardSelectionRequests(
+      List<CardSelectionRequest> cardSelectionRequests,
       MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl);
 

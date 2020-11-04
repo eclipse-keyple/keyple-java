@@ -15,8 +15,8 @@ import io.mockk.every
 import io.mockk.mockk
 import org.eclipse.keyple.core.card.message.ApduRequest
 import org.eclipse.keyple.core.card.message.CardRequest
+import org.eclipse.keyple.core.card.message.CardSelectionRequest
 import org.eclipse.keyple.core.card.message.ChannelControl
-import org.eclipse.keyple.core.card.message.SelectionRequest
 import org.eclipse.keyple.core.card.selection.CardSelector
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException
@@ -68,17 +68,17 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
 
         val cardRequest = CardRequest(poApduRequestList)
 
-        val selectionRequest = SelectionRequest(CardSelector.builder()
+        val cardSelectionRequest = CardSelectionRequest(CardSelector.builder()
                 .cardProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
                 .aidSelector(CardSelector.AidSelector.builder().aidToSelect(PO_AID)
                         .fileOccurrence(CardSelector.AidSelector.FileOccurrence.NEXT)
                         .fileControlInformation(CardSelector.AidSelector.FileControlInformation.FCI).build())
                 .build(), cardRequest)
 
-        val selectionRequests = ArrayList<SelectionRequest>()
-        selectionRequests.add(selectionRequest)
+        val cardSelectionRequests = ArrayList<CardSelectionRequest>()
+        cardSelectionRequests.add(cardSelectionRequest)
 
-        val cardResponseList = reader.transmitSelectionRequests(selectionRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        val cardResponseList = reader.transmitCardSelectionRequests(cardSelectionRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
 
         // assert
         Assert.assertNotNull(cardResponseList[0])

@@ -12,16 +12,16 @@
 package org.eclipse.keyple.example.calypso.android.omapi.utils
 
 import org.eclipse.keyple.core.card.command.AbstractApduCommandBuilder
-import org.eclipse.keyple.core.card.message.SelectionResponse
+import org.eclipse.keyple.core.card.message.CardSelectionResponse
 import org.eclipse.keyple.core.card.selection.AbstractCardSelectionRequest
 import org.eclipse.keyple.core.card.selection.AbstractSmartCard
 import org.eclipse.keyple.core.card.selection.CardSelector
 
 class GenericCardSelectionRequest(cardSelector: CardSelector) : AbstractCardSelectionRequest<AbstractApduCommandBuilder>(cardSelector) {
-    override fun parse(selectionResponse: SelectionResponse): AbstractSmartCard {
+    override fun parse(CardSelectionResponse: CardSelectionResponse): AbstractSmartCard {
         class GenericSmartCard(
-            selectionResponse: SelectionResponse
-        ) : AbstractSmartCard(selectionResponse)
-        return GenericSmartCard(selectionResponse)
+            CardSelectionResponse: CardSelectionResponse
+        ) : AbstractSmartCard(CardSelectionResponse)
+        return GenericSmartCard(CardSelectionResponse)
     }
 }

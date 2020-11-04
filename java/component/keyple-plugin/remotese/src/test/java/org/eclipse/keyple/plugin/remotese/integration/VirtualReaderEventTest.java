@@ -533,8 +533,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     @Override
     protected AbstractSmartCard parse(CardResponse cardResponse) {
       class GenericSmartCard extends AbstractSmartCard {
-        public GenericSmartCard(CardResponse selectionResponse) {
-          super(selectionResponse);
+        public GenericSmartCard(CardResponse cardSelectionResponse) {
+          super(cardSelectionResponse);
         }
       }
       return new GenericSmartCard(cardResponse);

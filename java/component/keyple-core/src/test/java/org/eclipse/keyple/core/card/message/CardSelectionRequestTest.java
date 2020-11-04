@@ -24,10 +24,10 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SelectionRequestTest {
+public class CardSelectionRequestTest {
 
   // object to test
-  SelectionRequest selectionRequest;
+  CardSelectionRequest cardSelectionRequest;
 
   public List<ApduRequest> getApdus() {
     return apdus;
@@ -46,44 +46,45 @@ public class SelectionRequestTest {
     cardProtocol = getAString();
     selectionStatusCode = ApduRequestTest.getASuccessFulStatusCode();
     selector = getSelector(selectionStatusCode);
-    selectionRequest = new SelectionRequest(selector, new CardRequest(apdus));
+    cardSelectionRequest = new CardSelectionRequest(selector, new CardRequest(apdus));
   }
 
   @Test
   public void testCardRequest() {
-    assertNotNull(selectionRequest);
+    assertNotNull(cardSelectionRequest);
   }
 
   @Test
   public void getSelector() {
     // test
     assertEquals(
-        getSelector(selectionStatusCode).toString(), selectionRequest.getCardSelector().toString());
+        getSelector(selectionStatusCode).toString(),
+        cardSelectionRequest.getCardSelector().toString());
   }
 
   @Test
   public void getApduRequests() {
     // test
-    selectionRequest = new SelectionRequest(getSelector(null), new CardRequest(apdus));
+    cardSelectionRequest = new CardSelectionRequest(getSelector(null), new CardRequest(apdus));
     assertArrayEquals(
-        apdus.toArray(), selectionRequest.getCardRequest().getApduRequests().toArray());
+        apdus.toArray(), cardSelectionRequest.getCardRequest().getApduRequests().toArray());
   }
 
   @Test
   public void getCardProtocol() {
-    selectionRequest =
-        new SelectionRequest(getSelector(null), new CardRequest(new ArrayList<ApduRequest>()));
-    assertEquals(cardProtocol, selectionRequest.getCardSelector().getCardProtocol());
+    cardSelectionRequest =
+        new CardSelectionRequest(getSelector(null), new CardRequest(new ArrayList<ApduRequest>()));
+    assertEquals(cardProtocol, cardSelectionRequest.getCardSelector().getCardProtocol());
   }
 
   @Test
   public void getSuccessfulSelectionStatusCodes() {
-    selectionRequest =
-        new SelectionRequest(
+    cardSelectionRequest =
+        new CardSelectionRequest(
             getSelector(selectionStatusCode), new CardRequest(new ArrayList<ApduRequest>()));
     assertArrayEquals(
         selectionStatusCode.toArray(),
-        selectionRequest
+        cardSelectionRequest
             .getCardSelector()
             .getAidSelector()
             .getSuccessfulSelectionStatusCodes()
@@ -92,8 +93,8 @@ public class SelectionRequestTest {
 
   @Test
   public void toStringNull() {
-    selectionRequest = new SelectionRequest(null, null);
-    assertNotNull(selectionRequest.toString());
+    cardSelectionRequest = new CardSelectionRequest(null, null);
+    assertNotNull(cardSelectionRequest.toString());
   }
 
   /*
@@ -101,45 +102,52 @@ public class SelectionRequestTest {
    */
   @Test
   public void constructor1() {
-    selectionRequest = new SelectionRequest(getSelector(null), new CardRequest(apdus));
-    assertEquals(getSelector(null).toString(), selectionRequest.getCardSelector().toString());
+    cardSelectionRequest = new CardSelectionRequest(getSelector(null), new CardRequest(apdus));
+    assertEquals(getSelector(null).toString(), cardSelectionRequest.getCardSelector().toString());
     assertArrayEquals(
-        apdus.toArray(), selectionRequest.getCardRequest().getApduRequests().toArray());
+        apdus.toArray(), cardSelectionRequest.getCardRequest().getApduRequests().toArray());
     //
     assertEquals(
         ContactlessCardCommonProtocols.ISO_14443_4.name(),
-        selectionRequest.getCardSelector().getCardProtocol());
+        cardSelectionRequest.getCardSelector().getCardProtocol());
     assertNull(
-        selectionRequest.getCardSelector().getAidSelector().getSuccessfulSelectionStatusCodes());
+        cardSelectionRequest
+            .getCardSelector()
+            .getAidSelector()
+            .getSuccessfulSelectionStatusCodes());
   }
 
   @Test
   public void constructor2() {
-    selectionRequest = new SelectionRequest(getSelector(null), new CardRequest(apdus));
-    assertEquals(getSelector(null).toString(), selectionRequest.getCardSelector().toString());
+    cardSelectionRequest = new CardSelectionRequest(getSelector(null), new CardRequest(apdus));
+    assertEquals(getSelector(null).toString(), cardSelectionRequest.getCardSelector().toString());
     assertArrayEquals(
-        apdus.toArray(), selectionRequest.getCardRequest().getApduRequests().toArray());
-    assertEquals(cardProtocol, selectionRequest.getCardSelector().getCardProtocol());
+        apdus.toArray(), cardSelectionRequest.getCardRequest().getApduRequests().toArray());
+    assertEquals(cardProtocol, cardSelectionRequest.getCardSelector().getCardProtocol());
     //
     assertNull(
-        selectionRequest.getCardSelector().getAidSelector().getSuccessfulSelectionStatusCodes());
+        cardSelectionRequest
+            .getCardSelector()
+            .getAidSelector()
+            .getSuccessfulSelectionStatusCodes());
   }
 
   @Test
   public void constructor2b() {
-    selectionRequest =
-        new SelectionRequest(getSelector(selectionStatusCode), new CardRequest(apdus));
+    cardSelectionRequest =
+        new CardSelectionRequest(getSelector(selectionStatusCode), new CardRequest(apdus));
     assertEquals(
-        getSelector(selectionStatusCode).toString(), selectionRequest.getCardSelector().toString());
+        getSelector(selectionStatusCode).toString(),
+        cardSelectionRequest.getCardSelector().toString());
     assertArrayEquals(
-        apdus.toArray(), selectionRequest.getCardRequest().getApduRequests().toArray());
+        apdus.toArray(), cardSelectionRequest.getCardRequest().getApduRequests().toArray());
     assertEquals(
         ContactlessCardCommonProtocols.ISO_14443_4.name(),
-        selectionRequest.getCardSelector().getCardProtocol());
+        cardSelectionRequest.getCardSelector().getCardProtocol());
     //
     assertArrayEquals(
         selectionStatusCode.toArray(),
-        selectionRequest
+        cardSelectionRequest
             .getCardSelector()
             .getAidSelector()
             .getSuccessfulSelectionStatusCodes()
@@ -148,16 +156,17 @@ public class SelectionRequestTest {
 
   @Test
   public void constructor3() {
-    selectionRequest =
-        new SelectionRequest(getSelector(selectionStatusCode), new CardRequest(apdus));
+    cardSelectionRequest =
+        new CardSelectionRequest(getSelector(selectionStatusCode), new CardRequest(apdus));
     assertEquals(
-        getSelector(selectionStatusCode).toString(), selectionRequest.getCardSelector().toString());
+        getSelector(selectionStatusCode).toString(),
+        cardSelectionRequest.getCardSelector().toString());
     assertArrayEquals(
-        apdus.toArray(), selectionRequest.getCardRequest().getApduRequests().toArray());
-    assertEquals(cardProtocol, selectionRequest.getCardSelector().getCardProtocol());
+        apdus.toArray(), cardSelectionRequest.getCardRequest().getApduRequests().toArray());
+    assertEquals(cardProtocol, cardSelectionRequest.getCardSelector().getCardProtocol());
     assertArrayEquals(
         selectionStatusCode.toArray(),
-        selectionRequest
+        cardSelectionRequest
             .getCardSelector()
             .getAidSelector()
             .getSuccessfulSelectionStatusCodes()
@@ -168,11 +177,11 @@ public class SelectionRequestTest {
    * HELPERS FOR OTHERS TESTS SUITE
    */
 
-  public static SelectionRequest getCardRequestSample() {
+  public static CardSelectionRequest getCardRequestSample() {
 
     List<ApduRequest> apdus = getAapduLists();
     Set<Integer> selectionStatusCode = ApduRequestTest.getASuccessFulStatusCode();
-    return new SelectionRequest(getSelector(selectionStatusCode), new CardRequest(apdus));
+    return new CardSelectionRequest(getSelector(selectionStatusCode), new CardRequest(apdus));
   }
 
   static List<ApduRequest> getAapduLists() {

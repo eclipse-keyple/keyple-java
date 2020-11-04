@@ -17,13 +17,13 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SelectionResponseTest {
+public class CardSelectionResponseTest {
 
   @Test
   public void constructorSuccessfullResponseMatch() {
 
-    SelectionResponse response =
-        new SelectionResponse(
+    CardSelectionResponse response =
+        new CardSelectionResponse(
             new SelectionStatus(ApduResponseTest.getAAtr(), ApduResponseTest.getAFCI(), true),
             new CardResponse(true, ApduResponseTest.getAListOfAPDUs()));
     Assert.assertNotNull(response);
@@ -38,8 +38,8 @@ public class SelectionResponseTest {
   @Test
   public void constructorSuccessfullResponseNoMatch() {
 
-    SelectionResponse response =
-        new SelectionResponse(
+    CardSelectionResponse response =
+        new CardSelectionResponse(
             new SelectionStatus(ApduResponseTest.getAAtr(), ApduResponseTest.getAFCI(), false),
             new CardResponse(true, ApduResponseTest.getAListOfAPDUs()));
     Assert.assertNotNull(response);
@@ -53,8 +53,8 @@ public class SelectionResponseTest {
 
   @Test
   public void constructorATRNull() {
-    SelectionResponse response =
-        new SelectionResponse(
+    CardSelectionResponse response =
+        new CardSelectionResponse(
             new SelectionStatus(null, ApduResponseTest.getAFCI(), true),
             new CardResponse(true, ApduResponseTest.getAListOfAPDUs()));
     Assert.assertNotNull(response);
@@ -62,8 +62,8 @@ public class SelectionResponseTest {
 
   @Test
   public void constructorFCINull() {
-    SelectionResponse response =
-        new SelectionResponse(
+    CardSelectionResponse response =
+        new CardSelectionResponse(
             new SelectionStatus(ApduResponseTest.getAAtr(), null, true),
             new CardResponse(true, ApduResponseTest.getAListOfAPDUs()));
     Assert.assertNotNull(response);

@@ -20,10 +20,10 @@ import java.util.concurrent.*;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.card.message.CardRequest;
+import org.eclipse.keyple.core.card.message.CardSelectionRequestTest;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionResponseTest;
 import org.eclipse.keyple.core.card.message.ChannelControl;
-import org.eclipse.keyple.core.card.message.SelectionRequestTest;
-import org.eclipse.keyple.core.card.message.SelectionResponse;
-import org.eclipse.keyple.core.card.message.SelectionResponseTest;
 import org.eclipse.keyple.core.card.message.SelectionStatus;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
 import org.eclipse.keyple.core.service.event.ObservableReader;
@@ -216,7 +216,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
   @Test
   public void communicationClosing_standard() throws Exception {
     AbstractObservableLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
-    CardRequest request = SelectionRequestTest.getCardRequestSample().getCardRequest();
+    CardRequest request = CardSelectionRequestTest.getCardRequestSample().getCardRequest();
     // close after
     r.transmitCardRequest(request, ChannelControl.CLOSE_AFTER);
 
@@ -302,7 +302,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
   public static AbstractObservableLocalReader getSpy(String pluginName, String readerName) {
     AbstractObservableLocalReader r =
         Mockito.spy(new BlankObservableLocalReader(pluginName, readerName));
-    doReturn(SelectionResponseTest.getACardResponse())
+    doReturn(CardSelectionResponseTest.getACardResponse())
         .when(r)
         .processCardRequest(any(CardRequest.class), any(ChannelControl.class));
     doReturn(getSelectionResponses())
@@ -312,7 +312,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     return r;
   }
 
-  public static List<SelectionResponse> getMatchingResponses() {
+  public static List<CardSelectionResponse> getMatchingResponses() {
     SelectionStatus selectionStatus =
         new SelectionStatus(
             null,
@@ -320,19 +320,19 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
                 AbsLocalReaderTransmitTest.RESP_SUCCESS,
                 AbsLocalReaderSelectionTest.STATUS_CODE_LIST),
             true);
-    SelectionResponse selectionResponse = new SelectionResponse(selectionStatus, null);
-    return Arrays.asList(selectionResponse);
+    CardSelectionResponse cardSelectionResponse = new CardSelectionResponse(selectionStatus, null);
+    return Arrays.asList(cardSelectionResponse);
   }
 
-  public static List<SelectionResponse> getNotMatchingResponses() {
+  public static List<CardSelectionResponse> getNotMatchingResponses() {
     SelectionStatus selectionStatus =
         new SelectionStatus(
             null,
             new ApduResponse(
                 AbsLocalReaderTransmitTest.RESP_FAIL, AbsLocalReaderSelectionTest.STATUS_CODE_LIST),
             false);
-    SelectionResponse selectionResponse = new SelectionResponse(selectionStatus, null);
-    return Arrays.asList(selectionResponse);
+    CardSelectionResponse cardSelectionResponse = new CardSelectionResponse(selectionStatus, null);
+    return Arrays.asList(cardSelectionResponse);
   }
 
   public static ObservableReader.ReaderObserver getReaderObserver() {
@@ -342,11 +342,12 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     };
   }
 
-  public static List<SelectionResponse> getSelectionResponses() {
-    List<SelectionResponse> responses = new ArrayList<SelectionResponse>();
+  public static List<CardSelectionResponse> getSelectionResponses() {
+    List<CardSelectionResponse> responses = new ArrayList<CardSelectionResponse>();
     responses.add(
-        new SelectionResponse(
-            SelectionResponseTest.getASelectionStatus(), SelectionResponseTest.getACardResponse()));
+        new CardSelectionResponse(
+            CardSelectionResponseTest.getASelectionStatus(),
+            CardSelectionResponseTest.getACardResponse()));
     return responses;
   }
 }

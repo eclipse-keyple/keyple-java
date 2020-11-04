@@ -15,7 +15,7 @@ import java.util.*;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
-import org.eclipse.keyple.core.card.message.SelectionResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
@@ -93,10 +93,10 @@ public class CalypsoPo extends AbstractSmartCard {
   /**
    * Constructor.
    *
-   * @param selectionResponse the response to the selection application command
+   * @param cardSelectionResponse the response to the selection application command
    */
-  CalypsoPo(SelectionResponse selectionResponse) {
-    super(selectionResponse);
+  CalypsoPo(CardSelectionResponse cardSelectionResponse) {
+    super(cardSelectionResponse);
 
     int bufferSizeIndicator;
     int bufferSizeValue;
@@ -105,7 +105,7 @@ public class CalypsoPo extends AbstractSmartCard {
 
       /* Parse PO FCI - to retrieve DF Name (AID), Serial Number, &amp; StartupInfo */
       GetDataFciRespPars poFciRespPars =
-          new GetDataFciRespPars(selectionResponse.getSelectionStatus().getFci(), null);
+          new GetDataFciRespPars(cardSelectionResponse.getSelectionStatus().getFci(), null);
 
       // 4 fields extracted by the low level parser
       dfName = poFciRespPars.getDfName();

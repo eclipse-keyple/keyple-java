@@ -35,9 +35,9 @@ import org.eclipse.keyple.core.card.message.ApduRequest;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.card.message.CardRequest;
 import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.card.message.ChannelControl;
 import org.eclipse.keyple.core.card.message.ProxyReader;
-import org.eclipse.keyple.core.card.message.SelectionResponse;
 import org.eclipse.keyple.core.card.message.SelectionStatus;
 import org.eclipse.keyple.core.card.selection.CardResource;
 import org.eclipse.keyple.core.service.Reader;
@@ -1709,8 +1709,8 @@ public class PoTransactionTest {
   }
 
   private CalypsoPo createCalypsoPo(String FCI) {
-    SelectionResponse selectionData =
-        new SelectionResponse(
+    CardSelectionResponse selectionData =
+        new CardSelectionResponse(
             new SelectionStatus(null, new ApduResponse(ByteArrayUtil.fromHex(FCI), null), true),
             null);
     return new CalypsoPo(selectionData);
@@ -1720,7 +1720,7 @@ public class PoTransactionTest {
 
     SelectionStatus selectionStatus =
         new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR1)), null, true);
-    return new CalypsoSam(new SelectionResponse(selectionStatus, null));
+    return new CalypsoSam(new CardSelectionResponse(selectionStatus, null));
   }
 
   private ProxyReader createMockReader(

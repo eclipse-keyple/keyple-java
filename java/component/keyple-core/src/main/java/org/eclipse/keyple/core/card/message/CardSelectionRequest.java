@@ -25,10 +25,10 @@ import org.eclipse.keyple.core.card.selection.CardSelector;
  * Can be used in conjunction with the default selection process to optimize the start of a
  * ticketing process.
  *
- * @see SelectionResponse
+ * @see CardSelectionResponse
  * @since 1.0
  */
-public final class SelectionRequest implements Serializable {
+public final class CardSelectionRequest implements Serializable {
 
   private final CardSelector cardSelector;
   private final CardRequest cardRequest;
@@ -40,7 +40,7 @@ public final class SelectionRequest implements Serializable {
    *
    * @param cardSelector a not null {@link CardSelector}
    */
-  public SelectionRequest(CardSelector cardSelector) {
+  public CardSelectionRequest(CardSelector cardSelector) {
     this.cardSelector = cardSelector;
     this.cardRequest = null;
   }
@@ -51,7 +51,7 @@ public final class SelectionRequest implements Serializable {
    * @param cardSelector a not null {@link CardSelector}
    * @param cardRequest a not empty {@link CardRequest}
    */
-  public SelectionRequest(CardSelector cardSelector, CardRequest cardRequest) {
+  public CardSelectionRequest(CardSelector cardSelector, CardRequest cardRequest) {
     this.cardSelector = cardSelector;
     this.cardRequest = cardRequest;
   }
@@ -77,6 +77,7 @@ public final class SelectionRequest implements Serializable {
   @Override
   public String toString() {
     return String.format(
-        "SelectionRequest:{SELECTOR = %s, CARDREQUEST = %s}", getCardSelector(), getCardRequest());
+        "CardSelectionRequest:{SELECTOR = %s, CARDREQUEST = %s}",
+        getCardSelector(), getCardRequest());
   }
 }

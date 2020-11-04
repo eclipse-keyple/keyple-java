@@ -19,7 +19,7 @@ import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronizedExchangesException;
 import org.eclipse.keyple.core.card.message.ApduResponse;
-import org.eclipse.keyple.core.card.message.SelectionResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.card.selection.AbstractCardSelectionRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,25 +99,25 @@ public class PoSelectionRequest
   /**
    * Create a CalypsoPo object containing the selection data received from the plugin
    *
-   * @param selectionResponse the card response received
+   * @param cardSelectionResponse the card response received
    * @return a {@link CalypsoPo}
    * @throws CalypsoDesynchronizedExchangesException if the number of responses is different from
    *     the number of requests
    * @throws CalypsoPoCommandException if a response from the PO was unexpected
    */
   @Override
-  protected CalypsoPo parse(SelectionResponse selectionResponse) {
+  protected CalypsoPo parse(CardSelectionResponse cardSelectionResponse) {
 
     List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> commandBuilders =
         getCommandBuilders();
-    List<ApduResponse> apduResponses = selectionResponse.getCardResponse().getApduResponses();
+    List<ApduResponse> apduResponses = cardSelectionResponse.getCardResponse().getApduResponses();
 
     if (commandBuilders.size() != apduResponses.size()) {
       throw new CalypsoDesynchronizedExchangesException(
           "Mismatch in the number of requests/responses");
     }
 
-    CalypsoPo calypsoPo = new CalypsoPo(selectionResponse);
+    CalypsoPo calypsoPo = new CalypsoPo(cardSelectionResponse);
 
     if (!commandBuilders.isEmpty()) {
       CalypsoPoUtils.updateCalypsoPo(calypsoPo, commandBuilders, apduResponses);

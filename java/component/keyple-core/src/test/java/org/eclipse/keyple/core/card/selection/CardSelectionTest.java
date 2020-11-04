@@ -18,11 +18,10 @@ import org.eclipse.keyple.core.card.command.CardCommand;
 import org.eclipse.keyple.core.card.message.ApduRequest;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.card.message.ChannelControl;
 import org.eclipse.keyple.core.card.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.card.message.DefaultSelectionsResponse;
-import org.eclipse.keyple.core.card.message.SelectionRequest;
-import org.eclipse.keyple.core.card.message.SelectionResponse;
 import org.eclipse.keyple.core.card.message.SelectionStatus;
 import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.service.exception.KeypleException;
@@ -63,13 +62,15 @@ public class CardSelectionTest extends CoreBaseTest {
     Assert.assertEquals(ChannelControl.KEEP_OPEN, selectionOperation.getChannelControl());
 
     // get the cardRequest set
-    List<SelectionRequest> selectionRequests = selectionOperation.getSelectionRequests();
-    Assert.assertEquals(2, selectionRequests.size());
+    List<org.eclipse.keyple.core.card.message.CardSelectionRequest> cardSelectionRequests =
+        selectionOperation.getSelectionRequests();
+    Assert.assertEquals(2, cardSelectionRequests.size());
 
     // get the two card requests
-    Iterator<SelectionRequest> iterator = selectionRequests.iterator();
-    SelectionRequest cardRequest1 = iterator.next();
-    SelectionRequest cardRequest2 = iterator.next();
+    Iterator<org.eclipse.keyple.core.card.message.CardSelectionRequest> iterator =
+        cardSelectionRequests.iterator();
+    org.eclipse.keyple.core.card.message.CardSelectionRequest cardRequest1 = iterator.next();
+    org.eclipse.keyple.core.card.message.CardSelectionRequest cardRequest2 = iterator.next();
 
     // check selectors
     Assert.assertEquals(
@@ -140,9 +141,9 @@ public class CardSelectionTest extends CoreBaseTest {
     CardSelection cardSelection = createCardSelection();
 
     AbstractDefaultSelectionsResponse defaultSelectionsResponse;
-    List<SelectionResponse> selectionResponses = new ArrayList<SelectionResponse>();
+    List<CardSelectionResponse> cardSelectionRespons = new ArrayList<CardSelectionResponse>();
 
-    defaultSelectionsResponse = new DefaultSelectionsResponse(selectionResponses);
+    defaultSelectionsResponse = new DefaultSelectionsResponse(cardSelectionRespons);
 
     SelectionsResult selectionsResult = null;
     try {
@@ -162,7 +163,7 @@ public class CardSelectionTest extends CoreBaseTest {
 
     // create a selection response
     AbstractDefaultSelectionsResponse defaultSelectionsResponse;
-    List<SelectionResponse> selectionResponses = new ArrayList<SelectionResponse>();
+    List<CardSelectionResponse> cardSelectionRespons = new ArrayList<CardSelectionResponse>();
 
     ApduResponse apduResponse =
         new ApduResponse(
@@ -178,12 +179,12 @@ public class CardSelectionTest extends CoreBaseTest {
         new SelectionStatus(
             null, new ApduResponse(ByteArrayUtil.fromHex("001122334455669000"), null), false);
 
-    SelectionResponse selectionResponse =
-        new SelectionResponse(selectionStatus, new CardResponse(true, apduResponses));
+    CardSelectionResponse cardSelectionResponse =
+        new CardSelectionResponse(selectionStatus, new CardResponse(true, apduResponses));
 
-    selectionResponses.add(selectionResponse);
+    cardSelectionRespons.add(cardSelectionResponse);
 
-    defaultSelectionsResponse = new DefaultSelectionsResponse(selectionResponses);
+    defaultSelectionsResponse = new DefaultSelectionsResponse(cardSelectionRespons);
 
     // process the selection response with the CardSelection
     SelectionsResult selectionsResult = null;
@@ -208,7 +209,7 @@ public class CardSelectionTest extends CoreBaseTest {
 
     // create a selection response
     AbstractDefaultSelectionsResponse defaultSelectionsResponse;
-    List<SelectionResponse> selectionResponses = new ArrayList<SelectionResponse>();
+    List<CardSelectionResponse> cardSelectionRespons = new ArrayList<CardSelectionResponse>();
 
     ApduResponse apduResponse =
         new ApduResponse(
@@ -224,12 +225,12 @@ public class CardSelectionTest extends CoreBaseTest {
         new SelectionStatus(
             null, new ApduResponse(ByteArrayUtil.fromHex("001122334455669000"), null), true);
 
-    SelectionResponse selectionResponse =
-        new SelectionResponse(selectionStatus, new CardResponse(true, apduResponses));
+    CardSelectionResponse cardSelectionResponse =
+        new CardSelectionResponse(selectionStatus, new CardResponse(true, apduResponses));
 
-    selectionResponses.add(selectionResponse);
+    cardSelectionRespons.add(cardSelectionResponse);
 
-    defaultSelectionsResponse = new DefaultSelectionsResponse(selectionResponses);
+    defaultSelectionsResponse = new DefaultSelectionsResponse(cardSelectionRespons);
 
     // process the selection response with the CardSelection
     SelectionsResult selectionsResult = null;
@@ -325,15 +326,15 @@ public class CardSelectionTest extends CoreBaseTest {
     }
 
     @Override
-    protected AbstractSmartCard parse(SelectionResponse selectionResponse) {
-      return new SmartCard(selectionResponse);
+    protected AbstractSmartCard parse(CardSelectionResponse cardSelectionResponse) {
+      return new SmartCard(cardSelectionResponse);
     }
   }
 
   /** Matching card instantiation */
   private final class SmartCard extends AbstractSmartCard {
-    SmartCard(SelectionResponse selectionResponse) {
-      super(selectionResponse);
+    SmartCard(CardSelectionResponse cardSelectionResponse) {
+      super(cardSelectionResponse);
     }
   }
 

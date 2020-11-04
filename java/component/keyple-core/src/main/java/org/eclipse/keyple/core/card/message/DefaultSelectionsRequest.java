@@ -22,7 +22,7 @@ import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsRequest;
  * <p>The default selection is defined by:
  *
  * <ul>
- *   <li>A list of {@link SelectionRequest} corresponding to one or more selection cases.
+ *   <li>A list of {@link CardSelectionRequest} corresponding to one or more selection cases.
  *   <li>A {@link MultiSelectionProcessing} indicator specifying whether all planned selections are
  *       to be executed or whether to stop at the first one that is successful.
  *   <li>A {@link ChannelControl} indicator controlling the physical channel to stipulate whether it
@@ -36,7 +36,7 @@ import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsRequest;
  */
 public final class DefaultSelectionsRequest extends AbstractDefaultSelectionsRequest {
 
-  private final List<SelectionRequest> selectionRequests;
+  private final List<CardSelectionRequest> cardSelectionRequests;
   private final MultiSelectionProcessing multiSelectionProcessing;
   private final ChannelControl channelControl;
 
@@ -52,22 +52,22 @@ public final class DefaultSelectionsRequest extends AbstractDefaultSelectionsReq
    * <p>The {@link ChannelControl} enum controls the closing of the physical channel at the end of
    * the selection.
    *
-   * <p>Note: the {@link SelectionRequest} list should be carefully ordered in accordance with the
-   * cards expected in the application to optimize the processing time of the selection process. The
-   * first selection case in the list will be processed first.
+   * <p>Note: the {@link CardSelectionRequest} list should be carefully ordered in accordance with
+   * the cards expected in the application to optimize the processing time of the selection process.
+   * The first selection case in the list will be processed first.
    *
-   * @param selectionRequests A list of {@link SelectionRequest} embedding the selection data (must
-   *     be not empty).
+   * @param cardSelectionRequests A list of {@link CardSelectionRequest} embedding the selection
+   *     data (must be not empty).
    * @param multiSelectionProcessing The multi request processing mode (must be not null).
    * @param channelControl The channel control (must be not null).
    * @since 0.9
    */
   public DefaultSelectionsRequest(
-      List<SelectionRequest> selectionRequests,
+      List<CardSelectionRequest> cardSelectionRequests,
       MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl) {
 
-    this.selectionRequests = selectionRequests;
+    this.cardSelectionRequests = cardSelectionRequests;
     this.multiSelectionProcessing = multiSelectionProcessing;
     this.channelControl = channelControl;
   }
@@ -83,7 +83,7 @@ public final class DefaultSelectionsRequest extends AbstractDefaultSelectionsReq
   }
 
   /** {@inheritDoc} */
-  public final List<SelectionRequest> getSelectionRequests() {
-    return selectionRequests;
+  public final List<CardSelectionRequest> getSelectionRequests() {
+    return cardSelectionRequests;
   }
 }

@@ -16,8 +16,8 @@ import io.mockk.unmockkAll
 import java.io.IOException
 import org.eclipse.keyple.core.card.message.ApduRequest
 import org.eclipse.keyple.core.card.message.CardRequest
+import org.eclipse.keyple.core.card.message.CardSelectionRequest
 import org.eclipse.keyple.core.card.message.ChannelControl
-import org.eclipse.keyple.core.card.message.SelectionRequest
 import org.eclipse.keyple.core.card.selection.CardSelector
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing
 import org.eclipse.keyple.core.service.exception.KeypleReaderException
@@ -96,7 +96,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         nativeReader = mockReaderWithExceptionOnOpenLogicalChannel(IOException())
         reader = buildOmapiReaderImpl(nativeReader)
         // test
-        reader.transmitSelectionRequests(getSampleSelectionRequest(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        reader.transmitCardSelectionRequests(getSampleSelectionRequest(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
     @Test(expected = KeypleReaderIOException::class)
@@ -104,7 +104,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         nativeReader = mockReaderWithExceptionOnOpenLogicalChannel(SecurityException())
         reader = buildOmapiReaderImpl(nativeReader)
         // test
-        reader.transmitSelectionRequests(getSampleSelectionRequest(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        reader.transmitCardSelectionRequests(getSampleSelectionRequest(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
     @Test(expected = IllegalArgumentException::class)
@@ -112,7 +112,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         nativeReader = mockReaderWithExceptionOnOpenLogicalChannel(NoSuchElementException())
         reader = buildOmapiReaderImpl(nativeReader)
         // test
-        val cardResponseList = reader.transmitSelectionRequests(getSampleSelectionRequest(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        val cardResponseList = reader.transmitCardSelectionRequests(getSampleSelectionRequest(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
         Assert.assertFalse(cardResponseList[0].selectionStatus.hasMatched()) // If container is not found a null responsed is returned
     }
 
@@ -121,7 +121,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         nativeReader = mockReaderWithNullOnOpenLogicalChannel()
         reader = buildOmapiReaderImpl(nativeReader)
         // test
-        reader.transmitSelectionRequests(getSampleSelectionRequest(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        reader.transmitCardSelectionRequests(getSampleSelectionRequest(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
     @Test(expected = KeypleReaderIOException::class)
@@ -129,7 +129,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         nativeReader = mockReaderWithNullOnOpenBasicChannel()
         reader = buildOmapiReaderImpl(nativeReader)
         // test
-        reader.transmitSelectionRequests(getNoAidSampleCardRequest(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        reader.transmitCardSelectionRequests(getNoAidSampleCardRequest(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
     @Test(expected = KeypleReaderIOException::class)
@@ -137,7 +137,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         nativeReader = mockReaderWithExceptionOnOpenBasicChannel(IOException())
         reader = buildOmapiReaderImpl(nativeReader)
         // test
-        reader.transmitSelectionRequests(getNoAidSampleCardRequest(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        reader.transmitCardSelectionRequests(getNoAidSampleCardRequest(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
     @Test(expected = KeypleReaderIOException::class)
@@ -145,7 +145,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         nativeReader = mockReaderWithExceptionOnOpenBasicChannel(SecurityException())
         reader = buildOmapiReaderImpl(nativeReader)
         // test
-        reader.transmitSelectionRequests(getNoAidSampleCardRequest(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        reader.transmitCardSelectionRequests(getNoAidSampleCardRequest(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
     @Test(expected = IllegalArgumentException::class)
@@ -156,7 +156,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader = buildOmapiReaderImpl(nativeReader)
 
         // test
-        val cardResponseList = reader.transmitSelectionRequests(getSampleSelectionRequest(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        val cardResponseList = reader.transmitCardSelectionRequests(getSampleSelectionRequest(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
 
         // assert
         Assert.assertFalse(cardResponseList[0].selectionStatus.hasMatched())
@@ -170,15 +170,15 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         // wrong protocol
         val cardRequest = CardRequest(ArrayList())
 
-        val selectionRequest = SelectionRequest(CardSelector.builder()
+        val cardSelectionRequest = CardSelectionRequest(CardSelector.builder()
                 .cardProtocol("MIFARE_ULTRA_LIGHT")
                 .aidSelector(CardSelector.AidSelector.builder()
                         .aidToSelect(poAid).build()).build(), cardRequest)
 
         // test
-        val selectionRequests = ArrayList<SelectionRequest>()
-        selectionRequests.add(selectionRequest)
-        val cardResponseList = reader.transmitSelectionRequests(selectionRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        val cardSelectionRequests = ArrayList<CardSelectionRequest>()
+        cardSelectionRequests.add(cardSelectionRequest)
+        val cardResponseList = reader.transmitCardSelectionRequests(cardSelectionRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
 
         // assert
         Assert.assertFalse(cardResponseList[0].selectionStatus.hasMatched())
@@ -192,7 +192,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader = buildOmapiReaderImpl(nativeReader)
 
         // test
-        reader.transmitSelectionRequests(getSampleSelectionRequest(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        reader.transmitCardSelectionRequests(getSampleSelectionRequest(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
     @Test
@@ -203,7 +203,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader = buildOmapiReaderImpl(nativeReader)
 
         // test
-        val cardResponseList = reader.transmitSelectionRequests(getSampleSelectionRequest(), MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER)
+        val cardResponseList = reader.transmitCardSelectionRequests(getSampleSelectionRequest(), MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER)
         Assert.assertNotNull(cardResponseList)
     }
 
@@ -215,7 +215,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader = buildOmapiReaderImpl(nativeReader)
 
         // test
-        reader.transmitSelectionRequests(getSampleSelectionRequest(), MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER)
+        reader.transmitCardSelectionRequests(getSampleSelectionRequest(), MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER)
     }
 
     @Test(expected = KeypleReaderIOException::class)
@@ -225,34 +225,34 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader = buildOmapiReaderImpl(nativeReader)
 
         // test
-        reader.transmitSelectionRequests(getSampleSelectionRequest(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        reader.transmitCardSelectionRequests(getSampleSelectionRequest(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
-    private fun getSampleSelectionRequest(): List<SelectionRequest> {
+    private fun getSampleSelectionRequest(): List<CardSelectionRequest> {
 
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
         val cardRequest = CardRequest(poApduRequestList)
-        val selectionRequest = SelectionRequest(CardSelector.builder()
+        val cardSelectionRequest = CardSelectionRequest(CardSelector.builder()
                 .cardProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
                 .aidSelector(CardSelector.AidSelector.builder()
                         .aidToSelect(PO_AID).build()).build(), cardRequest)
-        val selectionRequestList = ArrayList<SelectionRequest>()
-        selectionRequestList.add(selectionRequest)
+        val selectionRequestList = ArrayList<CardSelectionRequest>()
+        selectionRequestList.add(cardSelectionRequest)
         return selectionRequestList
     }
 
-    private fun getNoAidSampleCardRequest(): List<SelectionRequest> {
+    private fun getNoAidSampleCardRequest(): List<CardSelectionRequest> {
 
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
         val cardRequest = CardRequest(poApduRequestList)
 
-        val selectionRequest = SelectionRequest(CardSelector.builder()
+        val cardSelectionRequest = CardSelectionRequest(CardSelector.builder()
                 .cardProtocol(ContactsCardCommonProtocols.ISO_7816_3.name).build(), cardRequest)
 
-        val selectionRequestList = ArrayList<SelectionRequest>()
-        selectionRequestList.add(selectionRequest)
+        val selectionRequestList = ArrayList<CardSelectionRequest>()
+        selectionRequestList.add(cardSelectionRequest)
         return selectionRequestList
     }
 }
