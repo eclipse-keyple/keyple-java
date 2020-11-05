@@ -31,16 +31,13 @@ import org.slf4j.LoggerFactory;
  * instance.
  *
  * <p>Plugin name is defined by default in the factory. Access the Remote Pool Client Plugin with
- * the {@link RemotePoolClientUtils#getAsyncPlugin()} or {@link
- * RemotePoolClientUtils#getSyncPlugin()} depending on your node configuration.
+ * the {@link RemotePoolClientUtils#getRemotePlugin()} ()}.
  */
 public class RemotePoolClientPluginFactory implements PluginFactory {
 
   private static final Logger logger = LoggerFactory.getLogger(RemotePoolClientPluginFactory.class);
-  /** default name of the RemotePoolClientPlugin for a sync node : {@value} */
-  static final String PLUGIN_NAME_SYNC = "RemotePoolClientPluginSync";
-  /** default name of the RemotePoolClientPlugin for a async node : {@value} */
-  static final String PLUGIN_NAME_ASYNC = "RemotePoolClientPluginAsync";
+  /** default name of the RemotePoolClientPlugin : {@value} */
+  static final String DEFAULT_PLUGIN_NAME = "DefaultRemotePoolServerPlugin";
 
   private static final int DEFAULT_TIMEOUT = 5;
 
@@ -204,14 +201,12 @@ public class RemotePoolClientPluginFactory implements PluginFactory {
     @Override
     public RemotePoolClientPluginFactory build() {
 
-      RemotePoolClientPluginImpl plugin;
+      RemotePoolClientPluginImpl plugin = new RemotePoolClientPluginImpl(DEFAULT_PLUGIN_NAME);
 
       if (asyncEndpoint != null) {
-        plugin = new RemotePoolClientPluginImpl(PLUGIN_NAME_ASYNC);
         logger.info("Create a new RemotePoolClientPlugin with a async client endpoint");
         plugin.bindClientAsyncNode(asyncEndpoint, timeoutInSec);
       } else {
-        plugin = new RemotePoolClientPluginImpl(PLUGIN_NAME_SYNC);
         logger.info("Create a new RemotePoolClientPlugin with a sync client endpoint");
         plugin.bindClientSyncNode(syncEndpoint, null, null);
       }

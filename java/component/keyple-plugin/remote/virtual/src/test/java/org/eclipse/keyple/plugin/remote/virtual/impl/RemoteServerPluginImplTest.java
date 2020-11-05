@@ -55,10 +55,10 @@ public class RemoteServerPluginImplTest extends RemoteServerBaseTest {
                 .withPluginObserver(pluginObserver)
                 .usingDefaultEventNotificationPool()
                 .build());
-    assertThat(RemoteServerUtils.getSyncPlugin()).isNotNull();
+    assertThat(RemoteServerUtils.getRemotePlugin()).isNotNull();
     assertThat(RemoteServerUtils.getSyncNode()).isNotNull();
 
-    SeProxyService.getInstance().unregisterPlugin(RemoteServerPluginFactory.PLUGIN_NAME_SYNC);
+    SeProxyService.getInstance().unregisterPlugin(RemoteServerPluginFactory.DEFAULT_PLUGIN_NAME);
   }
 
   @Test
@@ -70,10 +70,10 @@ public class RemoteServerPluginImplTest extends RemoteServerBaseTest {
                 .withPluginObserver(pluginObserver)
                 .usingDefaultEventNotificationPool()
                 .build());
-    assertThat(RemoteServerUtils.getAsyncPlugin()).isNotNull();
+    assertThat(RemoteServerUtils.getRemotePlugin()).isNotNull();
     assertThat(RemoteServerUtils.getAsyncNode()).isNotNull();
 
-    SeProxyService.getInstance().unregisterPlugin(RemoteServerPluginFactory.PLUGIN_NAME_ASYNC);
+    SeProxyService.getInstance().unregisterPlugin(RemoteServerPluginFactory.DEFAULT_PLUGIN_NAME);
   }
 
   @Test

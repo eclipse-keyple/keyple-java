@@ -133,6 +133,15 @@ public abstract class BaseScenario {
   ExecutorService clientPool = Executors.newCachedThreadPool(new NamedThreadFactory("client-pool"));
   ExecutorService serverPool = Executors.newCachedThreadPool(new NamedThreadFactory("remote-pool"));
 
+  public static void unRegisterRemotePlugin() {
+    try {
+      RemoteServerPlugin oldPlugin = RemoteServerUtils.getRemotePlugin();
+      SeProxyService.getInstance().unregisterPlugin(oldPlugin.getName());
+    } catch (KeyplePluginNotFoundException e) {
+      // no plugin to unregister
+    }
+  }
+
   /** Init native stub plugin that can work with {@link StubSecureElement} */
   void initNativeStubPlugin() {
     // reuse stub plugin
@@ -179,7 +188,7 @@ public abstract class BaseScenario {
   /** Init a Sync Remote Server Plugin (ie. http server) */
   void initRemotePluginWithSyncNode() {
     try {
-      remotePlugin = RemoteServerUtils.getSyncPlugin();
+      remotePlugin = RemoteServerUtils.getRemotePlugin();
     } catch (KeyplePluginNotFoundException e) {
       remotePlugin =
           (RemoteServerPlugin)
@@ -197,7 +206,7 @@ public abstract class BaseScenario {
   /** Init a Async Remote Server Plugin with an async server endpoint */
   void initRemotePluginWithAsyncNode(KeypleServerAsync serverEndpoint) {
     try {
-      remotePlugin = RemoteServerUtils.getAsyncPlugin();
+      remotePlugin = RemoteServerUtils.getRemotePlugin();
       logger.info("RemotePluginServer already registered, reusing it");
     } catch (KeyplePluginNotFoundException e) {
       remotePlugin =

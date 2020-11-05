@@ -38,7 +38,7 @@ public class RemoteServerBaseTest {
 
   static String clientId = "client1";
   static String nativeReaderName = "nativeReaderName1";
-  static String remotePluginName = RemoteServerPluginFactory.PLUGIN_NAME_SYNC;
+  static String remotePluginName = RemoteServerPluginFactory.DEFAULT_PLUGIN_NAME;
   static String nativePluginName = "nativePluginName1";
   static String serviceId = "1";
   static RemoteServerPluginImplTest.MockUserOutputData userOutputData =

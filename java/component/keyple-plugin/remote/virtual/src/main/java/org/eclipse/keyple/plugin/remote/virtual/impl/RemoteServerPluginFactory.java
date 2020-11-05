@@ -34,16 +34,13 @@ import org.slf4j.LoggerFactory;
  * instance.
  *
  * <p>Plugin name is defined by default in the factory. Access the Remote Server Plugin with the
- * {@link RemoteServerUtils#getAsyncPlugin()} or {@link RemoteServerUtils#getSyncNode()} depending
- * on your node configuration.
+ * {@link RemoteServerUtils#getRemotePlugin()} ()}.
  */
 public class RemoteServerPluginFactory implements PluginFactory {
 
   private static final Logger logger = LoggerFactory.getLogger(RemoteServerPluginFactory.class);
-  /** default name of the RemoteServerPlugin for a sync node : {@value} */
-  static final String PLUGIN_NAME_SYNC = "RemoteServerPluginSync";
-  /** default name of the RemoteServerPlugin for a async node : {@value} */
-  static final String PLUGIN_NAME_ASYNC = "RemoteServerPluginAsync";
+  /** default name of the RemoteServerPlugin : {@value} */
+  static final String DEFAULT_PLUGIN_NAME = "DefaultRemoteServerPlugin";
 
   private RemoteServerPlugin plugin;
 
@@ -232,14 +229,13 @@ public class RemoteServerPluginFactory implements PluginFactory {
     @Override
     public RemoteServerPluginFactory build() {
 
-      RemoteServerPluginImpl plugin;
+      RemoteServerPluginImpl plugin =
+          new RemoteServerPluginImpl(DEFAULT_PLUGIN_NAME, eventNotificationPool);
 
       if (asyncEndpoint != null) {
-        plugin = new RemoteServerPluginImpl(PLUGIN_NAME_ASYNC, eventNotificationPool);
         logger.info("Create a new RemoteServerPlugin with a async server endpoint");
         plugin.bindServerAsyncNode(asyncEndpoint);
       } else {
-        plugin = new RemoteServerPluginImpl(PLUGIN_NAME_SYNC, eventNotificationPool);
         logger.info("Create a new RemoteServerPlugin with a sync server endpoint");
         plugin.bindServerSyncNode();
       }

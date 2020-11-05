@@ -45,6 +45,8 @@ public class AsyncScenario extends BaseScenario {
      * </ul>
      */
     serverEndpoint = new StubAsyncServerEndpoint();
+
+    unRegisterRemotePlugin();
   }
 
   @Before

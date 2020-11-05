@@ -21,6 +21,7 @@ import org.eclipse.keyple.plugin.remote.integration.common.model.UserInput;
 import org.eclipse.keyple.plugin.remote.nativ.impl.NativeClientServiceFactory;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,11 @@ public class SyncScenario extends BaseScenario {
   private static final Logger logger = LoggerFactory.getLogger(SyncScenario.class);
 
   KeypleClientSync clientSyncEndpoint;
+
+  @BeforeClass
+  public static void globalSetUp() {
+    unRegisterRemotePlugin();
+  }
 
   @Before
   public void setUp() {

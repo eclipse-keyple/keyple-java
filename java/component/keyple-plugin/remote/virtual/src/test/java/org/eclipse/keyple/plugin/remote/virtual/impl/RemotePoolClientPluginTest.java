@@ -57,10 +57,11 @@ public class RemotePoolClientPluginTest {
                 .withSyncNode(syncEndpoint)
                 .usingCustomTimeout(10)
                 .build());
-    assertThat(RemotePoolClientUtils.getSyncPlugin()).isNotNull();
+    assertThat(RemotePoolClientUtils.getRemotePlugin()).isNotNull();
 
     // unregister plugin
-    SeProxyService.getInstance().unregisterPlugin(RemotePoolClientUtils.getSyncPlugin().getName());
+    SeProxyService.getInstance()
+        .unregisterPlugin(RemotePoolClientUtils.getRemotePlugin().getName());
   }
 
   @Test
@@ -71,11 +72,12 @@ public class RemotePoolClientPluginTest {
                 .withAsyncNode(asyncEndpoint)
                 .usingDefaultTimeout()
                 .build());
-    assertThat(RemotePoolClientUtils.getAsyncPlugin()).isNotNull();
+    assertThat(RemotePoolClientUtils.getRemotePlugin()).isNotNull();
     assertThat(RemotePoolClientUtils.getAsyncNode()).isNotNull();
 
     // unregister plugin
-    SeProxyService.getInstance().unregisterPlugin(RemotePoolClientUtils.getAsyncPlugin().getName());
+    SeProxyService.getInstance()
+        .unregisterPlugin(RemotePoolClientUtils.getRemotePlugin().getName());
   }
 
   @Test
