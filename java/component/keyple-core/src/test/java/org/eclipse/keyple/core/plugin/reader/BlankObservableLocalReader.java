@@ -29,9 +29,9 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
   public final ObservableReaderStateService initStateService() {
 
     return ObservableReaderStateService.builder(this)
-        .WaitForCardInsertionWithNativeDetection()
-        .WaitForCardProcessingWithNativeDetection()
-        .WaitForCardRemovalWithNativeDetection()
+        .waitForCardInsertionWithNativeDetection()
+        .waitForCardProcessingWithNativeDetection()
+        .waitForCardRemovalWithNativeDetection()
         .build();
   }
 

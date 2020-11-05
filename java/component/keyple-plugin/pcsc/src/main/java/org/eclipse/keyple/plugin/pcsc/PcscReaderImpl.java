@@ -103,16 +103,16 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     if (!usePingPresence) {
       observableReaderStateService =
           ObservableReaderStateService.builder(this)
-              .WaitForCardInsertionWithSmartDetection()
-              .WaitForCardProcessingWithSmartDetection()
-              .WaitForCardRemovalWithSmartDetection()
+              .waitForCardInsertionWithSmartDetection()
+              .waitForCardProcessingWithSmartDetection()
+              .waitForCardRemovalWithSmartDetection()
               .build();
     } else {
       observableReaderStateService =
           ObservableReaderStateService.builder(this)
-              .WaitForCardInsertionWithPollingDetection()
-              .WaitForCardProcessingWithSmartDetection()
-              .WaitForCardRemovalWithSmartDetection()
+              .waitForCardInsertionWithPollingDetection()
+              .waitForCardProcessingWithSmartDetection()
+              .waitForCardRemovalWithSmartDetection()
               .build();
     }
 
