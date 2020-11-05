@@ -79,7 +79,7 @@ public final class ApduRequest implements Serializable {
    * Name this APDU request.
    *
    * <p>This name String is dedicated to improving the readability of logs and should therefore only
-   * be called conditionally (e.g. level >= debug).
+   * be called conditionally (e.g. level &gt;= debug).
    *
    * @param name A not null String.
    * @return the object instance.
