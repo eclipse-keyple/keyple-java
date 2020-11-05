@@ -30,95 +30,39 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
  */
 public final class ApduRequest implements Serializable {
 
-  /** Buffer of the APDU Request */
   private final byte[] bytes;
-
   private final boolean case4;
-
-  private final Set<Integer> successfulStatusCodes;
-
-  /** Name of the request being sent */
+  private Set<Integer> successfulStatusCodes;
   private String name;
 
   /**
-   * Constructor called by a card specific library in order to build an APDU command requests sent
-   * to the card through the ProxyReader.
+   * Constructor.
    *
-   * <p>The buffer contains the bytes to be sent.<br>
-   * The case4 flag is required to manage cards that presents a behaviour not compliant with ISO
-   * 7816-3 in contacts mode (not returning the 61XYh status).<br>
-   * The successfulStatusCodes list indicates which status words should be considered successful
-   * even though they are different from 9000h.
+   * <p><code>bytes</code> contains the APDU command bytes to send to the card.<br>
+   * The <code>case4</code> boolean is set to true to indicate that APDU has incoming and outgoing
+   * data. It helps to handle cards that present a behaviour not compliant with ISO 7816-3 in
+   * contacts mode (not returning the 61XYh status).<br>
    *
-   * @param buffer A not empty byte array.
+   * @param bytes A not empty byte array.
    * @param case4 True if the APDU is in case 4, false if not.
-   * @param successfulStatusCodes the list of status codes to be considered as successful although
-   *     different from 9000h
    * @since 0.9
    */
-  public ApduRequest(byte[] buffer, boolean case4, Set<Integer> successfulStatusCodes) {
-    this.bytes = buffer;
+  public ApduRequest(byte[] bytes, boolean case4) {
+    this.bytes = bytes;
     this.case4 = case4;
+  }
+
+  /**
+   * The successfulStatusCodes list indicates which status words in the response should be
+   * considered successful even though they are different from 9000h.
+   *
+   * @param successfulStatusCodes A not empty Set of Integer.
+   * @return the object instance.
+   * @since 1.0
+   */
+  public ApduRequest setSuccessfulStatusCodes(Set<Integer> successfulStatusCodes) {
     this.successfulStatusCodes = successfulStatusCodes;
-  }
-
-  /**
-   * Constructor called by a card specific library in order to build an named APDU command requests
-   * sent to the card through the ProxyReader.
-   *
-   * <p>The buffer contains the APDU bytes.<br>
-   * The name is intended to be printed in logs.<br>
-   * The case4 flag is required to manage cards that presents a behaviour not compliant with ISO
-   * 7816-3 in contacts mode (not returning the 61XYh status).<br>
-   * The successfulStatusCodes list indicates which status words should be considered successful
-   * even though they are different from 9000h.
-   *
-   * @param name A not empty string.
-   * @param buffer A not empty byte array.
-   * @param case4 True if the APDU is in case 4, false if not.
-   * @param successfulStatusCodes the list of status codes to be considered as successful although
-   *     different from 9000h
-   * @since 0.9
-   */
-  public ApduRequest(
-      String name, byte[] buffer, boolean case4, Set<Integer> successfulStatusCodes) {
-    this(buffer, case4, successfulStatusCodes);
-    this.name = name;
-  }
-
-  /**
-   * Constructor called by a card specific library in order to build an APDU command requests sent
-   * to the card through the ProxyReader.
-   *
-   * <p>The buffer contains the APDU bytes.<br>
-   * The case4 flag is required to manage cards that presents a behaviour not compliant with ISO
-   * 7816-3 in contacts mode (not returning the 61XYh status).<br>
-   *
-   * @param buffer A not empty byte array.
-   * @param case4 True if the APDU is in case 4, false if not.
-   * @since 0.9
-   */
-  public ApduRequest(byte[] buffer, boolean case4) {
-    this(buffer, case4, null);
-  }
-
-  /**
-   * Constructor called by a card specific library in order to build an named APDU command requests
-   * sent to the card through the ProxyReader.
-   *
-   * <p>The buffer contains the APDU bytes.<br>
-   * The name is intended to be printed in logs.<br>
-   * The case4 flag is required to manage cards that presents a behaviour not compliant with ISO
-   * 7816-3 in contacts mode (not returning the 61XYh status).<br>
-   *
-   * @param name A not empty string.
-   * @param buffer A not empty byte array.
-   * @param case4 True if the APDU is in case 4, false if not.
-   * @since 0.9
-   */
-  public ApduRequest(String name, byte[] buffer, boolean case4) {
-    this(buffer, case4, null);
-    this.name = name;
+    return this;
   }
 
   /**
@@ -135,16 +79,18 @@ public final class ApduRequest implements Serializable {
    * Name this APDU request
    *
    * @param name A not null String.
+   * @return the object instance.
    * @since 0.9
    */
-  public void setName(final String name) {
+  public ApduRequest setName(final String name) {
     this.name = name;
+    return this;
   }
 
   /**
    * Get the list of valid status codes for the request.
    *
-   * @return A Set of Integer (can be null).
+   * @return A not null Set of Integer (can be empty).
    * @since 0.9
    */
   public Set<Integer> getSuccessfulStatusCodes() {
@@ -162,7 +108,7 @@ public final class ApduRequest implements Serializable {
   }
 
   /**
-   * Gets the APDU buffer byte array.
+   * Gets the APDU bytes to send to the card.
    *
    * @return A not null byte array.
    * @since 0.9
@@ -174,16 +120,16 @@ public final class ApduRequest implements Serializable {
   @Override
   public String toString() {
     StringBuilder string;
+    if (name == null) {
+      name = "Unnamed";
+    }
     string =
         new StringBuilder(
-            "ApduRequest: NAME = \""
-                + this.getName()
-                + "\", RAWDATA = "
-                + ByteArrayUtil.toHex(bytes));
+            "ApduRequest: NAME = \"" + name + "\", RAWDATA = " + ByteArrayUtil.toHex(bytes));
     if (isCase4()) {
       string.append(", case4");
     }
-    if (successfulStatusCodes != null) {
+    if (successfulStatusCodes != null && !successfulStatusCodes.isEmpty()) {
       string.append(", additional successful status codes = ");
       Iterator<Integer> iterator = successfulStatusCodes.iterator();
       while (iterator.hasNext()) {

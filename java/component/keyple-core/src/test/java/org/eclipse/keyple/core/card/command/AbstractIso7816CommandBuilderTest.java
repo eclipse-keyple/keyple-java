@@ -45,7 +45,7 @@ public class AbstractIso7816CommandBuilderTest extends CoreBaseTest {
     Assert.assertNull(iso7816CommandBuilder.getApduRequest().getSuccessfulStatusCodes());
     Assert.assertEquals("COMMAND_1", iso7816CommandBuilder.getApduRequest().getName());
 
-    apduRequest = new ApduRequest("APDU_2", ByteArrayUtil.fromHex("AABBCCDDEEFF00"), true);
+    apduRequest = new ApduRequest(ByteArrayUtil.fromHex("AABBCCDDEEFF00"), true).setName("APDU_2");
     Assert.assertEquals("APDU_2", apduRequest.getName());
     iso7816CommandBuilder = new Iso7816CommandBuilder(CommandRef.COMMAND_2, apduRequest);
 
