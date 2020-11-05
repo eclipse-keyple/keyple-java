@@ -39,7 +39,6 @@ public class ChangeKeyCmdBuild extends AbstractPoCommandBuilder<ChangeKeyRespPar
     byte p2 = keyIndex;
 
     this.request = setApduRequest(cla, command, p1, p2, cryptogram, null);
-    this.addSubName("Change Key");
   }
 
   @Override

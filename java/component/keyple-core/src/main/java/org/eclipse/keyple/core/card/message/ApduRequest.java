@@ -76,7 +76,10 @@ public final class ApduRequest implements Serializable {
   }
 
   /**
-   * Name this APDU request
+   * Name this APDU request.
+   *
+   * <p>This name String is dedicated to improving the readability of logs and should therefore only
+   * be called conditionally (e.g. level >= debug).
    *
    * @param name A not null String.
    * @return the object instance.
@@ -98,9 +101,9 @@ public final class ApduRequest implements Serializable {
   }
 
   /**
-   * Get the name of this APDU request
+   * Gets the name of this APDU request if it has been defined (see setName).
    *
-   * @return A not null String.
+   * @return A String (may be null).
    * @since 0.9
    */
   public String getName() {
@@ -120,9 +123,6 @@ public final class ApduRequest implements Serializable {
   @Override
   public String toString() {
     StringBuilder string;
-    if (name == null) {
-      name = "Unnamed";
-    }
     string =
         new StringBuilder(
             "ApduRequest: NAME = \"" + name + "\", RAWDATA = " + ByteArrayUtil.toHex(bytes));

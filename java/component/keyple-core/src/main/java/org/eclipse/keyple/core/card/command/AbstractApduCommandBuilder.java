@@ -12,6 +12,8 @@
 package org.eclipse.keyple.core.card.command;
 
 import org.eclipse.keyple.core.card.message.ApduRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Generic APDU command builder.
@@ -28,6 +30,8 @@ import org.eclipse.keyple.core.card.message.ApduRequest;
  * @since 0.9
  */
 public abstract class AbstractApduCommandBuilder {
+
+  private static final Logger logger = LoggerFactory.getLogger(AbstractApduCommandBuilder.class);
 
   /**
    * The reference field {@link CardCommand} is used to find the type of command concerned when
@@ -58,16 +62,21 @@ public abstract class AbstractApduCommandBuilder {
    */
   protected AbstractApduCommandBuilder(CardCommand commandRef, ApduRequest request) {
     this.commandRef = commandRef;
-    this.name = commandRef.getName();
     this.request = request;
     // set APDU name for non null request
-    if (request != null) {
-      this.request.setName(commandRef.getName());
+    if (logger.isDebugEnabled()) {
+      this.name = commandRef.getName();
+      if (request != null) {
+        this.request.setName(this.name);
+      }
     }
   }
 
   /**
-   * Appends a string to the current name
+   * Appends a string to the current name.
+   *
+   * <p>The subname completes the name of the current command. This method must therefore only be
+   * called conditionally (log level &gt;= debug).
    *
    * @param subName the string to append
    * @since 0.9
@@ -92,9 +101,9 @@ public abstract class AbstractApduCommandBuilder {
   }
 
   /**
-   * Gets the name of the APDU command from the CalypsoCommands information.
+   * Gets the name of this APDU command if it has been allowed by the log level (see constructor).
    *
-   * @return A non null reference
+   * @return A String (may be null).
    * @since 0.9
    */
   public final String getName() {

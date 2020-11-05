@@ -65,8 +65,6 @@ public final class CloseSessionCmdBuild extends AbstractPoCommandBuilder<CloseSe
   public CloseSessionCmdBuild(PoClass poClass) {
     super(command, null);
     request = setApduRequest(poClass.getValue(), command, (byte) 0x00, (byte) 0x00, null, (byte) 0);
-    /* Add "Abort session" to command name for logging purposes */
-    this.addSubName("Abort session");
   }
 
   @Override

@@ -12,6 +12,8 @@
 package org.eclipse.keyple.core.card.command;
 
 import org.eclipse.keyple.core.card.message.ApduRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Iso7816 APDU command builder.
@@ -30,6 +32,8 @@ import org.eclipse.keyple.core.card.message.ApduRequest;
  * @since 0.9
  */
 public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandBuilder {
+
+  private static final Logger logger = LoggerFactory.getLogger(AbstractApduCommandBuilder.class);
 
   /**
    * (protected)<br>
@@ -143,6 +147,11 @@ public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandB
       case4 = false;
     }
 
-    return new ApduRequest(apdu, case4).setName(command.getName());
+    // sets the name only if the log level is debug or higher.
+    if (logger.isDebugEnabled()) {
+      return new ApduRequest(apdu, case4).setName(command.getName());
+    } else {
+      return new ApduRequest(apdu, case4);
+    }
   }
 }
