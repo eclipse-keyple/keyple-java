@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.common.generic;
 
-import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.card.selection.AbstractCardSelectionRequest;
 import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.card.selection.CardSelector;
@@ -23,12 +23,12 @@ public class GenericCardSelectionRequest extends AbstractCardSelectionRequest {
   }
 
   @Override
-  protected AbstractSmartCard parse(CardResponse cardResponse) {
+  protected AbstractSmartCard parse(CardSelectionResponse cardSelectionResponse) {
     class GenericSmartCard extends AbstractSmartCard {
-      public GenericSmartCard(CardResponse selectionResponse) {
-        super(selectionResponse);
+      public GenericSmartCard(CardSelectionResponse cardSelectionResponse) {
+        super(cardSelectionResponse);
       }
     }
-    return new GenericSmartCard(cardResponse);
+    return new GenericSmartCard(cardSelectionResponse);
   }
 }

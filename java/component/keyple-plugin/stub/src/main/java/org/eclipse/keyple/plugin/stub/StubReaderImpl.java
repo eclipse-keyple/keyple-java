@@ -239,9 +239,9 @@ class StubReaderImpl extends AbstractObservableLocalReader
   @Override
   protected final ObservableReaderStateService initStateService() {
     return ObservableReaderStateService.builder(this)
-        .WaitForCardInsertionWithSmartDetection()
-        .WaitForCardProcessingWithSmartDetection()
-        .WaitForCardRemovalWithSmartDetection()
+        .waitForCardInsertionWithSmartDetection()
+        .waitForCardProcessingWithSmartDetection()
+        .waitForCardRemovalWithSmartDetection()
         .build();
   }
 }

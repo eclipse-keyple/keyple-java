@@ -17,6 +17,7 @@ import org.eclipse.keyple.calypso.SelectFileControl;
 import org.eclipse.keyple.core.card.message.AnswerToReset;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.card.message.SelectionStatus;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -69,8 +70,9 @@ public class PoSelectionRequestTest {
     SelectionStatus selectionStatus =
         new SelectionStatus(
             new AnswerToReset(ByteArrayUtil.fromHex(ATR_VALUE)), SELECT_APPLICATION_RESPONSE, true);
-    CardResponse cardResponse = new CardResponse(true, true, selectionStatus, apduResponses);
-    CalypsoPo calypsoPo = poSelectionRequest.parse(cardResponse);
+    CardSelectionResponse cardSelectionResponse =
+        new CardSelectionResponse(selectionStatus, new CardResponse(true, apduResponses));
+    CalypsoPo calypsoPo = poSelectionRequest.parse(cardSelectionResponse);
 
     ElementaryFile ef1 = calypsoPo.getFileBySfi(sfi1);
     FileData records1 = ef1.getData();
@@ -95,8 +97,9 @@ public class PoSelectionRequestTest {
     SelectionStatus selectionStatus =
         new SelectionStatus(
             new AnswerToReset(ByteArrayUtil.fromHex(ATR_VALUE)), SELECT_APPLICATION_RESPONSE, true);
-    CardResponse cardResponse = new CardResponse(true, true, selectionStatus, apduResponses);
-    CalypsoPo calypsoPo = poSelectionRequest.parse(cardResponse);
+    CardSelectionResponse cardSelectionResponse =
+        new CardSelectionResponse(selectionStatus, new CardResponse(true, apduResponses));
+    CalypsoPo calypsoPo = poSelectionRequest.parse(cardSelectionResponse);
 
     ElementaryFile ef = calypsoPo.getFileByLid(lid1);
     FileHeader efHeader = ef.getHeader();
@@ -129,8 +132,9 @@ public class PoSelectionRequestTest {
     SelectionStatus selectionStatus =
         new SelectionStatus(
             new AnswerToReset(ByteArrayUtil.fromHex(ATR_VALUE)), SELECT_APPLICATION_RESPONSE, true);
-    CardResponse cardResponse = new CardResponse(true, true, selectionStatus, apduResponses);
-    CalypsoPo calypsoPo = poSelectionRequest.parse(cardResponse);
+    CardSelectionResponse cardSelectionResponse =
+        new CardSelectionResponse(selectionStatus, new CardResponse(true, apduResponses));
+    CalypsoPo calypsoPo = poSelectionRequest.parse(cardSelectionResponse);
 
     ElementaryFile ef = calypsoPo.getFileByLid(lid1);
     FileHeader efHeader = ef.getHeader();

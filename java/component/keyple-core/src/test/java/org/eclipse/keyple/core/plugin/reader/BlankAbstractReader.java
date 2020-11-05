@@ -14,6 +14,8 @@ package org.eclipse.keyple.core.plugin.reader;
 import java.util.List;
 import org.eclipse.keyple.core.card.message.CardRequest;
 import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionRequest;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.card.message.ChannelControl;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
 
@@ -25,8 +27,8 @@ public class BlankAbstractReader extends AbstractReader {
   }
 
   @Override
-  protected List<CardResponse> processCardRequests(
-      List<CardRequest> cardRequests,
+  protected List<CardSelectionResponse> processCardSelectionRequests(
+      List<CardSelectionRequest> cardSelectionRequests,
       MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl) {
     return null;

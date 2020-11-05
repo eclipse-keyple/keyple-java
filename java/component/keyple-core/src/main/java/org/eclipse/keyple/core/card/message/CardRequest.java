@@ -13,61 +13,33 @@ package org.eclipse.keyple.core.card.message;
 
 import java.io.Serializable;
 import java.util.List;
-import org.eclipse.keyple.core.card.selection.CardSelector;
 
 /**
- * List of APDU requests that will result in a {@link CardResponse}
+ * This POJO wraps a list of APDUs to be sent to a card for which the logical channel has already
+ * been opened.
  *
  * @see CardResponse
+ * @since 0.9
  */
 public final class CardRequest implements Serializable {
 
-  /** +/cardSelector is either an AID or an ATR regular expression */
-  private final CardSelector cardSelector;
-
-  /**
-   * contains a group of APDUCommand to operate on the selected card application by the card reader.
-   */
   private final List<ApduRequest> apduRequests;
 
   /**
-   * The constructor called by a ProxyReader in order to open a logical channel, to send a set of
-   * APDU commands to a card application, or both of them.
+   * Builds a request made of a list of {@link ApduRequest}.
    *
-   * @param cardSelector the CardSelector containing the selection information to process the card
-   *     selection
-   * @param apduRequests a optional list of {@link ApduRequest} to execute after a successful
-   *     selection process
-   */
-  public CardRequest(CardSelector cardSelector, List<ApduRequest> apduRequests) {
-    this.cardSelector = cardSelector;
-    this.apduRequests = apduRequests;
-  }
-
-  /**
-   * Constructor to be used when the card is already selected (without {@link CardSelector})
-   *
-   * @param apduRequests a list of ApudRequest
+   * @param apduRequests a not empty list of {@link ApduRequest}
+   * @since 0.9
    */
   public CardRequest(List<ApduRequest> apduRequests) {
-    this.cardSelector = null;
     this.apduRequests = apduRequests;
   }
 
   /**
-   * Gets the card cardSelector.
+   * Gets the list of {@link ApduRequest}.
    *
-   * @return the current card cardSelector
-   */
-  public CardSelector getCardSelector() {
-    return cardSelector;
-  }
-
-  /**
-   * Gets the apdu requests.
-   *
-   * @return the group of APDUs to be transmitted to the card application for this instance of
-   *     CardRequest.
+   * @return a not empty list of {@link ApduRequest}.
+   * @since 0.9
    */
   public List<ApduRequest> getApduRequests() {
     return apduRequests;
@@ -75,7 +47,6 @@ public final class CardRequest implements Serializable {
 
   @Override
   public String toString() {
-    return String.format(
-        "CardRequest:{REQUESTS = %s, SELECTOR = %s}", getApduRequests(), getCardSelector());
+    return String.format("CardRequest:{REQUESTS = %s}", getApduRequests());
   }
 }

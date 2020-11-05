@@ -43,9 +43,9 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
   public final ObservableReaderStateService initStateService() {
     // To be fixed with KEYP-349
     return ObservableReaderStateService.builder(this)
-        .WaitForCardInsertionWithSmartDetection()
-        .WaitForCardProcessingWithNativeDetection()
-        .WaitForCardRemovalWithPollingDetection()
+        .waitForCardInsertionWithSmartDetection()
+        .waitForCardProcessingWithNativeDetection()
+        .waitForCardRemovalWithPollingDetection()
         .build();
   }
 

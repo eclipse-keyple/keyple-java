@@ -20,9 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.card.message.CardRequest;
-import org.eclipse.keyple.core.card.message.CardRequestTest;
 import org.eclipse.keyple.core.card.message.CardResponse;
-import org.eclipse.keyple.core.card.message.CardResponseTest;
+import org.eclipse.keyple.core.card.message.CardSelectionRequest;
+import org.eclipse.keyple.core.card.message.CardSelectionRequestTest;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionResponseTest;
 import org.eclipse.keyple.core.card.message.ChannelControl;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
@@ -64,33 +66,40 @@ public class AbsReaderTest extends CoreBaseTest {
   @Test
   public void ts_transmit_null() throws Exception {
     AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
-    r.transmitCardRequests(null, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
+    r.transmitCardSelectionRequests(
+        null, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
     // we're just waiting right here for no exceptions to be thrown.
     verify(r, times(1))
-        .transmitCardRequests(
+        .transmitCardSelectionRequests(
             null, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
   }
 
   @Test
   public void ts_transmit2_null() throws Exception {
     AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
-    r.transmitCardRequests(null, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+    r.transmitCardSelectionRequests(
+        null, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
     // we're just waiting right here for no exceptions to be thrown.
     verify(r, times(1))
-        .transmitCardRequests(null, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+        .transmitCardSelectionRequests(
+            null, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
   }
 
   @Test
   public void ts_transmit() throws Exception {
     AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
-    List<CardRequest> cardRequests = getCardRequestList();
-    List<CardResponse> responses =
-        r.transmitCardRequests(
-            cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
+    List<CardSelectionRequest> cardSelectionRequests = getSelectionRequestList();
+    List<CardSelectionResponse> cardSelectionResponses =
+        r.transmitCardSelectionRequests(
+            cardSelectionRequests,
+            MultiSelectionProcessing.FIRST_MATCH,
+            ChannelControl.CLOSE_AFTER);
     verify(r, times(1))
-        .processCardRequests(
-            cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
-    Assert.assertNotNull(responses);
+        .processCardSelectionRequests(
+            cardSelectionRequests,
+            MultiSelectionProcessing.FIRST_MATCH,
+            ChannelControl.CLOSE_AFTER);
+    Assert.assertNotNull(cardSelectionResponses);
   }
 
   /*
@@ -100,7 +109,7 @@ public class AbsReaderTest extends CoreBaseTest {
   @Test
   public void transmit() throws Exception {
     AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
-    CardRequest request = CardRequestTest.getCardRequestSample();
+    CardRequest request = CardSelectionRequestTest.getCardRequestSample().getCardRequest();
     CardResponse response = r.transmitCardRequest(request, ChannelControl.CLOSE_AFTER);
     verify(r, times(1)).processCardRequest(request, ChannelControl.CLOSE_AFTER);
     Assert.assertNotNull(response);
@@ -122,22 +131,22 @@ public class AbsReaderTest extends CoreBaseTest {
     AbstractReader r = Mockito.spy(new BlankAbstractReader(pluginName, readerName));
     r.register();
     when(r.processCardRequest(any(CardRequest.class), any(ChannelControl.class)))
-        .thenReturn(CardResponseTest.getACardResponse());
-    when(r.processCardRequests(
+        .thenReturn(CardSelectionResponseTest.getACardResponse());
+    when(r.processCardSelectionRequests(
             any(List.class), any(MultiSelectionProcessing.class), any(ChannelControl.class)))
-        .thenReturn(getCardResponses());
+        .thenReturn(getCardSelectionResponses());
     return r;
   }
 
-  public static List<CardRequest> getCardRequestList() {
-    List<CardRequest> cardRequests = new ArrayList<CardRequest>();
-    cardRequests.add(CardRequestTest.getCardRequestSample());
-    return cardRequests;
+  public static List<CardSelectionRequest> getSelectionRequestList() {
+    List<CardSelectionRequest> cardSelectionRequests = new ArrayList<CardSelectionRequest>();
+    cardSelectionRequests.add(CardSelectionRequestTest.getCardRequestSample());
+    return cardSelectionRequests;
   }
 
-  public static List<CardResponse> getCardResponses() {
+  public static List<CardResponse> getCardSelectionResponses() {
     List<CardResponse> responses = new ArrayList<CardResponse>();
-    responses.add(CardResponseTest.getACardResponse());
+    responses.add(CardSelectionResponseTest.getACardResponse());
     return responses;
   }
 }

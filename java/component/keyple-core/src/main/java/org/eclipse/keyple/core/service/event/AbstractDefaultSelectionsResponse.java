@@ -12,7 +12,7 @@
 package org.eclipse.keyple.core.service.event;
 
 import java.util.List;
-import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 
 /**
  * This abstract class defines the POJO used to carry the response to a default selection request.
@@ -31,5 +31,5 @@ public abstract class AbstractDefaultSelectionsResponse {
    * @return A not empty list.
    * @since 0.9
    */
-  protected abstract List<CardResponse> getSelectionCardResponses();
+  protected abstract List<CardSelectionResponse> getCardSelectionResponses();
 }

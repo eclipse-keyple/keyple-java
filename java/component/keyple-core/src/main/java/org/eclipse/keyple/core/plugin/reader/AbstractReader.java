@@ -14,6 +14,8 @@ package org.eclipse.keyple.core.plugin.reader;
 import java.util.List;
 import org.eclipse.keyple.core.card.message.CardRequest;
 import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionRequest;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.card.message.ChannelControl;
 import org.eclipse.keyple.core.card.message.ProxyReader;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
@@ -87,21 +89,21 @@ public abstract class AbstractReader implements ProxyReader {
   /**
    * {@inheritDoc}
    *
-   * <p>This implementation of {@link ProxyReader#transmitCardRequests(List,
-   * MultiSelectionProcessing, ChannelControl)} is based on {@link #processCardRequests(List,
-   * MultiSelectionProcessing, ChannelControl)}.<br>
+   * <p>This implementation of {@link ProxyReader#transmitCardSelectionRequests(List,
+   * MultiSelectionProcessing, ChannelControl)} is based on {@link
+   * #processCardSelectionRequests(List, MultiSelectionProcessing, ChannelControl)}.<br>
    * It adds a logging of exchanges including a measure of execution time, available at the debug
    * level.
    */
   @Override
-  public final List<CardResponse> transmitCardRequests(
-      List<CardRequest> cardRequests,
+  public final List<CardSelectionResponse> transmitCardSelectionRequests(
+      List<CardSelectionRequest> cardSelectionRequests,
       MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl) {
 
     checkStatus();
 
-    List<CardResponse> cardResponse;
+    List<CardSelectionResponse> cardSelectionResponses;
 
     if (logger.isDebugEnabled()) {
       long timeStamp = System.nanoTime();
@@ -110,12 +112,14 @@ public abstract class AbstractReader implements ProxyReader {
       logger.debug(
           "[{}] transmit => CARDREQUESTLIST = {}, elapsed {} ms.",
           this.getName(),
-          cardRequests,
+          cardSelectionRequests,
           elapsed10ms / 10.0);
     }
 
     try {
-      cardResponse = processCardRequests(cardRequests, multiSelectionProcessing, channelControl);
+      cardSelectionResponses =
+          processCardSelectionRequests(
+              cardSelectionRequests, multiSelectionProcessing, channelControl);
     } catch (KeypleReaderIOException ex) {
       if (logger.isDebugEnabled()) {
         long timeStamp = System.nanoTime();
@@ -136,31 +140,31 @@ public abstract class AbstractReader implements ProxyReader {
       logger.debug(
           "[{}] transmit => CARDRESPONSELIST = {}, elapsed {} ms.",
           this.getName(),
-          cardResponse,
+          cardSelectionResponses,
           elapsed10ms / 10.0);
     }
 
-    return cardResponse;
+    return cardSelectionResponses;
   }
 
   /**
    * This method is the actual implementation of the process of transmitting a list of {@link
-   * CardRequest} as defined by {@link ProxyReader#transmitCardRequests(List,
+   * CardRequest} as defined by {@link ProxyReader#transmitCardSelectionRequests(List,
    * MultiSelectionProcessing, ChannelControl)}.
    *
-   * @param cardRequests A not empty list of not null {@link CardRequest}.
+   * @param cardSelectionRequests A not empty list of not null {@link CardSelectionRequest}.
    * @param multiSelectionProcessing The multi card processing flag (must be not null).
    * @param channelControl indicates if the physical channel has to be closed at the end of the
    *     processing (must be not null).
-   * @return A not empty response list (can be empty).
+   * @return A not null response list (can be empty).
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @throws IllegalArgumentException if one of the arguments is null.
    * @throws IllegalStateException in case of configuration inconsistency.
-   * @see ProxyReader#transmitCardRequests(List, MultiSelectionProcessing, ChannelControl)
+   * @see ProxyReader#transmitCardSelectionRequests(List, MultiSelectionProcessing, ChannelControl)
    * @since 0.9
    */
-  protected abstract List<CardResponse> processCardRequests(
-      List<CardRequest> cardRequests,
+  protected abstract List<CardSelectionResponse> processCardSelectionRequests(
+      List<CardSelectionRequest> cardSelectionRequests,
       MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl);
 

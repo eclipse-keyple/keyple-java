@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.card.message.ApduResponse;
-import org.eclipse.keyple.core.card.message.CardResponse;
-import org.eclipse.keyple.core.card.message.SelectionStatus;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Test;
@@ -32,15 +30,8 @@ public class CloseSessionRespParsTest {
     List<ApduResponse> responses = new ArrayList<ApduResponse>();
     ApduResponse apduResponse = new ApduResponse(response, null);
     responses.add(apduResponse);
-    CardResponse cardResponse =
-        new CardResponse(
-            true,
-            true,
-            new SelectionStatus(null, new ApduResponse(ByteArrayUtil.fromHex("9000"), null), true),
-            responses);
 
-    AbstractApduResponseParser apduResponseParser =
-        new CloseSessionRespPars(cardResponse.getApduResponses().get(0), null);
+    AbstractApduResponseParser apduResponseParser = new CloseSessionRespPars(apduResponse, null);
     Assert.assertArrayEquals(response, apduResponseParser.getApduResponse().getBytes());
   }
 

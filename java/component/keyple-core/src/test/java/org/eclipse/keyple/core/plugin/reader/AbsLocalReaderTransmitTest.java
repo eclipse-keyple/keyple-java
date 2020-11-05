@@ -22,6 +22,8 @@ import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.card.message.ApduRequest;
 import org.eclipse.keyple.core.card.message.CardRequest;
 import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionRequest;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.card.message.ChannelControl;
 import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
@@ -62,15 +64,16 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
     // init Request
-    List<CardRequest> cardRequests = getPartialRequestList(reader, 0);
+    List<CardSelectionRequest> cardSelectionRequests = getPartialRequestList(reader, 0);
     try {
       // test
-      reader.processCardRequests(
-          cardRequests, MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
+      reader.processCardSelectionRequests(
+          cardSelectionRequests, MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
       fail("A KeypleReaderIOException was expected");
     } catch (KeypleReaderIOException ex) {
-      assertThat(ex.getCardResponses().size()).isEqualTo(1);
-      assertThat(ex.getCardResponses().get(0).getApduResponses().size()).isEqualTo(2);
+      assertThat(ex.getCardSelectionResponses().size()).isEqualTo(1);
+      assertThat(ex.getCardSelectionResponses().get(0).getCardResponse().getApduResponses().size())
+          .isEqualTo(2);
     }
   }
 
@@ -78,17 +81,18 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
   public void transmit_partial_response_set_1() throws Exception {
     AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
-    List<CardRequest> cardRequests = getPartialRequestList(reader, 1);
+    List<CardSelectionRequest> cardSelectionRequests = getPartialRequestList(reader, 1);
     try {
       // test
-      reader.processCardRequests(
-          cardRequests, MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
+      reader.processCardSelectionRequests(
+          cardSelectionRequests, MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
       fail("A KeypleReaderIOException was expected");
     } catch (KeypleReaderIOException ex) {
-      assertThat(ex.getCardResponses().size()).isEqualTo(2);
-      assertThat(ex.getCardResponses().get(0).getApduResponses().size()).isEqualTo(4);
-      assertThat(ex.getCardResponses().get(1).getApduResponses().size()).isEqualTo(2);
-      assertThat(ex.getCardResponses().get(1).getApduResponses().size()).isEqualTo(2);
+      assertThat(ex.getCardSelectionResponses().size()).isEqualTo(2);
+      assertThat(ex.getCardSelectionResponses().get(0).getCardResponse().getApduResponses().size())
+          .isEqualTo(4);
+      assertThat(ex.getCardSelectionResponses().get(1).getCardResponse().getApduResponses().size())
+          .isEqualTo(2);
     }
   }
 
@@ -96,17 +100,20 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
   public void transmit_partial_response_set_2() throws Exception {
     AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
-    List<CardRequest> cardRequests = getPartialRequestList(reader, 2);
+    List<CardSelectionRequest> cardSelectionRequests = getPartialRequestList(reader, 2);
     try {
       // test
-      reader.processCardRequests(
-          cardRequests, MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
+      reader.processCardSelectionRequests(
+          cardSelectionRequests, MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
       fail("A KeypleReaderIOException was expected");
     } catch (KeypleReaderIOException ex) {
-      assertThat(ex.getCardResponses().size()).isEqualTo(3);
-      assertThat(ex.getCardResponses().get(0).getApduResponses().size()).isEqualTo(4);
-      assertThat(ex.getCardResponses().get(1).getApduResponses().size()).isEqualTo(4);
-      assertThat(ex.getCardResponses().get(2).getApduResponses().size()).isEqualTo(2);
+      assertThat(ex.getCardSelectionResponses().size()).isEqualTo(3);
+      assertThat(ex.getCardSelectionResponses().get(0).getCardResponse().getApduResponses().size())
+          .isEqualTo(4);
+      assertThat(ex.getCardSelectionResponses().get(1).getCardResponse().getApduResponses().size())
+          .isEqualTo(4);
+      assertThat(ex.getCardSelectionResponses().get(2).getCardResponse().getApduResponses().size())
+          .isEqualTo(2);
     }
   }
 
@@ -114,16 +121,21 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
   public void transmit_partial_response_set_3() throws Exception {
     AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
-    List<CardRequest> cardRequests = getPartialRequestList(reader, 3);
+    List<CardSelectionRequest> cardSelectionRequests = getPartialRequestList(reader, 3);
     try {
       // test
-      List<CardResponse> responses =
-          reader.processCardRequests(
-              cardRequests, MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
-      assertThat(responses.size()).isEqualTo(3);
-      assertThat(responses.get(0).getApduResponses().size()).isEqualTo(4);
-      assertThat(responses.get(1).getApduResponses().size()).isEqualTo(4);
-      assertThat(responses.get(2).getApduResponses().size()).isEqualTo(0);
+      List<CardSelectionResponse> cardSelectionResponses =
+          reader.processCardSelectionRequests(
+              cardSelectionRequests,
+              MultiSelectionProcessing.PROCESS_ALL,
+              ChannelControl.CLOSE_AFTER);
+      assertThat(cardSelectionResponses.size()).isEqualTo(3);
+      assertThat(cardSelectionResponses.get(0).getCardResponse().getApduResponses().size())
+          .isEqualTo(4);
+      assertThat(cardSelectionResponses.get(1).getCardResponse().getApduResponses().size())
+          .isEqualTo(4);
+      assertThat(cardSelectionResponses.get(2).getCardResponse().getApduResponses().size())
+          .isEqualTo(0);
 
     } catch (KeypleReaderException ex) {
       fail("Should not throw exception");
@@ -134,14 +146,17 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
   public void transmit_first_match() throws Exception {
     AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
-    List<CardRequest> cardRequests = getPartialRequestList(reader, 3);
+    List<CardSelectionRequest> cardSelectionRequests = getPartialRequestList(reader, 3);
     try {
       // test
-      List<CardResponse> responses =
-          reader.processCardRequests(
-              cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
-      assertThat(responses.size()).isEqualTo(1);
-      assertThat(responses.get(0).getApduResponses().size()).isEqualTo(4);
+      List<CardSelectionResponse> cardSelectionResponses =
+          reader.processCardSelectionRequests(
+              cardSelectionRequests,
+              MultiSelectionProcessing.FIRST_MATCH,
+              ChannelControl.CLOSE_AFTER);
+      assertThat(cardSelectionResponses.size()).isEqualTo(1);
+      assertThat(cardSelectionResponses.get(0).getCardResponse().getApduResponses().size())
+          .isEqualTo(4);
     } catch (KeypleReaderException ex) {
       fail("Should not throw exception");
     }
@@ -151,7 +166,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
   public void transmit_partial_response_0() throws Exception {
     AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
-    CardRequest cardRequest = getPartialRequest(reader, 0);
+    CardRequest cardRequest = getPartialRequest(reader, 0).getCardRequest();
     try {
       // test
       reader.processCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
@@ -165,7 +180,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
   public void transmit_partial_response_1() throws Exception {
     AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
-    CardRequest cardRequest = getPartialRequest(reader, 1);
+    CardRequest cardRequest = getPartialRequest(reader, 1).getCardRequest();
     try {
       // test
       reader.processCardRequest(cardRequest, ChannelControl.CLOSE_AFTER);
@@ -180,7 +195,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
   public void transmit_partial_response_2() throws Exception {
     AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
-    CardRequest cardRequest = getPartialRequest(reader, 2);
+    CardRequest cardRequest = getPartialRequest(reader, 2).getCardRequest();
     try {
       // test
       reader.processCardRequest(cardRequest, ChannelControl.CLOSE_AFTER);
@@ -195,7 +210,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
   public void transmit_partial_response_3() throws Exception {
     AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
-    CardRequest cardRequest = getPartialRequest(reader, 3);
+    CardRequest cardRequest = getPartialRequest(reader, 3).getCardRequest();
     try {
       // test
       CardResponse cardResponse =
@@ -211,7 +226,8 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
    *
    * An Exception will be thrown.
    */
-  public static List<CardRequest> getPartialRequestList(AbstractLocalReader r, int scenario) {
+  public static List<CardSelectionRequest> getPartialRequestList(
+      AbstractLocalReader r, int scenario) {
 
     CardSelector.AtrFilter atrFilter = new CardSelector.AtrFilter(ATR);
     CardSelector selector =
@@ -244,52 +260,56 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     poApduRequests3.add(apduKO);
     poApduRequests3.add(apduOK);
 
-    CardRequest cardRequest1 = new CardRequest(selector, poApduRequests1);
-    CardRequest cardRequest2 = new CardRequest(selector, poApduRequests2);
+    CardSelectionRequest cardRequest1 =
+        new CardSelectionRequest(selector, new CardRequest(poApduRequests1));
+    CardSelectionRequest cardRequest2 =
+        new CardSelectionRequest(selector, new CardRequest(poApduRequests2));
 
-    CardRequest cardRequest4 = new CardRequest(failSelector, poApduRequests1);
+    CardSelectionRequest cardRequest4 =
+        new CardSelectionRequest(failSelector, new CardRequest(poApduRequests1));
 
     /* This CardRequest fails at step 3 */
-    CardRequest cardRequest3 = new CardRequest(selector, poApduRequests3);
+    CardSelectionRequest cardRequest3 =
+        new CardSelectionRequest(selector, new CardRequest(poApduRequests3));
 
-    List<CardRequest> cardRequests = new ArrayList<CardRequest>();
+    List<CardSelectionRequest> cardSelectionRequests = new ArrayList<CardSelectionRequest>();
 
     switch (scenario) {
       case 0:
         /* 0 response Set */
-        cardRequests.add(cardRequest3); // fails
-        cardRequests.add(cardRequest1); // succeeds
-        cardRequests.add(cardRequest2); // succeeds
+        cardSelectionRequests.add(cardRequest3); // fails
+        cardSelectionRequests.add(cardRequest1); // succeeds
+        cardSelectionRequests.add(cardRequest2); // succeeds
         break;
       case 1:
         /* 1 response Set */
-        cardRequests.add(cardRequest1); // succeeds
-        cardRequests.add(cardRequest3); // fails
-        cardRequests.add(cardRequest2); // succeeds
+        cardSelectionRequests.add(cardRequest1); // succeeds
+        cardSelectionRequests.add(cardRequest3); // fails
+        cardSelectionRequests.add(cardRequest2); // succeeds
         break;
       case 2:
         /* 2 responses Set */
-        cardRequests.add(cardRequest1); // succeeds
-        cardRequests.add(cardRequest2); // succeeds
-        cardRequests.add(cardRequest3); // fails
+        cardSelectionRequests.add(cardRequest1); // succeeds
+        cardSelectionRequests.add(cardRequest2); // succeeds
+        cardSelectionRequests.add(cardRequest3); // fails
         break;
       case 3:
         /* 3 responses Set */
-        cardRequests.add(cardRequest1); // succeeds
-        cardRequests.add(cardRequest2); // succeeds
-        cardRequests.add(cardRequest4); // selection fails
+        cardSelectionRequests.add(cardRequest1); // succeeds
+        cardSelectionRequests.add(cardRequest2); // succeeds
+        cardSelectionRequests.add(cardRequest4); // selection fails
         break;
       case 4:
         /* 3 responses Set */
-        cardRequests.add(cardRequest1); // succeeds
+        cardSelectionRequests.add(cardRequest1); // succeeds
         break;
       default:
     }
 
-    return cardRequests;
+    return cardSelectionRequests;
   }
 
-  public static CardRequest getPartialRequest(AbstractLocalReader r, int scenario) {
+  public static CardSelectionRequest getPartialRequest(AbstractLocalReader r, int scenario) {
 
     /*
      * CardSelector.AtrFilter atrFilter = new CardSelector.AtrFilter(ATR); CardSelector selector = new
@@ -329,7 +349,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
         break;
     }
 
-    return new CardRequest(aidSelector, poApduRequests);
+    return new CardSelectionRequest(aidSelector, new CardRequest(poApduRequests));
   }
   /*
    * Partial response: multiple read records commands, one is not defined in the StubSE

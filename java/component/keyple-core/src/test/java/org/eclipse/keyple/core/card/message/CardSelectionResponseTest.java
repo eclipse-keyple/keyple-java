@@ -16,23 +16,20 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-@SuppressWarnings({"PMD.TooManyMethods", "PMD.SignatureDeclareThrowsException"})
 @RunWith(MockitoJUnitRunner.class)
-public class CardResponseTest {
+public class CardSelectionResponseTest {
 
   @Test
   public void constructorSuccessfullResponseMatch() {
 
-    CardResponse response =
-        new CardResponse(
-            true,
-            true,
+    CardSelectionResponse response =
+        new CardSelectionResponse(
             new SelectionStatus(ApduResponseTest.getAAtr(), ApduResponseTest.getAFCI(), true),
-            ApduResponseTest.getAListOfAPDUs());
+            new CardResponse(true, ApduResponseTest.getAListOfAPDUs()));
     Assert.assertNotNull(response);
     Assert.assertArrayEquals(
-        ApduResponseTest.getAListOfAPDUs().toArray(), response.getApduResponses().toArray());
-    Assert.assertTrue(response.wasChannelPreviouslyOpen());
+        ApduResponseTest.getAListOfAPDUs().toArray(),
+        response.getCardResponse().getApduResponses().toArray());
     Assert.assertEquals(ApduResponseTest.getAAtr(), response.getSelectionStatus().getAtr());
     Assert.assertEquals(ApduResponseTest.getAFCI(), response.getSelectionStatus().getFci());
     Assert.assertTrue(response.getSelectionStatus().hasMatched());
@@ -41,16 +38,14 @@ public class CardResponseTest {
   @Test
   public void constructorSuccessfullResponseNoMatch() {
 
-    CardResponse response =
-        new CardResponse(
-            true,
-            true,
+    CardSelectionResponse response =
+        new CardSelectionResponse(
             new SelectionStatus(ApduResponseTest.getAAtr(), ApduResponseTest.getAFCI(), false),
-            ApduResponseTest.getAListOfAPDUs());
+            new CardResponse(true, ApduResponseTest.getAListOfAPDUs()));
     Assert.assertNotNull(response);
     Assert.assertArrayEquals(
-        ApduResponseTest.getAListOfAPDUs().toArray(), response.getApduResponses().toArray());
-    Assert.assertTrue(response.wasChannelPreviouslyOpen());
+        ApduResponseTest.getAListOfAPDUs().toArray(),
+        response.getCardResponse().getApduResponses().toArray());
     Assert.assertEquals(ApduResponseTest.getAAtr(), response.getSelectionStatus().getAtr());
     Assert.assertEquals(ApduResponseTest.getAFCI(), response.getSelectionStatus().getFci());
     Assert.assertFalse(response.getSelectionStatus().hasMatched());
@@ -58,23 +53,19 @@ public class CardResponseTest {
 
   @Test
   public void constructorATRNull() {
-    CardResponse response =
-        new CardResponse(
-            true,
-            true,
+    CardSelectionResponse response =
+        new CardSelectionResponse(
             new SelectionStatus(null, ApduResponseTest.getAFCI(), true),
-            ApduResponseTest.getAListOfAPDUs());
+            new CardResponse(true, ApduResponseTest.getAListOfAPDUs()));
     Assert.assertNotNull(response);
   }
 
   @Test
   public void constructorFCINull() {
-    CardResponse response =
-        new CardResponse(
-            true,
-            true,
+    CardSelectionResponse response =
+        new CardSelectionResponse(
             new SelectionStatus(ApduResponseTest.getAAtr(), null, true),
-            ApduResponseTest.getAListOfAPDUs());
+            new CardResponse(true, ApduResponseTest.getAListOfAPDUs()));
     Assert.assertNotNull(response);
   }
 
@@ -82,11 +73,11 @@ public class CardResponseTest {
    * HELPERS
    */
 
+  public static SelectionStatus getASelectionStatus() {
+    return new SelectionStatus(ApduResponseTest.getAAtr(), ApduResponseTest.getAFCI(), true);
+  }
+
   public static CardResponse getACardResponse() {
-    return new CardResponse(
-        true,
-        true,
-        new SelectionStatus(ApduResponseTest.getAAtr(), ApduResponseTest.getAFCI(), true),
-        ApduResponseTest.getAListOfAPDUs());
+    return new CardResponse(true, ApduResponseTest.getAListOfAPDUs());
   }
 }
