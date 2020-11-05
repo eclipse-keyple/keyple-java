@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import org.eclipse.keyple.core.card.message.CardRequest;
 import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionRequest;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.card.message.ChannelControl;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
 import org.eclipse.keyple.core.plugin.reader.AbstractReader;
@@ -97,21 +99,21 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
   /**
    * Blocking TransmitCardRequests
    *
-   * @param cardRequests : List of CardRequest to be transmitted to the card
+   * @param cardSelectionRequests : List of CardRequest to be transmitted to the card
    * @param multiSelectionProcessing the multi card processing mode
    * @param channelControl indicates if the channel has to be closed at the end of the processing
    * @return List of CardResponse from the card
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    */
   @Override
-  protected List<CardResponse> processCardRequests(
-      List<CardRequest> cardRequests,
+  protected List<CardSelectionResponse> processCardSelectionRequests(
+      List<CardSelectionRequest> cardSelectionRequests,
       MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl) {
 
     RmTransmitSetTx transmit =
         new RmTransmitSetTx(
-            cardRequests,
+            cardSelectionRequests,
             multiSelectionProcessing,
             channelControl,
             session.getSessionId(),
