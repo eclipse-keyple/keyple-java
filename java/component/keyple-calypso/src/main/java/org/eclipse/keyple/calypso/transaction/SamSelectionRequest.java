@@ -18,7 +18,7 @@ import org.eclipse.keyple.calypso.command.sam.builder.security.UnlockCmdBuild;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronizedExchangesException;
 import org.eclipse.keyple.core.card.message.ApduResponse;
-import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.card.selection.AbstractCardSelectionRequest;
 
 /**
@@ -50,19 +50,19 @@ public class SamSelectionRequest
    * Create a CalypsoSam object containing the selection data received from the plugin<br>
    * If an Unlock command has been prepared, its status is checked.
    *
-   * @param cardResponse the card response received
+   * @param cardSelectionResponse the card response received
    * @return a {@link CalypsoSam}
    * @throws CalypsoDesynchronizedExchangesException if the APDU SAM exchanges are out of sync
    * @throws CalypsoSamCommandException if the SAM has responded with an error status
    */
   @Override
-  protected CalypsoSam parse(CardResponse cardResponse) {
+  protected CalypsoSam parse(CardSelectionResponse cardSelectionResponse) {
     List<AbstractSamCommandBuilder<? extends AbstractSamResponseParser>> commandBuilders =
         getCommandBuilders();
 
     if (commandBuilders.size() == 1) {
       // an unlock command has been requested
-      List<ApduResponse> apduResponses = cardResponse.getApduResponses();
+      List<ApduResponse> apduResponses = cardSelectionResponse.getCardResponse().getApduResponses();
       if (apduResponses == null) {
         throw new CalypsoDesynchronizedExchangesException(
             "Mismatch in the number of requests/responses");
@@ -71,6 +71,6 @@ public class SamSelectionRequest
       commandBuilders.get(0).createResponseParser(apduResponses.get(0)).checkStatus();
     }
 
-    return new CalypsoSam(cardResponse);
+    return new CalypsoSam(cardSelectionResponse);
   }
 }

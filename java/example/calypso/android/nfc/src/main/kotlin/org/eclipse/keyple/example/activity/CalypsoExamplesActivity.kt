@@ -315,14 +315,14 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
          * Generic selection: configures a CardSelector with all the desired attributes to make the
          * selection
          */
-        val selectionRequest = PoSelectionRequest(PoSelector.builder().cardProtocol(
+        val cardSelectionRequest = PoSelectionRequest(PoSelector.builder().cardProtocol(
                 ContactlessCardCommonProtocols.ISO_14443_4.name).aidSelector(
                         AidSelector.builder().aidToSelect(aid).build()).invalidatedPo(InvalidatedPo.REJECT).build())
 
         /*
         * Add the selection case to the current selection (we could have added other cases here)
         */
-        cardSelection.prepareSelection(selectionRequest)
+        cardSelection.prepareSelection(cardSelectionRequest)
 
         /*
          * Provide the Reader with the selection operation to be processed when a card is inserted.
@@ -401,14 +401,14 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
             /**
              * configure Protocol
              */
-            val selectionRequest = PoSelectionRequest(PoSelector.builder().cardProtocol(
+            val cardSelectionRequest = PoSelectionRequest(PoSelector.builder().cardProtocol(
                     ContactlessCardCommonProtocols.ISO_14443_4.name).aidSelector(
                             AidSelector.builder().aidToSelect(aid).build()).invalidatedPo(InvalidatedPo.REJECT).build())
 
             /**
              * Prepare Selection
              */
-            cardSelection.prepareSelection(selectionRequest)
+            cardSelection.prepareSelection(cardSelectionRequest)
 
             /*
              * Provide the Reader with the selection operation to be processed when a card is inserted.

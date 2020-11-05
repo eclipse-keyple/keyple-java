@@ -105,9 +105,9 @@ public class BlankSmartPresenceTheadedReader extends AbstractObservableLocalRead
   @Override
   public ObservableReaderStateService initStateService() {
     return ObservableReaderStateService.builder(this)
-        .WaitForCardInsertionWithSmartDetection()
-        .WaitForCardProcessingWithSmartDetection()
-        .WaitForCardRemovalWithSmartDetection()
+        .waitForCardInsertionWithSmartDetection()
+        .waitForCardProcessingWithSmartDetection()
+        .waitForCardRemovalWithSmartDetection()
         .build();
   }
 }

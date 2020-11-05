@@ -13,7 +13,7 @@ package org.eclipse.keyple.core.plugin.reader;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.card.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.card.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsRequest;
@@ -404,14 +404,15 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
        */
       boolean aCardMatched = false;
       try {
-        List<CardResponse> cardResponses =
-            transmitCardRequests(
-                defaultSelectionsRequest.getSelectionCardRequests(),
+        List<CardSelectionResponse> cardSelectionResponses =
+            transmitCardSelectionRequests(
+                defaultSelectionsRequest.getCardSelectionRequests(),
                 defaultSelectionsRequest.getMultiSelectionProcessing(),
                 defaultSelectionsRequest.getChannelControl());
 
-        for (CardResponse cardResponse : cardResponses) {
-          if (cardResponse != null && cardResponse.getSelectionStatus().hasMatched()) {
+        for (CardSelectionResponse cardSelectionResponse : cardSelectionResponses) {
+          if (cardSelectionResponse != null
+              && cardSelectionResponse.getSelectionStatus().hasMatched()) {
             if (logger.isTraceEnabled()) {
               logger.trace("[{}] a default selection has matched", getName());
             }
@@ -427,7 +428,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
                 getPluginName(),
                 getName(),
                 ReaderEvent.EventType.CARD_MATCHED,
-                new DefaultSelectionsResponse(cardResponses));
+                new DefaultSelectionsResponse(cardSelectionResponses));
           } else {
             if (logger.isTraceEnabled()) {
               logger.trace(
@@ -445,7 +446,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
                 getPluginName(),
                 getName(),
                 ReaderEvent.EventType.CARD_MATCHED,
-                new DefaultSelectionsResponse(cardResponses));
+                new DefaultSelectionsResponse(cardSelectionResponses));
           } else {
             /*
              * the card didn't match, notify an CARD_INSERTED event with the received
@@ -453,13 +454,15 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
              */
             if (logger.isTraceEnabled()) {
               logger.trace(
-                  "[{}] none of {} default selection matched", getName(), cardResponses.size());
+                  "[{}] none of {} default selection matched",
+                  getName(),
+                  cardSelectionResponses.size());
             }
             return new ReaderEvent(
                 getPluginName(),
                 getName(),
                 ReaderEvent.EventType.CARD_INSERTED,
-                new DefaultSelectionsResponse(cardResponses));
+                new DefaultSelectionsResponse(cardSelectionResponses));
           }
         }
       } catch (KeypleReaderException e) {

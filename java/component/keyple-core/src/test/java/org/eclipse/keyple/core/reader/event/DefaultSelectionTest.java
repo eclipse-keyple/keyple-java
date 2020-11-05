@@ -17,8 +17,8 @@ import static org.mockito.Mockito.doThrow;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.keyple.core.card.message.CardRequest;
-import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionRequest;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.card.message.ChannelControl;
 import org.eclipse.keyple.core.card.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
@@ -62,14 +62,16 @@ public class DefaultSelectionTest {
         (BlankObservableLocalReader) AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
 
     // configure parameters
-    List<CardRequest> selections = new ArrayList<CardRequest>();
+    List<CardSelectionRequest> selections = new ArrayList<CardSelectionRequest>();
     MultiSelectionProcessing multi = MultiSelectionProcessing.PROCESS_ALL;
     ChannelControl channel = ChannelControl.CLOSE_AFTER;
     ObservableReader.NotificationMode mode = ObservableReader.NotificationMode.ALWAYS;
 
     // mock return matching selection
-    List<CardResponse> responses = getNotMatchingResponses();
-    doReturn(responses).when(r).transmitCardRequests(selections, multi, channel);
+    List<CardSelectionResponse> cardSelectionResponses = getNotMatchingResponses();
+    doReturn(cardSelectionResponses)
+        .when(r)
+        .transmitCardSelectionRequests(selections, multi, channel);
 
     // test
     r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel), mode);
@@ -78,7 +80,7 @@ public class DefaultSelectionTest {
     // assert
     Assert.assertEquals(ReaderEvent.EventType.CARD_INSERTED, event.getEventType());
     Assert.assertEquals(
-        responses, event.getDefaultSelectionsResponse().getSelectionCardResponses());
+        cardSelectionResponses, event.getDefaultSelectionsResponse().getCardSelectionResponses());
     Assert.assertEquals(PLUGIN_NAME, event.getPluginName());
     Assert.assertEquals(READER_NAME, event.getReaderName());
   }
@@ -92,15 +94,18 @@ public class DefaultSelectionTest {
         (BlankObservableLocalReader) AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
 
     // configure parameters
-    List<CardRequest> selections = new ArrayList<CardRequest>();
+    List<CardSelectionRequest> selections = new ArrayList<CardSelectionRequest>();
     MultiSelectionProcessing multi = MultiSelectionProcessing.PROCESS_ALL;
     ChannelControl channel = ChannelControl.CLOSE_AFTER;
     ObservableReader.NotificationMode mode = ObservableReader.NotificationMode.MATCHED_ONLY;
 
     // mock
     // return success selection
-    List<CardResponse> responses = AbsObservableLocalReaderTest.getMatchingResponses();
-    doReturn(responses).when(r).transmitCardRequests(selections, multi, channel);
+    List<CardSelectionResponse> cardSelectionResponses =
+        AbsObservableLocalReaderTest.getMatchingResponses();
+    doReturn(cardSelectionResponses)
+        .when(r)
+        .transmitCardSelectionRequests(selections, multi, channel);
 
     // test
     r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel), mode);
@@ -108,7 +113,7 @@ public class DefaultSelectionTest {
 
     Assert.assertEquals(ReaderEvent.EventType.CARD_MATCHED, event.getEventType());
     Assert.assertEquals(
-        responses, event.getDefaultSelectionsResponse().getSelectionCardResponses());
+        cardSelectionResponses, event.getDefaultSelectionsResponse().getCardSelectionResponses());
     Assert.assertEquals(PLUGIN_NAME, event.getPluginName());
     Assert.assertEquals(READER_NAME, event.getReaderName());
   }
@@ -122,13 +127,15 @@ public class DefaultSelectionTest {
         (BlankObservableLocalReader) AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
 
     // configure parameters
-    List<CardRequest> selections = new ArrayList<CardRequest>();
+    List<CardSelectionRequest> selections = new ArrayList<CardSelectionRequest>();
     MultiSelectionProcessing multi = MultiSelectionProcessing.PROCESS_ALL;
     ChannelControl channel = ChannelControl.CLOSE_AFTER;
     ObservableReader.NotificationMode mode = ObservableReader.NotificationMode.MATCHED_ONLY;
 
     // mock return matching selection
-    doReturn(getNotMatchingResponses()).when(r).transmitCardRequests(selections, multi, channel);
+    doReturn(getNotMatchingResponses())
+        .when(r)
+        .transmitCardSelectionRequests(selections, multi, channel);
 
     // test
     r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel), mode);
@@ -146,7 +153,7 @@ public class DefaultSelectionTest {
         (BlankObservableLocalReader) AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
 
     // configure parameters
-    List<CardRequest> selections = new ArrayList<CardRequest>();
+    List<CardSelectionRequest> selections = new ArrayList<CardSelectionRequest>();
     MultiSelectionProcessing multi = MultiSelectionProcessing.PROCESS_ALL;
     ChannelControl channel = ChannelControl.CLOSE_AFTER;
     ObservableReader.NotificationMode mode = ObservableReader.NotificationMode.ALWAYS;
@@ -154,7 +161,7 @@ public class DefaultSelectionTest {
     // throw IO
     doThrow(new KeypleReaderIOException("io error when selecting"))
         .when(r)
-        .transmitCardRequests(selections, multi, channel);
+        .transmitCardSelectionRequests(selections, multi, channel);
 
     // test
     r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel), mode);

@@ -120,12 +120,12 @@ task installPcscPlugin{
 
 }
 
-task installRemotesePlugin{
-    group 'keyple'
-    description 'Builds and installs  the keyple remotese plugin into maven local repository'
-    dependsOn installCore
-    dependsOn ':java:component:keyple-plugin:keyple-plugin-remotese:installPlugin'
-}
+//task installRemotesePlugin{
+//    group 'keyple'
+//    description 'Builds and installs  the keyple remotese plugin into maven local repository'
+//    dependsOn installCore
+//    dependsOn ':java:component:keyple-plugin:keyple-plugin-remotese:installPlugin'
+//}
 
 task installStubPlugin{
     group 'keyple'
@@ -139,7 +139,7 @@ task installAll {
     description 'Builds and installs all java Keyple library into maven local repository'
     dependsOn installCore
     dependsOn installCalypsoExtension
-    dependsOn installRemotesePlugin
+//    dependsOn installRemotesePlugin
     dependsOn installStubPlugin
     dependsOn installPcscPlugin
 
@@ -165,8 +165,8 @@ task codeQuality {
     dependsOn ':java:component:keyple-core:sonarqube'
     dependsOn installCalypsoExtension
     dependsOn ':java:component:keyple-calypso:sonarqube'
-    dependsOn installRemotesePlugin
-    dependsOn ':java:component:keyple-plugin:keyple-plugin-remotese:sonarqube'
+//    dependsOn installRemotesePlugin
+//    dependsOn ':java:component:keyple-plugin:keyple-plugin-remotese:sonarqube'
     dependsOn installStubPlugin
     dependsOn ':java:component:keyple-plugin:keyple-plugin-stub:sonarqube'
     dependsOn installPcscPlugin

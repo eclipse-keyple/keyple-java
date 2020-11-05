@@ -35,6 +35,7 @@ import org.eclipse.keyple.core.card.message.ApduRequest;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.card.message.CardRequest;
 import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.card.message.ChannelControl;
 import org.eclipse.keyple.core.card.message.ProxyReader;
 import org.eclipse.keyple.core.card.message.SelectionStatus;
@@ -1708,10 +1709,8 @@ public class PoTransactionTest {
   }
 
   private CalypsoPo createCalypsoPo(String FCI) {
-    CardResponse selectionData =
-        new CardResponse(
-            true,
-            false,
+    CardSelectionResponse selectionData =
+        new CardSelectionResponse(
             new SelectionStatus(null, new ApduResponse(ByteArrayUtil.fromHex(FCI), null), true),
             null);
     return new CalypsoPo(selectionData);
@@ -1721,7 +1720,7 @@ public class PoTransactionTest {
 
     SelectionStatus selectionStatus =
         new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR1)), null, true);
-    return new CalypsoSam(new CardResponse(true, true, selectionStatus, null));
+    return new CalypsoSam(new CardSelectionResponse(selectionStatus, null));
   }
 
   private ProxyReader createMockReader(
@@ -1751,10 +1750,10 @@ public class PoTransactionTest {
                             + apduResponse.toString());
                   }
                 } catch (KeypleReaderIOException ex) {
-                  ex.setCardResponse(new CardResponse(true, true, null, apduResponses));
+                  ex.setCardResponse(new CardResponse(true, apduResponses));
                   throw ex;
                 }
-                return new CardResponse(true, true, null, apduResponses);
+                return new CardResponse(true, apduResponses);
               }
             })
         .when(mockReader)

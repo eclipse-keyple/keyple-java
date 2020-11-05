@@ -15,6 +15,7 @@ import io.mockk.every
 import io.mockk.mockk
 import org.eclipse.keyple.core.card.message.ApduRequest
 import org.eclipse.keyple.core.card.message.CardRequest
+import org.eclipse.keyple.core.card.message.CardSelectionRequest
 import org.eclipse.keyple.core.card.message.ChannelControl
 import org.eclipse.keyple.core.card.selection.CardSelector
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing
@@ -54,13 +55,7 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
 
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
-        val cardRequest = CardRequest(CardSelector.builder()
-                .cardProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
-                .aidSelector(CardSelector.AidSelector.builder().aidToSelect(PO_AID)
-                        .fileOccurrence(CardSelector.AidSelector.FileOccurrence.NEXT)
-                        .fileControlInformation(CardSelector.AidSelector.FileControlInformation.FCI).build())
-                .build(),
-                poApduRequestList)
+        val cardRequest = CardRequest(poApduRequestList)
 
         reader.transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN)
     }
@@ -72,19 +67,19 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
 
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
-        val cardRequest = CardRequest(CardSelector.builder()
+        val cardRequest = CardRequest(poApduRequestList)
+
+        val cardSelectionRequest = CardSelectionRequest(CardSelector.builder()
                 .cardProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
                 .aidSelector(CardSelector.AidSelector.builder().aidToSelect(PO_AID)
                         .fileOccurrence(CardSelector.AidSelector.FileOccurrence.NEXT)
                         .fileControlInformation(CardSelector.AidSelector.FileControlInformation.FCI).build())
-                .build(),
-                poApduRequestList)
+                .build(), cardRequest)
 
-        val cardRequests = ArrayList<CardRequest>()
-        cardRequests.add(cardRequest)
+        val cardSelectionRequests = ArrayList<CardSelectionRequest>()
+        cardSelectionRequests.add(cardSelectionRequest)
 
-        reader.transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN)
-        val cardResponseList = reader.transmitCardRequests(cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        val cardResponseList = reader.transmitCardSelectionRequests(cardSelectionRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
 
         // assert
         Assert.assertNotNull(cardResponseList[0])

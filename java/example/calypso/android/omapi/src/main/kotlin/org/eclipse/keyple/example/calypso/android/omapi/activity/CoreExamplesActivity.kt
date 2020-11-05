@@ -14,7 +14,7 @@ package org.eclipse.keyple.example.calypso.android.omapi.activity
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_core_examples.eventRecyclerView
 import kotlinx.android.synthetic.main.activity_core_examples.toolbar
-import org.eclipse.keyple.core.card.message.CardRequest
+import org.eclipse.keyple.core.card.message.CardSelectionRequest
 import org.eclipse.keyple.core.card.message.ChannelControl
 import org.eclipse.keyple.core.card.message.ProxyReader
 import org.eclipse.keyple.core.card.selection.CardSelection
@@ -74,15 +74,17 @@ class CoreExamplesActivity : ExamplesActivity() {
                     val cardSelector = CardSelector.builder()
                             .aidSelector(AidSelector.builder().aidToSelect(poAid).build())
                             .build()
-                    val cardRequest = CardRequest(cardSelector, null)
+                    val cardSelectionRequest = CardSelectionRequest(cardSelector, null)
+                    val cardSelectionRequests = ArrayList<CardSelectionRequest>()
+                    cardSelectionRequests.add(cardSelectionRequest)
 
                     addActionEvent("Sending CardRequest to select: $poAid")
                     try {
-                        val cardResponse = (it.value as ProxyReader).transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN)
+                        val cardSelectionResponses = (it.value as ProxyReader).transmitCardSelectionRequests(cardSelectionRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
 
-                        if (cardResponse?.selectionStatus?.hasMatched() == true) {
+                        if (cardSelectionResponses[0]?.selectionStatus?.hasMatched() == true) {
                             addResultEvent("The selection of the PO has succeeded.")
-                            addResultEvent("Application FCI = ${ByteArrayUtil.toHex(cardResponse.selectionStatus.fci.bytes)}")
+                            addResultEvent("Application FCI = ${ByteArrayUtil.toHex(cardSelectionResponses[0].selectionStatus.fci.bytes)}")
                         } else {
                             addResultEvent("The selection of the PO Failed")
                         }

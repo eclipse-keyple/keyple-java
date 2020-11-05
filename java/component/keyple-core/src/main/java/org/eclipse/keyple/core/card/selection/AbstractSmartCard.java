@@ -13,7 +13,7 @@ package org.eclipse.keyple.core.card.selection;
 
 import org.eclipse.keyple.core.card.message.AnswerToReset;
 import org.eclipse.keyple.core.card.message.ApduResponse;
-import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 
 /**
  * AbstractSmartCard is the class to manage the elements of the result of a selection.
@@ -35,16 +35,16 @@ public abstract class AbstractSmartCard {
   /**
    * Constructor.
    *
-   * @param selectionResponse the response from the card
+   * @param cardSelectionResponse the response from the card
    */
-  protected AbstractSmartCard(CardResponse selectionResponse) {
-    ApduResponse fci = selectionResponse.getSelectionStatus().getFci();
+  protected AbstractSmartCard(CardSelectionResponse cardSelectionResponse) {
+    ApduResponse fci = cardSelectionResponse.getSelectionStatus().getFci();
     if (fci != null) {
       this.fciBytes = fci.getBytes();
     } else {
       this.fciBytes = null;
     }
-    AnswerToReset atr = selectionResponse.getSelectionStatus().getAtr();
+    AnswerToReset atr = cardSelectionResponse.getSelectionStatus().getAtr();
     if (atr != null) {
       this.atrBytes = atr.getBytes();
     } else {

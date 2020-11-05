@@ -16,7 +16,7 @@ import static org.eclipse.keyple.calypso.command.sam.SamRevision.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
-import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
@@ -37,13 +37,13 @@ public class CalypsoSam extends AbstractSmartCard {
   /**
    * Constructor.
    *
-   * @param selectionResponse the selection response from the SAM
+   * @param cardSelectionResponse the selection response from the SAM
    */
-  CalypsoSam(CardResponse selectionResponse) {
-    super(selectionResponse);
+  CalypsoSam(CardSelectionResponse cardSelectionResponse) {
+    super(cardSelectionResponse);
 
     String atrString =
-        ByteArrayUtil.toHex(selectionResponse.getSelectionStatus().getAtr().getBytes());
+        ByteArrayUtil.toHex(cardSelectionResponse.getSelectionStatus().getAtr().getBytes());
     if (atrString.isEmpty()) {
       throw new IllegalStateException("ATR should not be empty.");
     }
