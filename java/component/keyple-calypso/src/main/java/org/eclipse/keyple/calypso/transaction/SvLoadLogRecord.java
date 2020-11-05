@@ -209,7 +209,7 @@ public class SvLoadLogRecord {
         + getBalance()
         + ", \"debitDate\":"
         + getLoadDate()
-        + ", \"debitTime\":"
+        + ", \"loadTime\":"
         + getLoadDate()
         + ", \"freeBytes\":"
         + ByteArrayUtil.toHex(getFreeByteBytes())

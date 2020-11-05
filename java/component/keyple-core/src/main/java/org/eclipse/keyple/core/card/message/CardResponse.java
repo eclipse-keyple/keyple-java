@@ -30,7 +30,7 @@ public final class CardResponse implements Serializable {
   private final List<ApduResponse> apduResponses;
 
   /**
-   * Builds a response from a list of {@link ApduResponse} and the logical channel status.
+   * Constructor.
    *
    * @param logicalChannelStatus A boolean (true if the current channel is open).
    * @param apduResponses A list of {@link ApduResponse} (must be not null).

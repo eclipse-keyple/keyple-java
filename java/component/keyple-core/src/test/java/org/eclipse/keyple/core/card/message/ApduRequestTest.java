@@ -62,8 +62,10 @@ public class ApduRequestTest {
     Set<Integer> successfulStatusCodes = getASuccessFulStatusCode();
     Boolean case4 = true;
     byte[] command = getACommand();
-    ApduRequest request = new ApduRequest(command, case4, successfulStatusCodes);
-    request.setName(getAName());
+    ApduRequest request =
+        new ApduRequest(command, case4)
+            .setSuccessfulStatusCodes(successfulStatusCodes)
+            .setName(getAName());
     return request;
   }
 

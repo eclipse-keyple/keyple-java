@@ -55,6 +55,7 @@ public abstract class AbstractApduResponseParser {
   protected final AbstractApduCommandBuilder builder;
 
   /**
+   * (protected)<br>
    * The generic abstract constructor to build a parser of the APDU response.
    *
    * @param response {@link ApduResponse} response to parse (should not be null)
@@ -62,7 +63,7 @@ public abstract class AbstractApduResponseParser {
    *     parser
    * @since 0.9
    */
-  public AbstractApduResponseParser(ApduResponse response, AbstractApduCommandBuilder builder) {
+  protected AbstractApduResponseParser(ApduResponse response, AbstractApduCommandBuilder builder) {
     this.response = response;
     this.builder = builder;
   }
