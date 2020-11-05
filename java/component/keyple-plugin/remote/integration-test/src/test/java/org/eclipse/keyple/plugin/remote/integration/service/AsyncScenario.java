@@ -22,10 +22,7 @@ import org.eclipse.keyple.plugin.remote.integration.common.model.DeviceInput;
 import org.eclipse.keyple.plugin.remote.integration.common.model.UserInput;
 import org.eclipse.keyple.plugin.remote.nativ.impl.NativeClientServiceFactory;
 import org.eclipse.keyple.plugin.remote.nativ.impl.NativeClientUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,8 +42,6 @@ public class AsyncScenario extends BaseScenario {
      * </ul>
      */
     serverEndpoint = new StubAsyncServerEndpoint();
-
-    unRegisterRemotePlugin();
   }
 
   @Before
@@ -80,6 +75,11 @@ public class AsyncScenario extends BaseScenario {
   public void tearDown() {
     /** Unplug the native reader */
     clearNativeReader();
+  }
+
+  @AfterClass
+  public void globalTearDown() {
+    unRegisterRemotePlugin();
   }
 
   /** {@inheritDoc} */
