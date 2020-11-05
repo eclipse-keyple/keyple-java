@@ -16,11 +16,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
-import org.eclipse.keyple.core.seproxy.event.PluginEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.event.ObservablePlugin;
+import org.eclipse.keyple.core.service.event.PluginEvent;
+import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -51,7 +51,7 @@ public class StubPluginTest extends BaseStubTest {
 
     StubPluginFactory factory = new StubPluginFactory(PLUGIN_NAME);
 
-    ReaderPlugin plugin = factory.getPlugin();
+    Plugin plugin = factory.getPlugin();
 
     Assert.assertEquals(PLUGIN_NAME, plugin.getName());
   }

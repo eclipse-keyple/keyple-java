@@ -17,7 +17,7 @@ import org.eclipse.keyple.plugin.stub.StubSecureElement;
 /** This class is an example of a Stub SAM */
 public class StubSamHoplink extends StubSecureElement {
 
-  static final String seProtocol = "PROTOCOL_ISO7816_3";
+  static final String cardProtocol = "PROTOCOL_ISO7816_3";
   final String ATR_HEX = "3B3F9600805A0080C120000012345678829000"; // serial number : 12345678
 
   public StubSamHoplink() {
@@ -63,7 +63,7 @@ public class StubSamHoplink extends StubSecureElement {
   }
 
   @Override
-  public String getSeProtocol() {
-    return seProtocol;
+  public String getCardProtocol() {
+    return cardProtocol;
   }
 }

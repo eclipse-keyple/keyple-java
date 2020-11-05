@@ -18,7 +18,7 @@ import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.security.AbstractOpenSessionCmdBuild;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;

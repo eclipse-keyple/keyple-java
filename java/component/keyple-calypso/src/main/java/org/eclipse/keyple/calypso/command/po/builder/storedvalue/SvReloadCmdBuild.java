@@ -11,11 +11,10 @@
  ************************************************************************************** */
 package org.eclipse.keyple.calypso.command.po.builder.storedvalue;
 
-import java.awt.*;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.*;
 import org.eclipse.keyple.calypso.command.po.parser.storedvalue.SvReloadRespPars;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
  * The Class SvReloadCmdBuild. This class provides the dedicated constructor to build the SV Reload
@@ -142,7 +141,7 @@ public final class SvReloadCmdBuild extends AbstractPoCommandBuilder<SvReloadRes
    * <p>A check is made to see if the object has been finalized. If not, an exception {@link
    * IllegalStateException} is thrown.
    *
-   * @param apduResponse the response data from the SE
+   * @param apduResponse the response data from the the card
    * @return a {@link SvReloadRespPars} object
    */
   @Override

@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.generic.pc.Demo_ObservableReaderNotification;
 
-import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,16 +24,16 @@ public class Demo_ObservableReaderNotification_Pcsc {
   public static void main(String[] args) throws Exception {
     ObservableReaderNotificationEngine demoEngine = new ObservableReaderNotificationEngine();
 
-    // Get the instance of the SeProxyService (Singleton pattern)
-    SeProxyService seProxyService = SeProxyService.getInstance();
+    // Get the instance of the SmartCardService (Singleton pattern)
+    SmartCardService smartCardService = SmartCardService.getInstance();
 
-    // Assign PcscPlugin to the SeProxyService
-    seProxyService.registerPlugin(new PcscPluginFactory());
+    // Assign PcscPlugin to the SmartCardService
+    smartCardService.registerPlugin(new PcscPluginFactory());
 
     // /* Set observers *//**/
     demoEngine.setPluginObserver();
 
-    logger.info("Wait for reader or SE insertion/removal");
+    logger.info("Wait for reader or card insertion/removal");
 
     // Wait indefinitely. CTRL-C to exit.
     synchronized (waitBeforeEnd) {

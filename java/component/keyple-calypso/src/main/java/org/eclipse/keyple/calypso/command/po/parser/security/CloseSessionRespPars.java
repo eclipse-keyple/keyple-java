@@ -19,8 +19,8 @@ import org.eclipse.keyple.calypso.command.po.builder.security.CloseSessionCmdBui
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoAccessForbiddenException;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalParameterException;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoSecurityDataException;
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
  * Close Secure Session (008E) response parser. See specs: Calypso / page 104 / 9.5.2 - Close Secure

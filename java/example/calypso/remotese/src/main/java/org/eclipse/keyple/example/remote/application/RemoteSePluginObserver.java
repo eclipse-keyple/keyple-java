@@ -16,16 +16,16 @@ import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.SamResourceManager;
-import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.event.PluginEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.ObservablePlugin;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.PluginEvent;
+import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
 import org.slf4j.Logger;
@@ -62,20 +62,19 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
       case READER_CONNECTED:
         /** a new virtual reader is connected, let's configure it */
         try {
-          ReaderPlugin remoteSEPlugin =
-              SeProxyService.getInstance().getPlugin(event.getPluginName());
+          Plugin remoteSEPlugin = SmartCardService.getInstance().getPlugin(event.getPluginName());
 
-          SeReader poReader = remoteSEPlugin.getReader(event.getReaderNames().first());
+          Reader poReader = remoteSEPlugin.getReader(event.getReaderNames().first());
 
-          logger.info("{} Configure SeSelection", nodeId);
+          logger.info("{} Configure CardSelection", nodeId);
 
           /* set default selection request */
-          final SeSelection seSelection = new SeSelection();
+          final CardSelection cardSelection = new CardSelection();
 
           /*
            * Setting of an AID based selection of a Calypso REV3 PO
            *
-           * Select the first application matching the selection AID whatever the SE
+           * Select the first application matching the selection AID whatever the card
            * communication protocol keep the logical channel open after the selection
            *
            * Calypso selection: configures a PoSelectionRequest with all the desired
@@ -84,7 +83,7 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
           PoSelectionRequest poSelectionRequest =
               new PoSelectionRequest(
                   PoSelector.builder()
-                      .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                      .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                       .aidSelector(
                           AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
                       .invalidatedPo(InvalidatedPo.ACCEPT)
@@ -96,17 +95,17 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
            * Add the selection case to the current selection (we could have added other
            * cases here)
            */
-          seSelection.prepareSelection(poSelectionRequest);
+          cardSelection.prepareSelection(poSelectionRequest);
 
           logger.info("{} setDefaultSelectionRequest for PoReader {}", nodeId, poReader.getName());
 
           /*
-           * Provide the SeReader with the selection operation to be processed when a PO
+           * Provide the Reader with the selection operation to be processed when a PO
            * is inserted.
            */
           ((ObservableReader) poReader)
               .setDefaultSelectionRequest(
-                  seSelection.getSelectionOperation(),
+                  cardSelection.getSelectionOperation(),
                   ObservableReader.NotificationMode.MATCHED_ONLY);
 
           // observe reader events
@@ -115,7 +114,8 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
 
           ((ObservableReader) poReader)
               .addObserver(
-                  new PoVirtualReaderObserver(masterAPI, samResourceManager, seSelection, nodeId));
+                  new PoVirtualReaderObserver(
+                      masterAPI, samResourceManager, cardSelection, nodeId));
 
         } catch (KeypleReaderNotFoundException e) {
           logger.error(e.getMessage());

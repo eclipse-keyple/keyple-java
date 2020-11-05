@@ -11,16 +11,16 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.event.ObservablePlugin;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 
 /**
  * RemoteSePlugin manages Virtual Reader. Use its ObservablePlugin capacities to get notified when a
  * {@link VirtualReader} is connected/disconnected. It is created and registered by the {@link
  * MasterAPI}
  */
-public interface RemoteSePlugin extends ReaderPlugin, ObservablePlugin {
+public interface RemoteSePlugin extends Plugin, ObservablePlugin {
 
   String DEFAULT_PLUGIN_NAME = "RemoteSePlugin";
 

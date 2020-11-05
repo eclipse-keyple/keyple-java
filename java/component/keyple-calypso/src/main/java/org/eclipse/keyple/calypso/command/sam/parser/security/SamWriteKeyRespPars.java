@@ -16,7 +16,7 @@ import java.util.Map;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
 import org.eclipse.keyple.calypso.command.sam.builder.security.SamWriteKeyCmdBuild;
 import org.eclipse.keyple.calypso.command.sam.exception.*;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /** SAM Write Key response parser. */
 public class SamWriteKeyRespPars extends AbstractSamResponseParser {

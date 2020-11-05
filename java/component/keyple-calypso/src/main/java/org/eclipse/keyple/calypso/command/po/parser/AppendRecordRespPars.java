@@ -16,8 +16,8 @@ import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.builder.AppendRecordCmdBuild;
 import org.eclipse.keyple.calypso.command.po.exception.*;
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /** Update records response parser. See specs: Calypso / page 96 / 9.4.1.1 - Update record */
 public final class AppendRecordRespPars extends AbstractPoResponseParser {

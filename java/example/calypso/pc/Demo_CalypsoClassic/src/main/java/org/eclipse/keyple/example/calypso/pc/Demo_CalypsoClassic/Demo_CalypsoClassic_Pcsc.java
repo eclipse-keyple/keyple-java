@@ -11,14 +11,14 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.calypso.pc.Demo_CalypsoClassic;
 
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactsCardCommonProtocols;
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.exception.KeypleException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.service.util.ContactsCardCommonProtocols;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
@@ -44,11 +44,11 @@ public class Demo_CalypsoClassic_Pcsc {
   public static void main(String[] args) throws InterruptedException {
     Logger logger = LoggerFactory.getLogger(Demo_CalypsoClassic_Pcsc.class);
 
-    /* Get the instance of the SeProxyService (Singleton pattern) */
-    SeProxyService seProxyService = SeProxyService.getInstance();
+    /* Get the instance of the SmartCardService (Singleton pattern) */
+    SmartCardService smartCardService = SmartCardService.getInstance();
 
-    /* Assign PcscPlugin to the SeProxyService */
-    ReaderPlugin readerPlugin = seProxyService.registerPlugin(new PcscPluginFactory());
+    /* Assign PcscPlugin to the SmartCardService */
+    Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory());
 
     /* Setting up the transaction engine (implements Observer) */
     CalypsoClassicTransactionEngine transactionEngine = new CalypsoClassicTransactionEngine();
@@ -57,11 +57,11 @@ public class Demo_CalypsoClassic_Pcsc {
      * Get PO and SAM readers. Apply regulars expressions to reader names to select PO / SAM
      * readers. Use the getReader helper method from the transaction engine.
      */
-    SeReader poReader = null;
-    SeReader samReader = null;
+    Reader poReader = null;
+    Reader samReader = null;
     try {
-      poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
-      samReader = readerPlugin.getReader(ReaderUtilities.getContactReaderName());
+      poReader = plugin.getReader(ReaderUtilities.getContactlessReaderName());
+      samReader = plugin.getReader(ReaderUtilities.getContactReaderName());
     } catch (KeypleReaderNotFoundException e) {
       e.printStackTrace();
     }

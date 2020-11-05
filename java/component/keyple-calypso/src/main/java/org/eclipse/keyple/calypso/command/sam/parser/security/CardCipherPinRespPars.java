@@ -19,7 +19,7 @@ import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamAccessForbidde
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCounterOverflowException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamDataAccessException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 public class CardCipherPinRespPars extends AbstractSamResponseParser {
   private static final Map<Integer, StatusProperties> STATUS_TABLE;

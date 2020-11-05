@@ -15,7 +15,7 @@ import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.parser.security.DigestInitRespPars;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /** Builder for the SAM Digest Init APDU command. */
 public class DigestInitCmdBuild extends AbstractSamCommandBuilder<DigestInitRespPars> {

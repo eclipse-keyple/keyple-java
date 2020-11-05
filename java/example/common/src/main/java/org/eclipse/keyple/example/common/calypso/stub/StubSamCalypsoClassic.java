@@ -75,7 +75,7 @@ public final class StubSamCalypsoClassic extends StubSecureElement {
   }
 
   @Override
-  public String getSeProtocol() {
+  public String getCardProtocol() {
     return SE_PROTOCOL;
   }
 }

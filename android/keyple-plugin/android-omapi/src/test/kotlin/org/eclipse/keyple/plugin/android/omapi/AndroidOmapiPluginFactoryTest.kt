@@ -19,7 +19,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.unmockkAll
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException
+import org.eclipse.keyple.core.service.exception.KeyplePluginInstantiationException
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -45,18 +45,30 @@ class AndroidOmapiPluginFactoryTest {
 
     @Test
     fun getPluginName() {
-        androidOmapiPluginFactory = AndroidOmapiPluginFactory(context)
+        every { context.bindService(any(), any(), any()) } returns false
+        val packageInfo = mockk<PackageInfo>()
+        every {
+            context.packageManager.getPackageInfo(AndroidOmapiPluginFactory.SIMALLIANCE_OMAPI_PACKAGE_NAME, any())
+        } returns packageInfo
+
+        androidOmapiPluginFactory = AndroidOmapiPluginFactory(context) {}
         Assert.assertEquals(PLUGIN_NAME, androidOmapiPluginFactory.pluginName)
     }
     @Test
     fun getPluginInstanceForOSSup28() {
-        androidOmapiPluginFactory = AndroidOmapiPluginFactory(context, 28)
-        var readerPlugin = androidOmapiPluginFactory.getPlugin()
-        Assert.assertTrue(readerPlugin is org.eclipse.keyple.plugin.android.omapi.se.AndroidOmapiPlugin)
+        every { context.bindService(any(), any(), any()) } returns false
+        val packageInfo = mockk<PackageInfo>()
+        every {
+            context.packageManager.getPackageInfo(AndroidOmapiPluginFactory.SIMALLIANCE_OMAPI_PACKAGE_NAME, any())
+        } returns packageInfo
 
-        androidOmapiPluginFactory = AndroidOmapiPluginFactory(context, 29)
-        readerPlugin = androidOmapiPluginFactory.getPlugin()
-        Assert.assertTrue(readerPlugin is org.eclipse.keyple.plugin.android.omapi.se.AndroidOmapiPlugin)
+        androidOmapiPluginFactory = AndroidOmapiPluginFactory(context, 28) {}
+        var plugin = androidOmapiPluginFactory.getPlugin()
+        Assert.assertTrue(plugin is org.eclipse.keyple.plugin.android.omapi.se.AndroidOmapiPlugin)
+
+        androidOmapiPluginFactory = AndroidOmapiPluginFactory(context, 29) {}
+        plugin = androidOmapiPluginFactory.getPlugin()
+        Assert.assertTrue(plugin is org.eclipse.keyple.plugin.android.omapi.se.AndroidOmapiPlugin)
     }
 
     @Test
@@ -66,9 +78,9 @@ class AndroidOmapiPluginFactoryTest {
         every {
             context.packageManager.getPackageInfo(AndroidOmapiPluginFactory.SIMALLIANCE_OMAPI_PACKAGE_NAME, any())
         } returns packageInfo
-        androidOmapiPluginFactory = AndroidOmapiPluginFactory(context, 27)
-        val readerPlugin = androidOmapiPluginFactory.pluginInstance()
-        Assert.assertTrue(readerPlugin is org.eclipse.keyple.plugin.android.omapi.simalliance.AndroidOmapiPlugin)
+        androidOmapiPluginFactory = AndroidOmapiPluginFactory(context, 27, {})
+        val plugin = androidOmapiPluginFactory.pluginInstance()
+        Assert.assertTrue(plugin is org.eclipse.keyple.plugin.android.omapi.simalliance.AndroidOmapiPlugin)
     }
 
     @Test(expected = KeyplePluginInstantiationException::class)
@@ -77,8 +89,8 @@ class AndroidOmapiPluginFactoryTest {
         every {
             context.packageManager.getPackageInfo(AndroidOmapiPluginFactory.SIMALLIANCE_OMAPI_PACKAGE_NAME, any())
         } throws PackageManager.NameNotFoundException()
-        androidOmapiPluginFactory = AndroidOmapiPluginFactory(context, 27)
-        val readerPlugin = androidOmapiPluginFactory.pluginInstance()
-        Assert.assertNull(readerPlugin)
+        androidOmapiPluginFactory = AndroidOmapiPluginFactory(context, 27, {})
+        val plugin = androidOmapiPluginFactory.pluginInstance()
+        Assert.assertNull(plugin)
     }
 }

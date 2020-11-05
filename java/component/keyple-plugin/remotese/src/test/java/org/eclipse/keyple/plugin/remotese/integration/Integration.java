@@ -11,10 +11,10 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remotese.integration;
 
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.exception.KeyplePluginInstantiationException;
+import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
 import org.eclipse.keyple.plugin.remotese.transport.DtoHandler;
@@ -48,7 +48,11 @@ public class Integration {
     // Create Master services : masterAPI
     return Mockito.spy(
         new MasterAPI(
-            SeProxyService.getInstance(), node, 10000, MasterAPI.PLUGIN_TYPE_DEFAULT, pluginName));
+            SmartCardService.getInstance(),
+            node,
+            10000,
+            MasterAPI.PLUGIN_TYPE_DEFAULT,
+            pluginName));
   }
 
   /**
@@ -59,7 +63,7 @@ public class Integration {
    */
   public static SlaveAPI createSpySlaveAPI(DtoNode node, String masterNodeId) {
     // Binds node for outgoing KeypleDto
-    return Mockito.spy(new SlaveAPI(SeProxyService.getInstance(), node, masterNodeId));
+    return Mockito.spy(new SlaveAPI(SmartCardService.getInstance(), node, masterNodeId));
   }
 
   /**
@@ -91,20 +95,20 @@ public class Integration {
   }
 
   public static void unregisterAllPlugin(String remoteSePluginName) {
-    SeProxyService.getInstance().unregisterPlugin(SLAVE_STUB);
-    SeProxyService.getInstance().unregisterPlugin(SLAVE_POOL_STUB);
-    SeProxyService.getInstance().unregisterPlugin(remoteSePluginName);
+    SmartCardService.getInstance().unregisterPlugin(SLAVE_STUB);
+    SmartCardService.getInstance().unregisterPlugin(SLAVE_POOL_STUB);
+    SmartCardService.getInstance().unregisterPlugin(remoteSePluginName);
   }
 
   public static StubPlugin createStubPlugin() {
 
     try {
-      // get SeProxyService
-      SeProxyService seProxyService = SeProxyService.getInstance();
+      // get SmartCardService
+      SmartCardService smartCardService = SmartCardService.getInstance();
 
       // register plugin
       StubPlugin stubPlugin =
-          (StubPlugin) seProxyService.registerPlugin(new StubPluginFactory(SLAVE_STUB));
+          (StubPlugin) smartCardService.registerPlugin(new StubPluginFactory(SLAVE_STUB));
 
       return stubPlugin;
     } catch (KeyplePluginInstantiationException e) {
@@ -123,13 +127,13 @@ public class Integration {
    */
   public static StubPoolPlugin createStubPoolPlugin() {
 
-    SeProxyService seProxyService = SeProxyService.getInstance();
+    SmartCardService smartCardService = SmartCardService.getInstance();
 
     StubPoolPluginFactory stubPoolPluginFactory = new StubPoolPluginFactory(SLAVE_POOL_STUB);
 
     try {
       StubPoolPlugin poolPlugin =
-          (StubPoolPlugin) seProxyService.registerPlugin(stubPoolPluginFactory);
+          (StubPoolPlugin) smartCardService.registerPlugin(stubPoolPluginFactory);
 
       return poolPlugin;
     } catch (KeyplePluginInstantiationException e) {

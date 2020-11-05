@@ -13,7 +13,8 @@ package org.eclipse.keyple.plugin.stub;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
+import java.util.regex.Pattern;
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 public abstract class StubSecureElement {
@@ -40,16 +41,16 @@ public abstract class StubSecureElement {
   }
 
   /**
-   * Gets the SE protocol supported by the SE
+   * Gets the card protocol supported by the card
    *
    * @return A not empty String.
    */
-  public abstract String getSeProtocol();
+  public abstract String getCardProtocol();
 
   Map<String, String> hexCommands = new HashMap<String, String>();
 
   /**
-   * Add more simulated commands to the Stub SE
+   * Add more simulated commands to the card Stub
    *
    * @param command : hexadecimal command to react to
    * @param response : hexadecimal response to be sent in reaction to command
@@ -63,7 +64,7 @@ public abstract class StubSecureElement {
   }
 
   /**
-   * Remove simulated commands from the Stub SE
+   * Remove simulated commands from the card Stub
    *
    * @param command : hexadecimal command to be removed
    */
@@ -79,7 +80,7 @@ public abstract class StubSecureElement {
    *
    * @param apduIn : commands to be processed
    * @return APDU response
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    */
   public byte[] processApdu(byte[] apduIn) {
 
@@ -90,12 +91,16 @@ public abstract class StubSecureElement {
     // convert apduIn to hexa
     String hexApdu = ByteArrayUtil.toHex(apduIn);
 
-    // return matching hexa response if found
-    if (hexCommands.containsKey(hexApdu)) {
-      return ByteArrayUtil.fromHex(hexCommands.get(hexApdu));
+    // return matching hexa response if the provided APDU matches the regex
+    Pattern p;
+    for (Map.Entry<String, String> hexCommand : hexCommands.entrySet()) {
+      p = Pattern.compile(hexCommand.getKey());
+      if (p.matcher(hexApdu).matches()) {
+        return ByteArrayUtil.fromHex(hexCommand.getValue());
+      }
     }
 
     // throw a KeypleReaderIOException if not found
-    throw new KeypleReaderIOException("No response available for this request.");
+    throw new KeypleReaderIOException("No response available for this request: " + hexApdu);
   }
 }

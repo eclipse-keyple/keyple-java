@@ -14,13 +14,13 @@ package org.eclipse.keyple.plugin.remotese.pluginse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.message.SeRequest;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractReader;
+import org.eclipse.keyple.core.card.message.CardRequest;
+import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.ChannelControl;
+import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
+import org.eclipse.keyple.core.plugin.reader.AbstractReader;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.pluginse.method.RmTransmitSetTx;
 import org.eclipse.keyple.plugin.remotese.pluginse.method.RmTransmitTx;
@@ -88,31 +88,31 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
   }
 
   @Override
-  public boolean isSePresent() {
+  public boolean isCardPresent() {
     logger.warn(
-        "{} isSePresent is not implemented in VirtualReader, returns false", this.getName());
+        "{} isCardPresent is not implemented in VirtualReader, returns false", this.getName());
     return false; // not implemented
   }
 
   /**
-   * Blocking TransmitSeRequests
+   * Blocking TransmitCardRequests
    *
-   * @param seRequests : List of SeRequest to be transmitted to SE
-   * @param multiSeRequestProcessing the multi se processing mode
+   * @param cardRequests : List of CardRequest to be transmitted to the card
+   * @param multiSelectionProcessing the multi card processing mode
    * @param channelControl indicates if the channel has to be closed at the end of the processing
-   * @return List of SeResponse from SE
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @return List of CardResponse from the card
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    */
   @Override
-  protected List<SeResponse> processSeRequests(
-      List<SeRequest> seRequests,
-      MultiSeRequestProcessing multiSeRequestProcessing,
+  protected List<CardResponse> processCardRequests(
+      List<CardRequest> cardRequests,
+      MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl) {
 
     RmTransmitSetTx transmit =
         new RmTransmitSetTx(
-            seRequests,
-            multiSeRequestProcessing,
+            cardRequests,
+            multiSelectionProcessing,
             channelControl,
             session.getSessionId(),
             this.getNativeReaderName(),
@@ -124,7 +124,7 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
       return transmit.execute(rmTxEngine);
     } catch (KeypleRemoteException e) {
       logger.error(
-          "{} - processSeRequests encounters an exception while communicating with slave. "
+          "{} - processCardRequests encounters an exception while communicating with slave. "
               + "sessionId:{} error:{}",
           this.getName(),
           this.getSession().getSessionId(),
@@ -136,17 +136,18 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
   /**
    * Blocking Transmit
    *
-   * @param seRequest : SeRequest to be transmitted to SE
+   * @param cardRequest : CardRequest to be transmitted to the card
    * @param channelControl indicates if the channel has to be closed at the end of the processing
-   * @return seResponse : SeResponse from SE
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @return cardResponse : CardResponse from the card
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    */
   @Override
-  protected SeResponse processSeRequest(SeRequest seRequest, ChannelControl channelControl) {
+  protected CardResponse processCardRequest(
+      CardRequest cardRequest, ChannelControl channelControl) {
 
     RmTransmitTx transmit =
         new RmTransmitTx(
-            seRequest,
+            cardRequest,
             channelControl,
             session.getSessionId(),
             this.getNativeReaderName(),
@@ -158,7 +159,7 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
       return transmit.execute(rmTxEngine);
     } catch (KeypleRemoteException e) {
       logger.error(
-          "{} - processSeRequest encounters an exception while communicating with slave. sessionId:{} error:{}",
+          "{} - processCardRequest encounters an exception while communicating with slave. sessionId:{} error:{}",
           this.getName(),
           this.getSession().getSessionId(),
           e.getMessage());

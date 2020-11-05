@@ -20,24 +20,10 @@ import android.os.Build
 import android.os.Bundle
 import java.io.IOException
 import java.util.HashMap
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableLocalReader
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableState
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableState.MonitoringState
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION
-import org.eclipse.keyple.core.seproxy.plugin.reader.CardAbsentPingMonitoringJob
-import org.eclipse.keyple.core.seproxy.plugin.reader.ObservableReaderStateService
-import org.eclipse.keyple.core.seproxy.plugin.reader.SmartRemovalMonitoringJob
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeInsertion
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeProcessing
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeRemoval
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForStartDetect
+import org.eclipse.keyple.core.plugin.reader.AbstractObservableLocalReader
+import org.eclipse.keyple.core.plugin.reader.ObservableReaderStateService
+import org.eclipse.keyple.core.service.exception.KeypleReaderException
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import timber.log.Timber
 
@@ -56,8 +42,6 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
     private val parameters = HashMap<String, String?>()
 
     private val protocolsMap = HashMap<String, String?>()
-
-    private val executorService: ExecutorService
 
     private const val NO_TAG = "no-tag"
 
@@ -85,10 +69,10 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
             if (nosounds != null && nosounds == "1") {
                 flags = flags or NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS
             }
-            for (seProtocol in this.protocolsMap.keys) {
-                if (AndroidNfcSupportedProtocols.ISO_14443_4.name == seProtocol) {
+            for (cardProtocol in this.protocolsMap.keys) {
+                if (AndroidNfcSupportedProtocols.ISO_14443_4.name == cardProtocol) {
                     flags = flags or NfcAdapter.FLAG_READER_NFC_B or NfcAdapter.FLAG_READER_NFC_A
-                } else if (AndroidNfcSupportedProtocols.MIFARE_ULTRA_LIGHT.name == seProtocol || AndroidNfcSupportedProtocols.MIFARE_CLASSIC.name == seProtocol) {
+                } else if (AndroidNfcSupportedProtocols.MIFARE_ULTRA_LIGHT.name == cardProtocol || AndroidNfcSupportedProtocols.MIFARE_CLASSIC.name == cardProtocol) {
                     flags = flags or NfcAdapter.FLAG_READER_NFC_A
                 }
             }
@@ -112,35 +96,20 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
             return options
         }
 
-    /**
-     * Private constructor
-     */
-    init {
-        Timber.i("Init NFC Reader")
-
-        executorService = Executors.newSingleThreadExecutor()
-
-        stateService = initStateService()
-    }
-
     override fun initStateService(): ObservableReaderStateService {
 
-        val states = HashMap<MonitoringState, AbstractObservableState>()
-
-        states[WAIT_FOR_START_DETECTION] = WaitForStartDetect(this)
-        states[WAIT_FOR_SE_INSERTION] = WaitForSeInsertion(this)
-        states[WAIT_FOR_SE_PROCESSING] = WaitForSeProcessing(this)
-        states[WAIT_FOR_SE_REMOVAL] = initWaitForRemoval()
-
-        return ObservableReaderStateService(this, states, WAIT_FOR_START_DETECTION)
-    }
-
-    private fun initWaitForRemoval(): WaitForSeRemoval {
         return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            WaitForSeRemoval(this, CardAbsentPingMonitoringJob(this), executorService)
+            ObservableReaderStateService.builder(this)
+                    .waitForCardInsertionWithNativeDetection()
+                    .waitForCardProcessingWithNativeDetection()
+                    .waitForCardRemovalWithPollingDetection()
+                    .build()
         } else {
-            // this.waitForCardAbsentNative will only be used on API>= N
-            WaitForSeRemoval(this, SmartRemovalMonitoringJob(this), executorService)
+            ObservableReaderStateService.builder(this)
+                    .waitForCardInsertionWithNativeDetection()
+                    .waitForCardProcessingWithNativeDetection()
+                    .waitForCardRemovalWithSmartDetection()
+                    .build()
         }
     }
 
@@ -207,7 +176,7 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
             try {
                 Timber.i("Getting tag proxy")
                 tagProxy = TagProxy.getTagProxy(tag)
-                onEvent(InternalEvent.SE_INSERTED)
+                onEvent(InternalEvent.CARD_INSERTED)
             } catch (e: KeypleReaderException) {
                 Timber.e(e)
             }
@@ -216,9 +185,9 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
 
     /**
      *
-     * @return true if a SE is present
+     * @return true if a card is present
      */
-    public override fun checkSePresence(): Boolean {
+    public override fun checkCardPresence(): Boolean {
         return tagProxy != null
     }
 
@@ -289,10 +258,10 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
     }
 
     /**
-     * Activates the provided SE protocol.
+     * Activates the provided card protocol.
      *
      *
-     *  * Ask the plugin to take this protocol into account if an SE using this protocol is
+     *  * Ask the plugin to take this protocol into account if a card using this protocol is
      * identified during the selection phase.
      *  * Activates the detection of SEs using this protocol (if the plugin allows it).
      *
@@ -301,14 +270,18 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
      * @throws KeypleReaderProtocolNotSupportedException if the protocol is not supported.
      */
     override fun activateReaderProtocol(readerProtocolName: String?) {
-        TODO("Not yet implemented")
+
+        if (!protocolsMap.containsKey(readerProtocolName)) {
+            protocolsMap.put(readerProtocolName!!, AndroidNfcProtocolSettings.getSetting(readerProtocolName!!)!!)
+        }
+        Timber.d("${getName()}: Activate protocol $readerProtocolName with rule \"${protocolsMap[readerProtocolName]}\".")
     }
 
     /**
-     * Deactivates the provided SE protocol.
+     * Deactivates the provided card protocol.
      *
      *
-     *  * Ask the plugin to ignore this protocol if an SE using this protocol is identified during
+     *  * Ask the plugin to ignore this protocol if a card using this protocol is identified during
      * the selection phase.
      *  * Inhibits the detection of SEs using this protocol (if the plugin allows it).
      *
@@ -316,7 +289,10 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
      * @param readerProtocolName The protocol to deactivate (must be not null).
      */
     override fun deactivateReaderProtocol(readerProtocolName: String?) {
-        TODO("Not yet implemented")
+        if (protocolsMap.containsKey(readerProtocolName)) {
+            protocolsMap.remove(readerProtocolName)
+        }
+        Timber.d("${getName()}: Deactivate protocol $readerProtocolName.")
     }
 
     /**
@@ -328,8 +304,7 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
      * @since 1.0
      */
     override fun isCurrentProtocol(readerProtocolName: String?): Boolean {
-        TODO("Not yet implemented")
-        return true
+        return readerProtocolName == null || protocolsMap.containsKey(readerProtocolName) && protocolsMap[readerProtocolName] == tagProxy?.tech
     }
 
     /**

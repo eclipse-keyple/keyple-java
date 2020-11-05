@@ -16,7 +16,7 @@ import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.parser.security.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.security.OpenSession24RespPars;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 public final class OpenSession24CmdBuild
     extends AbstractOpenSessionCmdBuild<AbstractOpenSessionRespPars> {

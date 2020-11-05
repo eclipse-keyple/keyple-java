@@ -20,7 +20,7 @@ import org.eclipse.keyple.plugin.stub.StubSecureElement;
  */
 public class StubHoplink extends StubSecureElement {
 
-  static final String seProtocol = "ISO_14443_4";
+  static final String cardProtocol = "ISO_14443_4";
   final String ATR_HEX = "3B8E800180318066409089120802830190000B";
 
   public StubHoplink() {
@@ -66,7 +66,7 @@ public class StubHoplink extends StubSecureElement {
   }
 
   @Override
-  public String getSeProtocol() {
-    return seProtocol;
+  public String getCardProtocol() {
+    return cardProtocol;
   }
 }
