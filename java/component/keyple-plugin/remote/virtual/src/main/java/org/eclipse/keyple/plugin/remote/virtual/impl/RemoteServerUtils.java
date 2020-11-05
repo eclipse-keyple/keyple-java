@@ -21,15 +21,15 @@ import org.eclipse.keyple.plugin.remote.virtual.RemoteServerPlugin;
 public class RemoteServerUtils {
 
   /**
-   * Access the registered RemoteServerPlugin with an async Node
+   * Access the registered RemoteServerPlugin
    *
    * @return a registered instance of the RemoteServerPlugin
    * @throws KeyplePluginNotFoundException if no RemoteServerPlugin is registered
    * @since 1.0
    */
-  public static RemoteServerPlugin getAsyncPlugin() {
+  public static RemoteServerPlugin getRemotePlugin() {
     return (RemoteServerPlugin)
-        SeProxyService.getInstance().getPlugin(RemoteServerPluginFactory.PLUGIN_NAME_ASYNC);
+        SeProxyService.getInstance().getPlugin(RemoteServerPluginFactory.DEFAULT_PLUGIN_NAME);
   }
 
   /**
@@ -39,19 +39,7 @@ public class RemoteServerUtils {
    * @since 1.0
    */
   public static KeypleServerAsyncNode getAsyncNode() {
-    return (KeypleServerAsyncNode) ((RemoteServerPluginImpl) getAsyncPlugin()).getNode();
-  }
-
-  /**
-   * Access the registered RemoteServerPlugin with a sync Node
-   *
-   * @return a registered instance of the RemoteServerPlugin
-   * @throws KeyplePluginNotFoundException if no RemoteServerPlugin is registered
-   * @since 1.0
-   */
-  public static RemoteServerPlugin getSyncPlugin() {
-    return (RemoteServerPlugin)
-        SeProxyService.getInstance().getPlugin(RemoteServerPluginFactory.PLUGIN_NAME_SYNC);
+    return (KeypleServerAsyncNode) ((RemoteServerPluginImpl) getRemotePlugin()).getNode();
   }
 
   /**
@@ -61,6 +49,6 @@ public class RemoteServerUtils {
    * @since 1.0
    */
   public static KeypleServerSyncNode getSyncNode() {
-    return (KeypleServerSyncNode) ((RemoteServerPluginImpl) getSyncPlugin()).getNode();
+    return (KeypleServerSyncNode) ((RemoteServerPluginImpl) getRemotePlugin()).getNode();
   }
 }

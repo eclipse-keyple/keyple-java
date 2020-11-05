@@ -20,36 +20,24 @@ import org.eclipse.keyple.plugin.remote.virtual.RemotePoolClientPlugin;
 public class RemotePoolClientUtils {
 
   /**
-   * Access the registered RemotePoolClientPlugin with an async Node
-   *
-   * @return a registered instance of the RemotePoolClientPlugin
-   * @throws KeyplePluginNotFoundException if no RemotePoolClientPlugin is registered
-   * @since 1.0
-   */
-  public static RemotePoolClientPlugin getAsyncPlugin() {
-    return (RemotePoolClientPlugin)
-        SeProxyService.getInstance().getPlugin(RemotePoolClientPluginFactory.PLUGIN_NAME_ASYNC);
-  }
-
-  /**
    * Retrieve the async node used in the RemotePoolClientPlugin
    *
    * @return non nullable instance of KeypleClientAsyncNode
    * @since 1.0
    */
   public static KeypleClientAsyncNode getAsyncNode() {
-    return (KeypleClientAsyncNode) ((RemotePoolClientPluginImpl) getAsyncPlugin()).getNode();
+    return (KeypleClientAsyncNode) ((RemotePoolClientPluginImpl) getRemotePlugin()).getNode();
   }
 
   /**
-   * Access the registered RemotePoolClientPlugin with a sync Node
+   * Access the registered RemotePoolClientPlugin
    *
    * @return a registered instance of the RemotePoolClientPlugin
    * @throws KeyplePluginNotFoundException if no RemotePoolClientPlugin is registered
    * @since 1.0
    */
-  public static RemotePoolClientPlugin getSyncPlugin() {
+  public static RemotePoolClientPlugin getRemotePlugin() {
     return (RemotePoolClientPlugin)
-        SeProxyService.getInstance().getPlugin(RemotePoolClientPluginFactory.PLUGIN_NAME_SYNC);
+        SeProxyService.getInstance().getPlugin(RemotePoolClientPluginFactory.DEFAULT_PLUGIN_NAME);
   }
 }
