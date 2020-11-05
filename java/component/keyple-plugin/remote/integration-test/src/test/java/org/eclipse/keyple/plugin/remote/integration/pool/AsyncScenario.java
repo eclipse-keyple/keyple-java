@@ -39,7 +39,7 @@ public class AsyncScenario extends BaseScenario {
     initNativePoolStubPlugin();
 
     StubAsyncServerEndpoint serverEndpoint = new StubAsyncServerEndpoint();
-    StubAsyncClientEndpoint clientEndpoint = new StubAsyncClientEndpoint(serverEndpoint, false);
+    StubAsyncClientEndpoint clientEndpoint = new StubAsyncClientEndpoint(serverEndpoint);
 
     nativePoolServerService =
         new NativePoolServerServiceFactory()

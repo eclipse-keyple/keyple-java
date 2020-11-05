@@ -37,7 +37,7 @@ public class SyncScenario extends BaseScenario {
   public void setUp() {
     initNativePoolStubPlugin();
 
-    KeypleClientSync clientEndpoint = new StubSyncClientEndpoint(false);
+    KeypleClientSync clientEndpoint = new StubSyncClientEndpoint();
 
     nativePoolServerService =
         new NativePoolServerServiceFactory()

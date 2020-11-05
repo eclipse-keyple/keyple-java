@@ -18,15 +18,15 @@ import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remote.core.KeypleServerAsync;
-import org.eclipse.keyple.plugin.remote.integration.common.endpoint.StubNetworkConnectionException;
 import org.eclipse.keyple.plugin.remote.integration.common.util.JacksonParser;
 import org.eclipse.keyple.plugin.remote.nativ.impl.NativePoolServerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Simulate a async server. Send and receive asynchronously serialized {@link KeypleMessageDto} with
- * connected {@link StubAsyncClientEndpoint}
+ * Simulate a async server to test {@link
+ * org.eclipse.keyple.plugin.remote.virtual.RemotePoolClientPlugin}. Send and receive asynchronously
+ * serialized {@link KeypleMessageDto} with connected {@link StubAsyncClientEndpoint}
  */
 public class StubAsyncServerEndpoint implements KeypleServerAsync {
 
@@ -35,13 +35,10 @@ public class StubAsyncServerEndpoint implements KeypleServerAsync {
   final Map<String, Integer> messageCounts; // sessionId_counts
   final ExecutorService taskPool;
 
-  boolean simulateConnectionError;
-
   public StubAsyncServerEndpoint() {
     clients = new HashMap<String, StubAsyncClientEndpoint>();
     messageCounts = new HashMap<String, Integer>();
     taskPool = Executors.newCachedThreadPool(new NamedThreadFactory("server-async-pool"));
-    simulateConnectionError = false;
   }
 
   /** Simulate a close socket operation */
@@ -72,10 +69,6 @@ public class StubAsyncServerEndpoint implements KeypleServerAsync {
   public void sendMessage(final KeypleMessageDto msg) {
     final String data = JacksonParser.toJson(msg);
     logger.trace("Data sent to client {}", data);
-    if (incrementCountInSession(msg.getSessionId()) == 2 && simulateConnectionError) {
-      simulateConnectionError = false; // reinit flag
-      throw new StubNetworkConnectionException("Simulate a unreachable client exception");
-    }
     final StubAsyncClientEndpoint client = clients.get(msg.getSessionId());
     taskPool.submit(
         new Runnable() {
@@ -88,15 +81,5 @@ public class StubAsyncServerEndpoint implements KeypleServerAsync {
             }
           }
         });
-  }
-
-  public void setSimulateConnectionError(Boolean simulateConnectionError) {
-    this.simulateConnectionError = simulateConnectionError;
-  }
-
-  Integer incrementCountInSession(String sessionId) {
-    messageCounts.put(
-        sessionId, messageCounts.get(sessionId) == null ? 1 : messageCounts.get(sessionId) + 1);
-    return messageCounts.get(sessionId);
   }
 }

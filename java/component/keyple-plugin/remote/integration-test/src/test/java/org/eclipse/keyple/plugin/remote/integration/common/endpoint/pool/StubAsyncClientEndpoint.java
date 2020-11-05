@@ -13,33 +13,28 @@ package org.eclipse.keyple.plugin.remote.integration.common.endpoint.pool;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.eclipse.keyple.plugin.remote.core.KeypleClientAsync;
 import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
-import org.eclipse.keyple.plugin.remote.integration.common.endpoint.StubNetworkConnectionException;
 import org.eclipse.keyple.plugin.remote.integration.common.util.JacksonParser;
 import org.eclipse.keyple.plugin.remote.virtual.impl.RemotePoolClientUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Async client endpoint. Send and receive asynchronously json serialized {@link KeypleMessageDto}
- * with {@link StubAsyncServerEndpoint}.
+ * Async client endpoint to test {@link
+ * org.eclipse.keyple.plugin.remote.virtual.RemotePoolClientPlugin}. Send and receive asynchronously
+ * json serialized {@link KeypleMessageDto} with {@link StubAsyncServerEndpoint}.
  */
 public class StubAsyncClientEndpoint implements KeypleClientAsync {
 
   private static final Logger logger = LoggerFactory.getLogger(StubAsyncClientEndpoint.class);
   final StubAsyncServerEndpoint server;
   final ExecutorService taskPool;
-  final Boolean simulateConnectionError;
-  final AtomicInteger messageSent = new AtomicInteger();
 
-  public StubAsyncClientEndpoint(StubAsyncServerEndpoint server, Boolean simulateConnectionError) {
+  public StubAsyncClientEndpoint(StubAsyncServerEndpoint server) {
     this.server = server;
     this.taskPool = Executors.newCachedThreadPool(new NamedThreadFactory("client-async-pool"));
-    this.simulateConnectionError = simulateConnectionError;
-    messageSent.set(0);
   }
 
   /**
@@ -52,7 +47,6 @@ public class StubAsyncClientEndpoint implements KeypleClientAsync {
         new Runnable() {
           @Override
           public void run() {
-            // creer task
             logger.trace("Data received from server : {}", data);
             KeypleMessageDto message = JacksonParser.fromJson(data);
             RemotePoolClientUtils.getAsyncNode().onMessage(message);
@@ -68,10 +62,7 @@ public class StubAsyncClientEndpoint implements KeypleClientAsync {
   @Override
   public void sendMessage(final KeypleMessageDto msg) {
     final StubAsyncClientEndpoint thisClient = this;
-    if (messageSent.incrementAndGet() == 2 && simulateConnectionError) {
-      throw new StubNetworkConnectionException("Simulate a unreachable server exception");
-    }
-    // creer task
+    // submit task to server
     taskPool.submit(
         new Runnable() {
           @Override
@@ -87,7 +78,6 @@ public class StubAsyncClientEndpoint implements KeypleClientAsync {
   public void closeSession(String sessionId) {
     logger.trace("Close session {} to server", sessionId);
     server.close(sessionId);
-    // currentSessionIds.remove(sessionId);
     RemotePoolClientUtils.getAsyncNode().onClose(sessionId);
   }
 }

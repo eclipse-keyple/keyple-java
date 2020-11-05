@@ -20,7 +20,6 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleRuntimeException;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.eclipse.keyple.plugin.remote.core.KeypleClientSync;
 import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
-import org.eclipse.keyple.plugin.remote.integration.common.endpoint.StubNetworkConnectionException;
 import org.eclipse.keyple.plugin.remote.integration.common.util.JacksonParser;
 import org.eclipse.keyple.plugin.remote.nativ.impl.NativePoolServerUtils;
 import org.slf4j.Logger;
@@ -36,19 +35,11 @@ public class StubSyncClientEndpoint implements KeypleClientSync {
   private static final Logger logger = LoggerFactory.getLogger(StubSyncClientEndpoint.class);
   static final ExecutorService taskPool =
       Executors.newCachedThreadPool(new NamedThreadFactory("syncPool"));;
-  private final Boolean simulateConnectionError;
-  int messageSent = 0;
 
-  public StubSyncClientEndpoint(Boolean simulateConnectionError) {
-    this.simulateConnectionError = simulateConnectionError;
-  }
+  public StubSyncClientEndpoint() {}
 
   @Override
   public List<KeypleMessageDto> sendRequest(KeypleMessageDto msg) {
-    if (messageSent++ == 2 && simulateConnectionError) {
-      throw new StubNetworkConnectionException("Simulate a host unreacheable error");
-    }
-
     final String responsesJson;
     // serialize request
     final String request = JacksonParser.toJson(msg);

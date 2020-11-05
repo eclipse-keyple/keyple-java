@@ -28,8 +28,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Stub implementation of a {@link KeypleClientSync}. It simulates synchronous invocation to a
- * remote server.
+ * Stub implementation of a {@link KeypleClientSync} to test {@link
+ * org.eclipse.keyple.plugin.remote.virtual.RemoteServerPlugin}. It simulates synchronous invocation
+ * to a remote server.
  */
 public class StubSyncClientEndpoint implements KeypleClientSync {
 

@@ -25,8 +25,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Simulate a async server. Send and receive asynchronously serialized {@link KeypleMessageDto} with
- * connected {@link StubAsyncClientEndpoint}
+ * Simulate a async server to test {@link
+ * org.eclipse.keyple.plugin.remote.virtual.RemoteServerPlugin}. Send and receive asynchronously
+ * serialized {@link KeypleMessageDto} with connected {@link StubAsyncClientEndpoint}
  */
 public class StubAsyncServerEndpoint implements KeypleServerAsync {
 

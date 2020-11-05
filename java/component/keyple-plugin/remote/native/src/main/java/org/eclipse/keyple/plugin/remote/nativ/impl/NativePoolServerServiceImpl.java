@@ -124,7 +124,7 @@ final class NativePoolServerServiceImpl extends AbstractNativeService
   }
 
   /**
-   * Concatenate group references of all registered local pool plugins.
+   * Concatenate group references of all registered pool plugins.
    *
    * @return non nullable instance of a group references, can be empty
    */
@@ -157,7 +157,7 @@ final class NativePoolServerServiceImpl extends AbstractNativeService
   }
 
   /**
-   * Find a local reader among all pool plugins associated to this service
+   * Find a reader among all pool plugins associated to this service
    *
    * @param nativeReaderName name of the reader to be found
    * @return a not null instance of a reader
