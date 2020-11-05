@@ -48,6 +48,7 @@ public abstract class AbstractApduCommandBuilder {
   protected ApduRequest request;
 
   /**
+   * (protected)<br>
    * The generic abstract constructor to build an APDU request with a command reference and a byte
    * array.
    *
@@ -55,7 +56,7 @@ public abstract class AbstractApduCommandBuilder {
    * @param request request
    * @since 0.9
    */
-  public AbstractApduCommandBuilder(CardCommand commandRef, ApduRequest request) {
+  protected AbstractApduCommandBuilder(CardCommand commandRef, ApduRequest request) {
     this.commandRef = commandRef;
     this.name = commandRef.getName();
     this.request = request;
