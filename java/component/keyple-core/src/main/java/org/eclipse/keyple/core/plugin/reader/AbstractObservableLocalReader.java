@@ -127,7 +127,8 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
   protected abstract ObservableReaderStateService initStateService();
 
   /**
-   * Reader constructor
+   * (protected)<br>
+   * Constructor.
    *
    * <p>Force the definition of a name through the use of super method.
    *

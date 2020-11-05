@@ -34,11 +34,14 @@ public final class CardSelectionRequest implements Serializable {
   private final CardRequest cardRequest;
 
   /**
-   * Builds a request to open a logical channel without sending additional APDUs.
+   * Constructor.
+   *
+   * <p>Builds a request to open a logical channel without sending additional APDUs.
    *
    * <p>The cardRequest field is set to null.
    *
    * @param cardSelector a not null {@link CardSelector}
+   * @since 1.0
    */
   public CardSelectionRequest(CardSelector cardSelector) {
     this.cardSelector = cardSelector;
@@ -46,10 +49,13 @@ public final class CardSelectionRequest implements Serializable {
   }
 
   /**
-   * Builds a request to open a logical channel and send additional APDUs.
+   * Constructor.
+   *
+   * <p>Builds a request to open a logical channel and send additional APDUs.
    *
    * @param cardSelector a not null {@link CardSelector}
    * @param cardRequest a not empty {@link CardRequest}
+   * @since 1.0
    */
   public CardSelectionRequest(CardSelector cardSelector, CardRequest cardRequest) {
     this.cardSelector = cardSelector;
@@ -60,6 +66,7 @@ public final class CardSelectionRequest implements Serializable {
    * Gets the {@link CardSelector}
    *
    * @return a not null {@link CardSelector}
+   * @since 1.0
    */
   public CardSelector getCardSelector() {
     return cardSelector;
@@ -69,6 +76,7 @@ public final class CardSelectionRequest implements Serializable {
    * Gets the {@link CardRequest}
    *
    * @return a {@link CardRequest} or null if it has not been defined
+   * @since 1.0
    */
   public CardRequest getCardRequest() {
     return cardRequest;

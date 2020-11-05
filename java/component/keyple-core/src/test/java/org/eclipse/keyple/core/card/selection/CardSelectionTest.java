@@ -283,11 +283,13 @@ public class CardSelectionTest extends CoreBaseTest {
     commandBuilders.add(
         new CommandBuilder(
             CardCommandTest.COMMAND_1,
-            new ApduRequest("Apdu 001122334455", ByteArrayUtil.fromHex("001122334455"), false)));
+            new ApduRequest(ByteArrayUtil.fromHex("001122334455"), false)
+                .setName("Apdu 001122334455")));
     commandBuilders.add(
         new CommandBuilder(
             CardCommandTest.COMMAND_1,
-            new ApduRequest("Apdu 66778899AABB", ByteArrayUtil.fromHex("66778899AABB"), true)));
+            new ApduRequest(ByteArrayUtil.fromHex("66778899AABB"), true)
+                .setName("Apdu 66778899AABB")));
 
     cardSelection.prepareSelection(new CardSelectionRequest(cardSelector1, commandBuilders));
 

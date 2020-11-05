@@ -553,9 +553,8 @@ class SamCommandProcessor {
     CardCipherPinCmdBuild cardCipherPinCmdBuild =
         new CardCipherPinCmdBuild(
             samResource.getSmartCard().getSamRevision(), pinCipheringKey, currentPin, newPin);
-    samCommands.add(
-        new CardCipherPinCmdBuild(
-            samResource.getSmartCard().getSamRevision(), pinCipheringKey, currentPin, newPin));
+
+    samCommands.add(cardCipherPinCmdBuild);
 
     // build a SAM CardRequest
     CardRequest samCardRequest = new CardRequest(getApduRequests(samCommands));
