@@ -78,7 +78,7 @@ public class AsyncScenario extends BaseScenario {
   }
 
   @AfterClass
-  public void globalTearDown() {
+  public static void globalTearDown() {
     unRegisterRemotePlugin();
   }
 
