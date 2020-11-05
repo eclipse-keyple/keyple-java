@@ -28,11 +28,10 @@ public final class CardSelectionResponse implements Serializable {
   private final CardResponse cardResponse;
 
   /**
-   * Builds the CardSelectionResponse from the {@link SelectionStatus} and a {@link CardResponse}
-   * (list of {@link ApduResponse}).
+   * Constructor.
    *
-   * <p>selectionStatus may be null (response to a non-selecting request)<br>
-   * apduResponses may be empty but should not be null.
+   * <p>Builds the CardSelectionResponse from the {@link SelectionStatus} and a {@link CardResponse}
+   * (list of {@link ApduResponse}).
    *
    * @param selectionStatus A not null {@link SelectionStatus}.
    * @param cardResponse A {@link CardResponse} (must be not null).
@@ -47,7 +46,7 @@ public final class CardSelectionResponse implements Serializable {
   /**
    * Gets the selection status.
    *
-   * @return A {@link SelectionStatus} (may be null).
+   * @return A not null {@link SelectionStatus}.
    * @since 0.9
    */
   public SelectionStatus getSelectionStatus() {
