@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.plugin.remote.integration.test;
+package org.eclipse.keyple.plugin.remote.integration.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -106,10 +106,6 @@ public abstract class BaseScenario {
   abstract void execute_transaction_host_network_error();
 
   abstract void execute_transaction_client_network_error();
-
-  // timeout reseau le client s'est barré
-
-  // async, time out transaction.
 
   private static final Logger logger = LoggerFactory.getLogger(BaseScenario.class);
 

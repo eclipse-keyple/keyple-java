@@ -50,6 +50,7 @@ public class StubPoolPluginTest extends BaseStubTest {
     Assert.assertEquals(1, stubPoolPlugin.getReaders().size());
     Assert.assertEquals(true, seReader.isSePresent());
     Assert.assertEquals(1, stubPoolPlugin.getReaderGroupReferences().size());
+    Assert.assertEquals("anyGroup", stubPoolPlugin.getReaderGroupReferences().first());
   }
 
   /** Unplug a pool reader */

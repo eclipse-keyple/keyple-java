@@ -12,10 +12,7 @@
 package org.eclipse.keyple.plugin.remote.nativ.impl;
 
 import com.google.gson.JsonObject;
-import java.util.Collection;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
+import java.util.*;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
@@ -35,17 +32,21 @@ final class NativePoolServerServiceImpl extends AbstractNativeService
     implements NativePoolServerService {
 
   private static NativePoolServerServiceImpl uniqueInstance;
+  private final String[] poolPluginNames;
 
-  private NativePoolServerServiceImpl() {}
+  private NativePoolServerServiceImpl(String[] poolPluginNames) {
+    this.poolPluginNames = poolPluginNames;
+  }
 
   /**
    * (package-private)<br>
    * Create an instance of this singleton service
    *
+   * @param poolPluginNames name(s) of the pool plugin(s) associated with this service
    * @return a not null instance of the singleton
    */
-  static NativePoolServerServiceImpl createInstance() {
-    uniqueInstance = new NativePoolServerServiceImpl();
+  static NativePoolServerServiceImpl createInstance(String[] poolPluginNames) {
+    uniqueInstance = new NativePoolServerServiceImpl(poolPluginNames);
     return uniqueInstance;
   }
 
@@ -88,7 +89,7 @@ final class NativePoolServerServiceImpl extends AbstractNativeService
           response = new KeypleMessageDto(msg).setBody(body.toString());
           break;
         default:
-          reader = findLocalReader(msg.getNativeReaderName());
+          reader = findReader(msg.getNativeReaderName());
           response = executeLocally(reader, msg);
           break;
       }
@@ -109,31 +110,30 @@ final class NativePoolServerServiceImpl extends AbstractNativeService
    * @throws KeypleAllocationReaderException if no pool plugin containing group reference is found
    */
   private ReaderPoolPlugin getAPoolPlugin(String groupReference) {
-    Collection<ReaderPlugin> plugins = SeProxyService.getInstance().getPlugins().values();
-    for (ReaderPlugin plugin : plugins) {
-      if (plugin instanceof ReaderPoolPlugin
-          && ((ReaderPoolPlugin) plugin).getReaderGroupReferences().contains(groupReference)) {
-        return (ReaderPoolPlugin) plugin;
+    for (String poolPluginName : poolPluginNames) {
+      ReaderPoolPlugin poolPlugin =
+          (ReaderPoolPlugin) SeProxyService.getInstance().getPlugin(poolPluginName);
+      if (poolPlugin.getReaderGroupReferences().contains(groupReference)) {
+        return poolPlugin;
       }
     }
     throw new KeypleAllocationReaderException(
         "No reader pool plugin containing group reference '"
             + groupReference
-            + "' is registered in SeProxyService");
+            + "' is registered in this service");
   }
 
   /**
-   * Concatenate group references of all registered pool plugins
+   * Concatenate group references of all registered pool plugins.
    *
    * @return non nullable instance of a group references, can be empty
    */
   private SortedSet<String> getAllGroupReferences() {
     SortedSet<String> allGroupReferences = new TreeSet<String>();
-    Collection<ReaderPlugin> plugins = SeProxyService.getInstance().getPlugins().values();
-    for (ReaderPlugin plugin : plugins) {
-      if (plugin instanceof ReaderPoolPlugin) {
-        allGroupReferences.addAll(((ReaderPoolPlugin) plugin).getReaderGroupReferences());
-      }
+    for (String poolPluginName : poolPluginNames) {
+      ReaderPoolPlugin poolPlugin =
+          (ReaderPoolPlugin) SeProxyService.getInstance().getPlugin(poolPluginName);
+      allGroupReferences.addAll(poolPlugin.getReaderGroupReferences());
     }
     return allGroupReferences;
   }
@@ -145,13 +145,35 @@ final class NativePoolServerServiceImpl extends AbstractNativeService
    * @throws KeypleReaderNotFoundException if no reader is found with given reader name
    */
   private void releaseReader(String readerName) {
-    Collection<ReaderPlugin> plugins = SeProxyService.getInstance().getPlugins().values();
-    for (ReaderPlugin plugin : plugins) {
-      if (plugin.getReaderNames().contains(readerName)) {
-        ((ReaderPoolPlugin) plugin).releaseReader(plugin.getReader(readerName));
+    for (String poolPluginName : poolPluginNames) {
+      ReaderPoolPlugin poolPlugin =
+          (ReaderPoolPlugin) SeProxyService.getInstance().getPlugin(poolPluginName);
+      if (poolPlugin.getReaderNames().contains(readerName)) {
+        poolPlugin.releaseReader(poolPlugin.getReader(readerName));
         return;
       }
     }
     throw new KeypleReaderNotFoundException(readerName);
+  }
+
+  /**
+   * Find a reader among all pool plugins associated to this service
+   *
+   * @param nativeReaderName name of the reader to be found
+   * @return a not null instance of a reader
+   * @throws KeypleReaderNotFoundException if no reader is found with this name
+   * @since 1.0
+   */
+  private ProxyReader findReader(String nativeReaderName) {
+    for (String poolPluginName : poolPluginNames) {
+      ReaderPoolPlugin plugin =
+          (ReaderPoolPlugin) SeProxyService.getInstance().getPlugin(poolPluginName);
+      try {
+        return (ProxyReader) plugin.getReader(nativeReaderName);
+      } catch (KeypleReaderNotFoundException e) {
+        // reader has not been found in this plugin, continue
+      }
+    }
+    throw new KeypleReaderNotFoundException(nativeReaderName);
   }
 }

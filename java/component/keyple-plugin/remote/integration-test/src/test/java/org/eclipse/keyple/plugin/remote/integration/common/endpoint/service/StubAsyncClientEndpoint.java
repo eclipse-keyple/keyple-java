@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.plugin.remote.integration.common.endpoint;
+package org.eclipse.keyple.plugin.remote.integration.common.endpoint.service;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,14 +17,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.eclipse.keyple.plugin.remote.core.KeypleClientAsync;
 import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.integration.common.endpoint.StubNetworkConnectionException;
 import org.eclipse.keyple.plugin.remote.integration.common.util.JacksonParser;
 import org.eclipse.keyple.plugin.remote.nativ.impl.NativeClientUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Async client endpoint. Send and receive asynchronously json serialized {@link KeypleMessageDto}
- * with {@link StubAsyncServerEndpoint}.
+ * Async client endpoint to test {@link
+ * org.eclipse.keyple.plugin.remote.virtual.RemoteServerPlugin}. Send and receive asynchronously
+ * json serialized {@link KeypleMessageDto} with {@link StubAsyncServerEndpoint}.
  */
 public class StubAsyncClientEndpoint implements KeypleClientAsync {
 

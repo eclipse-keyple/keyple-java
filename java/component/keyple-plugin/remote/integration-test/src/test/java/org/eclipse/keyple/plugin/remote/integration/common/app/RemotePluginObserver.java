@@ -24,7 +24,7 @@ import org.eclipse.keyple.plugin.remote.integration.common.model.DeviceInput;
 import org.eclipse.keyple.plugin.remote.integration.common.model.TransactionResult;
 import org.eclipse.keyple.plugin.remote.integration.common.model.UserInput;
 import org.eclipse.keyple.plugin.remote.integration.common.util.CalypsoUtilities;
-import org.eclipse.keyple.plugin.remote.integration.test.BaseScenario;
+import org.eclipse.keyple.plugin.remote.integration.service.BaseScenario;
 import org.eclipse.keyple.plugin.remote.virtual.RemoteServerObservableReader;
 import org.eclipse.keyple.plugin.remote.virtual.RemoteServerPlugin;
 import org.eclipse.keyple.plugin.remote.virtual.RemoteServerReader;
