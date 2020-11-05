@@ -36,7 +36,8 @@ public class ApduRequestTest {
     assertTrue(request.isCase4());
     assertArrayEquals(getACommand(), request.getBytes());
     assertEquals(null, request.getSuccessfulStatusCodes());
-    assertEquals("ApduRequest: NAME = \"null\", RAWDATA = FEDCBA989005, case4", request.toString());
+    assertEquals(
+        "ApduRequest: NAME = \"Unnamed\", RAWDATA = FEDCBA989005, case4", request.toString());
   }
 
   @Test

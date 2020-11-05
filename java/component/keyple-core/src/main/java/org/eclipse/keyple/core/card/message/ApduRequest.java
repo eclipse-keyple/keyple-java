@@ -123,6 +123,9 @@ public final class ApduRequest implements Serializable {
   @Override
   public String toString() {
     StringBuilder string;
+    if (name == null) {
+      name = "Unnamed";
+    }
     string =
         new StringBuilder(
             "ApduRequest: NAME = \"" + name + "\", RAWDATA = " + ByteArrayUtil.toHex(bytes));
