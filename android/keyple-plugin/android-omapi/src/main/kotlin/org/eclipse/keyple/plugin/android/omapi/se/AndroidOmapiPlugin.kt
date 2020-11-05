@@ -24,12 +24,15 @@ import timber.log.Timber
  * OMAPI implementation of Reader and SeService objects.
  */
 @RequiresApi(android.os.Build.VERSION_CODES.P) // OS version providing android.se.omapi package
-internal object AndroidOmapiPlugin : AbstractAndroidOmapiPlugin<android.se.omapi.Reader, SEService>(), SEService.OnConnectedListener {
+internal object AndroidOmapiPlugin : AbstractAndroidOmapiPlugin<android.se.omapi.Reader, SEService>() {
 
-    override fun connectToSe(context: Context) {
+    override fun connectToSe(context: Context, callback: () -> Unit) {
         val seServiceFactory = SeServiceFactoryImpl(context.applicationContext)
-        seService = seServiceFactory.connectToSe(this)
-        Timber.i("OMAPI SEService version: %s", seService?.version)
+        seService = seServiceFactory.connectToSe(SEService.OnConnectedListener {
+            Timber.i("Connected, ready to register plugin")
+            Timber.i("OMAPI SEService version: %s", seService?.version)
+            callback()
+        })
     }
 
     override fun getNativeReaders(): Array<android.se.omapi.Reader>? {
@@ -40,21 +43,5 @@ internal object AndroidOmapiPlugin : AbstractAndroidOmapiPlugin<android.se.omapi
         Timber.d("Reader available name : %s", nativeReader.name)
         Timber.d("Reader available isCardPresent : %S", nativeReader.isSecureElementPresent)
         return AndroidOmapiReader(nativeReader, PLUGIN_NAME, nativeReader.name)
-    }
-
-    /**
-     * Warning. Do not call this method directly.
-     *
-     * Invoked by Open Mobile {@link SEService} when connected
-     * Instantiates {@link AndroidOmapiReader} for each Reader detected in the platform
-     *
-     * @param seService : connected omapi service
-     */
-    override fun onConnected() {
-
-        Timber.i("Retrieve available readers...")
-
-        // init readers
-        readers.putAll(initNativeReaders())
     }
 }

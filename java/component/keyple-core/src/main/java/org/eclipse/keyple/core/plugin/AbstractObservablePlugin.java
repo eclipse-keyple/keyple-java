@@ -148,4 +148,12 @@ public abstract class AbstractObservablePlugin extends AbstractPlugin
       observer.update(event);
     }
   }
+
+  @Override
+  public void unregister() {
+    super.unregister();
+    notifyObservers(
+        new PluginEvent(this.getName(), readers.keySet(), PluginEvent.EventType.UNREGISTERED));
+    clearObservers();
+  }
 }

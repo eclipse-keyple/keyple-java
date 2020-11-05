@@ -16,7 +16,6 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.core.plugin.reader.AbstractReader;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.event.ObservablePlugin;
-import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.PluginEvent;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
@@ -181,6 +180,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
      */
     private void addReader(String readerName) {
       Reader reader = fetchNativeReader(readerName);
+      reader.register();
       readers.put(reader.getName(), reader);
       if (logger.isTraceEnabled()) {
         logger.trace(
@@ -197,13 +197,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
      * Removes a reader from the list of known readers (by the plugin)
      */
     private void removeReader(Reader reader) {
-      /* removes any possible observers before removing the reader */
-      if (reader instanceof ObservableReader) {
-        ((ObservableReader) reader).clearObservers();
-
-        // In case where Reader was detecting the card
-        ((ObservableReader) reader).stopCardDetection();
-      }
+      reader.unregister();
       readers.remove(reader.getName());
       if (logger.isTraceEnabled()) {
         logger.trace(

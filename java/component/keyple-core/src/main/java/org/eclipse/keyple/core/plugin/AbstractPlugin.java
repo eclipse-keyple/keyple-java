@@ -11,6 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.plugin;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,6 +30,9 @@ public abstract class AbstractPlugin implements Plugin {
   /** The list of readers */
   protected Map<String, Reader> readers = new ConcurrentHashMap<String, Reader>();
 
+  /** Registeration status of the plugin */
+  private boolean isRegistered;
+
   /**
    * Instantiates a new Plugin. Retrieve the current readers list.
    *
@@ -41,7 +45,7 @@ public abstract class AbstractPlugin implements Plugin {
    */
   protected AbstractPlugin(String name) {
     this.name = name;
-    readers.putAll(initNativeReaders());
+    this.isRegistered = false;
   }
 
   /** @return the name of the plugin */
@@ -52,13 +56,12 @@ public abstract class AbstractPlugin implements Plugin {
   /**
    * Returns the current readers name instance map.
    *
-   * <p>The map is initialized in the constructor and may be updated in background in the case of a
-   * threaded plugin {@link AbstractThreadedObservablePlugin}
-   *
    * @return the current readers map, can be an empty
+   * @throws IllegalStateException is thrown when plugin is not (or no longer) registered.
    */
   @Override
   public final Map<String, Reader> getReaders() {
+    checkStatus();
     return readers;
   }
 
@@ -68,9 +71,11 @@ public abstract class AbstractPlugin implements Plugin {
    * <p>The list of names is built from the current readers list
    *
    * @return a list of String
+   * @throws IllegalStateException is thrown when plugin is not (or no longer) registered.
    */
   @Override
   public final Set<String> getReaderNames() {
+    checkStatus();
     return readers.keySet();
   }
 
@@ -93,13 +98,51 @@ public abstract class AbstractPlugin implements Plugin {
    * @param name of the reader
    * @return the reader
    * @throws KeypleReaderNotFoundException if the wanted reader is not found
+   * @throws IllegalStateException is thrown when plugin is not (or no longer) registered.
    */
   @Override
   public final Reader getReader(String name) {
+    checkStatus();
     Reader reader = readers.get(name);
     if (reader == null) {
       throw new KeypleReaderNotFoundException(name);
     }
     return reader;
+  }
+
+  /**
+   * Check if the plugin status is "registered".
+   *
+   * @throws IllegalStateException is thrown when plugin is not (or no longer) registered.
+   */
+  protected void checkStatus() {
+    if (!isRegistered)
+      throw new IllegalStateException(
+          String.format("This plugin, %s, is not registered", getName()));
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public void register() {
+    if (isRegistered)
+      throw new IllegalStateException(
+          String.format("This plugin, %s, is already registered", getName()));
+    isRegistered = true;
+    readers.putAll(initNativeReaders());
+    final Collection<Reader> _readers = readers.values();
+    for (Reader seReader : _readers) {
+      seReader.register();
+    }
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public void unregister() {
+    checkStatus();
+    isRegistered = false;
+    for (String key : readers.keySet()) {
+      final Reader seReader = readers.remove(key);
+      seReader.unregister();
+    }
   }
 }

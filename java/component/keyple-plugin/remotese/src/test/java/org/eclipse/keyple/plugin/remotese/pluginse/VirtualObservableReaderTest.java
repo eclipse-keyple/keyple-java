@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Unit Test Observable Virtual Reader */
+@Ignore
 public class VirtualObservableReaderTest extends VirtualReaderBaseTest {
 
   private static final Logger logger = LoggerFactory.getLogger(VirtualObservableReaderTest.class);

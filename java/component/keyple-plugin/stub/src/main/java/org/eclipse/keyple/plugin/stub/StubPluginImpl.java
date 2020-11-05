@@ -66,6 +66,8 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
 
     if (!exist && synchronous) {
       /* add the reader as a new reader to the readers list */
+      StubReaderImpl stubReader = new StubReaderImpl(this.getName(), readerName, isContactless);
+      stubReader.register();
       readers.put(readerName, new StubReaderImpl(this.getName(), readerName, isContactless));
     }
 

@@ -17,11 +17,13 @@ import org.eclipse.keyple.plugin.stub.StubReader;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Test Virtual Reader Parameters with stub plugin and hoplink card */
+@Ignore
 public class VirtualReaderParameterTest extends VirtualReaderBaseTest {
 
   private static final Logger logger = LoggerFactory.getLogger(VirtualReaderParameterTest.class);

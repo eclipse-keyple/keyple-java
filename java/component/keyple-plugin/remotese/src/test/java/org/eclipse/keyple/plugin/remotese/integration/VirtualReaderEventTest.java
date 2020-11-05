@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 /** Test Virtual Reader Service with stub plugin and hoplink card */
 @RunWith(Parameterized.class)
+@Ignore
 public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
   private static final Logger logger = LoggerFactory.getLogger(VirtualReaderEventTest.class);

@@ -25,7 +25,7 @@ const val PLUGIN_NAME = "AndroidOmapiPlugin"
 
 internal abstract class AbstractAndroidOmapiPlugin<T, V> : AbstractPlugin(PLUGIN_NAME), Plugin {
 
-    abstract fun connectToSe(context: Context)
+    abstract fun connectToSe(context: Context, callback: () -> Unit)
     abstract fun getNativeReaders(): Array<T>?
     abstract fun mapToReader(nativeReader: T): Reader
 
@@ -35,13 +35,12 @@ internal abstract class AbstractAndroidOmapiPlugin<T, V> : AbstractPlugin(PLUGIN
     /**
      * Initialize plugin by connecting to {@link SEService}
      */
-    fun init(context: Context): AbstractAndroidOmapiPlugin<T, V> {
+    fun init(context: Context, callback: () -> Unit) {
         return if (seService != null) {
-            this
+            callback()
         } else {
             Timber.d("Connect to a card")
-            connectToSe(context.applicationContext)
-            this
+            connectToSe(context.applicationContext, callback)
         }
     }
 

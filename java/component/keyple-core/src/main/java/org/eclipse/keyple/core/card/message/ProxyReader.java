@@ -66,7 +66,8 @@ public interface ProxyReader extends Reader {
    * @return A not null response list (can be empty).
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @throws IllegalArgumentException if one of the arguments is null.
-   * @throws IllegalStateException in case of configuration inconsistency.
+   * @throws IllegalStateException in case of configuration inconsistency or reader is not
+   *     registered.
    * @since 0.9
    */
   List<CardResponse> transmitCardRequests(
@@ -120,7 +121,7 @@ public interface ProxyReader extends Reader {
    * @param channelControl indicates if the physical channel has to be closed at the end of the
    *     processing (must be not null).
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
-   * @throws IllegalArgumentException if one of the arguments is null.
+   * @throws IllegalArgumentException if one of the arguments is null or reader is not registered.
    * @since 0.9
    */
   CardResponse transmitCardRequest(CardRequest cardRequest, ChannelControl channelControl);

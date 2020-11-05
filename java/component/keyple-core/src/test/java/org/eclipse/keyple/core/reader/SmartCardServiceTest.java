@@ -207,11 +207,11 @@ public class SmartCardServiceTest {
   }
 
   /**
-   * Test that a plugin can not be added twice with multi thread
+   * Test that a plugin can not be removed twice with multi thread
    *
-   * @throws Exception
+   * @throws IllegalStateException
    */
-  @Test
+  @Test(expected = IllegalStateException.class)
   public void unregisterMultiThread() throws Exception {
 
     final MockObservablePluginFactory factory = new MockObservablePluginFactory(PLUGIN_NAME_1);

@@ -72,6 +72,7 @@ public final class SmartCardService {
       } else {
         Plugin pluginInstance = pluginFactory.getPlugin();
         logger.info("Registering a new Plugin to the platform : {}", pluginName);
+        pluginInstance.register();
         this.plugins.put(pluginName, pluginInstance);
         return pluginInstance;
       }
@@ -82,17 +83,19 @@ public final class SmartCardService {
    * Unregister plugin from platform
    *
    * @param pluginName : plugin name
-   * @return true if the plugin was successfully unregistered
+   * @throws IllegalStateException if the plugin or his reader(s) are already unregistered
    */
-  public boolean unregisterPlugin(String pluginName) {
+  public void unregisterPlugin(String pluginName) {
     synchronized (MONITOR) {
       final Plugin removedPlugin = plugins.remove(pluginName);
       if (removedPlugin != null) {
+        removedPlugin.unregister();
         logger.info("Unregistering a plugin from the platform : {}", removedPlugin.getName());
       } else {
         logger.warn("Plugin is not registered to the platform : {}", pluginName);
+        throw new IllegalStateException(
+            String.format("This plugin, %s, is not registered", pluginName));
       }
-      return removedPlugin != null;
     }
   }
 

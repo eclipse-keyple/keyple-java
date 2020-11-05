@@ -52,7 +52,10 @@ public final class PluginEvent {
     READER_CONNECTED,
 
     /** A reader has been disconnected. */
-    READER_DISCONNECTED
+    READER_DISCONNECTED,
+
+    /** This plugin has been unregistered */
+    UNREGISTERED
   }
 
   /**

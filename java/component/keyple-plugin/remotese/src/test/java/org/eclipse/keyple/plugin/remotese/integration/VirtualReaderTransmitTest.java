@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Test transmit scenarii extends configuration from VirtualReaderTest */
+@Ignore
 public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
   private static final Logger logger = LoggerFactory.getLogger(VirtualReaderTransmitTest.class);
