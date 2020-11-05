@@ -12,11 +12,11 @@
 package org.eclipse.keyple.plugin.remote.integration.common.app;
 
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
-import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
+import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
+import org.eclipse.keyple.core.service.exception.KeypleException;
 import org.eclipse.keyple.plugin.remote.integration.common.model.TransactionResult;
 import org.eclipse.keyple.plugin.remote.integration.common.model.UserInput;
 import org.eclipse.keyple.plugin.remote.integration.common.util.CalypsoUtilities;
@@ -34,7 +34,7 @@ public class VirtualReaderObserver implements ObservableReader.ReaderObserver {
   public void update(ReaderEvent event) {
     String virtualReaderName = event.getReaderName();
     RemoteServerPlugin plugin =
-        (RemoteServerPlugin) SeProxyService.getInstance().getPlugin(event.getPluginName());
+        (RemoteServerPlugin) SmartCardService.getInstance().getPlugin(event.getPluginName());
     RemoteServerObservableReader observableVirtualReader =
         (RemoteServerObservableReader) plugin.getReader(virtualReaderName);
     logger.info(
@@ -45,18 +45,18 @@ public class VirtualReaderObserver implements ObservableReader.ReaderObserver {
         event.getDefaultSelectionsResponse());
 
     switch (event.getEventType()) {
-      case SE_MATCHED:
+      case CARD_INSERTED:
         eventCounter++;
 
         UserInput userInput = observableVirtualReader.getUserInputData(UserInput.class);
 
         // retrieve selection
-        SeSelection seSelection = CalypsoUtilities.getSeSelection();
+        CardSelection cardSelection = CalypsoUtilities.getSeSelection();
         CalypsoPo calypsoPo =
             (CalypsoPo)
-                seSelection
+                cardSelection
                     .processDefaultSelection(event.getDefaultSelectionsResponse())
-                    .getActiveMatchingSe();
+                    .getActiveSmartCard();
 
         // execute a transaction
         try {
@@ -81,7 +81,7 @@ public class VirtualReaderObserver implements ObservableReader.ReaderObserver {
         }
 
         break;
-      case SE_REMOVED:
+      case CARD_REMOVED:
         // do nothing
         plugin.terminateService(virtualReaderName, null);
         break;

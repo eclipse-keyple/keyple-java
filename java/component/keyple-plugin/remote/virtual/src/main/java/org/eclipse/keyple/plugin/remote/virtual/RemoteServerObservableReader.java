@@ -11,7 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.virtual;
 
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+
+import org.eclipse.keyple.core.service.event.ObservableReader;
 
 /**
  * <b>Remote Server Observable Reader</b> API.

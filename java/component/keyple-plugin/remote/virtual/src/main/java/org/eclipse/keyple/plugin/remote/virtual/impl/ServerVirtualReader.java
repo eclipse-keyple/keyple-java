@@ -34,4 +34,14 @@ final class ServerVirtualReader extends AbstractServerVirtualReader {
       String initialCardContentJson) {
     super(reader, serviceId, userInputDataJson, initialCardContentJson);
   }
+
+  @Override
+  public void register() {
+
+  }
+
+  @Override
+  public void unregister() {
+
+  }
 }

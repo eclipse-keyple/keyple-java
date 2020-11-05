@@ -11,8 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.nativ;
 
-import org.eclipse.keyple.core.selection.AbstractMatchingSe;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
+import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.util.Assert;
 
 /**
@@ -27,7 +27,7 @@ import org.eclipse.keyple.core.util.Assert;
  *   <li><b>userInputData</b> (optional) : An object with the user input data if you want to
  *       transmit data during the call to the remote ticketing service.
  *   <li><b>initialCardContent</b> (optional) : An initial Card content inside an {@link
- *       AbstractMatchingSe} to send to the server ticketing service. For Calypso ticketing
+ *       AbstractSmartCard} to send to the server ticketing service. For Calypso ticketing
  *       application, this object will be a <b>CalypsoPo</b> or a <b>CalypsoSam</b>, depending on
  *       the context.
  * </ul>
@@ -37,9 +37,9 @@ import org.eclipse.keyple.core.util.Assert;
 public class RemoteServiceParameters {
 
   private final String serviceId;
-  private final SeReader nativeReader;
+  private final Reader nativeReader;
   private final Object userInputData;
-  private final AbstractMatchingSe initialCardContent;
+  private final AbstractSmartCard initialCardContent;
 
   private RemoteServiceParameters(Builder builder) {
 
@@ -63,7 +63,7 @@ public class RemoteServiceParameters {
    * @return a new builder instance.
    * @since 1.0
    */
-  public static Builder builder(String serviceId, SeReader nativeReader) {
+  public static Builder builder(String serviceId, Reader nativeReader) {
     return new Builder(serviceId, nativeReader);
   }
 
@@ -71,11 +71,11 @@ public class RemoteServiceParameters {
   public static class Builder {
 
     private final String serviceId;
-    private final SeReader nativeReader;
+    private final Reader nativeReader;
     private Object userInputData;
-    private AbstractMatchingSe initialCardContent;
+    private AbstractSmartCard initialCardContent;
 
-    private Builder(String serviceId, SeReader nativeReader) {
+    private Builder(String serviceId, Reader nativeReader) {
       this.serviceId = serviceId;
       this.nativeReader = nativeReader;
     }
@@ -93,7 +93,7 @@ public class RemoteServiceParameters {
     }
 
     /**
-     * Add an initial Card content inside an AbstractMatchingSe to send to the server ticketing
+     * Add an initial Card content inside an AbstractSmartCard to send to the server ticketing
      * service.<br>
      * For Calypso ticketing application, this object will be a <b>CalypsoPo</b> or a
      * <b>CalypsoSam</b>, depending on the context.
@@ -102,7 +102,7 @@ public class RemoteServiceParameters {
      * @return the builder instance
      * @since 1.0
      */
-    public Builder withInitialSeContext(AbstractMatchingSe initialCardContent) {
+    public Builder withInitialSeContext(AbstractSmartCard initialCardContent) {
       this.initialCardContent = initialCardContent;
       return this;
     }
@@ -134,7 +134,7 @@ public class RemoteServiceParameters {
    * @return a not null reference.
    * @since 1.0
    */
-  public SeReader getNativeReader() {
+  public Reader getNativeReader() {
     return nativeReader;
   }
 
@@ -154,7 +154,7 @@ public class RemoteServiceParameters {
    * @return a nullable reference.
    * @since 1.0
    */
-  public AbstractMatchingSe getInitialCardContent() {
+  public AbstractSmartCard getInitialCardContent() {
     return initialCardContent;
   }
 }

@@ -13,12 +13,12 @@ package org.eclipse.keyple.plugin.remote.nativ.impl;
 
 import com.google.gson.JsonObject;
 import java.util.*;
-import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.message.ProxyReader;
+import org.eclipse.keyple.core.service.ReaderPoolPlugin;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.exception.KeypleAllocationReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.card.message.ProxyReader;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
@@ -112,7 +112,7 @@ final class NativePoolServerServiceImpl extends AbstractNativeService
   private ReaderPoolPlugin getAPoolPlugin(String groupReference) {
     for (String poolPluginName : poolPluginNames) {
       ReaderPoolPlugin poolPlugin =
-          (ReaderPoolPlugin) SeProxyService.getInstance().getPlugin(poolPluginName);
+          (ReaderPoolPlugin) SmartCardService.getInstance().getPlugin(poolPluginName);
       if (poolPlugin.getReaderGroupReferences().contains(groupReference)) {
         return poolPlugin;
       }
@@ -132,7 +132,7 @@ final class NativePoolServerServiceImpl extends AbstractNativeService
     SortedSet<String> allGroupReferences = new TreeSet<String>();
     for (String poolPluginName : poolPluginNames) {
       ReaderPoolPlugin poolPlugin =
-          (ReaderPoolPlugin) SeProxyService.getInstance().getPlugin(poolPluginName);
+          (ReaderPoolPlugin) SmartCardService.getInstance().getPlugin(poolPluginName);
       allGroupReferences.addAll(poolPlugin.getReaderGroupReferences());
     }
     return allGroupReferences;
@@ -147,7 +147,7 @@ final class NativePoolServerServiceImpl extends AbstractNativeService
   private void releaseReader(String readerName) {
     for (String poolPluginName : poolPluginNames) {
       ReaderPoolPlugin poolPlugin =
-          (ReaderPoolPlugin) SeProxyService.getInstance().getPlugin(poolPluginName);
+          (ReaderPoolPlugin) SmartCardService.getInstance().getPlugin(poolPluginName);
       if (poolPlugin.getReaderNames().contains(readerName)) {
         poolPlugin.releaseReader(poolPlugin.getReader(readerName));
         return;
@@ -167,7 +167,7 @@ final class NativePoolServerServiceImpl extends AbstractNativeService
   private ProxyReader findReader(String nativeReaderName) {
     for (String poolPluginName : poolPluginNames) {
       ReaderPoolPlugin plugin =
-          (ReaderPoolPlugin) SeProxyService.getInstance().getPlugin(poolPluginName);
+          (ReaderPoolPlugin) SmartCardService.getInstance().getPlugin(poolPluginName);
       try {
         return (ProxyReader) plugin.getReader(nativeReaderName);
       } catch (KeypleReaderNotFoundException e) {

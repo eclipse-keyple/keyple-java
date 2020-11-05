@@ -15,10 +15,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.keyple.core.selection.AbstractMatchingSe;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.message.ProxyReader;
+
+import org.eclipse.keyple.core.card.message.ProxyReader;
+import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.core.KeypleClientReaderEventFilter;
@@ -92,7 +93,7 @@ final class NativeClientServiceImpl extends AbstractNativeService
         .notNull(classOfT, "classOfT");
 
     // get nativeReader
-    ProxyReader nativeReader = (ProxyReader) parameters.getNativeReader();
+     ProxyReader nativeReader = (ProxyReader) parameters.getNativeReader();
 
     if (logger.isTraceEnabled()) {
       logger.trace(
@@ -320,7 +321,7 @@ final class NativeClientServiceImpl extends AbstractNativeService
       body.add("userInputData", KeypleJsonParser.getParser().toJsonTree(userInputData));
     }
 
-    AbstractMatchingSe initialCardContent = parameters.getInitialCardContent();
+    AbstractSmartCard initialCardContent = parameters.getInitialCardContent();
     if (initialCardContent != null) {
       body.add("initialCardContent", KeypleJsonParser.getParser().toJsonTree(initialCardContent));
     }

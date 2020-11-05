@@ -13,9 +13,13 @@ package org.eclipse.keyple.plugin.remote.virtual.impl;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.eclipse.keyple.core.seproxy.PluginFactory;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
+
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.PluginFactory;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.ObservablePlugin;
+import org.eclipse.keyple.core.service.event.PluginEvent;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remote.core.KeypleServerAsync;
 import org.eclipse.keyple.plugin.remote.core.KeypleServerSyncNode;
@@ -29,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * <p>This factory must be used in the use case of the <b>Remote Server Plugin</b>.
  *
  * <p>To register a Remote Server Plugin, use the method {@link
- * org.eclipse.keyple.core.seproxy.SeProxyService#registerPlugin(PluginFactory)} fed in with an
+ * SmartCardService#registerPlugin(PluginFactory)} fed in with an
  * instance of this factory. Invoke the {@link #builder()} method to create and configure a factory
  * instance.
  *
@@ -80,7 +84,7 @@ public class RemoteServerPluginFactory implements PluginFactory {
    * @since 1.0
    */
   @Override
-  public ReaderPlugin getPlugin() {
+  public Plugin getPlugin() {
     return plugin;
   }
 
@@ -132,8 +136,8 @@ public class RemoteServerPluginFactory implements PluginFactory {
     /**
      * Configure the plugin to use a custom thread pool for events notification. The custom pool
      * should be flexible enough to handle many tasks parallely as each {@link
-     * org.eclipse.keyple.core.seproxy.event.ReaderEvent} and {@link
-     * org.eclipse.keyple.core.seproxy.event.PluginEvent} are executed asynchronously.
+     * ReaderEvent} and {@link
+     * PluginEvent} are executed asynchronously.
      *
      * @param eventNotificationPool non nullable instance of a executor service
      * @return next configuration step
@@ -147,7 +151,7 @@ public class RemoteServerPluginFactory implements PluginFactory {
      * Build the plugin factory instance.
      *
      * <p>This instance should be passed to {@link
-     * org.eclipse.keyple.core.seproxy.SeProxyService#registerPlugin(PluginFactory)} in order to
+     * SmartCardService#registerPlugin(PluginFactory)} in order to
      * register the plugin.
      *
      * @return instance of the plugin factory

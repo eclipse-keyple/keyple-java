@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.core.exception;
 
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
+import org.eclipse.keyple.core.service.exception.KeypleException;
 
 /**
  * The exception {@code KeypleRemoteCommunicationException} indicates that an external error occurs

@@ -22,11 +22,10 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader.PollingMode;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
+
+import org.eclipse.keyple.core.card.message.DefaultSelectionsRequest;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remote.core.impl.AbstractKeypleNode;
@@ -45,15 +44,15 @@ public class VirtualObservableReaderTest {
 
   VirtualObservableReader reader;
   AbstractKeypleNode node;
-  ReaderObserver observer;
+  ObservableReader.ReaderObserver observer;
 
   static final DefaultSelectionsRequest abstractDefaultSelectionsRequest =
       SampleFactory.getSelectionRequest();;
   static final ObservableReader.NotificationMode notificationMode =
       SampleFactory.getNotificationMode();;
-  static final PollingMode pollingMode = PollingMode.REPEATING;;
+  static final ObservableReader.PollingMode pollingMode = ObservableReader.PollingMode.REPEATING;;
   static final ReaderEvent event =
-      new ReaderEvent(pluginName, nativeReaderName, ReaderEvent.EventType.SE_INSERTED, null);;
+      new ReaderEvent(pluginName, nativeReaderName, ReaderEvent.EventType.CARD_INSERTED, null);;
   static final KeypleMessageDto response =
       new KeypleMessageDto().setAction(KeypleMessageDto.Action.SET_DEFAULT_SELECTION.name());;
 
@@ -120,7 +119,7 @@ public class VirtualObservableReaderTest {
     assertThat(
             ObservableReader.NotificationMode.valueOf(body.get("notificationMode").getAsString()))
         .isEqualToComparingFieldByFieldRecursively(notificationMode);
-    assertThat(PollingMode.valueOf(body.get("pollingMode").getAsString()))
+    assertThat(ObservableReader.PollingMode.valueOf(body.get("pollingMode").getAsString()))
         .isEqualToComparingFieldByFieldRecursively(pollingMode);
   }
 
@@ -136,20 +135,20 @@ public class VirtualObservableReaderTest {
 
   @Test
   public void startSeDetection_shouldSendDto() {
-    reader.startSeDetection(pollingMode);
+    reader.startCardDetection(pollingMode);
     verify(node).sendRequest(messageArgumentCaptor.capture());
     KeypleMessageDto request = messageArgumentCaptor.getValue();
     assertThat(request.getAction()).isEqualTo(KeypleMessageDto.Action.START_CARD_DETECTION.name());
     JsonObject body = KeypleJsonParser.getParser().fromJson(request.getBody(), JsonObject.class);
     assertThat(
             KeypleJsonParser.getParser()
-                .fromJson(body.get("pollingMode").getAsString(), PollingMode.class))
+                .fromJson(body.get("pollingMode").getAsString(), ObservableReader.PollingMode.class))
         .isEqualToComparingFieldByFieldRecursively(pollingMode);
   }
 
   @Test
   public void stopSeDetection_shouldSendDto() {
-    reader.stopSeDetection();
+    reader.stopCardDetection();
     verify(node).sendRequest(messageArgumentCaptor.capture());
     KeypleMessageDto request = messageArgumentCaptor.getValue();
     assertThat(request.getAction()).isEqualTo(KeypleMessageDto.Action.STOP_CARD_DETECTION.name());
@@ -159,7 +158,7 @@ public class VirtualObservableReaderTest {
 
   @Test
   public void finalizeSeProcessing_shouldSendDto() {
-    reader.finalizeSeProcessing();
+    reader.finalizeCardProcessing();
     verify(node).sendRequest(messageArgumentCaptor.capture());
     KeypleMessageDto request = messageArgumentCaptor.getValue();
     assertThat(request.getAction())
@@ -168,7 +167,7 @@ public class VirtualObservableReaderTest {
     assertThat(body).isNull();
   }
 
-  private static class MockObserver implements ReaderObserver {
+  private static class MockObserver implements ObservableReader.ReaderObserver {
 
     ReaderEvent event;
 

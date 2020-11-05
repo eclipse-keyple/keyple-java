@@ -15,7 +15,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
-import org.eclipse.keyple.core.seproxy.exception.KeypleRuntimeException;
+import org.eclipse.keyple.core.service.exception.KeypleRuntimeException;
 import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
 
 public class JacksonParser {

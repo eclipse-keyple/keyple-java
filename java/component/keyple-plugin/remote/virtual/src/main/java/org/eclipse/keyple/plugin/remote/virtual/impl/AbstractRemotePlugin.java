@@ -14,11 +14,11 @@ package org.eclipse.keyple.plugin.remote.virtual.impl;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin;
+
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.plugin.remote.core.impl.AbstractKeypleMessageHandler;
 
 /**
@@ -26,12 +26,12 @@ import org.eclipse.keyple.plugin.remote.core.impl.AbstractKeypleMessageHandler;
  * Abstract class for all Remote Plugins.
  *
  * <p>This object behaves both as a {@link AbstractKeypleMessageHandler} and as a {@link
- * AbstractPlugin}.
+ * org.eclipse.keyple.core.service.Plugin}.
  */
-abstract class AbstractRemotePlugin extends AbstractKeypleMessageHandler implements ReaderPlugin {
+abstract class AbstractRemotePlugin extends AbstractKeypleMessageHandler implements Plugin {
 
   private final String name;
-  protected final Map<String, SeReader> readers;
+  protected final Map<String, Reader> readers;
 
   /**
    * (package-private)<br>
@@ -50,7 +50,7 @@ abstract class AbstractRemotePlugin extends AbstractKeypleMessageHandler impleme
   AbstractRemotePlugin(String name) {
     super();
     this.name = name;
-    this.readers = new ConcurrentHashMap<String, SeReader>();
+    this.readers = new ConcurrentHashMap<String, Reader>();
     this.readers.putAll(initNativeReaders());
   }
 
@@ -70,7 +70,7 @@ abstract class AbstractRemotePlugin extends AbstractKeypleMessageHandler impleme
    * @since 1.0
    */
   @Override
-  public final Map<String, SeReader> getReaders() {
+  public final Map<String, Reader> getReaders() {
     return readers;
   }
 
@@ -87,12 +87,12 @@ abstract class AbstractRemotePlugin extends AbstractKeypleMessageHandler impleme
   /**
    * (protected)<br>
    * Init connected native readers (from third party library) and returns a map of corresponding
-   * {@link SeReader} with their name as key and each {@link SeReader} is a new instance.
+   * {@link Reader} with their name as key and each {@link Reader} is a new instance.
    *
    * <p>this method is called once in the plugin constructor.
    *
    * @return a not null map.
    * @throws KeypleReaderIOException if the communication with the reader or the Card has failed
    */
-  protected abstract Map<String, SeReader> initNativeReaders() throws KeypleReaderIOException;
+  protected abstract Map<String, Reader> initNativeReaders() throws KeypleReaderIOException;
 }

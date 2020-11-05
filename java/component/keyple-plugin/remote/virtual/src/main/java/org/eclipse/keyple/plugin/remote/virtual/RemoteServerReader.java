@@ -11,19 +11,19 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.virtual;
 
-import org.eclipse.keyple.core.selection.AbstractMatchingSe;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
+import org.eclipse.keyple.core.service.Reader;
 
 /**
  * <b>Remote Server Reader</b> API.
  *
  * <p>This reader must be used in the use case of the <b>Remote Server Plugin</b>.
  *
- * <p>This reader behaves like an {@link SeReader} but exposes additional services.
+ * <p>This reader behaves like an {@link Reader} but exposes additional services.
  *
  * @since 1.0
  */
-public interface RemoteServerReader extends SeReader {
+public interface RemoteServerReader extends Reader {
 
   /**
    * Gets the id of the remote service to execute on the server's side.
@@ -51,5 +51,5 @@ public interface RemoteServerReader extends SeReader {
    * @return a nullable reference if there is no initial Card content.
    * @since 1.0
    */
-  <T extends AbstractMatchingSe> T getInitialCardContent(Class<T> classOfT);
+  <T extends AbstractSmartCard> T getInitialCardContent(Class<T> classOfT);
 }

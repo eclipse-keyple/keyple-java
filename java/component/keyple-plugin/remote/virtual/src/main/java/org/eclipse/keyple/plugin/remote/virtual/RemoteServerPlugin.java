@@ -11,15 +11,16 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.virtual;
 
-import java.util.Map;
-import org.eclipse.keyple.core.seproxy.PluginFactory;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
-import org.eclipse.keyple.core.seproxy.event.PluginEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.service.PluginFactory;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.ObservablePlugin;
+import org.eclipse.keyple.core.service.event.PluginEvent;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.plugin.remote.virtual.impl.RemoteServerPluginFactory;
 import org.eclipse.keyple.plugin.remote.virtual.impl.RemoteServerUtils;
+
+import java.util.Map;
 
 /**
  * <b>Remote Server Plugin</b> API.
@@ -31,12 +32,12 @@ import org.eclipse.keyple.plugin.remote.virtual.impl.RemoteServerUtils;
  *
  * <ul>
  *   <li>To <b>register</b> the plugin, use the Keyple service method {@link
- *       SeProxyService#registerPlugin(PluginFactory)} using the factory {@link
+ *       SmartCardService#registerPlugin(PluginFactory)} using the factory {@link
  *       RemoteServerPluginFactory} for the plugin creation.
  *   <li>To access the plugin, use the following utility method {@link
  *       RemoteServerUtils#getRemotePlugin()}
  *   <li>To <b>unregister</b> the plugin, use the Keyple service method {@link
- *       SeProxyService#unregisterPlugin(String)} using the plugin name.
+ *       SmartCardService#unregisterPlugin(String)} using the plugin name.
  * </ul>
  *
  * <p>This plugin behaves like an {@link ObservablePlugin} but exposes additional services and
@@ -72,12 +73,12 @@ public interface RemoteServerPlugin extends ObservablePlugin {
   /**
    * {@inheritDoc}
    *
-   * @return a not null sorted set of {@link SeReader} but you can cast them to {@link
+   * @return a not null sorted set of {@link Reader} but you can cast them to {@link
    *     RemoteServerReader}.
    * @since 1.0
    */
   @Override
-  Map<String, SeReader> getReaders();
+  Map<String, Reader> getReaders();
 
   /**
    * {@inheritDoc}

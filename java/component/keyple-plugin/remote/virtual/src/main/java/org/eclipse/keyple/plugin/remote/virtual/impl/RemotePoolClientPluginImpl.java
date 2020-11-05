@@ -15,10 +15,11 @@ import com.google.gson.JsonObject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
@@ -79,7 +80,7 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
    * @since 1.0
    */
   @Override
-  public SeReader allocateReader(String groupReference) {
+  public Reader allocateReader(String groupReference) {
     String sessionId = generateSessionId();
     try {
       // Open a new session on the node, session will be closed with the release reader method
@@ -119,7 +120,7 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
    * @since 1.0
    */
   @Override
-  public void releaseReader(SeReader reader) {
+  public void releaseReader(Reader reader) {
     Assert.getInstance().notNull(reader, "reader");
     if (!readers.containsKey(reader.getName())) {
       throw new IllegalArgumentException("reader is not a virtual reader of this pool plugin");
@@ -156,13 +157,23 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
    * @since 1.0
    */
   @Override
-  public SeReader getReader(String name) {
+  public Reader getReader(String name) {
     Assert.getInstance().notNull(name, "reader name");
-    SeReader seReader = readers.get(name);
+    Reader seReader = readers.get(name);
     if (seReader == null) {
       throw new KeypleReaderNotFoundException(name);
     }
     return seReader;
+  }
+
+  @Override
+  public void register() {
+
+  }
+
+  @Override
+  public void unregister() {
+
   }
 
   /**
@@ -180,7 +191,7 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
    * Initialize the readers map
    */
   @Override
-  protected Map<String, SeReader> initNativeReaders() throws KeypleReaderIOException {
-    return new HashMap<String, SeReader>();
+  protected Map<String, Reader> initNativeReaders() throws KeypleReaderIOException {
+    return new HashMap<String, Reader>();
   }
 }

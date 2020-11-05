@@ -13,14 +13,14 @@ package org.eclipse.keyple.core.util.json;
 
 import com.google.gson.*;
 import java.lang.reflect.Type;
-import org.eclipse.keyple.core.command.SeCommand;
+import org.eclipse.keyple.core.card.command.CardCommand;
 import org.eclipse.keyple.core.util.Assert;
 
 public class SeCommandTypeAdapter
-    implements JsonSerializer<SeCommand>, JsonDeserializer<SeCommand> {
+    implements JsonSerializer<CardCommand>, JsonDeserializer<CardCommand> {
 
   @Override
-  public SeCommand deserialize(
+  public CardCommand deserialize(
       JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext)
       throws JsonParseException {
 
@@ -28,7 +28,7 @@ public class SeCommandTypeAdapter
     String name = jsonElement.getAsJsonObject().get("name").getAsString();
 
     try {
-      return (SeCommand) Enum.valueOf((Class<? extends Enum>) Class.forName(className), name);
+      return (CardCommand) Enum.valueOf((Class<? extends Enum>) Class.forName(className), name);
     } catch (ClassNotFoundException e) {
       throw new JsonParseException(
           "Can not parse jsonElement as a SeCommand " + jsonElement.toString());
@@ -37,7 +37,7 @@ public class SeCommandTypeAdapter
 
   @Override
   public JsonElement serialize(
-      SeCommand seCommand, Type type, JsonSerializationContext jsonSerializationContext) {
+          CardCommand seCommand, Type type, JsonSerializationContext jsonSerializationContext) {
     JsonObject output = new JsonObject();
     Assert.getInstance()
         .isTrue(seCommand.getClass().isEnum(), "SeCommandAdapter works only with enum");

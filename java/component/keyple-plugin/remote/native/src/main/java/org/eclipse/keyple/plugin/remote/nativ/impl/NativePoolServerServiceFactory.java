@@ -11,9 +11,9 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.nativ.impl;
 
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.ReaderPoolPlugin;
+import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remote.core.KeypleServerAsync;
 import org.eclipse.keyple.plugin.remote.nativ.NativePoolServerService;
@@ -104,7 +104,7 @@ public final class NativePoolServerServiceFactory {
       Assert.getInstance().notNull(poolPluginNames, "poolPluginNames");
       // verify that each plugin is instance of ReaderPoolPlugin
       for (String poolPluginName : poolPluginNames) {
-        ReaderPlugin plugin = SeProxyService.getInstance().getPlugin(poolPluginName);
+        Plugin plugin = SmartCardService.getInstance().getPlugin(poolPluginName);
         if (!(plugin instanceof ReaderPoolPlugin)) {
           throw new IllegalArgumentException(
               "Invalid plugin type for plugin "

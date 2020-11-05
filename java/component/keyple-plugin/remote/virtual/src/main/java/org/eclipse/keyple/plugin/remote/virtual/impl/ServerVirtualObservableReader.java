@@ -11,9 +11,9 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.virtual.impl;
 
-import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.plugin.reader.ObservableReaderNotifier;
+import org.eclipse.keyple.core.plugin.reader.ObservableReaderNotifier;
+import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsRequest;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remote.virtual.RemoteServerObservableReader;
 
@@ -126,8 +126,8 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
    * @since 1.0
    */
   @Override
-  public void startSeDetection(PollingMode pollingMode) {
-    reader.startSeDetection(pollingMode);
+  public void startCardDetection(PollingMode pollingMode) {
+    reader.startCardDetection(pollingMode);
   }
 
   /**
@@ -136,8 +136,8 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
    * @since 1.0
    */
   @Override
-  public void stopSeDetection() {
-    reader.stopSeDetection();
+  public void stopCardDetection() {
+    reader.stopCardDetection();
   }
 
   /**
@@ -171,8 +171,8 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
    * @since 1.0
    */
   @Override
-  public void finalizeSeProcessing() {
-    reader.finalizeSeProcessing();
+  public void finalizeCardProcessing() {
+    reader.finalizeCardProcessing();
   }
 
   /**
@@ -183,6 +183,16 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
   @Override
   public boolean isContactless() {
     return reader.isContactless();
+  }
+
+  @Override
+  public void register() {
+
+  }
+
+  @Override
+  public void unregister() {
+
   }
 
   /**

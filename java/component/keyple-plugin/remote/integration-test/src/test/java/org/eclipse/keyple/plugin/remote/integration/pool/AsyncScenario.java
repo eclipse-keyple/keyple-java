@@ -15,9 +15,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.SortedSet;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
-import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.plugin.remote.integration.common.endpoint.pool.StubAsyncClientEndpoint;
 import org.eclipse.keyple.plugin.remote.integration.common.endpoint.pool.StubAsyncServerEndpoint;
 import org.eclipse.keyple.plugin.remote.integration.common.util.CalypsoUtilities;
@@ -50,7 +50,7 @@ public class AsyncScenario extends BaseScenario {
 
     remotePoolClientPlugin =
         (RemotePoolClientPlugin)
-            SeProxyService.getInstance()
+            SmartCardService.getInstance()
                 .registerPlugin(
                     RemotePoolClientPluginFactory.builder()
                         .withAsyncNode(clientEndpoint)
@@ -60,7 +60,7 @@ public class AsyncScenario extends BaseScenario {
 
   @After
   public void tearDown() {
-    SeProxyService.getInstance().unregisterPlugin(remotePoolClientPlugin.getName());
+    SmartCardService.getInstance().unregisterPlugin(remotePoolClientPlugin.getName());
   }
 
   @Test
@@ -69,10 +69,10 @@ public class AsyncScenario extends BaseScenario {
     SortedSet<String> groupReferences = remotePoolClientPlugin.getReaderGroupReferences();
     assertThat(groupReferences).containsExactly(groupReference);
 
-    SeReader virtualReader = remotePoolClientPlugin.allocateReader(groupReference);
-    SeSelection seSelection = CalypsoUtilities.getSeSelection();
+    Reader virtualReader = remotePoolClientPlugin.allocateReader(groupReference);
+    CardSelection seSelection = CalypsoUtilities.getSeSelection();
     CalypsoPo calypsoPo =
-        (CalypsoPo) seSelection.processExplicitSelection(virtualReader).getActiveMatchingSe();
+        (CalypsoPo) seSelection.processExplicitSelection(virtualReader).getActiveSmartCard();
 
     String eventLog = CalypsoUtilities.readEventLog(calypsoPo, virtualReader, logger);
     assertThat(eventLog).isNotNull();

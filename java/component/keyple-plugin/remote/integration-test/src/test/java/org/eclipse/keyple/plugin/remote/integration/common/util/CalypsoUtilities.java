@@ -14,17 +14,17 @@ package org.eclipse.keyple.plugin.remote.integration.common.util;
 import static org.eclipse.keyple.calypso.transaction.PoTransaction.SessionSetting.AccessLevel;
 
 import org.eclipse.keyple.calypso.transaction.*;
-import org.eclipse.keyple.core.selection.SeResource;
-import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.card.selection.CardResource;
+import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.CardSelector;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 
 public final class CalypsoUtilities {
 
-  public static PoSecuritySettings getSecuritySettings(SeResource<CalypsoSam> samResource) {
+  public static PoSecuritySettings getSecuritySettings(CardResource<CalypsoSam> samResource) {
 
     // The default KIF values for personalization, loading and debiting
     final byte DEFAULT_KIF_PERSO = (byte) 0x21;
@@ -48,17 +48,17 @@ public final class CalypsoUtilities {
         .build();
   }
 
-  public static SeSelection getSeSelection() {
+  public static CardSelection getSeSelection() {
     // Prepare PO Selection
-    SeSelection seSelection = new SeSelection();
+    CardSelection seSelection = new CardSelection();
 
     // Calypso selection
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(
-                    SeSelector.AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
+                    CardSelector.AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
 
@@ -71,7 +71,7 @@ public final class CalypsoUtilities {
     return seSelection;
   }
 
-  public static String readEventLog(CalypsoPo calypsoPo, SeReader seReader, Logger logger) {
+  public static String readEventLog(CalypsoPo calypsoPo, Reader reader, Logger logger) {
     // execute calypso session from a card selection
     logger.info(
         "Initial PO Content, atr : {}, sn : {}",
@@ -90,7 +90,7 @@ public final class CalypsoUtilities {
     // Go on with the reading of the first record of the EventLog file
     logger.info("= #### reading transaction of the EventLog file.");
 
-    PoTransaction poTransaction = new PoTransaction(new SeResource<CalypsoPo>(seReader, calypsoPo));
+    PoTransaction poTransaction = new PoTransaction(new CardResource<CalypsoPo>(reader, calypsoPo));
 
     // Prepare the reading order and keep the associated parser for later use once the
     // transaction has been processed.

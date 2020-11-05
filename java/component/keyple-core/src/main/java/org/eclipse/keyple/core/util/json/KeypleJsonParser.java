@@ -13,9 +13,11 @@ package org.eclipse.keyple.core.util.json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.eclipse.keyple.core.command.SeCommand;
-import org.eclipse.keyple.core.command.exception.KeypleSeCommandException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.card.command.CardCommand;
+import org.eclipse.keyple.core.card.command.exception.KeypleCardCommandException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
+
+import javax.smartcardio.Card;
 
 /** Json Parser for Keyple DTO and Keyple DTO body */
 public final class KeypleJsonParser {
@@ -48,12 +50,12 @@ public final class KeypleJsonParser {
     GsonBuilder init = new GsonBuilder();
     // init keyple default adapter
     init.registerTypeAdapter(byte[].class, new HexArrayTypeAdapter())
-        .registerTypeAdapter(SeCommand.class, new SeCommandTypeAdapter())
+        .registerTypeAdapter(CardCommand.class, new SeCommandTypeAdapter())
         .registerTypeAdapter(BodyError.class, new BodyErrorSerializer())
         .registerTypeHierarchyAdapter(Throwable.class, new ThrowableSerializer())
         .registerTypeAdapter(KeypleReaderIOException.class, new KeypleReaderIOExceptionSerializer())
         .registerTypeHierarchyAdapter(
-            KeypleSeCommandException.class, new KeypleSeCommandExceptionSerializer());
+            KeypleCardCommandException.class, new KeypleSeCommandExceptionSerializer());
 
     return init;
   }

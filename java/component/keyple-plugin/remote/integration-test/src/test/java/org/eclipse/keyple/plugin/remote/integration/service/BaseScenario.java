@@ -18,13 +18,13 @@ import java.lang.reflect.Field;
 import java.util.UUID;
 import java.util.concurrent.*;
 import org.eclipse.keyple.calypso.transaction.*;
-import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.SelectionsResult;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.eclipse.keyple.plugin.remote.core.KeypleServerAsync;
 import org.eclipse.keyple.plugin.remote.core.impl.AbstractKeypleNode;
@@ -136,7 +136,7 @@ public abstract class BaseScenario {
   public static void unRegisterRemotePlugin() {
     try {
       RemoteServerPlugin oldPlugin = RemoteServerUtils.getRemotePlugin();
-      SeProxyService.getInstance().unregisterPlugin(oldPlugin.getName());
+      SmartCardService.getInstance().unregisterPlugin(oldPlugin.getName());
     } catch (KeyplePluginNotFoundException e) {
       // no plugin to unregister
     }
@@ -146,11 +146,11 @@ public abstract class BaseScenario {
   void initNativeStubPlugin() {
     // reuse stub plugin
     try {
-      nativePlugin = (StubPlugin) SeProxyService.getInstance().getPlugin(NATIVE_PLUGIN_NAME);
+      nativePlugin = (StubPlugin) SmartCardService.getInstance().getPlugin(NATIVE_PLUGIN_NAME);
     } catch (KeyplePluginNotFoundException e) {
       nativePlugin =
           (StubPlugin)
-              SeProxyService.getInstance()
+              SmartCardService.getInstance()
                   .registerPlugin(new StubPluginFactory(NATIVE_PLUGIN_NAME));
     }
     // nativeReader should be reset
@@ -192,7 +192,7 @@ public abstract class BaseScenario {
     } catch (KeyplePluginNotFoundException e) {
       remotePlugin =
           (RemoteServerPlugin)
-              SeProxyService.getInstance()
+              SmartCardService.getInstance()
                   .registerPlugin(
                       RemoteServerPluginFactory.builder()
                           .withSyncNode()
@@ -211,7 +211,7 @@ public abstract class BaseScenario {
     } catch (KeyplePluginNotFoundException e) {
       remotePlugin =
           (RemoteServerPlugin)
-              SeProxyService.getInstance()
+                  SmartCardService.getInstance()
                   .registerPlugin(
                       RemoteServerPluginFactory.builder()
                           .withAsyncNode(serverEndpoint)
@@ -241,9 +241,9 @@ public abstract class BaseScenario {
    * @return matching PO
    */
   CalypsoPo explicitPoSelection() {
-    SeSelection seSelection = CalypsoUtilities.getSeSelection();
+    CardSelection seSelection = CalypsoUtilities.getSeSelection();
     SelectionsResult selectionsResult = seSelection.processExplicitSelection(nativeReader);
-    return (CalypsoPo) selectionsResult.getActiveMatchingSe();
+    return (CalypsoPo) selectionsResult.getActiveSmartCard();
   }
 
   Callable<Boolean> verifyUserTransaction(
@@ -259,20 +259,20 @@ public abstract class BaseScenario {
     };
   }
 
-  Callable<Boolean> seRemoved(final SeReader seReader) {
+  Callable<Boolean> seRemoved(final Reader seReader) {
     return new Callable<Boolean>() {
       @Override
       public Boolean call() throws Exception {
-        return !seReader.isSePresent();
+        return !seReader.isCardPresent();
       }
     };
   }
 
-  Callable<Boolean> seInserted(final SeReader seReader) {
+  Callable<Boolean> seInserted(final Reader seReader) {
     return new Callable<Boolean>() {
       @Override
       public Boolean call() throws Exception {
-        return seReader.isSePresent();
+        return seReader.isCardPresent();
       }
     };
   }

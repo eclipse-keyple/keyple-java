@@ -12,12 +12,10 @@
 package org.eclipse.keyple.plugin.remote.virtual.impl;
 
 import java.util.List;
-import org.eclipse.keyple.core.selection.AbstractMatchingSe;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
-import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.message.SeRequest;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
+
+import org.eclipse.keyple.core.card.message.*;
+import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
+import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.virtual.RemoteServerReader;
@@ -60,11 +58,11 @@ abstract class AbstractServerVirtualReader implements RemoteServerReader, ProxyR
    * @since 1.0
    */
   @Override
-  public List<SeResponse> transmitSeRequests(
-      List<SeRequest> seRequests,
-      MultiSeRequestProcessing multiSeRequestProcessing,
+  public List<CardSelectionResponse> transmitCardSelectionRequests(
+      List<CardSelectionRequest> cardSelectionRequests,
+      MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl) {
-    return reader.transmitSeRequests(seRequests, multiSeRequestProcessing, channelControl);
+    return reader.transmitCardSelectionRequests(cardSelectionRequests, multiSelectionProcessing, channelControl);
   }
 
   /**
@@ -73,8 +71,8 @@ abstract class AbstractServerVirtualReader implements RemoteServerReader, ProxyR
    * @since 1.0
    */
   @Override
-  public SeResponse transmitSeRequest(SeRequest seRequest, ChannelControl channelControl) {
-    return reader.transmitSeRequest(seRequest, channelControl);
+  public CardResponse transmitCardRequest(CardRequest cardRequest, ChannelControl channelControl) {
+    return reader.transmitCardRequest(cardRequest, channelControl);
   }
 
   /**
@@ -106,7 +104,7 @@ abstract class AbstractServerVirtualReader implements RemoteServerReader, ProxyR
    * @since 1.0
    */
   @Override
-  public <T extends AbstractMatchingSe> T getInitialCardContent(Class<T> classOfT) {
+  public <T extends AbstractSmartCard> T getInitialCardContent(Class<T> classOfT) {
     Assert.getInstance().notNull(classOfT, "classOfT");
     return initialCardContentJson != null
         ? KeypleJsonParser.getParser().fromJson(initialCardContentJson, classOfT)
@@ -119,8 +117,8 @@ abstract class AbstractServerVirtualReader implements RemoteServerReader, ProxyR
    * @since 1.0
    */
   @Override
-  public boolean isSePresent() {
-    return reader.isSePresent();
+  public boolean isCardPresent() {
+    return reader.isCardPresent();
   }
 
   /**

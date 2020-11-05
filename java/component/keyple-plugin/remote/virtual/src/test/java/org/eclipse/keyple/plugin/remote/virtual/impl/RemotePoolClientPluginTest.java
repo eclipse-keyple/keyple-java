@@ -19,11 +19,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.SortedSet;
 import org.assertj.core.util.Sets;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationNoReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.exception.KeypleAllocationNoReaderException;
+import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.core.KeypleClientAsync;
@@ -34,7 +34,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 public class RemotePoolClientPluginTest {
-  SeReader virtualReader;
+  Reader virtualReader;
 
   KeypleClientSync syncEndpoint;
   KeypleClientAsync asyncEndpoint;
@@ -51,7 +51,7 @@ public class RemotePoolClientPluginTest {
 
   @Test
   public void factory_withSyncEndpoint_shouldCreate_PluginWith_SyncNode() {
-    SeProxyService.getInstance()
+    SmartCardService.getInstance()
         .registerPlugin(
             RemotePoolClientPluginFactory.builder()
                 .withSyncNode(syncEndpoint)
@@ -60,13 +60,13 @@ public class RemotePoolClientPluginTest {
     assertThat(RemotePoolClientUtils.getRemotePlugin()).isNotNull();
 
     // unregister plugin
-    SeProxyService.getInstance()
+    SmartCardService.getInstance()
         .unregisterPlugin(RemotePoolClientUtils.getRemotePlugin().getName());
   }
 
   @Test
   public void factory_withAsyncEndpoint_shouldCreate_PluginWith_AsyncNode() {
-    SeProxyService.getInstance()
+    SmartCardService.getInstance()
         .registerPlugin(
             RemotePoolClientPluginFactory.builder()
                 .withAsyncNode(asyncEndpoint)
@@ -76,7 +76,7 @@ public class RemotePoolClientPluginTest {
     assertThat(RemotePoolClientUtils.getAsyncNode()).isNotNull();
 
     // unregister plugin
-    SeProxyService.getInstance()
+    SmartCardService.getInstance()
         .unregisterPlugin(RemotePoolClientUtils.getRemotePlugin().getName());
   }
 
@@ -140,7 +140,7 @@ public class RemotePoolClientPluginTest {
   @Test(expected = IllegalArgumentException.class)
   public void releaseReader_onWrongReader_shouldThrow_exception() {
     // mock reader
-    SeReader reader = Mockito.mock(SeReader.class);
+    Reader reader = Mockito.mock(Reader.class);
     when(reader.getName()).thenReturn("mock");
 
     syncEndpoint = new MockSyncEndpoint().setException(new KeypleReaderNotFoundException("msg"));
@@ -186,7 +186,7 @@ public class RemotePoolClientPluginTest {
     asyncEndpoint = new MockAsyncEndpoint();
     remotePoolPlugin =
         (RemotePoolClientPluginImpl)
-            SeProxyService.getInstance()
+            SmartCardService.getInstance()
                 .registerPlugin(
                     RemotePoolClientPluginFactory.builder()
                         .withAsyncNode(asyncEndpoint)
@@ -194,7 +194,7 @@ public class RemotePoolClientPluginTest {
                         .build());
     virtualReader = remotePoolPlugin.allocateReader(groupReference);
     assertThat(remotePoolPlugin.getReader(virtualReader.getName())).isNotNull();
-    assertThat(virtualReader.isSePresent()).isTrue();
+    assertThat(virtualReader.isCardPresent()).isTrue();
   }
 
   @Test(expected = UnsupportedOperationException.class)
@@ -202,7 +202,7 @@ public class RemotePoolClientPluginTest {
     asyncEndpoint = new MockAsyncEndpoint();
     remotePoolPlugin =
         (RemotePoolClientPluginImpl)
-            SeProxyService.getInstance()
+            SmartCardService.getInstance()
                 .registerPlugin(
                     RemotePoolClientPluginFactory.builder()
                         .withAsyncNode(asyncEndpoint)

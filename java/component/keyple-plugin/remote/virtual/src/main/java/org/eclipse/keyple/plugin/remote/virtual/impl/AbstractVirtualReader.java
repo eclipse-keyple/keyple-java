@@ -14,17 +14,18 @@ package org.eclipse.keyple.plugin.remote.virtual.impl;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import java.util.*;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
-import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.message.SeRequest;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractReader;
+
+import org.eclipse.keyple.core.card.message.*;
+import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
+import org.eclipse.keyple.core.plugin.reader.AbstractReader;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remote.core.impl.AbstractKeypleNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.smartcardio.Card;
 
 /**
  * (package-private)<br>
@@ -71,26 +72,26 @@ abstract class AbstractVirtualReader extends AbstractReader {
    * @since 1.0
    */
   @Override
-  protected List<SeResponse> processSeRequests(
-      List<SeRequest> seRequests,
-      MultiSeRequestProcessing multiSeRequestProcessing,
+  protected List<CardSelectionResponse> processCardSelectionRequests(
+      List<CardSelectionRequest> cardSelectionRequests,
+      MultiSelectionProcessing multiSeRequestProcessing,
       ChannelControl channelControl) {
 
     // Build the message
     JsonObject body = new JsonObject();
     body.addProperty(
-        "seRequests",
+        "cardSelectionRequests",
         KeypleJsonParser.getParser()
-            .toJson(seRequests, new TypeToken<ArrayList<SeRequest>>() {}.getType()));
+            .toJson(cardSelectionRequests, new TypeToken<ArrayList<CardSelectionRequest>>() {}.getType()));
     body.addProperty("multiSeRequestProcessing", multiSeRequestProcessing.name());
     body.addProperty("channelControl", channelControl.name());
 
     // Send the message as a request
-    KeypleMessageDto response = sendRequest(KeypleMessageDto.Action.TRANSMIT_SET, body);
+    KeypleMessageDto response = sendRequest(KeypleMessageDto.Action.TRANSMIT_CARD_SELECTION, body);
 
     // Extract the response
     return KeypleJsonParser.getParser()
-        .fromJson(response.getBody(), new TypeToken<ArrayList<SeResponse>>() {}.getType());
+        .fromJson(response.getBody(), new TypeToken<ArrayList<CardSelectionResponse>>() {}.getType());
   }
 
   /**
@@ -99,18 +100,18 @@ abstract class AbstractVirtualReader extends AbstractReader {
    * @since 1.0
    */
   @Override
-  protected SeResponse processSeRequest(SeRequest seRequest, ChannelControl channelControl) {
+  protected CardResponse processCardRequest(CardRequest seRequest, ChannelControl channelControl) {
 
     // Build the message
     JsonObject body = new JsonObject();
-    body.addProperty("seRequest", KeypleJsonParser.getParser().toJson(seRequest, SeRequest.class));
+    body.addProperty("seRequest", KeypleJsonParser.getParser().toJson(seRequest, CardRequest.class));
     body.addProperty("channelControl", channelControl.name());
 
     // Send the message as a request
     KeypleMessageDto response = sendRequest(KeypleMessageDto.Action.TRANSMIT, body);
 
     // Extract the response
-    return KeypleJsonParser.getParser().fromJson(response.getBody(), SeResponse.class);
+    return KeypleJsonParser.getParser().fromJson(response.getBody(), CardResponse.class);
   }
 
   /**
@@ -119,7 +120,7 @@ abstract class AbstractVirtualReader extends AbstractReader {
    * @since 1.0
    */
   @Override
-  public boolean isSePresent() {
+  public boolean isCardPresent() {
 
     // Send the message as a request
     KeypleMessageDto response = sendRequest(KeypleMessageDto.Action.IS_CARD_PRESENT, null);

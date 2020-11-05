@@ -17,8 +17,9 @@ import static org.mockito.Mockito.*;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.event.*;
+
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remote.core.KeypleServerAsync;
 import org.eclipse.keyple.plugin.remote.core.impl.AbstractKeypleNode;
@@ -48,7 +49,7 @@ public class RemoteServerPluginImplTest extends RemoteServerBaseTest {
 
   @Test
   public void registerSyncPlugin() {
-    SeProxyService.getInstance()
+    SmartCardService.getInstance()
         .registerPlugin(
             RemoteServerPluginFactory.builder()
                 .withSyncNode()
@@ -58,12 +59,12 @@ public class RemoteServerPluginImplTest extends RemoteServerBaseTest {
     assertThat(RemoteServerUtils.getRemotePlugin()).isNotNull();
     assertThat(RemoteServerUtils.getSyncNode()).isNotNull();
 
-    SeProxyService.getInstance().unregisterPlugin(RemoteServerPluginFactory.DEFAULT_PLUGIN_NAME);
+    SmartCardService.getInstance().unregisterPlugin(RemoteServerPluginFactory.DEFAULT_PLUGIN_NAME);
   }
 
   @Test
   public void registerAsyncPlugin() {
-    SeProxyService.getInstance()
+    SmartCardService.getInstance()
         .registerPlugin(
             RemoteServerPluginFactory.builder()
                 .withAsyncNode(Mockito.mock(KeypleServerAsync.class))
@@ -73,7 +74,7 @@ public class RemoteServerPluginImplTest extends RemoteServerBaseTest {
     assertThat(RemoteServerUtils.getRemotePlugin()).isNotNull();
     assertThat(RemoteServerUtils.getAsyncNode()).isNotNull();
 
-    SeProxyService.getInstance().unregisterPlugin(RemoteServerPluginFactory.DEFAULT_PLUGIN_NAME);
+    SmartCardService.getInstance().unregisterPlugin(RemoteServerPluginFactory.DEFAULT_PLUGIN_NAME);
   }
 
   @Test
