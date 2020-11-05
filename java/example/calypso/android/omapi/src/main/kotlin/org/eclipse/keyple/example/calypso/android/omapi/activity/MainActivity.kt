@@ -76,14 +76,20 @@ class MainActivity : BasicActivity(), View.OnClickListener {
     private suspend fun connectOmapi(): Map<String, Reader> = withContext(Dispatchers.IO) {
         var readers: Map<String, Reader> ? = null
         for (x in 1..MAX_TRIES) {
-            readers = SmartCardService.getInstance().getPlugin(PLUGIN_NAME).readers
-            if (readers == null || readers.size < 1) {
-                Timber.d("No readers found in OMAPI Keyple Plugin")
+            try{
+                readers = SmartCardService.getInstance().getPlugin(PLUGIN_NAME).readers
+                if (readers == null || readers.size < 1) {
+                    Timber.d("No readers found in OMAPI Keyple Plugin")
+                    Timber.d("Retrying in 1 second")
+                    delay(1000)
+                } else {
+                    Timber.d("Readers Found")
+                    break
+                }
+            }catch (e: KeyplePluginNotFoundException){
+                Timber.d("Plugin inition and registering not done yet")
                 Timber.d("Retrying in 1 second")
                 delay(1000)
-            } else {
-                Timber.d("Readers Found")
-                break
             }
         }
 

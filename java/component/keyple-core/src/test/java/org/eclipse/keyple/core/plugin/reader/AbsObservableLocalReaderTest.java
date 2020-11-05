@@ -302,6 +302,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
   public static AbstractObservableLocalReader getSpy(String pluginName, String readerName) {
     AbstractObservableLocalReader r =
         Mockito.spy(new BlankObservableLocalReader(pluginName, readerName));
+    r.register();
     doReturn(CardResponseTest.getACardResponse())
         .when(r)
         .processCardRequest(any(CardRequest.class), any(ChannelControl.class));

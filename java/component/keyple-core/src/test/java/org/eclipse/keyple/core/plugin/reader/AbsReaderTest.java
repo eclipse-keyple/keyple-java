@@ -120,6 +120,7 @@ public class AbsReaderTest extends CoreBaseTest {
    */
   public static AbstractReader getSpy(String pluginName, String readerName) {
     AbstractReader r = Mockito.spy(new BlankAbstractReader(pluginName, readerName));
+    r.register();
     when(r.processCardRequest(any(CardRequest.class), any(ChannelControl.class)))
         .thenReturn(CardResponseTest.getACardResponse());
     when(r.processCardRequests(

@@ -26,6 +26,7 @@ import org.eclipse.keyple.plugin.remotese.CoreBaseTest;
 import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -34,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RunWith(Parameterized.class)
+@Ignore
 public class RemoteSePluginImplTest extends CoreBaseTest {
 
   private static final Logger logger = LoggerFactory.getLogger(RemoteSePluginImplTest.class);

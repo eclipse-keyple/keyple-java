@@ -22,11 +22,13 @@ import org.eclipse.keyple.plugin.stub.StubSecureElement;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Test RemoteSePoolPluginTest */
+@Ignore
 public class RemoteSePoolPluginTest {
 
   private static final Logger logger = LoggerFactory.getLogger(RemoteSePoolPluginTest.class);

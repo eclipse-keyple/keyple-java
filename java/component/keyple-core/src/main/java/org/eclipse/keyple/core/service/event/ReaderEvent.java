@@ -50,7 +50,10 @@ public final class ReaderEvent {
     CARD_MATCHED,
 
     /** The card has been removed and is no longer able to communicate with the reader */
-    CARD_REMOVED
+    CARD_REMOVED,
+
+    /** The reader has been unregistered */
+    UNREGISTERED
   }
 
   /** The type of event */

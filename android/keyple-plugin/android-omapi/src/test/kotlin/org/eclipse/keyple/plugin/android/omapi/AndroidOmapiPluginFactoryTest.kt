@@ -45,16 +45,28 @@ class AndroidOmapiPluginFactoryTest {
 
     @Test
     fun getPluginName() {
-        androidOmapiPluginFactory = AndroidOmapiPluginFactory(context)
+        every { context.bindService(any(), any(), any()) } returns false
+        val packageInfo = mockk<PackageInfo>()
+        every {
+            context.packageManager.getPackageInfo(AndroidOmapiPluginFactory.SIMALLIANCE_OMAPI_PACKAGE_NAME, any())
+        } returns packageInfo
+
+        androidOmapiPluginFactory = AndroidOmapiPluginFactory(context) {}
         Assert.assertEquals(PLUGIN_NAME, androidOmapiPluginFactory.pluginName)
     }
     @Test
     fun getPluginInstanceForOSSup28() {
-        androidOmapiPluginFactory = AndroidOmapiPluginFactory(context, 28)
+        every { context.bindService(any(), any(), any()) } returns false
+        val packageInfo = mockk<PackageInfo>()
+        every {
+            context.packageManager.getPackageInfo(AndroidOmapiPluginFactory.SIMALLIANCE_OMAPI_PACKAGE_NAME, any())
+        } returns packageInfo
+
+        androidOmapiPluginFactory = AndroidOmapiPluginFactory(context, 28) {}
         var plugin = androidOmapiPluginFactory.getPlugin()
         Assert.assertTrue(plugin is org.eclipse.keyple.plugin.android.omapi.se.AndroidOmapiPlugin)
 
-        androidOmapiPluginFactory = AndroidOmapiPluginFactory(context, 29)
+        androidOmapiPluginFactory = AndroidOmapiPluginFactory(context, 29) {}
         plugin = androidOmapiPluginFactory.getPlugin()
         Assert.assertTrue(plugin is org.eclipse.keyple.plugin.android.omapi.se.AndroidOmapiPlugin)
     }
@@ -66,7 +78,7 @@ class AndroidOmapiPluginFactoryTest {
         every {
             context.packageManager.getPackageInfo(AndroidOmapiPluginFactory.SIMALLIANCE_OMAPI_PACKAGE_NAME, any())
         } returns packageInfo
-        androidOmapiPluginFactory = AndroidOmapiPluginFactory(context, 27)
+        androidOmapiPluginFactory = AndroidOmapiPluginFactory(context, 27, {})
         val plugin = androidOmapiPluginFactory.pluginInstance()
         Assert.assertTrue(plugin is org.eclipse.keyple.plugin.android.omapi.simalliance.AndroidOmapiPlugin)
     }
@@ -77,7 +89,7 @@ class AndroidOmapiPluginFactoryTest {
         every {
             context.packageManager.getPackageInfo(AndroidOmapiPluginFactory.SIMALLIANCE_OMAPI_PACKAGE_NAME, any())
         } throws PackageManager.NameNotFoundException()
-        androidOmapiPluginFactory = AndroidOmapiPluginFactory(context, 27)
+        androidOmapiPluginFactory = AndroidOmapiPluginFactory(context, 27, {})
         val plugin = androidOmapiPluginFactory.pluginInstance()
         Assert.assertNull(plugin)
     }

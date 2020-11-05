@@ -57,6 +57,7 @@ public class AbstractPluginTest extends CoreBaseTest {
   @Test
   public void addRemoveReadersMultiThreaded() throws Exception {
     Plugin plugin = new BlankAbstractPlugin("addRemoveReadersMultiThreaded");
+    plugin.register();
     Map<String, Reader> readers = plugin.getReaders();
     final CountDownLatch lock = new CountDownLatch(10);
 

@@ -64,6 +64,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
 
     @After
     fun tearDown() {
+        reader.unregister()
         unmockkAll()
     }
     /*

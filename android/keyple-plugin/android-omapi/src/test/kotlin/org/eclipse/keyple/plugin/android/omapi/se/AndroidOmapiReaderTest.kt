@@ -29,6 +29,7 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
 
     override fun buildOmapiReaderImpl(nativeReader: Reader): AndroidOmapiReader {
         var androidOmapiReader = AndroidOmapiReader(nativeReader, PLUGIN_NAME, nativeReader.name)
+        androidOmapiReader.register()
         androidOmapiReader.activateProtocol(AndroidOmapiSupportedProtocols.ISO_7816_3.name, ContactsCardCommonProtocols.ISO_7816_3.name)
         return androidOmapiReader
     }
