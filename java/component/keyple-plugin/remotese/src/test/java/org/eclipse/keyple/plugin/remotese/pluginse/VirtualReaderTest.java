@@ -17,6 +17,7 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import org.eclipse.keyple.core.card.message.CardRequest;
 import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionRequest;
 import org.eclipse.keyple.core.card.message.ChannelControl;
 import org.eclipse.keyple.core.card.message.ProxyReader;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
@@ -103,7 +104,7 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
             false,
             new HashMap<String, String>());
 
-    reader.transmitCardRequests(
+    reader.transmitCardSelectionRequests(
         StubReaderTest.getRequestIsoDepSetSample(),
         MultiSelectionProcessing.FIRST_MATCH,
         ChannelControl.KEEP_OPEN);
@@ -119,17 +120,21 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
   // TODO Mock does not work, see this#connectMockReader()
   // execute at hand and check logs
   public void transmitCardRequests_withParameters() throws Exception {
-    List<CardRequest> cardRequests = SampleFactory.getACardRequestList();
+    List<CardSelectionRequest> cardSelectionRequests = SampleFactory.getACardRequestList();
 
     // test transmitCardRequests with Parameters
     ((ProxyReader) virtualReader)
-        .transmitCardRequests(
-            cardRequests, MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
+        .transmitCardSelectionRequests(
+            cardSelectionRequests,
+            MultiSelectionProcessing.PROCESS_ALL,
+            ChannelControl.CLOSE_AFTER);
 
     // condition -> the nativeReader execute the method executed on the virtual reader
     verify(nativeReader, times(1))
-        .transmitCardRequests(
-            cardRequests, MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
+        .transmitCardSelectionRequests(
+            cardSelectionRequests,
+            MultiSelectionProcessing.PROCESS_ALL,
+            ChannelControl.CLOSE_AFTER);
   }
 
   @Test
@@ -137,17 +142,17 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
   // TODO Mock does not work, see this#connectMockReader()
   // execute at hand and check logs
   public void transmitCardRequests_withNoParameters() throws Exception {
-    List<CardRequest> cardRequests = SampleFactory.getACardRequestList();
+    List<CardSelectionRequest> cardSelectionRequests = SampleFactory.getACardRequestList();
 
     // test transmitCardRequest without parameter
     ((ProxyReader) virtualReader)
-        .transmitCardRequests(
-            cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+        .transmitCardSelectionRequests(
+            cardSelectionRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
     // condition -> the nativeReader execute the method executed on the virtual reader
     verify(nativeReader, times(1))
-        .transmitCardRequests(
-            cardRequests,
+        .transmitCardSelectionRequests(
+            cardSelectionRequests,
             MultiSelectionProcessing.FIRST_MATCH,
             ChannelControl.KEEP_OPEN); // default value
     // when no param is
@@ -199,8 +204,8 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
     doReturn(true).when(mockReader).isContactless();
     doReturn(new ArrayList<CardResponse>())
         .when(mockReader)
-        .transmitCardRequests(
-            ArgumentMatchers.<CardRequest>anyList(),
+        .transmitCardSelectionRequests(
+            ArgumentMatchers.<CardSelectionRequest>anyList(),
             any(MultiSelectionProcessing.class),
             any(ChannelControl.class));
 

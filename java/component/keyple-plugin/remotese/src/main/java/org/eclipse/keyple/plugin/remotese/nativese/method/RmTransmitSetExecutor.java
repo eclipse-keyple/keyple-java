@@ -15,8 +15,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.keyple.core.card.message.CardRequest;
 import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionRequest;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.card.message.ChannelControl;
 import org.eclipse.keyple.core.card.message.ProxyReader;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
@@ -55,7 +56,7 @@ public class RmTransmitSetExecutor implements IRemoteMethodExecutor {
   public TransportDto execute(TransportDto transportDto) {
     KeypleDto keypleDto = transportDto.getKeypleDTO();
     TransportDto out = null;
-    List<CardResponse> cardResponse = null;
+    List<CardSelectionResponse> cardSelectionResponses = null;
     MultiSelectionProcessing multiSelectionProcessing;
     ChannelControl channelControl;
 
@@ -68,17 +69,17 @@ public class RmTransmitSetExecutor implements IRemoteMethodExecutor {
 
     channelControl = ChannelControl.valueOf(bodyJsonO.get("channelControl").getAsString());
 
-    List<CardRequest> cardRequests =
+    List<CardSelectionRequest> cardSelectionRequests =
         JsonParser.getGson()
             .fromJson(
                 bodyJsonO.get("cardRequests").getAsString(),
-                new TypeToken<ArrayList<CardRequest>>() {}.getType());
+                new TypeToken<ArrayList<CardSelectionRequest>>() {}.getType());
 
     // prepare transmitSet on nativeReader
     String nativeReaderName = keypleDto.getNativeReaderName();
     logger.trace(
         "Execute locally cardRequests : {} with params {} {}",
-        cardRequests,
+        cardSelectionRequests,
         channelControl,
         multiSelectionProcessing);
 
@@ -87,13 +88,15 @@ public class RmTransmitSetExecutor implements IRemoteMethodExecutor {
       ProxyReader reader = (ProxyReader) slaveAPI.findLocalReader(nativeReaderName);
 
       // execute transmitSet
-      cardResponse =
-          reader.transmitCardRequests(cardRequests, multiSelectionProcessing, channelControl);
+      cardSelectionResponses =
+          reader.transmitCardSelectionRequests(
+              cardSelectionRequests, multiSelectionProcessing, channelControl);
 
       // prepare response
       String parseBody =
           JsonParser.getGson()
-              .toJson(cardResponse, new TypeToken<ArrayList<CardResponse>>() {}.getType());
+              .toJson(
+                  cardSelectionResponses, new TypeToken<ArrayList<CardResponse>>() {}.getType());
       out =
           transportDto.nextTransportDTO(
               KeypleDtoHelper.buildResponse(

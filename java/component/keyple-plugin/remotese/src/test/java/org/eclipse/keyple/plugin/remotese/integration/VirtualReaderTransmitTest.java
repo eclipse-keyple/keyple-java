@@ -13,6 +13,7 @@ package org.eclipse.keyple.plugin.remotese.integration;
 
 import java.util.List;
 import org.eclipse.keyple.core.card.message.CardRequest;
+import org.eclipse.keyple.core.card.message.CardSelectionRequest;
 import org.eclipse.keyple.core.card.message.ChannelControl;
 import org.eclipse.keyple.core.card.message.ProxyReader;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
@@ -72,7 +73,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
       StubReaderTest.genericSelectSe(virtualReader);
 
       ((ProxyReader) virtualReader)
-          .transmitCardRequests(
+          .transmitCardSelectionRequests(
               SampleFactory.getACardRequestList(),
               MultiSelectionProcessing.FIRST_MATCH,
               ChannelControl.KEEP_OPEN);
@@ -161,14 +162,14 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
     Thread.sleep(500);
 
     // init Request
-    List<CardRequest> requests = StubReaderTest.getNoResponseRequest();
+    List<CardSelectionRequest> cardSelectionRequests = StubReaderTest.getNoResponseRequest();
 
     StubReaderTest.genericSelectSe(virtualReader);
 
     // test
     ((ProxyReader) virtualReader)
-        .transmitCardRequests(
-            requests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+        .transmitCardSelectionRequests(
+            cardSelectionRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
   }
 
   @Test
@@ -181,14 +182,16 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
     Thread.sleep(500);
 
     // init Request
-    List<CardRequest> cardRequests = StubReaderTest.getPartialRequestList(0);
+    List<CardSelectionRequest> cardSelectionRequests = StubReaderTest.getPartialRequestList(0);
 
     try {
       StubReaderTest.genericSelectSe(virtualReader);
 
       ((ProxyReader) virtualReader)
-          .transmitCardRequests(
-              cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+          .transmitCardSelectionRequests(
+              cardSelectionRequests,
+              MultiSelectionProcessing.FIRST_MATCH,
+              ChannelControl.KEEP_OPEN);
 
     } catch (KeypleReaderIOException ex) {
       logger.info(
@@ -197,7 +200,8 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
           ex.getCardResponse());
 
       Assert.assertEquals(ex.getCardSelectionResponses().size(), 1);
-      Assert.assertEquals(ex.getCardSelectionResponses().get(0).getApduResponses().size(), 2);
+      Assert.assertEquals(
+          ex.getCardSelectionResponses().get(0).getCardResponse().getApduResponses().size(), 2);
     }
   }
 
@@ -211,14 +215,16 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
     Thread.sleep(500);
 
     // init Request
-    List<CardRequest> cardRequests = StubReaderTest.getPartialRequestList(1);
+    List<CardSelectionRequest> cardSelectionRequests = StubReaderTest.getPartialRequestList(1);
 
     try {
       StubReaderTest.genericSelectSe(virtualReader);
 
       ((ProxyReader) virtualReader)
-          .transmitCardRequests(
-              cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+          .transmitCardSelectionRequests(
+              cardSelectionRequests,
+              MultiSelectionProcessing.FIRST_MATCH,
+              ChannelControl.KEEP_OPEN);
 
     } catch (KeypleReaderIOException ex) {
       logger.info(
@@ -226,9 +232,12 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
           ex.getCardSelectionResponses(),
           ex.getCardResponse());
       Assert.assertEquals(ex.getCardSelectionResponses().size(), 2);
-      Assert.assertEquals(ex.getCardSelectionResponses().get(0).getApduResponses().size(), 4);
-      Assert.assertEquals(ex.getCardSelectionResponses().get(1).getApduResponses().size(), 2);
-      Assert.assertEquals(ex.getCardSelectionResponses().get(1).getApduResponses().size(), 2);
+      Assert.assertEquals(
+          ex.getCardSelectionResponses().get(0).getCardResponse().getApduResponses().size(), 4);
+      Assert.assertEquals(
+          ex.getCardSelectionResponses().get(1).getCardResponse().getApduResponses().size(), 2);
+      Assert.assertEquals(
+          ex.getCardSelectionResponses().get(1).getCardResponse().getApduResponses().size(), 2);
     }
   }
 
@@ -242,15 +251,17 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
     Thread.sleep(500);
 
     // init Request
-    List<CardRequest> cardRequests = StubReaderTest.getPartialRequestList(2);
+    List<CardSelectionRequest> cardSelectionRequests = StubReaderTest.getPartialRequestList(2);
 
     // test
     try {
       StubReaderTest.genericSelectSe(virtualReader);
 
       ((ProxyReader) virtualReader)
-          .transmitCardRequests(
-              cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+          .transmitCardSelectionRequests(
+              cardSelectionRequests,
+              MultiSelectionProcessing.FIRST_MATCH,
+              ChannelControl.KEEP_OPEN);
 
     } catch (KeypleReaderIOException ex) {
       logger.info(
@@ -258,9 +269,12 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
           ex.getCardSelectionResponses(),
           ex.getCardResponse());
       Assert.assertEquals(ex.getCardSelectionResponses().size(), 3);
-      Assert.assertEquals(ex.getCardSelectionResponses().get(0).getApduResponses().size(), 4);
-      Assert.assertEquals(ex.getCardSelectionResponses().get(1).getApduResponses().size(), 4);
-      Assert.assertEquals(ex.getCardSelectionResponses().get(2).getApduResponses().size(), 2);
+      Assert.assertEquals(
+          ex.getCardSelectionResponses().get(0).getCardResponse().getApduResponses().size(), 4);
+      Assert.assertEquals(
+          ex.getCardSelectionResponses().get(1).getCardResponse().getApduResponses().size(), 4);
+      Assert.assertEquals(
+          ex.getCardSelectionResponses().get(2).getCardResponse().getApduResponses().size(), 2);
     }
   }
 
@@ -274,15 +288,17 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
     Thread.sleep(500);
 
     // init Request
-    List<CardRequest> cardRequests = StubReaderTest.getPartialRequestList(3);
+    List<CardSelectionRequest> cardSelectionRequests = StubReaderTest.getPartialRequestList(3);
 
     // test
     try {
       StubReaderTest.genericSelectSe(virtualReader);
 
       ((ProxyReader) virtualReader)
-          .transmitCardRequests(
-              cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+          .transmitCardSelectionRequests(
+              cardSelectionRequests,
+              MultiSelectionProcessing.FIRST_MATCH,
+              ChannelControl.KEEP_OPEN);
 
     } catch (KeypleReaderIOException ex) {
       logger.info(
@@ -290,9 +306,12 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
           ex.getCardSelectionResponses(),
           ex.getCardResponse());
       Assert.assertEquals(ex.getCardSelectionResponses().size(), 3);
-      Assert.assertEquals(ex.getCardSelectionResponses().get(0).getApduResponses().size(), 4);
-      Assert.assertEquals(ex.getCardSelectionResponses().get(1).getApduResponses().size(), 4);
-      Assert.assertEquals(ex.getCardSelectionResponses().get(2).getApduResponses().size(), 4);
+      Assert.assertEquals(
+          ex.getCardSelectionResponses().get(0).getCardResponse().getApduResponses().size(), 4);
+      Assert.assertEquals(
+          ex.getCardSelectionResponses().get(1).getCardResponse().getApduResponses().size(), 4);
+      Assert.assertEquals(
+          ex.getCardSelectionResponses().get(2).getCardResponse().getApduResponses().size(), 4);
     }
   }
 

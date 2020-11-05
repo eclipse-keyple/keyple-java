@@ -17,6 +17,8 @@ import org.eclipse.keyple.core.card.message.ApduRequest;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.card.message.CardRequest;
 import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionRequest;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.card.message.ChannelControl;
 import org.eclipse.keyple.core.card.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.card.message.SelectionStatus;
@@ -52,7 +54,7 @@ public class SampleFactory {
     return ObservableReader.NotificationMode.ALWAYS;
   }
 
-  public static List<CardRequest> getACardRequestList_ISO14443_4() {
+  public static List<CardSelectionRequest> getACardRequestList_ISO14443_4() {
     String poAid = "A000000291A000000191";
 
     List<ApduRequest> poApduRequests;
@@ -67,16 +69,16 @@ public class SampleFactory {
             .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
             .build();
 
-    CardRequest cardRequest = new CardRequest(cardSelector, poApduRequests);
+    CardRequest cardRequest = new CardRequest(poApduRequests);
 
-    List<CardRequest> cardRequests = new ArrayList<CardRequest>();
+    List<CardSelectionRequest> cardRequests = new ArrayList<CardSelectionRequest>();
 
-    cardRequests.add(cardRequest);
+    cardRequests.add(new CardSelectionRequest(cardSelector, cardRequest));
 
     return cardRequests;
   }
 
-  public static List<CardRequest> getACardRequestList() {
+  public static List<CardSelectionRequest> getACardRequestList() {
     String poAid = "A000000291A000000191";
 
     List<ApduRequest> poApduRequests;
@@ -84,11 +86,17 @@ public class SampleFactory {
 
     CardRequest cardRequest = new CardRequest(poApduRequests);
 
-    List<CardRequest> cardRequests = new ArrayList<CardRequest>();
+    List<CardSelectionRequest> cardSelectionRequests = new ArrayList<CardSelectionRequest>();
 
-    cardRequests.add(cardRequest);
+    CardSelector cardSelector =
+        CardSelector.builder()
+            .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+            .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
+            .build();
 
-    return cardRequests;
+    cardSelectionRequests.add(new CardSelectionRequest(cardSelector, cardRequest));
+
+    return cardSelectionRequests;
   }
 
   public static CardRequest getACardRequest_ISO14443_4() {
@@ -97,16 +105,7 @@ public class SampleFactory {
     List<ApduRequest> poApduRequests;
     poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
-    CardSelector.AidSelector aidSelector =
-        CardSelector.AidSelector.builder().aidToSelect(poAid).build();
-
-    CardSelector cardSelector =
-        CardSelector.builder()
-            .aidSelector(aidSelector)
-            .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-            .build();
-
-    CardRequest cardRequest = new CardRequest(cardSelector, poApduRequests);
+    CardRequest cardRequest = new CardRequest(poApduRequests);
     return cardRequest;
   }
 
@@ -120,7 +119,7 @@ public class SampleFactory {
     return cardRequest;
   }
 
-  public static List<CardRequest> getCompleteRequestList() {
+  public static List<CardSelectionRequest> getCompleteRequestList() {
     String poAid = "A000000291A000000191";
 
     List<ApduRequest> poApduRequests;
@@ -144,19 +143,19 @@ public class SampleFactory {
             .cardProtocol(ContactsCardCommonProtocols.ISO_7816_3.name())
             .build();
 
-    CardRequest cardRequest = new CardRequest(aidCardSelector, poApduRequests);
+    CardRequest cardRequest = new CardRequest(poApduRequests);
 
-    CardRequest cardRequest2 = new CardRequest(cardAtrSelector, poApduRequests);
+    CardRequest cardRequest2 = new CardRequest(poApduRequests);
 
-    List<CardRequest> cardRequests = new ArrayList<CardRequest>();
-    cardRequests.add(cardRequest);
-    cardRequests.add(cardRequest2);
+    List<CardSelectionRequest> cardSelectionRequests = new ArrayList<CardSelectionRequest>();
+    cardSelectionRequests.add(new CardSelectionRequest(aidCardSelector, cardRequest));
+    cardSelectionRequests.add(new CardSelectionRequest(cardAtrSelector, cardRequest2));
 
-    return cardRequests;
+    return cardSelectionRequests;
   }
 
-  public static List<CardResponse> getCompleteResponseSet() {
-    List<CardResponse> cardResponse = new ArrayList<CardResponse>();
+  public static List<CardSelectionResponse> getCompleteResponseList() {
+    List<CardSelectionResponse> cardSelectionResponses = new ArrayList<CardSelectionResponse>();
 
     ApduResponse apdu = new ApduResponse(ByteArrayUtil.fromHex("9000"), new HashSet<Integer>());
     ApduResponse apdu2 = new ApduResponse(ByteArrayUtil.fromHex("9000"), new HashSet<Integer>());
@@ -165,11 +164,13 @@ public class SampleFactory {
     apduResponses.add(apdu);
     apduResponses.add(apdu2);
 
-    cardResponse.add(
-        new CardResponse(true, true, new SelectionStatus(null, apdu, true), apduResponses));
-    cardResponse.add(
-        new CardResponse(true, true, new SelectionStatus(null, apdu, true), apduResponses));
+    cardSelectionResponses.add(
+        new CardSelectionResponse(
+            new SelectionStatus(null, apdu, true), new CardResponse(true, apduResponses)));
+    cardSelectionResponses.add(
+        new CardSelectionResponse(
+            new SelectionStatus(null, apdu, true), new CardResponse(true, apduResponses)));
 
-    return cardResponse;
+    return cardSelectionResponses;
   }
 }

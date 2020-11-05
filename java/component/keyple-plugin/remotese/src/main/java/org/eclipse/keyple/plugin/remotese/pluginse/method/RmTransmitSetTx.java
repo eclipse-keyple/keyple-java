@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.core.card.message.CardRequest;
 import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionRequest;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.card.message.ChannelControl;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
@@ -30,11 +32,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Handle the Transmit keypleDTO serialization and deserialization */
-public class RmTransmitSetTx extends AbstractRemoteMethodTx<List<CardResponse>> {
+public class RmTransmitSetTx extends AbstractRemoteMethodTx<List<CardSelectionResponse>> {
 
   private static final Logger logger = LoggerFactory.getLogger(RmTransmitSetTx.class);
 
-  private final List<CardRequest> cardRequests;
+  private final List<CardSelectionRequest> cardRequests;
   private final MultiSelectionProcessing multiSelectionProcessing;
   private final ChannelControl channelControl;
 
@@ -44,7 +46,7 @@ public class RmTransmitSetTx extends AbstractRemoteMethodTx<List<CardResponse>> 
   }
 
   public RmTransmitSetTx(
-      List<CardRequest> cardRequests,
+      List<CardSelectionRequest> cardSelectionRequests,
       MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl,
       String sessionId,
@@ -53,7 +55,7 @@ public class RmTransmitSetTx extends AbstractRemoteMethodTx<List<CardResponse>> 
       String requesterNodeId,
       String slaveNodeId) {
     super(sessionId, nativeReaderName, virtualReaderName, slaveNodeId, requesterNodeId);
-    this.cardRequests = cardRequests;
+    this.cardRequests = cardSelectionRequests;
     this.multiSelectionProcessing = multiSelectionProcessing;
     this.channelControl = channelControl;
   }
@@ -84,7 +86,7 @@ public class RmTransmitSetTx extends AbstractRemoteMethodTx<List<CardResponse>> 
   }
 
   @Override
-  public List<CardResponse> parseResponse(KeypleDto keypleDto) {
+  public List<CardSelectionResponse> parseResponse(KeypleDto keypleDto) {
 
     // logger.trace("KeypleDto : {}", keypleDto);
 

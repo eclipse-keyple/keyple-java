@@ -15,7 +15,7 @@ import static org.eclipse.keyple.plugin.stub.StubReaderTest.hoplinkSE;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.card.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.card.message.ProxyReader;
 import org.eclipse.keyple.core.card.selection.AbstractCardSelectionRequest;
@@ -204,14 +204,14 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
             Assert.assertEquals(ReaderEvent.EventType.CARD_MATCHED, event.getEventType());
             Assert.assertTrue(
                 ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                    .getSelectionCardResponses()
+                    .getCardSelectionResponses()
                     .get(0)
                     .getSelectionStatus()
                     .hasMatched());
 
             Assert.assertArrayEquals(
                 ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                    .getSelectionCardResponses()
+                    .getCardSelectionResponses()
                     .get(0)
                     .getSelectionStatus()
                     .getAtr()
@@ -238,7 +238,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
             Assert.assertArrayEquals(
                 ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                    .getSelectionCardResponses()
+                    .getCardSelectionResponses()
                     .get(0)
                     .getSelectionStatus()
                     .getFci()
@@ -365,7 +365,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
             // card has not match
             Assert.assertFalse(
                 ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                    .getSelectionCardResponses()
+                    .getCardSelectionResponses()
                     .get(0)
                     .getSelectionStatus()
                     .hasMatched());
@@ -532,13 +532,13 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     }
 
     @Override
-    protected AbstractSmartCard parse(CardResponse cardResponse) {
+    protected AbstractSmartCard parse(CardSelectionResponse cardSelectionResponse) {
       class GenericSmartCard extends AbstractSmartCard {
-        public GenericSmartCard(CardResponse cardSelectionResponse) {
+        public GenericSmartCard(CardSelectionResponse cardSelectionResponse) {
           super(cardSelectionResponse);
         }
       }
-      return new GenericSmartCard(cardResponse);
+      return new GenericSmartCard(cardSelectionResponse);
     }
   }
 }

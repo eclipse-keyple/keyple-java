@@ -78,7 +78,7 @@ public class RmSetDefaultSelectionRequestExecutor implements IRemoteMethodExecut
         "Execute locally SetDefaultSelectionRequest : {} - {} - {}",
         notificationMode,
         hasPollingMode ? pollingMode : KeypleDtoHelper.notSpecified(),
-        defaultSelectionsRequest.getSelectionCardRequests());
+        defaultSelectionsRequest.getCardSelectionRequests());
 
     try {
       // find native reader by name
