@@ -250,7 +250,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
    */
   @Override
   public final boolean isCardPresent() {
-    if (!isRegistered) throw new IllegalStateException("This reader is no longer registered");
+    checkStatus();
     if (checkCardPresence()) {
       return true;
     } else {

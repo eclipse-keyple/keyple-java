@@ -66,8 +66,7 @@ public final class SmartCardService {
 
     synchronized (MONITOR) {
       final String pluginName = pluginFactory.getPluginName();
-      if (this.plugins.containsKey(
-          pluginName)) { // Should we also check status of the plugin within the map?
+      if (this.plugins.containsKey(pluginName)) {
         logger.warn("Plugin has already been registered to the platform : {}", pluginName);
         return this.plugins.get(pluginName);
       } else {

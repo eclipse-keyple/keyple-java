@@ -101,7 +101,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    */
   @Override
   public boolean isCardPresent() {
-    if (!isRegistered) throw new IllegalStateException("This reader is no longer registered");
+    checkStatus();
     return checkCardPresence();
   }
 
@@ -821,7 +821,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    */
   @Override
   public final void activateProtocol(String readerProtocolName, String applicationProtocolName) {
-    if (!isRegistered) throw new IllegalStateException("This reader is no longer registered");
+    checkStatus();
     Assert.getInstance()
         .notEmpty(readerProtocolName, "readerProtocolName")
         .notEmpty(applicationProtocolName, "applicationProtocolName");
@@ -847,7 +847,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * @since 1.0
    */
   public final void deactivateProtocol(String readerProtocolName) {
-    if (!isRegistered) throw new IllegalStateException("This reader is no longer registered");
+    checkStatus();
     Assert.getInstance().notEmpty(readerProtocolName, "readerProtocolName");
 
     protocolAssociations.remove(readerProtocolName);

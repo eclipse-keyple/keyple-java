@@ -52,7 +52,7 @@ public final class ReaderEvent {
     /** The card has been removed and is no longer able to communicate with the reader */
     CARD_REMOVED,
 
-    /** The SE has been unregistered */
+    /** The reader has been unregistered */
     UNREGISTERED
   }
 

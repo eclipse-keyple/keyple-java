@@ -26,7 +26,7 @@ import org.eclipse.keyple.core.service.exception.KeyplePluginInstantiationExcept
 class AndroidOmapiPluginFactory(private val context: Context, callback: (AndroidOmapiPluginFactory) -> Unit) : PluginFactory {
 
     private var sdkVersion: Int = Build.VERSION.SDK_INT
-    private lateinit var readerPlugin: AbstractAndroidOmapiPlugin<*, *>
+    private var readerPlugin: AbstractAndroidOmapiPlugin<*, *>
 
     companion object {
         const val SIMALLIANCE_OMAPI_PACKAGE_NAME = "org.simalliance.openmobileapi.service"

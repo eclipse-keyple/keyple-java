@@ -56,9 +56,6 @@ public abstract class AbstractPlugin implements Plugin {
   /**
    * Returns the current readers name instance map.
    *
-   * <p>The map is initialized in the constructor and may be updated in background in the case of a
-   * threaded plugin {@link AbstractThreadedObservablePlugin}
-   *
    * @return the current readers map, can be an empty
    * @throws IllegalStateException is thrown when plugin is not (or no longer) registered.
    */

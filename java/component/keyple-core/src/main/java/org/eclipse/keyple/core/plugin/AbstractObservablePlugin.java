@@ -153,10 +153,7 @@ public abstract class AbstractObservablePlugin extends AbstractPlugin
   public void unregister() {
     super.unregister();
     notifyObservers(
-        new PluginEvent(
-            this.getName(),
-            readers.keySet(),
-            PluginEvent.EventType.UNREGISTERED)); // Why do we need to pass readers name?
+        new PluginEvent(this.getName(), readers.keySet(), PluginEvent.EventType.UNREGISTERED));
     clearObservers();
   }
 }
