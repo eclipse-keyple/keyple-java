@@ -193,7 +193,7 @@ pipeline {
                     sh 'cp ./java/component/keyple-calypso/build/libs/keyple-java-calypso*.jar ./repository/java'
                     sh 'cp ./java/component/keyple-core/build/libs/keyple-java-core*.jar ./repository/java'
                     sh 'cp ./java/component/keyple-plugin/pcsc/build/libs/keyple-java-plugin*.jar ./repository/java'
-                    sh 'cp ./java/component/keyple-plugin/remotese/build/libs/keyple-java-plugin*.jar ./repository/java'
+//                    sh 'cp ./java/component/keyple-plugin/remotese/build/libs/keyple-java-plugin*.jar ./repository/java'
                     sh 'cp ./java/component/keyple-plugin/stub/build/libs/keyple-java-plugin*.jar ./repository/java'
                     sh 'cp ./java/example/calypso/android/nfc/build/outputs/apk/debug/*.apk ./repository/android'
                     sh 'cp ./java/example/calypso/android/omapi/build/outputs/apk/debug/*.apk ./repository/android'
