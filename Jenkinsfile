@@ -156,7 +156,7 @@ pipeline {
                         sh './gradlew :java:component:keyple-core:uploadArchives ${uploadParams}'
                         sh './gradlew :java:component:keyple-calypso:uploadArchives ${uploadParams}'
                         sh './gradlew :java:component:keyple-plugin:keyple-plugin-pcsc:uploadArchives ${uploadParams}'
-                        sh './gradlew :java:component:keyple-plugin:keyple-plugin-remotese:uploadArchives ${uploadParams}'
+//                        sh './gradlew :java:component:keyple-plugin:keyple-plugin-remotese:uploadArchives ${uploadParams}'
                         sh './gradlew :java:component:keyple-plugin:keyple-plugin-stub:uploadArchives ${uploadParams}'
                         sh './gradlew --stop'
                     }
