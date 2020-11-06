@@ -12,15 +12,15 @@
 package org.eclipse.keyple.example.generic.pc.Demo_ObservableReaderNotification;
 
 import java.util.Collection;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.event.PluginEvent;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.ObservablePlugin;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.PluginEvent;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
+import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,8 +42,8 @@ public class ObservableReaderNotificationEngine {
      * We add an observer to each plugin (only one in this example) the readers observers will
      * be added dynamically upon plugin notification (see SpecificPluginObserver.update)
      */
-    Collection<ReaderPlugin> readerPlugins = SeProxyService.getInstance().getPlugins().values();
-    for (ReaderPlugin plugin : readerPlugins) {
+    Collection<Plugin> plugins = SmartCardService.getInstance().getPlugins().values();
+    for (Plugin plugin : plugins) {
 
       if (plugin instanceof ObservablePlugin) {
         logger.info("Add observer PLUGINNAME = {}", plugin.getName());
@@ -54,7 +54,7 @@ public class ObservableReaderNotificationEngine {
     }
   }
 
-  /** This method is called whenever a Reader event occurs (SE insertion/removal) */
+  /** This method is called whenever a Reader event occurs (card insertion/removal) */
   public class SpecificReaderObserver implements ObservableReader.ReaderObserver {
 
     SpecificReaderObserver() {
@@ -63,13 +63,13 @@ public class ObservableReaderNotificationEngine {
 
     public void update(ReaderEvent event) {
       switch (event.getEventType()) {
-        case SE_MATCHED:
+        case CARD_MATCHED:
           /*
-           * Informs the underlying layer of the end of the SE processing, in order to
+           * Informs the underlying layer of the end of the card processing, in order to
            * manage the removal sequence.
            */
           try {
-            ((ObservableReader) (event.getReader())).finalizeSeProcessing();
+            ((ObservableReader) (event.getReader())).finalizeCardProcessing();
           } catch (KeypleReaderNotFoundException e) {
             e.printStackTrace();
           } catch (KeyplePluginNotFoundException e) {
@@ -77,9 +77,9 @@ public class ObservableReaderNotificationEngine {
           }
           break;
 
-        case SE_INSERTED:
+        case CARD_INSERTED:
           /*
-           * end of the SE processing is automatically done
+           * end of the card processing is automatically done
            */
           break;
       }
@@ -105,7 +105,7 @@ public class ObservableReaderNotificationEngine {
     @Override
     public void update(PluginEvent event) {
       for (String readerName : event.getReaderNames()) {
-        SeReader reader = null;
+        Reader reader = null;
         logger.info(
             "PluginEvent: PLUGINNAME = {}, READERNAME = {}, EVENTTYPE = {}",
             event.getPluginName(),
@@ -115,7 +115,7 @@ public class ObservableReaderNotificationEngine {
         /* We retrieve the reader object from its name. */
         try {
           reader =
-              SeProxyService.getInstance().getPlugin(event.getPluginName()).getReader(readerName);
+              SmartCardService.getInstance().getPlugin(event.getPluginName()).getReader(readerName);
         } catch (KeyplePluginNotFoundException e) {
           e.printStackTrace();
         } catch (KeypleReaderNotFoundException e) {
@@ -135,7 +135,7 @@ public class ObservableReaderNotificationEngine {
                 logger.info("Add observer READERNAME = {}", reader.getName());
                 ((ObservableReader) reader).addObserver(readerObserver);
                 ((ObservableReader) reader)
-                    .startSeDetection(ObservableReader.PollingMode.REPEATING);
+                    .startCardDetection(ObservableReader.PollingMode.REPEATING);
               } else {
                 logger.info("No observer to add READERNAME = {}", reader.getName());
               }

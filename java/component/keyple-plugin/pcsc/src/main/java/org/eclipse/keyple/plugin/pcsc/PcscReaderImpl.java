@@ -14,26 +14,26 @@ package org.eclipse.keyple.plugin.pcsc;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 import javax.smartcardio.*;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotSupportedException;
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableLocalReader;
-import org.eclipse.keyple.core.seproxy.plugin.reader.ObservableReaderStateService;
-import org.eclipse.keyple.core.seproxy.plugin.reader.SmartInsertionReader;
-import org.eclipse.keyple.core.seproxy.plugin.reader.SmartRemovalReader;
+import org.eclipse.keyple.core.plugin.reader.AbstractObservableLocalReader;
+import org.eclipse.keyple.core.plugin.reader.ObservableReaderStateService;
+import org.eclipse.keyple.core.plugin.reader.SmartInsertionReader;
+import org.eclipse.keyple.core.plugin.reader.SmartRemovalReader;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderProtocolNotSupportedException;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Package private class implementing the {@link org.eclipse.keyple.core.seproxy.SeReader} interface
- * for PC/SC based readers.
+ * Package private class implementing the {@link Reader} interface for PC/SC based readers.
  *
  * <p>A PC/SC reader is observable ({@link AbstractObservableLocalReader}), autonomous to detect the
- * insertion of secure elements ({@link SmartInsertionReader}, able to detect the removal of a
- * secure element prior an attempt to communicate with it ({@link SmartRemovalReader} and has
- * specific settings ({@link PcscReader}.
+ * insertion of cards ({@link SmartInsertionReader}, able to detect the removal of a card prior an
+ * attempt to communicate with it ({@link SmartRemovalReader} and has specific settings ({@link
+ * PcscReader}.
  *
  * @since 0.9
  */
@@ -58,8 +58,8 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   private static final long INSERT_LATENCY = 500;
   private static final long REMOVAL_LATENCY = 500;
 
-  private final AtomicBoolean loopWaitSe = new AtomicBoolean();
-  private final AtomicBoolean loopWaitSeRemoval = new AtomicBoolean();
+  private final AtomicBoolean loopWaitCard = new AtomicBoolean();
+  private final AtomicBoolean loopWaitCardRemoval = new AtomicBoolean();
 
   private final boolean usePingPresence;
 
@@ -103,16 +103,16 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     if (!usePingPresence) {
       observableReaderStateService =
           ObservableReaderStateService.builder(this)
-              .waitForSeInsertionWithSmartDetection()
-              .waitForSeProcessingWithSmartDetection()
-              .waitForSeRemovalWithSmartDetection()
+              .waitForCardInsertionWithSmartDetection()
+              .waitForCardProcessingWithSmartDetection()
+              .waitForCardRemovalWithSmartDetection()
               .build();
     } else {
       observableReaderStateService =
           ObservableReaderStateService.builder(this)
-              .waitForSeInsertionWithPollingDetection()
-              .waitForSeProcessingWithSmartDetection()
-              .waitForSeRemovalWithSmartDetection()
+              .waitForCardInsertionWithPollingDetection()
+              .waitForCardProcessingWithSmartDetection()
+              .waitForCardRemovalWithSmartDetection()
               .build();
     }
 
@@ -148,11 +148,11 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    * @since 0.9
    */
   @Override
-  protected boolean checkSePresence() {
+  protected boolean checkCardPresence() {
     try {
       return terminal.isCardPresent();
     } catch (CardException e) {
-      throw new KeypleReaderIOException("Exception occurred in isSePresent", e);
+      throw new KeypleReaderIOException("Exception occurred in isCardPresent", e);
     }
   }
 
@@ -169,10 +169,10 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         "[{}] waitForCardPresent => loop with latency of {} ms.", this.getName(), INSERT_LATENCY);
 
     // activate loop
-    loopWaitSe.set(true);
+    loopWaitCard.set(true);
 
     try {
-      while (loopWaitSe.get()) {
+      while (loopWaitCard.get()) {
         if (logger.isTraceEnabled()) {
           logger.trace("[{}] waitForCardPresent => looping", this.getName());
         }
@@ -211,7 +211,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    */
   @Override
   public void stopWaitForCard() {
-    loopWaitSe.set(false);
+    loopWaitCard.set(false);
   }
 
   /**
@@ -228,10 +228,10 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         this.getName(),
         REMOVAL_LATENCY);
 
-    loopWaitSeRemoval.set(true);
+    loopWaitCardRemoval.set(true);
 
     try {
-      while (loopWaitSeRemoval.get()) {
+      while (loopWaitCardRemoval.get()) {
         if (logger.isTraceEnabled()) {
           logger.trace("[{}] waitForCardAbsentNative => looping", this.getName());
         }
@@ -269,7 +269,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    */
   @Override
   public void stopWaitForCardRemoval() {
-    loopWaitSeRemoval.set(false);
+    loopWaitCardRemoval.set(false);
   }
 
   /**
@@ -292,7 +292,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         throw new KeypleReaderIOException(this.getName() + ":" + e.getMessage());
       }
     } else {
-      // could occur if the SE was removed
+      // could occur if the card was removed
       throw new KeypleReaderIOException(this.getName() + ": null channel.");
     }
 
@@ -347,14 +347,14 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    * {@inheritDoc}
    *
    * <p>The standard interface of the PC/SC readers does not allow to know directly the type of
-   * protocol used by an SE.
+   * protocol used by a card.
    *
    * <p>This is especially true in contactless mode. Moreover, in this mode, the Answer To Reset
-   * (ATR) returned by the reader is not produced by the SE but reconstructed by the reader from low
-   * level internal data and with elements defined in the standard (see <b>Interoperability
+   * (ATR) returned by the reader is not produced by the card but reconstructed by the reader from
+   * low level internal data and with elements defined in the standard (see <b>Interoperability
    * Specification for ICCs and Personal Computer Systems</b>, Part 3).
    *
-   * <p>We therefore use ATR (real or reconstructed) to identify the SE protocol using regular
+   * <p>We therefore use ATR (real or reconstructed) to identify the card protocol using regular
    * expressions. These regular expressions are managed in {@link PcscProtocolSetting}.
    *
    * @return True if the provided protocol matches the current protocol, false if not.
@@ -379,7 +379,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     Assert.getInstance().notNull(sharingMode, "sharingMode");
 
     if (sharingMode == SharingMode.SHARED) {
-      // if an SE is present, change the mode immediately
+      // if a card is present, change the mode immediately
       if (card != null) {
         try {
           card.endExclusive();
@@ -444,7 +444,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    *
    * <p>This status may be wrong if the card has been removed.
    *
-   * <p>The caller should test the card presence with isSePresent before calling this method.
+   * <p>The caller should test the card presence with isCardPresent before calling this method.
    *
    * @return true if the physical channel is open
    * @since 0.9
@@ -462,22 +462,23 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    * <p>In this case be aware that on some platforms (ex. Windows 8+), the exclusivity is granted
    * for a limited time (ex. 5 seconds). After this delay, the card is automatically resetted.
    *
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @since 0.9
    */
   @Override
   protected void openPhysicalChannel() {
 
-    /* init of the physical SE channel: if not yet established, opening of a new physical channel */
+    /* init of the card physical channel: if not yet established, opening of a new physical channel */
     try {
       if (card == null) {
         this.card = this.terminal.connect(parameterCardProtocol);
         if (cardExclusiveMode) {
           card.beginExclusive();
-          logger.debug("[{}] Opening of a physical SE channel in exclusive mode.", this.getName());
+          logger.debug(
+              "[{}] Opening of a card physical channel in exclusive mode.", this.getName());
 
         } else {
-          logger.debug("[{}] Opening of a physical SE channel in shared mode.", this.getName());
+          logger.debug("[{}] Opening of a card physical channel in shared mode.", this.getName());
         }
       }
       this.channel = card.getBasicChannel();
@@ -487,7 +488,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   }
 
   /**
-   * Return the mode of transmission used to communicate with the SEs<br>
+   * Return the mode of transmission used to communicate with the cards<br>
    * The transmission mode can set explicitly with setParameter(SETTING_KEY_TRANSMISSION_MODE,
    * MODE). In this case, this parameter has priority.
    *
@@ -504,7 +505,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     if (isContactless == null) {
       /* First time initialisation, the transmission mode has not yet been determined or fixed explicitly, let's ask the plugin to determine it (only once) */
       isContactless =
-          ((PcscPluginImpl) SeProxyService.getInstance().getPlugin(getPluginName()))
+          ((PcscPluginImpl) SmartCardService.getInstance().getPlugin(getPluginName()))
               .isContactless(getName());
     }
     return isContactless;

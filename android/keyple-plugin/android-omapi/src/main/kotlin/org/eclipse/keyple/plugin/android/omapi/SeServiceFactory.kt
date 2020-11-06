@@ -12,7 +12,7 @@
 package org.eclipse.keyple.plugin.android.omapi
 
 /**
- * Se Service Factory provide a framework to implement the connection the SE using an OMAPI
+ * Se Service Factory provide a framework to implement the connection the card using an OMAPI
  * interface.
  */
 internal interface SeServiceFactory<T, V> {

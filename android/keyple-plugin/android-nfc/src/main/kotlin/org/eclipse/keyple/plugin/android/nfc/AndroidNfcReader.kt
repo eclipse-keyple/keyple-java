@@ -14,11 +14,11 @@ package org.eclipse.keyple.plugin.android.nfc
 import android.app.Activity
 import android.content.Intent
 import android.nfc.NfcAdapter
-import org.eclipse.keyple.core.seproxy.SeReader
-import org.eclipse.keyple.core.seproxy.plugin.reader.SmartRemovalReader
+import org.eclipse.keyple.core.plugin.reader.SmartRemovalReader
+import org.eclipse.keyple.core.service.Reader
 
 /**
- * [SeReader] to communicate with NFC Tag though
+ * [Reader] to communicate with NFC Tag though
  * Android [NfcAdapter]
  *
  * Configure NFCAdapter Protocols with [AndroidNfcReaderImpl.setParameter]

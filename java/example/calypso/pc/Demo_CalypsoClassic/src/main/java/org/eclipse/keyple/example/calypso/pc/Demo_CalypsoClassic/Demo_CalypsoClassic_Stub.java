@@ -12,13 +12,13 @@
 package org.eclipse.keyple.example.calypso.pc.Demo_CalypsoClassic;
 
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalArgumentException;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.exception.KeyplePluginInstantiationException;
+import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.common.calypso.stub.StubCalypsoClassic;
 import org.eclipse.keyple.example.common.calypso.stub.StubSamCalypsoClassic;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
@@ -43,14 +43,13 @@ public class Demo_CalypsoClassic_Stub {
   public static void main(String[] args) throws InterruptedException {
     final Logger logger = LoggerFactory.getLogger(Demo_CalypsoClassic_Stub.class);
 
-    /* Get the instance of the SeProxyService (Singleton pattern) */
-    SeProxyService seProxyService = SeProxyService.getInstance();
+    /* Get the instance of the SmartCardService (Singleton pattern) */
+    SmartCardService smartCardService = SmartCardService.getInstance();
 
     final String STUB_PLUGIN_NAME = "stub1";
 
     /* Register Stub plugin in the platform */
-    ReaderPlugin stubPlugin =
-        seProxyService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
+    Plugin stubPlugin = smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
 
     /* Setting up the transaction engine (implements Observer) */
     CalypsoClassicTransactionEngine transactionEngine = new CalypsoClassicTransactionEngine();
@@ -89,12 +88,12 @@ public class Demo_CalypsoClassic_Stub {
     /* Assign readers to the Hoplink transaction engine */
     transactionEngine.setReaders(poReader, samReader);
 
-    /* Create 'virtual' Hoplink and SAM SE */
-    StubSecureElement calypsoStubSe = new StubCalypsoClassic();
+    /* Create 'virtual' Hoplink and SAM card */
+    StubSecureElement calypsoStubCard = new StubCalypsoClassic();
     StubSecureElement samSE = new StubSamCalypsoClassic();
 
     /* Insert the SAM into the SAM reader */
-    logger.info("Insert stub SAM SE.");
+    logger.info("Insert stub SAM card.");
     samReader.insertSe(samSE);
 
     /* Set the default selection operation */
@@ -106,13 +105,13 @@ public class Demo_CalypsoClassic_Stub {
     /* Set the transactionEngine as Observer of the PO reader */
     poReader.addObserver(transactionEngine);
 
-    logger.info("Insert stub PO SE.");
-    poReader.insertSe(calypsoStubSe);
+    logger.info("Insert stub PO card.");
+    poReader.insertSe(calypsoStubCard);
 
     Thread.sleep(1000);
 
-    /* Remove SE */
-    logger.info("Remove stub SAM and PO SE.");
+    /* Remove card */
+    logger.info("Remove stub SAM and PO cards.");
 
     poReader.removeSe();
     samReader.removeSe();

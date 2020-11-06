@@ -14,10 +14,10 @@ package org.eclipse.keyple.example.common.generic.stub;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
 
-/** Simple contact stub SE (no command) */
+/** Simple contact card Stub (no command) */
 public class StubSe1 extends StubSecureElement {
 
-  static final String seProtocol = "PROTOCOL_ISO7816_3";
+  static final String cardProtocol = "PROTOCOL_ISO7816_3";
   final String ATR_HEX = "3B3F9600805A0080C120000012345678829000"; // serial number : 12345678
 
   public StubSe1() {}
@@ -28,7 +28,7 @@ public class StubSe1 extends StubSecureElement {
   }
 
   @Override
-  public String getSeProtocol() {
-    return seProtocol;
+  public String getCardProtocol() {
+    return cardProtocol;
   }
 }

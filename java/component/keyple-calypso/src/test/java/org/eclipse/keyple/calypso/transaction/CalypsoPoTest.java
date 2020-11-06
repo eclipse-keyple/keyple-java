@@ -19,10 +19,10 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
+import org.eclipse.keyple.core.card.message.AnswerToReset;
+import org.eclipse.keyple.core.card.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
+import org.eclipse.keyple.core.card.message.SelectionStatus;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -99,8 +99,8 @@ public class CalypsoPoTest {
       fci = new ApduResponse(ByteArrayUtil.fromHex(fciStr), null);
     }
 
-    SeResponse selectionData =
-        new SeResponse(true, false, new SelectionStatus(atr, fci, true), null);
+    CardSelectionResponse selectionData =
+        new CardSelectionResponse(new SelectionStatus(atr, fci, true), null);
     CalypsoPo calypsoPo = new CalypsoPo(selectionData);
     return calypsoPo;
   }
@@ -215,18 +215,18 @@ public class CalypsoPoTest {
   @Test(expected = IllegalStateException.class)
   public void testRev1_1() {
     AnswerToReset atr = new AnswerToReset(ByteArrayUtil.fromHex(ATR_VALUE_2));
-    ApduResponse fciData = new ApduResponse(null, null);
-    SeResponse selectionData =
-        new SeResponse(true, false, new SelectionStatus(atr, fciData, true), null);
+    ApduResponse fciData = new ApduResponse(ByteArrayUtil.fromHex("0000"), null);
+    CardSelectionResponse selectionData =
+        new CardSelectionResponse(new SelectionStatus(atr, fciData, true), null);
     CalypsoPo calypsoPo = new CalypsoPo(selectionData);
   }
 
   @Test
   public void testRev1_2() {
     AnswerToReset atr = new AnswerToReset(ByteArrayUtil.fromHex(ATR_VALUE));
-    ApduResponse fciData = new ApduResponse(null, null);
-    SeResponse selectionData =
-        new SeResponse(true, false, new SelectionStatus(atr, fciData, true), null);
+    ApduResponse fciData = new ApduResponse(ByteArrayUtil.fromHex("0000"), null);
+    CardSelectionResponse selectionData =
+        new CardSelectionResponse(new SelectionStatus(atr, fciData, true), null);
     CalypsoPo calypsoPo = new CalypsoPo(selectionData);
 
     assertThat(calypsoPo.getRevision()).isEqualTo(PoRevision.REV1_0);

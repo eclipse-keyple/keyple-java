@@ -11,26 +11,32 @@
  ************************************************************************************** */
 package org.eclipse.keyple.calypso.transaction;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
-import org.eclipse.keyple.core.selection.SeResource;
-import org.eclipse.keyple.core.seproxy.*;
-import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.event.PluginEvent;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.*;
+import org.eclipse.keyple.core.card.selection.CardResource;
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.ObservablePlugin;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.PluginEvent;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
+import org.eclipse.keyple.core.service.exception.KeypleException;
+import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Implementation of Sam Resource Manager working a {@link ReaderPlugin} (either Stub or Pcsc) It is
- * meant to work with a Keyple Pcsc Plugin or a Keyple Stub Plugin.
+ * Implementation of Sam Resource Manager working a {@link Plugin} (either Stub or Pcsc) It is meant
+ * to work with a Keyple Pcsc Plugin or a Keyple Stub Plugin.
  */
 public class SamResourceManagerDefault extends SamResourceManager {
   private static final Logger logger = LoggerFactory.getLogger(SamResourceManagerDefault.class);
@@ -39,7 +45,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
       new ConcurrentHashMap<String, ManagedSamResource>();
   final SamResourceManagerDefault.ReaderObserver readerObserver; // only used with observable
   // readers
-  protected final ReaderPlugin samReaderPlugin;
+  protected final Plugin samReaderPlugin;
   /* the maximum time (in milliseconds) during which the BLOCKING mode will wait */
   private final int maxBlockingTime;
   /*
@@ -50,7 +56,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
   /**
    * Protected constructor, use the {@link SamResourceManagerFactory}
    *
-   * @param readerPlugin the plugin through which SAM readers are accessible
+   * @param plugin the plugin through which SAM readers are accessible
    * @param samReaderFilter the regular expression defining how to identify SAM readers among
    *     others.
    * @param maxBlockingTime the maximum duration for which the allocateSamResource method will
@@ -59,7 +65,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
    * @throws KeypleReaderException thrown if an error occurs while getting the readers list.
    */
   protected SamResourceManagerDefault(
-      ReaderPlugin readerPlugin, String samReaderFilter, int maxBlockingTime, int sleepTime) {
+      Plugin plugin, String samReaderFilter, int maxBlockingTime, int sleepTime) {
     /*
      * Assign parameters
      */
@@ -71,7 +77,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
     }
     this.sleepTime = sleepTime;
     this.maxBlockingTime = maxBlockingTime;
-    this.samReaderPlugin = readerPlugin;
+    this.samReaderPlugin = plugin;
 
     readerObserver = new SamResourceManagerDefault.ReaderObserver();
     logger.info(
@@ -94,7 +100,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
         logger.trace("Reader not matching: {}", samReaderName);
       }
     }
-    if (readerPlugin instanceof ObservablePlugin) {
+    if (plugin instanceof ObservablePlugin) {
 
       // add an observer to monitor reader and SAM insertions
 
@@ -106,11 +112,11 @@ public class SamResourceManagerDefault extends SamResourceManager {
   }
 
   /**
-   * Remove a {@link SeResource} from the current {@code SeResourceCalypsoSam>} list
+   * Remove a {@link CardResource} from the current {@code CardResource CalypsoSam>} list
    *
    * @param samReader the SAM reader of the resource to remove from the list.
    */
-  protected void removeResource(SeReader samReader) {
+  protected void removeResource(Reader samReader) {
     ManagedSamResource managedSamResource = localManagedSamResources.get(samReader.getName());
     if (managedSamResource != null) {
       localManagedSamResources.remove(samReader.getName());
@@ -118,14 +124,14 @@ public class SamResourceManagerDefault extends SamResourceManager {
         logger.trace(
             "Freed SAM resource: READER = {}, SAM_REVISION = {}, SAM_SERIAL_NUMBER = {}",
             samReader.getName(),
-            managedSamResource.getMatchingSe().getSamRevision(),
-            ByteArrayUtil.toHex(managedSamResource.getMatchingSe().getSerialNumber()));
+            managedSamResource.getSmartCard().getSamRevision(),
+            ByteArrayUtil.toHex(managedSamResource.getSmartCard().getSerialNumber()));
       }
     }
   }
 
   @Override
-  public SeResource<CalypsoSam> allocateSamResource(
+  public CardResource<CalypsoSam> allocateSamResource(
       AllocationMode allocationMode, SamIdentifier samIdentifier) {
     long maxBlockingDate = System.currentTimeMillis() + maxBlockingTime;
     boolean noSamResourceLogged = false;
@@ -177,10 +183,10 @@ public class SamResourceManagerDefault extends SamResourceManager {
   }
 
   @Override
-  public void freeSamResource(SeResource<CalypsoSam> samResource) {
+  public void freeSamResource(CardResource<CalypsoSam> samResource) {
     synchronized (localManagedSamResources) {
       ManagedSamResource managedSamResource =
-          localManagedSamResources.get(samResource.getSeReader().getName());
+          localManagedSamResources.get(samResource.getReader().getName());
       if (managedSamResource != null) {
         logger.trace("Freeing local SAM resource.");
         managedSamResource.setSamResourceStatus(ManagedSamResource.SamResourceStatus.FREE);
@@ -216,7 +222,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
     @Override
     public void update(PluginEvent event) {
       for (String readerName : event.getReaderNames()) {
-        SeReader samReader = null;
+        Reader samReader = null;
         logger.info(
             "PluginEvent: PLUGINNAME = {}, READERNAME = {}, EVENTTYPE = {}",
             event.getPluginName(),
@@ -226,7 +232,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
         /* We retrieve the reader object from its name. */
         try {
           samReader =
-              SeProxyService.getInstance().getPlugin(event.getPluginName()).getReader(readerName);
+              SmartCardService.getInstance().getPlugin(event.getPluginName()).getReader(readerName);
         } catch (KeyplePluginNotFoundException e) {
           logger.error("Plugin not found {}", event.getPluginName());
           return;
@@ -279,7 +285,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
                 if (readerObserver != null) {
                   logger.trace("Remove observer and stop detection READERNAME = {}", readerName);
                   ((ObservableReader) samReader).removeObserver(readerObserver);
-                  ((ObservableReader) samReader).stopSeDetection();
+                  ((ObservableReader) samReader).stopCardDetection();
                 } else {
                   removeResource(samReader);
                   logger.trace(
@@ -309,14 +315,14 @@ public class SamResourceManagerDefault extends SamResourceManager {
     /**
      * Handle {@link ReaderEvent}
      *
-     * <p>Create {@link SeResource<CalypsoSam>}
+     * <p>Create {@link CardResource <CalypsoSam>}
      *
      * @param event the reader event
      */
     @Override
     public void update(ReaderEvent event) {
       // TODO revise exception management
-      SeReader samReader = null;
+      Reader samReader = null;
       try {
         samReader = samReaderPlugin.getReader(event.getReaderName());
       } catch (KeypleReaderNotFoundException e) {
@@ -324,8 +330,8 @@ public class SamResourceManagerDefault extends SamResourceManager {
       }
       synchronized (localManagedSamResources) {
         switch (event.getEventType()) {
-          case SE_MATCHED:
-          case SE_INSERTED:
+          case CARD_MATCHED:
+          case CARD_INSERTED:
             if (localManagedSamResources.containsKey(samReader.getName())) {
               logger.trace(
                   "Reader is already present in the local samResources -  READERNAME = {}",
@@ -343,7 +349,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
               newSamResource = createSamResource(samReader);
             } catch (CalypsoNoSamResourceAvailableException e) {
               logger.error(
-                  "Failed to create a SeResource<CalypsoSam> from {}", samReader.getName());
+                  "Failed to create a CardResource<CalypsoSam> from {}", samReader.getName());
             }
             /* failures are ignored */
             if (newSamResource != null) {
@@ -351,13 +357,13 @@ public class SamResourceManagerDefault extends SamResourceManager {
                 logger.trace(
                     "Created SAM resource: READER = {}, SAM_REVISION = {}, SAM_SERIAL_NUMBER = {}",
                     event.getReaderName(),
-                    newSamResource.getMatchingSe().getSamRevision(),
-                    ByteArrayUtil.toHex(newSamResource.getMatchingSe().getSerialNumber()));
+                    newSamResource.getSmartCard().getSamRevision(),
+                    ByteArrayUtil.toHex(newSamResource.getSmartCard().getSerialNumber()));
               }
               localManagedSamResources.put(samReader.getName(), newSamResource);
             }
             break;
-          case SE_REMOVED:
+          case CARD_REMOVED:
           case TIMEOUT_ERROR:
             removeResource(samReader);
             break;
@@ -366,13 +372,13 @@ public class SamResourceManagerDefault extends SamResourceManager {
     }
   }
 
-  private void initSamReader(SeReader samReader, ReaderObserver readerObserver) {
+  private void initSamReader(Reader samReader, ReaderObserver readerObserver) {
     /*
      * Specific to PCSC reader (no effect on Stub)
      */
 
     try {
-      if (samReader.isSePresent()) {
+      if (samReader.isCardPresent()) {
         logger.trace("Create SAM resource: {}", samReader.getName());
         synchronized (localManagedSamResources) {
           localManagedSamResources.put(samReader.getName(), createSamResource(samReader));
@@ -386,7 +392,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
     if (samReader instanceof ObservableReader && readerObserver != null) {
       logger.trace("Add observer and start detection READERNAME = {}", samReader.getName());
       ((ObservableReader) samReader).addObserver(readerObserver);
-      ((ObservableReader) samReader).startSeDetection(ObservableReader.PollingMode.REPEATING);
+      ((ObservableReader) samReader).startCardDetection(ObservableReader.PollingMode.REPEATING);
     } else {
       logger.trace("Sam Reader is not an ObservableReader = {}", samReader.getName());
     }
@@ -394,12 +400,12 @@ public class SamResourceManagerDefault extends SamResourceManager {
 
   /**
    * (package-private)<br>
-   * Inner class to handle specific attributes associated with an {@code SeResource<CalypsoSam>} in
-   * the {@link SamResourceManager} context.
+   * Inner class to handle specific attributes associated with an {@code CardResource<CalypsoSam>}
+   * in the {@link SamResourceManager} context.
    *
    * @since 0.9
    */
-  static class ManagedSamResource extends SeResource<CalypsoSam> {
+  static class ManagedSamResource extends CardResource<CalypsoSam> {
     /** the free/busy enum status */
     public enum SamResourceStatus {
       FREE,
@@ -415,11 +421,11 @@ public class SamResourceManagerDefault extends SamResourceManager {
     /**
      * Constructor
      *
-     * @param seReader the {@link SeReader} with which the SE is communicating
+     * @param reader the {@link Reader} with which the card is communicating
      * @param calypsoSam the {@link CalypsoSam} information structure
      */
-    public ManagedSamResource(SeReader seReader, CalypsoSam calypsoSam) {
-      super(seReader, calypsoSam);
+    public ManagedSamResource(Reader reader, CalypsoSam calypsoSam) {
+      super(reader, calypsoSam);
 
       samResourceStatus = SamResourceStatus.FREE;
       samIdentifier = null;

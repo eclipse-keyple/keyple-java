@@ -24,8 +24,8 @@ internal class AndroidOmapiPluginTest : AbstractAndroidOmapiPluginTest<Reader, S
 
     override lateinit var androidOmapiPlugin: AbstractAndroidOmapiPlugin<Reader, SEService>
 
-    override fun buildAndroidOmapiPlugin(context: Context): AndroidOmapiPlugin {
-        return AndroidOmapiPlugin.init(context) as AndroidOmapiPlugin
+    override fun buildAndroidOmapiPlugin(context: Context): AbstractAndroidOmapiPlugin<Reader, SEService> {
+        return AndroidOmapiPlugin
     }
 
     override fun mockReader(name: String, isPresent: Boolean): Reader {
@@ -43,10 +43,5 @@ internal class AndroidOmapiPluginTest : AbstractAndroidOmapiPluginTest<Reader, S
         mockkObject(androidOmapiPlugin)
         val readers = readersToMock.map { mockReader(it.key, it.value) }.toTypedArray()
         every { androidOmapiPlugin.getNativeReaders() } returns readers
-    }
-
-    override fun triggerOnConnected() {
-        val seService = mockk<SEService>()
-        (androidOmapiPlugin as AndroidOmapiPlugin).serviceConnected(seService)
     }
 }

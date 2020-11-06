@@ -12,7 +12,7 @@
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import com.google.gson.JsonObject;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.plugin.remotese.rm.IRemoteMethodExecutor;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
@@ -22,7 +22,7 @@ import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Execute the disconnect Reader on Remote Se plugin */
+/** Execute the disconnect Reader on Remote Card plugin */
 class RmDisconnectReaderExecutor implements IRemoteMethodExecutor {
 
   private static final Logger logger = LoggerFactory.getLogger(RmDisconnectReaderExecutor.class);

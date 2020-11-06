@@ -15,7 +15,7 @@ import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.parser.security.CloseSessionRespPars;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /** This class provides the dedicated constructor to build the Close Secure Session APDU command. */
@@ -65,8 +65,6 @@ public final class CloseSessionCmdBuild extends AbstractPoCommandBuilder<CloseSe
   public CloseSessionCmdBuild(PoClass poClass) {
     super(command, null);
     request = setApduRequest(poClass.getValue(), command, (byte) 0x00, (byte) 0x00, null, (byte) 0);
-    /* Add "Abort session" to command name for logging purposes */
-    this.addSubName("Abort session");
   }
 
   @Override

@@ -11,24 +11,24 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.common.generic;
 
-import org.eclipse.keyple.core.selection.AbstractMatchingSe;
-import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
-import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
+import org.eclipse.keyple.core.card.selection.AbstractCardSelectionRequest;
+import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
+import org.eclipse.keyple.core.card.selection.CardSelector;
 
-/** Create a new class extending AbstractSeSelectionRequest */
-public class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
-  public GenericSeSelectionRequest(SeSelector seSelector) {
-    super(seSelector);
+/** Create a new class extending AbstractCardSelectionRequest */
+public class GenericCardSelectionRequest extends AbstractCardSelectionRequest {
+  public GenericCardSelectionRequest(CardSelector cardSelector) {
+    super(cardSelector);
   }
 
   @Override
-  protected AbstractMatchingSe parse(SeResponse seResponse) {
-    class GenericMatchingSe extends AbstractMatchingSe {
-      public GenericMatchingSe(SeResponse selectionResponse) {
-        super(selectionResponse);
+  protected AbstractSmartCard parse(CardSelectionResponse cardSelectionResponse) {
+    class GenericSmartCard extends AbstractSmartCard {
+      public GenericSmartCard(CardSelectionResponse cardSelectionResponse) {
+        super(cardSelectionResponse);
       }
     }
-    return new GenericMatchingSe(seResponse);
+    return new GenericSmartCard(cardSelectionResponse);
   }
 }

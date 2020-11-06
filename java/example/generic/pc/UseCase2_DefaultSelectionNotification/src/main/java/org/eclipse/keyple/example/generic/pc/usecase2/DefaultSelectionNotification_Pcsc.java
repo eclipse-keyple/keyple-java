@@ -11,21 +11,21 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.generic.pc.usecase2;
 
-import org.eclipse.keyple.core.selection.AbstractMatchingSe;
-import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
+import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.CardSelector;
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.ObservableReader.ReaderObserver;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
+import org.eclipse.keyple.core.service.exception.KeypleException;
+import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.common.ReaderUtilities;
-import org.eclipse.keyple.example.common.generic.GenericSeSelectionRequest;
+import org.eclipse.keyple.example.common.generic.GenericCardSelectionRequest;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.slf4j.Logger;
@@ -41,14 +41,14 @@ import org.slf4j.LoggerFactory;
  *       <h2>Scenario:</h2>
  *       <ul>
  *         <li>Define a default selection of ISO 14443-4 (here a Calypso PO) and set it to an
- *             observable reader, on SE detection in case the selection is successful, notify the
- *             terminal application with the SE information.
+ *             observable reader, on card detection in case the selection is successful, notify the
+ *             terminal application with the card information.
  *         <li><code>
  * Default Selection Notification
- * </code> means that the SE processing is automatically started when detected.
+ * </code> means that the card processing is automatically started when detected.
  *         <li>PO messages:
  *             <ul>
- *               <li>A single SE message handled at SeReader level
+ *               <li>A single card message handled at Reader level
  *             </ul>
  *       </ul>
  * </ul>
@@ -56,8 +56,8 @@ import org.slf4j.LoggerFactory;
 public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
   private static final Logger logger =
       LoggerFactory.getLogger(DefaultSelectionNotification_Pcsc.class);
-  private String seAid = "A0000004040125090101";
-  private SeSelection seSelection;
+  private String cardAid = "A0000004040125090101";
+  private CardSelection cardSelection;
   /**
    * This object is used to freeze the main thread while card operations are handle through the
    * observers callbacks. A call to the notify() method would end the program (not demonstrated
@@ -66,54 +66,53 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
   private static final Object waitForEnd = new Object();
 
   public DefaultSelectionNotification_Pcsc() throws InterruptedException {
-    // Get the instance of the SeProxyService (Singleton pattern)
-    SeProxyService seProxyService = SeProxyService.getInstance();
+    // Get the instance of the SmartCardService (Singleton pattern)
+    SmartCardService smartCardService = SmartCardService.getInstance();
 
-    // Register the PcscPlugin with SeProxyService, get the corresponding generic ReaderPlugin in
+    // Register the PcscPlugin with SmartCardService, get the corresponding generic Plugin in
     // return
-    ReaderPlugin readerPlugin = seProxyService.registerPlugin(new PcscPluginFactory());
+    Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory());
 
     // Get and configure the PO reader
-    SeReader seReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
-    ((PcscReader) seReader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
+    Reader reader = plugin.getReader(ReaderUtilities.getContactlessReaderName());
+    ((PcscReader) reader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     logger.info(
         "=============== UseCase Generic #2: AID based default selection ===================");
-    logger.info("= SE Reader  NAME = {}", seReader.getName());
+    logger.info("= Card reader  NAME = {}", reader.getName());
 
-    // Prepare a SE selection
-    seSelection = new SeSelection();
+    // Prepare a card selection
+    cardSelection = new CardSelection();
 
     // Setting of an AID based selection
     //
-    // Select the first application matching the selection AID whatever the SE communication
+    // Select the first application matching the selection AID whatever the card communication
     // protocol keep the logical channel open after the selection
 
-    // Generic selection: configures a SeSelector with all the desired attributes to make the
+    // Generic selection: configures a CardSelector with all the desired attributes to make the
     // selection
-    GenericSeSelectionRequest seSelector =
-        new GenericSeSelectionRequest(
-            SeSelector.builder()
-                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-                .aidSelector(SeSelector.AidSelector.builder().aidToSelect(seAid).build())
+    GenericCardSelectionRequest cardSelector =
+        new GenericCardSelectionRequest(
+            CardSelector.builder()
+                .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                .aidSelector(CardSelector.AidSelector.builder().aidToSelect(cardAid).build())
                 .build());
 
     // Add the selection case to the current selection (we could have added other cases here)
-    seSelection.prepareSelection(seSelector);
+    cardSelection.prepareSelection(cardSelector);
 
-    // Provide the SeReader with the selection operation to be processed when a SE is inserted.
-    ((ObservableReader) seReader)
+    // Provide the Reader with the selection operation to be processed when a card is inserted.
+    ((ObservableReader) reader)
         .setDefaultSelectionRequest(
-            seSelection.getSelectionOperation(),
+            cardSelection.getSelectionOperation(),
             ObservableReader.NotificationMode.MATCHED_ONLY,
             ObservableReader.PollingMode.REPEATING);
 
     // Set the current class as Observer of the first reader
-    ((ObservableReader) seReader).addObserver(this);
+    ((ObservableReader) reader).addObserver(this);
 
     logger.info(
-        "= #### Wait for a SE. The default AID based selection to be processed as soon as the");
-    logger.info("= SE is detected.");
+        "= #### Wait for a card. The default AID based selection to be processed as soon as the card is detected.");
 
     // Wait for ever (exit with CTRL-C)
     synchronized (waitForEnd) {
@@ -129,18 +128,18 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
   @Override
   public void update(ReaderEvent event) {
     switch (event.getEventType()) {
-      case SE_MATCHED:
+      case CARD_MATCHED:
         // the selection has one target, get the result at index 0
-        AbstractMatchingSe selectedSe = null;
+        AbstractSmartCard selectedCard = null;
         try {
-          selectedSe =
-              seSelection
+          selectedCard =
+              cardSelection
                   .processDefaultSelection(event.getDefaultSelectionsResponse())
-                  .getActiveMatchingSe();
+                  .getActiveSmartCard();
         } catch (KeypleException e) {
           logger.error("Exception: {}", e.getMessage());
           try {
-            ((ObservableReader) (event.getReader())).finalizeSeProcessing();
+            ((ObservableReader) (event.getReader())).finalizeCardProcessing();
           } catch (KeypleReaderNotFoundException ex) {
             logger.error("Reader not found exception: {}", ex.getMessage());
           } catch (KeyplePluginNotFoundException ex) {
@@ -148,31 +147,31 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
           }
         }
 
-        if (selectedSe != null) {
-          logger.info("Observer notification: the selection of the SE has succeeded.");
+        if (selectedCard != null) {
+          logger.info("Observer notification: the selection of the card has succeeded.");
 
-          logger.info("= #### End of the SE processing.");
+          logger.info("= #### End of the card processing.");
         } else {
           logger.error(
-              "The selection of the SE has failed. Should not have occurred due to the MATCHED_ONLY selection mode.");
+              "The selection of the card has failed. Should not have occurred due to the MATCHED_ONLY selection mode.");
         }
         break;
-      case SE_INSERTED:
+      case CARD_INSERTED:
         logger.error(
-            "SE_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.");
+            "CARD_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.");
         break;
-      case SE_REMOVED:
+      case CARD_REMOVED:
         logger.info("There is no PO inserted anymore. Return to the waiting state...");
         break;
       default:
         break;
     }
-    if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED
-        || event.getEventType() == ReaderEvent.EventType.SE_MATCHED) {
-      // Informs the underlying layer of the end of the SE processing, in order to manage the
+    if (event.getEventType() == ReaderEvent.EventType.CARD_INSERTED
+        || event.getEventType() == ReaderEvent.EventType.CARD_MATCHED) {
+      // Informs the underlying layer of the end of the card processing, in order to manage the
       // removal sequence.
       try {
-        ((ObservableReader) (event.getReader())).finalizeSeProcessing();
+        ((ObservableReader) (event.getReader())).finalizeCardProcessing();
       } catch (KeypleReaderNotFoundException e) {
         logger.error("Reader not found exception: {}", e.getMessage());
       } catch (KeyplePluginNotFoundException e) {
@@ -183,7 +182,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
 
   /** main program entry */
   public static void main(String[] args) throws InterruptedException, KeypleException {
-    // Create the observable object to handle the SE processing
+    // Create the observable object to handle the card processing
     new DefaultSelectionNotification_Pcsc();
   }
 }

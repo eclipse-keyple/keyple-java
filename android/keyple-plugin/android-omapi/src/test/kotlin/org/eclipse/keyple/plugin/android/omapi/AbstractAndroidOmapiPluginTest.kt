@@ -14,7 +14,9 @@ package org.eclipse.keyple.plugin.android.omapi
 import android.content.Context
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.unmockkAll
+import java.util.concurrent.CountDownLatch
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -32,23 +34,35 @@ internal abstract class AbstractAndroidOmapiPluginTest<T, V> {
     internal abstract fun buildAndroidOmapiPlugin(context: Context): AbstractAndroidOmapiPlugin<T, V>
     abstract fun mockReader(name: String, isPresent: Boolean): T
     internal abstract fun mockGetNativeReaders(androidOmapiPlugin: AbstractAndroidOmapiPlugin<T, V>, readersToMock: Map<String, Boolean>)
-    abstract fun triggerOnConnected()
 
     @Before
     fun setUp() {
+        val cdl = CountDownLatch(1)
         context = mockContext()
         androidOmapiPlugin = buildAndroidOmapiPlugin(context)
+        mockkObject(androidOmapiPlugin)
+
+        // We mock hardware init
+        every { androidOmapiPlugin.connectToSe(any(), any()) } answers { secondArg<() -> Unit>().invoke() }
+
+        androidOmapiPlugin.init(context) {
+            cdl.countDown()
+        }
+        cdl.await()
         mockGetNativeReaders(androidOmapiPlugin, READERS_TO_MOCK)
+        androidOmapiPlugin.register()
     }
 
     @After
     fun tearDown() {
+        androidOmapiPlugin.unregister()
         unmockkAll()
     }
 
     @Test
     fun connectToSe() {
-        androidOmapiPlugin.connectToSe(context)
+        androidOmapiPlugin.connectToSe(context) {
+        }
     }
 
     @Test
@@ -57,23 +71,15 @@ internal abstract class AbstractAndroidOmapiPluginTest<T, V> {
     }
 
     @Test
-    fun mapToSeReader() {
+    fun mapToReader() {
         Companion.READERS_TO_MOCK.forEach {
-            val reader = mockReader(it.key, it.value)
-            val seReader = androidOmapiPlugin.mapToSeReader(reader)
-            Assert.assertNotNull(seReader)
-            Assert.assertEquals(it.key, seReader.name)
-            Assert.assertEquals(it.value, seReader.isSePresent)
+            val omapiReader = mockReader(it.key, it.value)
+            val reader = androidOmapiPlugin.mapToReader(omapiReader)
+            reader.register()
+            Assert.assertNotNull(reader)
+            Assert.assertEquals(it.key, reader.name)
+            Assert.assertEquals(it.value, reader.isCardPresent)
         }
-    }
-
-    @Test
-    fun onConnected() {
-        Assert.assertNotNull(androidOmapiPlugin.readers)
-        Assert.assertEquals(0, androidOmapiPlugin.readers.size)
-        androidOmapiPlugin.connectToSe(context)
-        triggerOnConnected() // Thanks to the object mockk we can simulate readers retrieval
-        Assert.assertEquals(Companion.READERS_TO_MOCK.size, androidOmapiPlugin.readers.size)
     }
 
     private fun mockContext(): Context {

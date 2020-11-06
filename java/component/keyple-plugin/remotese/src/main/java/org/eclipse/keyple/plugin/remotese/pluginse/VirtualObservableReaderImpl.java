@@ -12,10 +12,10 @@
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import java.util.*;
-import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.plugin.reader.ObservableReaderNotifier;
+import org.eclipse.keyple.core.plugin.reader.ObservableReaderNotifier;
+import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsRequest;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.pluginse.method.RmSetDefaultSelectionRequestTx;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTxEngine;
@@ -118,15 +118,15 @@ final class VirtualObservableReaderImpl extends VirtualReaderImpl
   }
 
   @Override
-  public void startSeDetection(PollingMode pollingMode) {
+  public void startCardDetection(PollingMode pollingMode) {
     logger.warn(
-        "startSeDetection is not implemented in VirtualObservableReaderImpl, please use the method on the slave node");
+        "startCardDetection is not implemented in VirtualObservableReaderImpl, please use the method on the slave node");
   }
 
   @Override
-  public void stopSeDetection() {
+  public void stopCardDetection() {
     logger.warn(
-        "stopSeDetection is not implemented in VirtualObservableReaderImpl, please use the method on the slave node");
+        "stopCardDetection is not implemented in VirtualObservableReaderImpl, please use the method on the slave node");
   }
 
   /*
@@ -217,7 +217,7 @@ final class VirtualObservableReaderImpl extends VirtualReaderImpl
 
   /** {@inheritDoc} */
   @Override
-  public final void finalizeSeProcessing() {
+  public final void finalizeCardProcessing() {
     // TODO check why we can't test if the channel is already closed here.
     releaseChannel();
   }

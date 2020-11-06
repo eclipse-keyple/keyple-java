@@ -22,16 +22,16 @@ import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.SamIdentifier;
 import org.eclipse.keyple.calypso.transaction.SamResourceManager;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
-import org.eclipse.keyple.core.selection.SeResource;
-import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.card.selection.CardResource;
+import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
+import org.eclipse.keyple.core.service.exception.KeypleAllocationReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
@@ -45,25 +45,25 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
 
   private final MasterAPI masterAPI;
   private final String nodeId; // for logging purposes
-  private final SeSelection seSelection;
+  private final CardSelection cardSelection;
   private final SamResourceManager samResourceManager;
 
   /**
    * Create a new Observer for a PO Virtual Reader
    *
    * @param masterAPI : master API
-   * @param seSelection : the default selection configured on the reader
+   * @param cardSelection : the default selection configured on the reader
    * @param nodeId : master node id, used for logging
    * @param samResourceManager : SAM Resource Manager required for transactions
    */
   PoVirtualReaderObserver(
       MasterAPI masterAPI,
       SamResourceManager samResourceManager,
-      SeSelection seSelection,
+      CardSelection cardSelection,
       String nodeId) {
     this.masterAPI = masterAPI;
     this.nodeId = nodeId;
-    this.seSelection = seSelection;
+    this.cardSelection = cardSelection;
     this.samResourceManager = samResourceManager;
   }
 
@@ -77,32 +77,32 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
         event.getDefaultSelectionsResponse());
 
     switch (event.getEventType()) {
-      case SE_MATCHED:
+      case CARD_MATCHED:
         CalypsoPo calypsoPo = null;
         try {
           calypsoPo =
               (CalypsoPo)
-                  seSelection
+                  cardSelection
                       .processDefaultSelection(event.getDefaultSelectionsResponse())
-                      .getActiveMatchingSe();
+                      .getActiveSmartCard();
         } catch (KeypleException e) {
           logger.error("Keyple Exception: {}", e.getMessage());
         }
 
         // retrieve PO virtual reader
-        SeReader poReader = null;
-        SeResource<CalypsoSam> samResource = null;
+        Reader poReader = null;
+        CardResource<CalypsoSam> samResource = null;
         try {
           poReader = masterAPI.getPlugin().getReader(event.getReaderName());
 
           // create a Po Resource
-          SeResource<CalypsoPo> poResource = new SeResource<CalypsoPo>(poReader, calypsoPo);
+          CardResource<CalypsoPo> poResource = new CardResource<CalypsoPo>(poReader, calypsoPo);
 
           // PO has matched
           // executeReadEventLog(poResource);
 
           /*
-           * Get a SeResource<CalypsoSam> to perform authentication
+           * Get a CardResource<CalypsoSam> to perform authentication
            */
           samResource =
               samResourceManager.allocateSamResource(
@@ -125,7 +125,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
           logger.error("SAM resource allocation error exception {}", e.getMessage());
         } finally {
           /*
-           * Release SeResource<CalypsoSam>
+           * Release CardResource<CalypsoSam>
            */
 
           if (samResource != null) {
@@ -134,11 +134,11 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
           }
         }
         break;
-      case SE_INSERTED:
-        logger.info("{} SE_INSERTED {} {}", nodeId, event.getPluginName(), event.getReaderName());
+      case CARD_INSERTED:
+        logger.info("{} CARD_INSERTED {} {}", nodeId, event.getPluginName(), event.getReaderName());
         break;
-      case SE_REMOVED:
-        logger.info("{} SE_REMOVED {} {}", nodeId, event.getPluginName(), event.getReaderName());
+      case CARD_REMOVED:
+        logger.info("{} CARD_REMOVED {} {}", nodeId, event.getPluginName(), event.getReaderName());
         break;
 
       case TIMEOUT_ERROR:
@@ -154,7 +154,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
    *
    * @param poResource : Reference to the matching PO embeeded in a PoResource
    */
-  private void executeReadEventLog(SeResource<CalypsoPo> poResource) {
+  private void executeReadEventLog(CardResource<CalypsoPo> poResource) {
     try {
 
       logger.info("{} Observer notification: the selection of the PO has succeeded.", nodeId);
@@ -189,7 +189,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
        * Retrieve the data read from the CalyspoPo updated during the transaction process
        */
       ElementaryFile efEventLog =
-          poResource.getMatchingSe().getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
+          poResource.getSmartCard().getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
       String eventLog = ByteArrayUtil.toHex(efEventLog.getData().getContent());
 
       /* Log the result */
@@ -220,7 +220,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
    * @param poResource : Reference to the matching PO embeeded in a PoResource
    */
   private void executeCalypso4_PoAuthentication(
-      SeResource<CalypsoPo> poResource, SeResource<CalypsoSam> samResource) {
+      CardResource<CalypsoPo> poResource, CardResource<CalypsoSam> samResource) {
     try {
 
       /* Go on with the reading of the first record of the EventLog file */
@@ -238,7 +238,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
        */
       poTransaction.processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT);
 
-      if (!poResource.getMatchingSe().isDfRatified()) {
+      if (!poResource.getSmartCard().isDfRatified()) {
         logger.warn("========= Previous Secure Session was not ratified. =====================");
       }
       /*
@@ -251,7 +251,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
        * Retrieve the data read from the CalyspoPo updated during the transaction process
        */
       ElementaryFile efEventLog =
-          poResource.getMatchingSe().getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
+          poResource.getSmartCard().getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
       String eventLog = ByteArrayUtil.toHex(efEventLog.getData().getContent());
 
       /* Log the result */

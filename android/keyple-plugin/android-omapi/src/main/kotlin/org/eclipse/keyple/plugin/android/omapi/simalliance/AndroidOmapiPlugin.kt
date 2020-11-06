@@ -12,10 +12,9 @@
 package org.eclipse.keyple.plugin.android.omapi.simalliance
 
 import android.content.Context
-import org.eclipse.keyple.core.seproxy.SeReader
+import org.eclipse.keyple.core.service.Reader
 import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiPlugin
 import org.eclipse.keyple.plugin.android.omapi.PLUGIN_NAME
-import org.simalliance.openmobileapi.Reader
 import org.simalliance.openmobileapi.SEService
 import timber.log.Timber
 
@@ -23,36 +22,24 @@ import timber.log.Timber
  * Allow to provide an implementation of AbstractAndroidOmapiPlugin using the Simalliance
  * OMAPI implementation of Reader and SeService objects.
  */
-internal object AndroidOmapiPlugin : AbstractAndroidOmapiPlugin<Reader, SEService>(), SEService.CallBack {
+internal object AndroidOmapiPlugin : AbstractAndroidOmapiPlugin<org.simalliance.openmobileapi.Reader, SEService>() {
 
-    override fun connectToSe(context: Context) {
+    override fun connectToSe(context: Context, callback: () -> Unit) {
         val seServiceFactory = SeServiceFactoryImpl(context)
-        seService = seServiceFactory.connectToSe(this)
-        Timber.i("OMAPI SEService version: %s", seService?.version)
+        seService = seServiceFactory.connectToSe(SEService.CallBack {
+            Timber.i("Connected, ready to register plugin")
+            Timber.i("OMAPI SEService version: %s", seService?.version)
+            callback()
+        })
     }
 
-    override fun getNativeReaders(): Array<Reader>? {
+    override fun getNativeReaders(): Array<org.simalliance.openmobileapi.Reader>? {
         return seService?.readers
     }
 
-    override fun mapToSeReader(nativeReader: Reader): SeReader {
+    override fun mapToReader(nativeReader: org.simalliance.openmobileapi.Reader): Reader {
         Timber.d("Reader available name : %s", nativeReader.name)
-        Timber.d("Reader available isSePresent : %S", nativeReader.isSecureElementPresent)
+        Timber.d("Reader available isCardPresent : %S", nativeReader.isSecureElementPresent)
         return AndroidOmapiReader(nativeReader, PLUGIN_NAME, nativeReader.name)
-    }
-
-    /**
-     * Warning. Do not call this method directly.
-     *
-     * Invoked by Open Mobile {@link SEService} when connected
-     * Instantiates {@link AndroidOmapiReader} for each SE Reader detected in the platform
-     *
-     * @param seService : connected omapi service
-     */
-    override fun serviceConnected(p0: SEService?) {
-        Timber.i("Retrieve available readers...")
-
-        // init readers
-        readers.putAll(initNativeReaders())
     }
 }

@@ -14,7 +14,7 @@ package org.eclipse.keyple.plugin.remotese.pluginse;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import java.util.Map;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.plugin.remotese.rm.IRemoteMethodExecutor;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
 import org.eclipse.keyple.plugin.remotese.transport.*;
@@ -25,7 +25,7 @@ import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Execute the Connect Reader on Remote Se plugin */
+/** Execute the Connect Reader on Remote card plugin */
 class RmConnectReaderExecutor implements IRemoteMethodExecutor {
 
   private static final Logger logger = LoggerFactory.getLogger(RmConnectReaderExecutor.class);
