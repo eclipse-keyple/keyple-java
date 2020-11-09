@@ -64,8 +64,8 @@ abstract class AbstractPcscPlugin extends AbstractThreadedObservablePlugin imple
     SortedSet<String> nativeReadersNames = new ConcurrentSkipListSet<String>();
     CardTerminals terminals = getCardTerminals();
     try {
-      for (CardTerminal term : terminals.list()) {
-        nativeReadersNames.add(term.getName());
+      for (CardTerminal terminal : terminals.list()) {
+        nativeReadersNames.add(terminal.getName());
       }
     } catch (CardException e) {
       if (e.getCause().toString().contains("SCARD_E_NO_READERS_AVAILABLE")) {
@@ -109,8 +109,8 @@ abstract class AbstractPcscPlugin extends AbstractThreadedObservablePlugin imple
     CardTerminals terminals = getCardTerminals();
     logger.trace("[{}] initNativeReaders => CardTerminal in list: {}", this.getName(), terminals);
     try {
-      for (CardTerminal term : terminals.list()) {
-        final PcscReaderImpl pcscReader = new PcscReaderImpl(this.getName(), term);
+      for (CardTerminal terminal : terminals.list()) {
+        final PcscReader pcscReader = createReader(this.getName(), terminal);
         nativeReaders.put(pcscReader.getName(), pcscReader);
       }
     } catch (CardException e) {
@@ -151,13 +151,13 @@ abstract class AbstractPcscPlugin extends AbstractThreadedObservablePlugin imple
     /* parse the current PC/SC readers list to create the ProxyReader(s) associated with new reader(s) */
     CardTerminals terminals = getCardTerminals();
     try {
-      for (CardTerminal term : terminals.list()) {
-        if (term.getName().equals(name)) {
+      for (CardTerminal terminal : terminals.list()) {
+        if (terminal.getName().equals(name)) {
           logger.trace(
               "[{}] fetchNativeReader => CardTerminal in new PcscReader: {}",
               this.getName(),
               terminals);
-          reader = new PcscReaderImpl(this.getName(), term);
+          reader = createReader(this.getName(), terminal);
         }
       }
     } catch (CardException e) {
