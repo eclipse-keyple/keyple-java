@@ -362,7 +362,6 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                     eventRecyclerView.smoothScrollToPosition(events.size - 1)
                 }
                 if (event?.eventType == ReaderEvent.EventType.CARD_INSERTED || event?.eventType == ReaderEvent.EventType.CARD_MATCHED) {
-                    // TODO make this conditional on the abnormal termination (exception)
                     /*
                      * Informs the underlying layer of the end of the card processing, in order to manage the
                      * removal sequence. <p>If closing has already been requested, this method will do
