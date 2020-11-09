@@ -140,8 +140,8 @@ public class StubPoolPluginTest extends BaseStubTest {
   }
 
   /** Stub Card */
-  private static final StubSecureElement stubCard =
-      new StubSecureElement() {
+  private static final StubSmartCard stubCard =
+      new StubSmartCard() {
         @Override
         public byte[] getATR() {
           return new byte[0];

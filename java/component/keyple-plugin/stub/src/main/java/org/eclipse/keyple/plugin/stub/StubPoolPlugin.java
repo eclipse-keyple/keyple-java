@@ -14,7 +14,7 @@ package org.eclipse.keyple.plugin.stub;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.ReaderPoolPlugin;
 
-/** StubPoolPlugin allows to simulate a {@link ReaderPoolPlugin} and a {@link StubSecureElement} */
+/** StubPoolPlugin allows to simulate a {@link ReaderPoolPlugin} and a {@link StubSmartCard} */
 public interface StubPoolPlugin extends ReaderPoolPlugin {
 
   /**
@@ -26,7 +26,7 @@ public interface StubPoolPlugin extends ReaderPoolPlugin {
    * @param card : insert a card at creation (can be null)
    * @return created StubReader
    */
-  Reader plugStubPoolReader(String groupReference, String readerName, StubSecureElement card);
+  Reader plugStubPoolReader(String groupReference, String readerName, StubSmartCard card);
 
   /**
    * Unplug synchronously a new reader by groupReference. A READER_DISCONNECTED event will be

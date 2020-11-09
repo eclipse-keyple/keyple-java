@@ -25,15 +25,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Simulates communication with a {@link StubSecureElement}. StubReader is observable, it raises
- * {@link ReaderEvent} : CARD_INSERTED, CARD_REMOVED
+ * Simulates communication with a {@link StubSmartCard}. StubReader is observable, it raises {@link
+ * ReaderEvent} : CARD_INSERTED, CARD_REMOVED
  */
 class StubReaderImpl extends AbstractObservableLocalReader
     implements StubReader, SmartInsertionReader, SmartRemovalReader {
 
   private static final Logger logger = LoggerFactory.getLogger(StubReaderImpl.class);
 
-  private StubSecureElement card;
+  private StubSmartCard card;
   boolean isContactless = true;
 
   private final AtomicBoolean loopWaitCard = new AtomicBoolean();
@@ -154,7 +154,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
    * @param _se stub card to be inserted in the reader
    * @throws KeypleReaderProtocolNotFoundException if the card protocol is not found
    */
-  public synchronized void insertCard(StubSecureElement _se) {
+  public synchronized void insertCard(StubSmartCard _se) {
     logger.debug("Insert card {}", _se);
     /* clean channels status */
     if (isPhysicalChannelOpen()) {
@@ -174,7 +174,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
     card = null;
   }
 
-  public StubSecureElement getSe() {
+  public StubSmartCard getSe() {
     return card;
   }
 

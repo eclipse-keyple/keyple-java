@@ -1322,9 +1322,9 @@ public class StubReaderTest extends BaseStubTest {
     return new CardRequest(poApduRequests);
   }
 
-  public static StubSecureElement hoplinkSE() {
+  public static StubSmartCard hoplinkSE() {
 
-    return new StubSecureElement() {
+    return new StubSmartCard() {
 
       @Override
       public byte[] processApdu(byte[] apduIn) {
@@ -1353,8 +1353,8 @@ public class StubReaderTest extends BaseStubTest {
     };
   }
 
-  public static StubSecureElement revision1SE() {
-    return new StubSecureElement() {
+  public static StubSmartCard revision1SE() {
+    return new StubSmartCard() {
       @Override
       public byte[] processApdu(byte[] apduIn) {
         addHexCommand(
@@ -1382,8 +1382,8 @@ public class StubReaderTest extends BaseStubTest {
     };
   }
 
-  public static StubSecureElement noApduResponseSE() {
-    return new StubSecureElement() {
+  public static StubSmartCard noApduResponseSE() {
+    return new StubSmartCard() {
 
       @Override
       public byte[] processApdu(byte[] apduIn) {
@@ -1407,8 +1407,8 @@ public class StubReaderTest extends BaseStubTest {
     };
   }
 
-  public static StubSecureElement partialSE() {
-    return new StubSecureElement() {
+  public static StubSmartCard partialSE() {
+    return new StubSmartCard() {
       @Override
       public byte[] processApdu(byte[] apduIn) {
 
@@ -1433,8 +1433,8 @@ public class StubReaderTest extends BaseStubTest {
     };
   }
 
-  public static StubSecureElement getSENoconnection() {
-    return new StubSecureElement() {
+  public static StubSmartCard getSENoconnection() {
+    return new StubSmartCard() {
       @Override
       public byte[] getATR() {
         return new byte[0];

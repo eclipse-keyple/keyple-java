@@ -12,11 +12,14 @@
 package org.eclipse.keyple.plugin.stub;
 
 import java.util.Set;
-import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.event.ObservablePlugin;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 
-/** Stubplugin allows to simulate a {@link Plugin} and a {@link StubSecureElement} */
+/**
+ * This plugin allows to simulate card communication by creating @{@link StubReaderImpl} and @{@link
+ * StubSmartCard}. Plug a new StubReader with StubPlugin#plugStubReader and insert an implementation
+ * of your own of {@link StubSmartCard} to start simulation communication.
+ */
 public interface StubPlugin extends ObservablePlugin {
 
   /**

@@ -32,7 +32,7 @@ import org.eclipse.keyple.plugin.remotese.transport.factory.TransportFactory;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubPluginFactory;
 import org.eclipse.keyple.plugin.stub.StubReader;
-import org.eclipse.keyple.plugin.stub.StubSecureElement;
+import org.eclipse.keyple.plugin.stub.StubSmartCard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,9 +116,9 @@ public class MasterNodeController {
       Reader samReader = samStubPlugin.getReader("samReader");
 
       /* Create 'virtual' and insert a Calypso SAM */
-      StubSecureElement calypsoSamStubCard = new StubSamCalypsoClassic();
+      StubSmartCard calypsoSamStubCard = new StubSamCalypsoClassic();
 
-      ((StubReader) samReader).insertSe(calypsoSamStubCard);
+      ((StubReader) samReader).insertCard(calypsoSamStubCard);
       logger.info("Stub SAM inserted");
 
       /*

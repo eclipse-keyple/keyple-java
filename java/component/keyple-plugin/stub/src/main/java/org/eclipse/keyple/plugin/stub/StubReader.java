@@ -20,7 +20,7 @@ public interface StubReader extends ObservableReader {
    *
    * @param _se stub card to be inserted in the reader
    */
-  void insertCard(StubSecureElement _se);
+  void insertCard(StubSmartCard _se);
 
   /** Remove card from reader if any */
   void removeCard();
@@ -30,5 +30,5 @@ public interface StubReader extends ObservableReader {
    *
    * @return card, can be null if no card inserted
    */
-  StubSecureElement getSe();
+  StubSmartCard getSe();
 }

@@ -24,7 +24,7 @@ import org.eclipse.keyple.example.common.calypso.stub.StubSamCalypsoClassic;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubPluginFactory;
 import org.eclipse.keyple.plugin.stub.StubReader;
-import org.eclipse.keyple.plugin.stub.StubSecureElement;
+import org.eclipse.keyple.plugin.stub.StubSmartCard;
 import org.eclipse.keyple.plugin.stub.StubSupportedProtocols;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,12 +89,12 @@ public class Demo_CalypsoClassic_Stub {
     transactionEngine.setReaders(poReader, samReader);
 
     /* Create 'virtual' Hoplink and SAM card */
-    StubSecureElement calypsoStubCard = new StubCalypsoClassic();
-    StubSecureElement samSE = new StubSamCalypsoClassic();
+    StubSmartCard calypsoStubCard = new StubCalypsoClassic();
+    StubSmartCard samSE = new StubSamCalypsoClassic();
 
     /* Insert the SAM into the SAM reader */
     logger.info("Insert stub SAM card.");
-    samReader.insertSe(samSE);
+    samReader.insertCard(samSE);
 
     /* Set the default selection operation */
     poReader.setDefaultSelectionRequest(
@@ -106,15 +106,15 @@ public class Demo_CalypsoClassic_Stub {
     poReader.addObserver(transactionEngine);
 
     logger.info("Insert stub PO card.");
-    poReader.insertSe(calypsoStubCard);
+    poReader.insertCard(calypsoStubCard);
 
     Thread.sleep(1000);
 
     /* Remove card */
     logger.info("Remove stub SAM and PO cards.");
 
-    poReader.removeSe();
-    samReader.removeSe();
+    poReader.removeCard();
+    samReader.removeCard();
 
     logger.info("END.");
 
