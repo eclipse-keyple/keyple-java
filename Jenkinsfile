@@ -85,9 +85,7 @@ pipeline {
             steps{
                 container('java-builder') {
                     sh 'keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US" -keyalg RSA -keysize 2048 -validity 90'
-                    
-                    sh "./gradlew -b java/example/calypso/remotese/build.gradle check -P keyple_version=${keypleVersion}"
-                    
+
                     dir('java/example/calypso/android/nfc/') {
                         sh "./gradlew assembleDebug -P keyple_version=${keypleVersion}"
                     }
