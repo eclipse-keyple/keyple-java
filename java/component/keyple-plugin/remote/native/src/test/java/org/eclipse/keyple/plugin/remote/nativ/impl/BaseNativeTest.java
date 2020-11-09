@@ -30,6 +30,7 @@ public abstract class BaseNativeTest {
 
   protected static final String readerName = "readerName";
   final String readerNameUnknown = "readerNameUnknown";
+  final String observableReaderName = "observableReaderName";
 
   ProxyReader readerMocked;
   NativeClientServiceTest.ObservableProxyReader observableReaderMocked;
