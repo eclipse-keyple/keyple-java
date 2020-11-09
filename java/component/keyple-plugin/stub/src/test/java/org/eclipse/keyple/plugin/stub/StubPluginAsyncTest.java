@@ -34,19 +34,20 @@ public class StubPluginAsyncTest extends BaseStubTest {
   Logger logger = LoggerFactory.getLogger(StubPluginAsyncTest.class);
 
   @Before
-  public void setupStub() throws Exception {
-    super.setupStub();
+  public void registerStub() throws Exception {
+    super.registerStub();
   }
 
   @After
-  public void clearStub()
+  public void unregisterStub()
       throws InterruptedException, KeypleReaderException, KeyplePluginNotFoundException {
-    super.clearStub();
+    super.unregisterStub();
   }
 
   /** Plug one reader asynchronously Check: Event thrown */
   @Test
-  public void plugOneReaderAsync_success() throws InterruptedException, KeypleReaderException {
+  public void plug_oneReader_asynchronously_withObserver_success()
+      throws InterruptedException, KeypleReaderException {
     final CountDownLatch lock = new CountDownLatch(1);
     final String READER_NAME = "plugOneReaderAsync_sucess";
 
@@ -69,7 +70,8 @@ public class StubPluginAsyncTest extends BaseStubTest {
 
   /** Unplug one reader and wait for event */
   @Test
-  public void unplugOneReaderAsync_success() throws InterruptedException, KeypleReaderException {
+  public void unplug_oneReader_asynchronously_withObserver_success()
+      throws InterruptedException, KeypleReaderException {
     final CountDownLatch connectedLock = new CountDownLatch(1);
     final CountDownLatch disconnectedLock = new CountDownLatch(1);
     final String READER_NAME = "unplugOneReaderAsync_success";
@@ -112,11 +114,13 @@ public class StubPluginAsyncTest extends BaseStubTest {
     // wait for event to be raised
     disconnectedLock.await(2, TimeUnit.SECONDS);
     Assert.assertEquals(0, disconnectedLock.getCount());
+    Assert.assertEquals(0, stubPlugin.getReaders().size());
   }
 
   /** Plug many readers at once async Check : check event, count event */
   @Test
-  public void plugMultiReadersAsync_success() throws InterruptedException, KeypleReaderException {
+  public void plug_multiReader_asynchronously_withObserver_success()
+      throws InterruptedException, KeypleReaderException {
     final Set<String> READERS =
         new HashSet<String>(Arrays.asList("E_Reader1", "E_Reader2", "E_Reader3"));
 
@@ -149,7 +153,7 @@ public class StubPluginAsyncTest extends BaseStubTest {
 
   /** Plug and unplug many readers at once asynchronously Check : event and count events */
   @Test
-  public void plugUnplugMultiReadersAsync_success()
+  public void unplug_multiReader_asynchronously_withObserver_success()
       throws InterruptedException, KeypleReaderException {
     final Set<String> READERS =
         new HashSet<String>(Arrays.asList("F_Reader1", "F_Reader2", "F_Reader3"));
@@ -184,19 +188,18 @@ public class StubPluginAsyncTest extends BaseStubTest {
     stubPlugin.addObserver(assertDisconnect);
 
     // connect reader
-    stubPlugin.plugStubReaders(READERS, false);
+    stubPlugin.plugStubReaders(READERS, true);
 
     Assert.assertTrue(connectedLock.await(2, TimeUnit.SECONDS));
 
-    Thread.sleep(1000);
+    // Thread.sleep(1000);
 
     stubPlugin.unplugStubReaders(READERS, false);
 
     Assert.assertTrue(disconnectedLock.await(2, TimeUnit.SECONDS));
 
-    // Thread.sleep(1000);
-
     Thread.sleep(1000);
+
     logger.debug("Stub Readers connected {}", stubPlugin.getReaderNames());
     Assert.assertEquals(0, stubPlugin.getReaders().size());
     Assert.assertEquals(0, connectedLock.getCount());

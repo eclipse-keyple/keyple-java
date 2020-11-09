@@ -31,14 +31,14 @@ public class StubPoolPluginTest extends BaseStubTest {
   Logger logger = LoggerFactory.getLogger(StubPoolPluginTest.class);
 
   @Before
-  public void setupStub() throws Exception {
-    super.setupStub();
+  public void registerStub() throws Exception {
+    super.registerStub();
   }
 
   @After
-  public void clearStub()
+  public void unregisterStub()
       throws InterruptedException, KeypleReaderException, KeyplePluginNotFoundException {
-    super.clearStub();
+    super.unregisterStub();
   }
 
   /** Plug a pool reader */

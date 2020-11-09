@@ -35,14 +35,14 @@ public class StubPluginTest extends BaseStubTest {
   Logger logger = LoggerFactory.getLogger(StubPluginTest.class);
 
   @Before
-  public void setupStub() throws Exception {
-    super.setupStub();
+  public void registerStub() throws Exception {
+    super.registerStub();
   }
 
   @After
-  public void clearStub()
+  public void unregisterStub()
       throws InterruptedException, KeypleReaderException, KeyplePluginNotFoundException {
-    super.clearStub();
+    super.unregisterStub();
   }
 
   @Test
@@ -58,8 +58,8 @@ public class StubPluginTest extends BaseStubTest {
 
   /** Plug one reader synchronously Check: Count if created */
   @Test
-  public void plugOneReaderSync_success() {
-    final String READER_NAME = "plugOneReaderSync_sucess";
+  public void plugOneReader_synchronously_withoutObservation_success() {
+    final String READER_NAME = "plugOneReader_synchronously_withObservation_success";
 
     // connect reader
     stubPlugin.plugStubReader(READER_NAME, true, true);
@@ -72,9 +72,10 @@ public class StubPluginTest extends BaseStubTest {
 
   /** Plug one reader synchronously Check: Event thrown */
   @Test
-  public void plugOneReaderSyncEvent_success() throws InterruptedException, KeypleReaderException {
+  public void plugOneReader_synchronously_withObservation_success()
+      throws InterruptedException, KeypleReaderException {
     final CountDownLatch readerConnected = new CountDownLatch(1);
-    final String READER_NAME = "testA_PlugReaders";
+    final String READER_NAME = "plugOneReader_synchronously_withObservation_success";
 
     // add READER_CONNECTED assert observer
     stubPlugin.addObserver(
@@ -90,14 +91,49 @@ public class StubPluginTest extends BaseStubTest {
 
     stubPlugin.plugStubReader(READER_NAME, true);
     readerConnected.await(2, TimeUnit.SECONDS);
-
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     Assert.assertEquals(0, readerConnected.getCount());
   }
 
+  @Test
+  public void plugMultiReaders_synchronously_withoutObservation_success()
+      throws InterruptedException, KeypleReaderException {
+    Set<String> newReaders =
+        new HashSet<String>(Arrays.asList("EC_reader1", "EC_reader2", "EC_reader3"));
+    // connect readers at once
+    stubPlugin.plugStubReaders(newReaders, true);
+    logger.info("Stub Readers connected {}", stubPlugin.getReaderNames());
+    Assert.assertEquals(newReaders, stubPlugin.getReaderNames());
+    Assert.assertEquals(3, stubPlugin.getReaders().size());
+  }
+
+  @Test
+  public void plugMultiReaders_synchronously_withObservation_success()
+      throws InterruptedException, KeypleReaderException {
+    Set<String> newReaders =
+        new HashSet<String>(Arrays.asList("EC_reader1", "EC_reader2", "EC_reader3"));
+    final CountDownLatch readerConnected = new CountDownLatch(1);
+
+    // add READER_CONNECTED assert observer
+    stubPlugin.addObserver(
+        new ObservablePlugin.PluginObserver() {
+          @Override
+          public void update(PluginEvent event) {
+            Assert.assertEquals(PluginEvent.EventType.READER_CONNECTED, event.getEventType());
+            Assert.assertEquals(3, event.getReaderNames().size());
+            readerConnected.countDown();
+          }
+        });
+    // connect readers at once
+    stubPlugin.plugStubReaders(newReaders, true);
+    readerConnected.await(2, TimeUnit.SECONDS);
+    Assert.assertEquals(newReaders, stubPlugin.getReaderNames());
+    Assert.assertEquals(3, stubPlugin.getReaders().size());
+  }
+
   /** Unplug one reader synchronously Check: Count if removed */
   @Test
-  public void unplugOneReader_success() throws Exception {
+  public void unplugOneReader_synchronously_withoutObservation_success() {
     final String READER_NAME = "unplugOneReader_success";
     // connect reader
     stubPlugin.plugStubReader(READER_NAME, true);
@@ -106,9 +142,49 @@ public class StubPluginTest extends BaseStubTest {
     Assert.assertEquals(0, stubPlugin.getReaders().size());
   }
 
+  /** Plug and unplug many readers at once synchronously Check : count */
+  @Test
+  public void unplugMultiReaders_synchronously_withoutObservation_success()
+      throws InterruptedException, KeypleReaderException {
+    final Set<String> READERS =
+        new HashSet<String>(Arrays.asList("FC_Reader1", "FC_Reader2", "FC_Reader3"));
+    // connect readers at once
+    stubPlugin.plugStubReaders(READERS, true);
+    Assert.assertEquals(3, stubPlugin.getReaders().size());
+    stubPlugin.unplugStubReaders(READERS, true);
+    Assert.assertEquals(0, stubPlugin.getReaders().size());
+  }
+
+  /** Plug and unplug many readers at once synchronously Check : count */
+  @Test
+  public void unplugMultiReaders_synchronously_withObservation_success()
+      throws KeypleReaderException {
+    final CountDownLatch readerDisconnected = new CountDownLatch(1);
+    final Set<String> READERS =
+        new HashSet<String>(Arrays.asList("FC_Reader1", "FC_Reader2", "FC_Reader3"));
+    // connect readers at once
+    stubPlugin.plugStubReaders(READERS, true);
+    Assert.assertEquals(3, stubPlugin.getReaders().size());
+
+    // add READER_DISCONNECTED assert observer
+    stubPlugin.addObserver(
+        new ObservablePlugin.PluginObserver() {
+          @Override
+          public void update(PluginEvent event) {
+            Assert.assertEquals(PluginEvent.EventType.READER_DISCONNECTED, event.getEventType());
+            Assert.assertEquals(3, event.getReaderNames().size());
+            readerDisconnected.countDown();
+          }
+        });
+
+    stubPlugin.unplugStubReaders(READERS, true);
+    Assert.assertEquals(0, stubPlugin.getReaders().size());
+  }
+
   /** Plug same reader twice Check : only one reader */
   @Test
-  public void plugSameReaderTwice_fail() throws InterruptedException, KeypleReaderException {
+  public void plugSameReaderTwice_synchronously_fail()
+      throws InterruptedException, KeypleReaderException {
     final String READER_NAME = "testC_PlugSameReaderTwice";
 
     stubPlugin.plugStubReader(READER_NAME, true);
@@ -122,34 +198,5 @@ public class StubPluginTest extends BaseStubTest {
   @Test
   public void getName_success() {
     Assert.assertNotNull(stubPlugin.getName());
-  }
-
-  /**
-   * Plug many readers at once sync
-   *
-   * <p>Check : count readers
-   */
-  @Test
-  public void plugMultiReadersSync_success() throws InterruptedException, KeypleReaderException {
-    Set<String> newReaders =
-        new HashSet<String>(Arrays.asList("EC_reader1", "EC_reader2", "EC_reader3"));
-    // connect readers at once
-    stubPlugin.plugStubReaders(newReaders, true);
-    logger.info("Stub Readers connected {}", stubPlugin.getReaderNames());
-    Assert.assertEquals(newReaders, stubPlugin.getReaderNames());
-    Assert.assertEquals(3, stubPlugin.getReaders().size());
-  }
-
-  /** Plug and unplug many readers at once synchronously Check : count */
-  @Test
-  public void plugUnplugMultiReadersSync_success()
-      throws InterruptedException, KeypleReaderException {
-    final Set<String> READERS =
-        new HashSet<String>(Arrays.asList("FC_Reader1", "FC_Reader2", "FC_Reader3"));
-    // connect readers at once
-    stubPlugin.plugStubReaders(READERS, true);
-    Assert.assertEquals(3, stubPlugin.getReaders().size());
-    stubPlugin.unplugStubReaders(READERS, true);
-    Assert.assertEquals(0, stubPlugin.getReaders().size());
   }
 }

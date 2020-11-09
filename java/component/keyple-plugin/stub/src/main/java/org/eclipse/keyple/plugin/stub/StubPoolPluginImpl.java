@@ -60,9 +60,7 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
       // get new reader
       StubReaderImpl newReader = (StubReaderImpl) stubPlugin.getReader(readerName);
 
-      newReader.register();
-
-      newReader.insertSe(card);
+      newReader.insertCard(card);
 
       // map reader to groupReference
       readerPool.put(groupReference, newReader);
@@ -148,8 +146,8 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
     StubReaderImpl stubReader = ((StubReaderImpl) reader);
     if (stubReader.checkCardPresence()) {
       StubSecureElement card = stubReader.getSe();
-      stubReader.removeSe();
-      stubReader.insertSe(card);
+      stubReader.removeCard();
+      stubReader.insertCard(card);
     }
 
     allocatedReader.remove(reader.getName());

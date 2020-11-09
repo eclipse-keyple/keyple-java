@@ -154,7 +154,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
    * @param _se stub card to be inserted in the reader
    * @throws KeypleReaderProtocolNotFoundException if the card protocol is not found
    */
-  public synchronized void insertSe(StubSecureElement _se) {
+  public synchronized void insertCard(StubSecureElement _se) {
     logger.debug("Insert card {}", _se);
     /* clean channels status */
     if (isPhysicalChannelOpen()) {
@@ -169,7 +169,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
     }
   }
 
-  public synchronized void removeSe() {
+  public synchronized void removeCard() {
     logger.debug("Remove card {}", card != null ? card : "none");
     card = null;
   }
