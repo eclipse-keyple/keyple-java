@@ -12,7 +12,6 @@
 package org.eclipse.keyple.plugin.remote.virtual.impl;
 
 import java.util.List;
-
 import org.eclipse.keyple.core.card.message.*;
 import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
@@ -62,7 +61,8 @@ abstract class AbstractServerVirtualReader implements RemoteServerReader, ProxyR
       List<CardSelectionRequest> cardSelectionRequests,
       MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl) {
-    return reader.transmitCardSelectionRequests(cardSelectionRequests, multiSelectionProcessing, channelControl);
+    return reader.transmitCardSelectionRequests(
+        cardSelectionRequests, multiSelectionProcessing, channelControl);
   }
 
   /**
@@ -189,5 +189,15 @@ abstract class AbstractServerVirtualReader implements RemoteServerReader, ProxyR
   @Override
   public boolean isContactless() {
     return reader.isContactless();
+  }
+
+  @Override
+  public void register() {
+    reader.register();
+  }
+
+  @Override
+  public void unregister() {
+    reader.unregister();
   }
 }

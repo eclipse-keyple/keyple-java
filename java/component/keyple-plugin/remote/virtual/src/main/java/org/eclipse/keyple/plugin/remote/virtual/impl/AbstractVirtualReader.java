@@ -14,7 +14,6 @@ package org.eclipse.keyple.plugin.remote.virtual.impl;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import java.util.*;
-
 import org.eclipse.keyple.core.card.message.*;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
 import org.eclipse.keyple.core.plugin.reader.AbstractReader;
@@ -24,8 +23,6 @@ import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remote.core.impl.AbstractKeypleNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.smartcardio.Card;
 
 /**
  * (package-private)<br>
@@ -74,7 +71,7 @@ abstract class AbstractVirtualReader extends AbstractReader {
   @Override
   protected List<CardSelectionResponse> processCardSelectionRequests(
       List<CardSelectionRequest> cardSelectionRequests,
-      MultiSelectionProcessing multiSeRequestProcessing,
+      MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl) {
 
     // Build the message
@@ -82,8 +79,10 @@ abstract class AbstractVirtualReader extends AbstractReader {
     body.addProperty(
         "cardSelectionRequests",
         KeypleJsonParser.getParser()
-            .toJson(cardSelectionRequests, new TypeToken<ArrayList<CardSelectionRequest>>() {}.getType()));
-    body.addProperty("multiSeRequestProcessing", multiSeRequestProcessing.name());
+            .toJson(
+                cardSelectionRequests,
+                new TypeToken<ArrayList<CardSelectionRequest>>() {}.getType()));
+    body.addProperty("multiSelectionProcessing", multiSelectionProcessing.name());
     body.addProperty("channelControl", channelControl.name());
 
     // Send the message as a request
@@ -91,7 +90,8 @@ abstract class AbstractVirtualReader extends AbstractReader {
 
     // Extract the response
     return KeypleJsonParser.getParser()
-        .fromJson(response.getBody(), new TypeToken<ArrayList<CardSelectionResponse>>() {}.getType());
+        .fromJson(
+            response.getBody(), new TypeToken<ArrayList<CardSelectionResponse>>() {}.getType());
   }
 
   /**
@@ -100,11 +100,13 @@ abstract class AbstractVirtualReader extends AbstractReader {
    * @since 1.0
    */
   @Override
-  protected CardResponse processCardRequest(CardRequest seRequest, ChannelControl channelControl) {
+  protected CardResponse processCardRequest(
+      CardRequest cardRequest, ChannelControl channelControl) {
 
     // Build the message
     JsonObject body = new JsonObject();
-    body.addProperty("seRequest", KeypleJsonParser.getParser().toJson(seRequest, CardRequest.class));
+    body.addProperty(
+        "cardRequest", KeypleJsonParser.getParser().toJson(cardRequest, CardRequest.class));
     body.addProperty("channelControl", channelControl.name());
 
     // Send the message as a request

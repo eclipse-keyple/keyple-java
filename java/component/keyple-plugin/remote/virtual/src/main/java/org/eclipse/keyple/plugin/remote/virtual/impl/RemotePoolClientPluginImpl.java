@@ -15,7 +15,6 @@ import com.google.gson.JsonObject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
-
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
@@ -104,6 +103,7 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
               getNode(),
               sessionId,
               response.getClientNodeId());
+      reader.register();
       readers.put(reader.getName(), reader);
 
       return reader;
@@ -164,16 +164,6 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
       throw new KeypleReaderNotFoundException(name);
     }
     return seReader;
-  }
-
-  @Override
-  public void register() {
-
-  }
-
-  @Override
-  public void unregister() {
-
   }
 
   /**

@@ -15,13 +15,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.List;
+import org.eclipse.keyple.core.card.message.*;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.card.message.*;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
@@ -163,23 +163,23 @@ abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
       ChannelControl channelControl =
           ChannelControl.valueOf(bodyObject.get("channelControl").getAsString());
 
-      CardRequest seRequest =
+      CardRequest cardRequest =
           KeypleJsonParser.getParser()
-              .fromJson(bodyObject.get("seRequest").getAsString(), CardRequest.class);
+              .fromJson(bodyObject.get("cardRequest").getAsString(), CardRequest.class);
 
       if (logger.isTraceEnabled()) {
         logger.trace(
-            "Execute locally seRequest : {} with params {} on reader {}",
-            seRequest,
+            "Execute locally cardRequest : {} with params {} on reader {}",
+            cardRequest,
             channelControl,
             reader.getName());
       }
 
       // Execute the action on the reader
-      CardResponse seResponse = reader.transmitCardRequest(seRequest, channelControl);
+      CardResponse cardResponse = reader.transmitCardRequest(cardRequest, channelControl);
 
       // Build response
-      String body = KeypleJsonParser.getParser().toJson(seResponse, CardResponse.class);
+      String body = KeypleJsonParser.getParser().toJson(cardResponse, CardResponse.class);
       return new KeypleMessageDto(msg).setBody(body);
     }
 
@@ -199,10 +199,10 @@ abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
           KeypleJsonParser.getParser()
               .fromJson(
                   bodyJsonO.get("cardSelectionRequests").getAsString(),
-                  new TypeToken<ArrayList<CardRequest>>() {}.getType());
+                  new TypeToken<ArrayList<CardSelectionRequest>>() {}.getType());
 
-      MultiSelectionProcessing multiCardRequestProcessing =
-              MultiSelectionProcessing.valueOf(bodyJsonO.get("multiCardRequestProcessing").getAsString());
+      MultiSelectionProcessing multiSelectionProcessing =
+          MultiSelectionProcessing.valueOf(bodyJsonO.get("multiSelectionProcessing").getAsString());
 
       ChannelControl channelControl =
           ChannelControl.valueOf(bodyJsonO.get("channelControl").getAsString());
@@ -212,17 +212,20 @@ abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
             "Execute locally cardSelectionRequests : {} with params {} {}",
             cardSelectionRequests,
             channelControl,
-            multiCardRequestProcessing);
+            multiSelectionProcessing);
       }
 
       // Execute the action on the reader
       List<CardSelectionResponse> cardSelectionResponses =
-          reader.transmitCardSelectionRequests(cardSelectionRequests, multiCardRequestProcessing, channelControl);
+          reader.transmitCardSelectionRequests(
+              cardSelectionRequests, multiSelectionProcessing, channelControl);
 
       // Build response
       String body =
           KeypleJsonParser.getParser()
-              .toJson(cardSelectionResponses, new TypeToken<ArrayList<CardSelectionResponse>>() {}.getType());
+              .toJson(
+                  cardSelectionResponses,
+                  new TypeToken<ArrayList<CardSelectionResponse>>() {}.getType());
       return new KeypleMessageDto(msg).setBody(body);
     }
 

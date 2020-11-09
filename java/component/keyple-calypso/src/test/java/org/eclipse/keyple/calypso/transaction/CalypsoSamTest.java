@@ -139,7 +139,7 @@ public class CalypsoSamTest {
   public void json_fromJson() {
     SelectionStatus selectionStatus =
         new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR1)), null, true);
-    CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null));
+    CalypsoSam calypsoSam = new CalypsoSam(new CardSelectionResponse(selectionStatus, null));
     String json = KeypleJsonParser.getParser().toJson(calypsoSam);
     logger.debug(json);
     Assertions.assertThat(KeypleJsonParser.getParser().fromJson(json, CalypsoSam.class))

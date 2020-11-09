@@ -16,17 +16,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.google.gson.*;
 import java.lang.reflect.Type;
 import java.util.List;
-import org.eclipse.keyple.core.command.AbstractIso7816CommandBuilderTest;
-import org.eclipse.keyple.core.command.exception.KeypleSeCommandException;
-import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
-import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
-import org.eclipse.keyple.core.seproxy.message.SeRequest;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.card.command.AbstractIso7816CommandBuilderTest;
+import org.eclipse.keyple.core.card.command.exception.KeypleCardCommandException;
+import org.eclipse.keyple.core.card.command.exception.KeypleCardCommandUnknownStatusException;
+import org.eclipse.keyple.core.card.message.*;
+import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsRequest;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -40,21 +38,15 @@ public class JsonParserTest {
 
   /** Test Serialization of Keyple Se Proxy Objects */
   @Test
-  public void serialize_HoplinkSeRequestList() {
-    List<SeRequest> seRequests = SampleFactory.getASeRequestList_ISO14443_4();
-    assertSerialization_forList(seRequests, List.class);
+  public void serialize_HoplinkCardRequestList() {
+    List<CardSelectionRequest> selectionRequests = SampleFactory.getCardSelectionRequests();
+    assertSerialization_forList(selectionRequests, List.class);
   }
 
   @Test
-  public void serialize_CompleteSeRequestList() {
-    List<SeRequest> seRequests = SampleFactory.getCompleteRequestList();
-    assertSerialization_forList(seRequests, List.class);
-  }
-
-  @Test
-  public void serialize_SeResponses() {
-    List<SeResponse> seResponses = SampleFactory.getCompleteResponseSet();
-    assertSerialization_forList(seResponses, List.class);
+  public void serialize_cardSelectionResponses() {
+    List<CardSelectionResponse> cardSelectionResponses = SampleFactory.getCompleteResponseSet();
+    assertSerialization_forList(cardSelectionResponses, List.class);
   }
 
   @Test
@@ -82,7 +74,7 @@ public class JsonParserTest {
         new ReaderEvent(
             "PLUGIN",
             "READER",
-            ReaderEvent.EventType.SE_INSERTED,
+            ReaderEvent.EventType.CARD_INSERTED,
             new DefaultSelectionsResponse(SampleFactory.getCompleteResponseSet()));
     assertSerialization(readerEvent, ReaderEvent.class);
   }
@@ -103,8 +95,8 @@ public class JsonParserTest {
 
   @Test
   public void serialize_readerException() {
-    KeypleReaderNotFoundException source =
-        (KeypleReaderNotFoundException) SampleFactory.getAReaderKeypleException();
+    KeypleReaderException source =
+        (KeypleReaderException) SampleFactory.getAReaderKeypleException();
     assertSerialization_forException(new BodyError(source), BodyError.class);
   }
 
@@ -122,8 +114,8 @@ public class JsonParserTest {
 
   @Test
   public void serialize_keypleSeCommandException() {
-    KeypleSeCommandException source =
-        new AKeypleSeCommandException(
+    KeypleCardCommandException source =
+        new KeypleCardCommandUnknownStatusException(
             "message", AbstractIso7816CommandBuilderTest.CommandRef.COMMAND_1, 1);
     assertSerialization_forException(new BodyError(source), BodyError.class);
   }
@@ -185,18 +177,6 @@ public class JsonParserTest {
         JsonElement json, Type typeOfT, JsonDeserializationContext context)
         throws JsonParseException {
       return new SampleFactory.MyKeypleUserData(aDefinedResult);
-    }
-  }
-
-  static class AKeypleSeCommandException extends KeypleSeCommandException {
-    /**
-     * @param message the message to identify the exception context
-     * @param command the command
-     * @param statusCode the status code (optional)
-     */
-    public AKeypleSeCommandException(
-        String message, AbstractIso7816CommandBuilderTest.CommandRef command, Integer statusCode) {
-      super(message, command, statusCode);
     }
   }
 }

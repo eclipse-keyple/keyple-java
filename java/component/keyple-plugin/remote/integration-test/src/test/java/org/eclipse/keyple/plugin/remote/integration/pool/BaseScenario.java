@@ -44,7 +44,7 @@ public abstract class BaseScenario {
     } catch (KeyplePluginNotFoundException e) {
       nativePoolPlugin =
           (StubPoolPlugin)
-                  SmartCardService.getInstance()
+              SmartCardService.getInstance()
                   .registerPlugin(new StubPoolPluginFactory(NATIVE_POOL_PLUGIN_NAME));
     }
     // plug one reader if not exists yet

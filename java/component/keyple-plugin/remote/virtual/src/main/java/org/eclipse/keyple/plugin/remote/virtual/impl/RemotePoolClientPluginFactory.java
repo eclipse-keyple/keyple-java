@@ -27,9 +27,8 @@ import org.slf4j.LoggerFactory;
  * <p>This factory must be used in the use case of the <b>Remote Pool Client Plugin</b>.
  *
  * <p>To register a Remote Pool Client Plugin, use the method {@link
- * SmartCardService#registerPlugin(PluginFactory)} fed in with an
- * instance of this factory. Invoke the {@link #builder()} method to create and configure a factory
- * instance.
+ * SmartCardService#registerPlugin(PluginFactory)} fed in with an instance of this factory. Invoke
+ * the {@link #builder()} method to create and configure a factory instance.
  *
  * <p>Plugin name is defined by default in the factory. Access the Remote Pool Client Plugin with
  * the {@link RemotePoolClientUtils#getRemotePlugin()} ()}.
@@ -131,9 +130,8 @@ public class RemotePoolClientPluginFactory implements PluginFactory {
     /**
      * Build the plugin factory instance.
      *
-     * <p>This instance should be passed to {@link
-     * SmartCardService#registerPlugin(PluginFactory)} in order to
-     * register the plugin.
+     * <p>This instance should be passed to {@link SmartCardService#registerPlugin(PluginFactory)}
+     * in order to register the plugin.
      *
      * @return instance of the plugin factory
      * @since 1.0

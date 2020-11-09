@@ -11,7 +11,6 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.virtual;
 
-
 import org.eclipse.keyple.core.service.event.ObservableReader;
 
 /**

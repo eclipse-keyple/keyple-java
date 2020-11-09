@@ -30,7 +30,6 @@ public abstract class BaseNativeTest {
 
   protected static final String readerName = "readerName";
   final String readerNameUnknown = "readerNameUnknown";
-  final String observableReaderName = "observableReaderName";
 
   ProxyReader readerMocked;
   NativeClientServiceTest.ObservableProxyReader observableReaderMocked;
@@ -44,7 +43,7 @@ public abstract class BaseNativeTest {
   public static KeypleMessageDto getTransmitDto(String sessionId) {
     JsonObject body = new JsonObject();
     body.addProperty("channelControl", ChannelControl.CLOSE_AFTER.name());
-    body.addProperty("seRequest", KeypleJsonParser.getParser().toJson(getACardRequest()));
+    body.addProperty("cardRequest", KeypleJsonParser.getParser().toJson(getACardRequest()));
     return new KeypleMessageDto() //
         .setSessionId(sessionId) //
         .setAction(KeypleMessageDto.Action.TRANSMIT.name()) //
@@ -74,12 +73,13 @@ public abstract class BaseNativeTest {
         .setBody(body.toString());
   }
 
-  public static KeypleMessageDto getTransmitSetDto(String sessionId) {
+  public static KeypleMessageDto getTransmitCardSelectionsDto(String sessionId) {
     JsonObject body = new JsonObject();
     body.addProperty("channelControl", ChannelControl.CLOSE_AFTER.name());
     body.addProperty(
-        "seRequests", KeypleJsonParser.getParser().toJson(Lists.newArrayList(getACardRequest())));
-    body.addProperty("multiCardRequestProcessing", MultiSelectionProcessing.FIRST_MATCH.name());
+        "cardSelectionRequests",
+        KeypleJsonParser.getParser().toJson(Lists.newArrayList(getACardRequest())));
+    body.addProperty("multiSelectionProcessing", MultiSelectionProcessing.FIRST_MATCH.name());
     return new KeypleMessageDto() //
         .setSessionId(sessionId) //
         .setAction(KeypleMessageDto.Action.TRANSMIT_CARD_SELECTION.name()) //
@@ -88,7 +88,7 @@ public abstract class BaseNativeTest {
         .setBody(body.toString());
   }
 
-  public static KeypleMessageDto getIsSePresentDto(String sessionId) {
+  public static KeypleMessageDto getIsCardPresentDto(String sessionId) {
     return new KeypleMessageDto() //
         .setSessionId(sessionId) //
         .setAction(KeypleMessageDto.Action.IS_CARD_PRESENT.name()) //
@@ -106,7 +106,7 @@ public abstract class BaseNativeTest {
         .setBody(null);
   }
 
-  public static KeypleMessageDto getStartSeDetection(String sessionId) {
+  public static KeypleMessageDto getStartCardDetection(String sessionId) {
     JsonObject body = new JsonObject();
     body.addProperty("pollingMode", ObservableReader.PollingMode.REPEATING.name());
 
@@ -118,7 +118,7 @@ public abstract class BaseNativeTest {
         .setBody(body.toString());
   }
 
-  public static KeypleMessageDto getStopSeDetection(String sessionId) {
+  public static KeypleMessageDto getStopCardDetection(String sessionId) {
     JsonObject body = new JsonObject();
     return new KeypleMessageDto() //
         .setSessionId(sessionId) //
@@ -128,7 +128,7 @@ public abstract class BaseNativeTest {
         .setBody(body.toString());
   }
 
-  public static KeypleMessageDto getFinalizeSeProcessing(String sessionId) {
+  public static KeypleMessageDto getFinalizeCardProcessing(String sessionId) {
     JsonObject body = new JsonObject();
     return new KeypleMessageDto() //
         .setSessionId(sessionId) //
@@ -157,7 +157,10 @@ public abstract class BaseNativeTest {
 
   public static CardSelectionRequest getACardSelectionRequest() {
     String poAid = "A000000291A000000191";
-    return new CardSelectionRequest(CardSelector.builder().aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build()).build());
+    return new CardSelectionRequest(
+        CardSelector.builder()
+            .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
+            .build());
   }
 
   public static CardResponse getACardResponse() {
@@ -181,7 +184,7 @@ public abstract class BaseNativeTest {
     apduResponses.add(apdu);
     apduResponses.add(apdu2);
 
-    return new CardSelectionResponse(new SelectionStatus(atr, null, true),getACardResponse());
+    return new CardSelectionResponse(new SelectionStatus(atr, null, true), getACardResponse());
   }
 
   public static void assertMetadataMatches(KeypleMessageDto request, KeypleMessageDto response) {

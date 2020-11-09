@@ -25,7 +25,7 @@ public class KeypleSeCommandExceptionSerializer
 
   @Override
   public JsonElement serialize(
-          KeypleCardCommandException exception,
+      KeypleCardCommandException exception,
       Type type,
       JsonSerializationContext jsonSerializationContext) {
     JsonObject jsonObject = new JsonObject();

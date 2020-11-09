@@ -17,8 +17,6 @@ import org.eclipse.keyple.core.card.command.CardCommand;
 import org.eclipse.keyple.core.card.command.exception.KeypleCardCommandException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 
-import javax.smartcardio.Card;
-
 /** Json Parser for Keyple DTO and Keyple DTO body */
 public final class KeypleJsonParser {
 
@@ -50,7 +48,7 @@ public final class KeypleJsonParser {
     GsonBuilder init = new GsonBuilder();
     // init keyple default adapter
     init.registerTypeAdapter(byte[].class, new HexArrayTypeAdapter())
-        .registerTypeAdapter(CardCommand.class, new SeCommandTypeAdapter())
+        .registerTypeAdapter(CardCommand.class, new CardCommandTypeAdapter())
         .registerTypeAdapter(BodyError.class, new BodyErrorSerializer())
         .registerTypeHierarchyAdapter(Throwable.class, new ThrowableSerializer())
         .registerTypeAdapter(KeypleReaderIOException.class, new KeypleReaderIOExceptionSerializer())

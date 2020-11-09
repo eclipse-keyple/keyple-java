@@ -185,16 +185,6 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
     return reader.isContactless();
   }
 
-  @Override
-  public void register() {
-
-  }
-
-  @Override
-  public void unregister() {
-
-  }
-
   /**
    * (package-private)<br>
    * Return the master reader if any, null if none

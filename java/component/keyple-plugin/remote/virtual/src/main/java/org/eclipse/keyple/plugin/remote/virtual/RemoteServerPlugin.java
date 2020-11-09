@@ -11,6 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.virtual;
 
+import java.util.Map;
 import org.eclipse.keyple.core.service.PluginFactory;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
@@ -19,8 +20,6 @@ import org.eclipse.keyple.core.service.event.PluginEvent;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.plugin.remote.virtual.impl.RemoteServerPluginFactory;
 import org.eclipse.keyple.plugin.remote.virtual.impl.RemoteServerUtils;
-
-import java.util.Map;
 
 /**
  * <b>Remote Server Plugin</b> API.

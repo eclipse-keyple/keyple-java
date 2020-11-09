@@ -14,8 +14,8 @@ package org.eclipse.keyple.core.util.json;
 import com.google.gson.*;
 import java.lang.reflect.Type;
 import java.util.List;
-import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 
 /** Remove Stacktrace and SupressedExceptions fields from serialization */
 public class KeypleReaderIOExceptionSerializer implements JsonSerializer<KeypleReaderIOException> {
@@ -27,10 +27,11 @@ public class KeypleReaderIOExceptionSerializer implements JsonSerializer<KeypleR
       JsonSerializationContext jsonSerializationContext) {
     JsonObject json = new JsonObject();
     json.add(
-        "seResponse",
+        "cardResponse",
         jsonSerializationContext.serialize(exception.getCardResponse(), CardResponse.class));
     json.add(
-        "seResponses", jsonSerializationContext.serialize(exception.getCardResponse(), List.class));
+        "cardSelectionResponses",
+        jsonSerializationContext.serialize(exception.getCardSelectionResponses(), List.class));
     json.addProperty("message", exception.getMessage());
     return json;
   }

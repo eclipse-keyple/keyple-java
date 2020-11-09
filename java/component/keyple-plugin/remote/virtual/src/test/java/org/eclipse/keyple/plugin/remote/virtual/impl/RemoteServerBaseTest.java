@@ -20,7 +20,6 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservablePlugin;
 import org.eclipse.keyple.core.service.event.ObservableReader;
@@ -150,7 +149,8 @@ public class RemoteServerBaseTest {
     return new Callable<Boolean>() {
       @Override
       public Boolean call() throws Exception {
-        return ReaderEvent.EventType.CARD_INSERTED.compareTo(readerObserver.event.getEventType()) == 0
+        return ReaderEvent.EventType.CARD_INSERTED.compareTo(readerObserver.event.getEventType())
+                == 0
             && remotePluginName.equals(pluginObserver.event.getPluginName())
             && !readerObserver.event.getReaderName().equals(virtualReaderName)
             && readerObserver.virtualReaderNames.size()

@@ -17,7 +17,6 @@ import static org.mockito.Mockito.*;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
@@ -41,6 +40,7 @@ public class RemoteServerPluginImplTest extends RemoteServerBaseTest {
     node = Mockito.mock(AbstractKeypleNode.class);
     doReturn(node).when(remotePlugin).getNode();
     doAnswer(aVoid()).when(node).sendMessage(messageArgumentCaptor.capture());
+    remotePlugin.register();
   }
 
   /*

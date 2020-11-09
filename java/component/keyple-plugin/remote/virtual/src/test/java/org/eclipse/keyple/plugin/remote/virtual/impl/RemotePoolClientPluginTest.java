@@ -118,6 +118,7 @@ public class RemotePoolClientPluginTest {
                 .usingDefaultTimeout()
                 .build()
                 .getPlugin();
+    remotePoolPlugin.register();
     virtualReader = remotePoolPlugin.allocateReader(groupReference);
     remotePoolPlugin.releaseReader(virtualReader);
     assertThat(remotePoolPlugin.getReaders()).isEmpty();

@@ -17,7 +17,6 @@ import static org.mockito.Mockito.*;
 
 import com.google.gson.reflect.TypeToken;
 import java.util.*;
-
 import org.eclipse.keyple.core.card.message.*;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
@@ -59,22 +58,22 @@ public class VirtualReaderTest {
     ChannelControl channelControl = ChannelControl.KEEP_OPEN;
 
     // init response
-    CardResponse seResponse = SampleFactory.getACardResponse();
+    CardResponse cardResponse = SampleFactory.getACardResponse();
 
     KeypleMessageDto responseDto =
         new KeypleMessageDto() //
             .setAction(KeypleMessageDto.Action.TRANSMIT.name()) //
             .setVirtualReaderName(reader.getName()) //
             .setNativeReaderName(reader.nativeReaderName) //
-            .setBody(KeypleJsonParser.getParser().toJson(seResponse, CardResponse.class));
+            .setBody(KeypleJsonParser.getParser().toJson(cardResponse, CardResponse.class));
 
     doReturn(responseDto).when(node).sendRequest(any(KeypleMessageDto.class));
 
     // execute
-    CardResponse seResponseReturned = reader.processCardRequest(cardRequest, channelControl);
+    CardResponse cardResponseReturned = reader.processCardRequest(cardRequest, channelControl);
 
     // verify
-    assertThat(seResponseReturned).isEqualToComparingFieldByField(seResponse);
+    assertThat(cardResponseReturned).isEqualToComparingFieldByField(cardResponse);
   }
 
   @Test(expected = KeypleTimeoutException.class)
@@ -109,12 +108,13 @@ public class VirtualReaderTest {
   public void processCardRequests_whenOk_shouldCallTheHandlerAndReturnResponses() {
 
     // init request
-    List<CardSelectionRequest> seRequests = SampleFactory.getACardRequestList_ISO14443_4();
+    List<CardSelectionRequest> cardSelectionRequests =
+        SampleFactory.getACardRequestList_ISO14443_4();
     MultiSelectionProcessing multiCardRequestProcessing = MultiSelectionProcessing.FIRST_MATCH;
     ChannelControl channelControl = ChannelControl.KEEP_OPEN;
 
     // init response
-    List<CardSelectionResponse> seResponses = SampleFactory.getCompleteResponseList();
+    List<CardSelectionResponse> cardResponses = SampleFactory.getCompleteResponseList();
 
     KeypleMessageDto responseDto =
         new KeypleMessageDto() //
@@ -123,16 +123,17 @@ public class VirtualReaderTest {
             .setNativeReaderName(reader.nativeReaderName) //
             .setBody(
                 KeypleJsonParser.getParser()
-                    .toJson(seResponses, new TypeToken<ArrayList<CardResponse>>() {}.getType()));
+                    .toJson(cardResponses, new TypeToken<ArrayList<CardResponse>>() {}.getType()));
 
     doReturn(responseDto).when(node).sendRequest(any(KeypleMessageDto.class));
 
     // execute
-    List<CardSelectionResponse> seResponsesReturned =
-        reader.processCardSelectionRequests(seRequests, multiCardRequestProcessing, channelControl);
+    List<CardSelectionResponse> cardResponsesReturned =
+        reader.processCardSelectionRequests(
+            cardSelectionRequests, multiCardRequestProcessing, channelControl);
 
     // verify
-    assertThat(seResponsesReturned).hasSameElementsAs(seResponses);
+    assertThat(cardResponsesReturned).hasSameElementsAs(cardResponses);
   }
 
   @Test(expected = KeypleTimeoutException.class)
@@ -142,12 +143,14 @@ public class VirtualReaderTest {
     mockTimeout();
 
     // init request
-    List<CardSelectionRequest> seRequests = SampleFactory.getACardRequestList_ISO14443_4();
+    List<CardSelectionRequest> cardSelectionRequests =
+        SampleFactory.getACardRequestList_ISO14443_4();
     MultiSelectionProcessing multiCardRequestProcessing = MultiSelectionProcessing.FIRST_MATCH;
     ChannelControl channelControl = ChannelControl.KEEP_OPEN;
 
     // execute
-    reader.processCardSelectionRequests(seRequests, multiCardRequestProcessing, channelControl);
+    reader.processCardSelectionRequests(
+        cardSelectionRequests, multiCardRequestProcessing, channelControl);
   }
 
   @Test(expected = KeypleReaderIOException.class)
@@ -157,12 +160,14 @@ public class VirtualReaderTest {
     mockError();
 
     // init request
-    List<CardSelectionRequest> seRequests = SampleFactory.getACardRequestList_ISO14443_4();
+    List<CardSelectionRequest> cardSelectionRequests =
+        SampleFactory.getACardRequestList_ISO14443_4();
     MultiSelectionProcessing multiCardRequestProcessing = MultiSelectionProcessing.FIRST_MATCH;
     ChannelControl channelControl = ChannelControl.KEEP_OPEN;
 
     // execute
-    reader.processCardSelectionRequests(seRequests, multiCardRequestProcessing, channelControl);
+    reader.processCardSelectionRequests(
+        cardSelectionRequests, multiCardRequestProcessing, channelControl);
   }
 
   @Test

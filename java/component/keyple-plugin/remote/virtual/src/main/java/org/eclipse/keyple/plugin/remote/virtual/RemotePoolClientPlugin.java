@@ -10,6 +10,7 @@
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.virtual;
+
 import org.eclipse.keyple.core.service.PluginFactory;
 import org.eclipse.keyple.core.service.ReaderPoolPlugin;
 import org.eclipse.keyple.core.service.SmartCardService;

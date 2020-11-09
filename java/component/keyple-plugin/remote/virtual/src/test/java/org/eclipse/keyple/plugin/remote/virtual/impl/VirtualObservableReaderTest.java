@@ -22,7 +22,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
 import org.eclipse.keyple.core.card.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
@@ -142,7 +141,8 @@ public class VirtualObservableReaderTest {
     JsonObject body = KeypleJsonParser.getParser().fromJson(request.getBody(), JsonObject.class);
     assertThat(
             KeypleJsonParser.getParser()
-                .fromJson(body.get("pollingMode").getAsString(), ObservableReader.PollingMode.class))
+                .fromJson(
+                    body.get("pollingMode").getAsString(), ObservableReader.PollingMode.class))
         .isEqualToComparingFieldByFieldRecursively(pollingMode);
   }
 

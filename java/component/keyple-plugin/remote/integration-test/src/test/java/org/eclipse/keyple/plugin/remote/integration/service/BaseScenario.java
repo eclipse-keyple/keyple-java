@@ -156,7 +156,6 @@ public abstract class BaseScenario {
     // nativeReader should be reset
     try {
       nativeReader = (StubReader) nativePlugin.getReader(NATIVE_READER_NAME);
-      assertThat(nativeReader).isNull();
     } catch (KeypleReaderNotFoundException e) {
       nativePlugin.plugStubReader(NATIVE_READER_NAME, true, true);
       nativeReader = (StubReader) nativePlugin.getReader(NATIVE_READER_NAME);
@@ -168,7 +167,6 @@ public abstract class BaseScenario {
     // nativeReader should be reset
     try {
       nativeReader2 = (StubReader) nativePlugin.getReader(NATIVE_READER_NAME_2);
-      assertThat(nativeReader2).isNull();
     } catch (KeypleReaderNotFoundException e) {
       // plug a second reader
       nativePlugin.plugStubReader(NATIVE_READER_NAME_2, true, true);
@@ -211,7 +209,7 @@ public abstract class BaseScenario {
     } catch (KeyplePluginNotFoundException e) {
       remotePlugin =
           (RemoteServerPlugin)
-                  SmartCardService.getInstance()
+              SmartCardService.getInstance()
                   .registerPlugin(
                       RemoteServerPluginFactory.builder()
                           .withAsyncNode(serverEndpoint)
@@ -221,7 +219,7 @@ public abstract class BaseScenario {
     }
   }
 
-  StubCalypsoClassic getSlowSe() {
+  StubCalypsoClassic getSlowCard() {
     return new StubCalypsoClassic() {
       @Override
       public byte[] processApdu(byte[] apduIn) {
@@ -268,15 +266,6 @@ public abstract class BaseScenario {
     };
   }
 
-  Callable<Boolean> seInserted(final Reader seReader) {
-    return new Callable<Boolean>() {
-      @Override
-      public Boolean call() throws Exception {
-        return seReader.isCardPresent();
-      }
-    };
-  }
-
   Callable<Boolean> executeTransaction(
       final NativeClientService nativeService,
       final StubReader nativeReader,
@@ -285,7 +274,7 @@ public abstract class BaseScenario {
       @Override
       public Boolean call() throws Exception {
         // insert stub card into stub
-        nativeReader.insertSe(new StubCalypsoClassic());
+        nativeReader.insertCard(new StubCalypsoClassic());
 
         // execute remote service
         TransactionResult output =
@@ -305,7 +294,7 @@ public abstract class BaseScenario {
 
   void localselection_remoteTransaction_successful() {
     // insert stub card into stub
-    nativeReader.insertSe(new StubCalypsoClassic());
+    nativeReader.insertCard(new StubCalypsoClassic());
 
     // execute a local selection on native reader
     CalypsoPo calypsoPo = explicitPoSelection();
@@ -326,7 +315,7 @@ public abstract class BaseScenario {
 
   void remoteselection_remoteTransaction_successful() {
     // insert stub card into stub
-    nativeReader.insertSe(new StubCalypsoClassic());
+    nativeReader.insertCard(new StubCalypsoClassic());
 
     // execute remote service
     TransactionResult output =
@@ -345,8 +334,8 @@ public abstract class BaseScenario {
     user2 = new UserInput().setUserId("user2");
 
     // insert stub card into both readers
-    nativeReader.insertSe(new StubCalypsoClassic());
-    nativeReader2.insertSe(new StubCalypsoClassic());
+    nativeReader.insertCard(new StubCalypsoClassic());
+    nativeReader2.insertCard(new StubCalypsoClassic());
 
     // execute remoteservice task concurrently on both readers
     final Future<Boolean> task1 =
@@ -371,7 +360,7 @@ public abstract class BaseScenario {
     // remove read record command to make the tx fail
     failingSe.removeHexCommand("00B2014400");
 
-    nativeReader.insertSe(failingSe);
+    nativeReader.insertCard(failingSe);
 
     // execute remote service
     TransactionResult output =
@@ -388,7 +377,7 @@ public abstract class BaseScenario {
 
   void transaction_slowSe_success() {
 
-    nativeReader.insertSe(getSlowSe());
+    nativeReader.insertCard(getSlowCard());
 
     try {
       // execute remote service
@@ -427,12 +416,12 @@ public abstract class BaseScenario {
      * a transaction is operated in response
      * user1 removes card
      */
-    nativeReader.insertSe(new StubCalypsoClassic());
+    nativeReader.insertCard(new StubCalypsoClassic());
     logger.info(
         "1 - Verify User Transaction is successful for first user {}",
         eventFilter.user.getUserId());
     await().atMost(10, TimeUnit.SECONDS).until(verifyUserTransaction(eventFilter, user1, true));
-    nativeReader.removeSe();
+    nativeReader.removeCard();
     await().atMost(1, TimeUnit.SECONDS).until(seRemoved(nativeReader));
 
     /*
@@ -443,12 +432,12 @@ public abstract class BaseScenario {
      */
     UserInput user2 = new UserInput().setUserId(UUID.randomUUID().toString());
     eventFilter.setUserData(user2);
-    nativeReader.insertSe(new StubCalypsoClassic());
+    nativeReader.insertCard(new StubCalypsoClassic());
     logger.info(
         "2 - Verify User Transaction is successful for second user {}",
         eventFilter.user.getUserId());
     await().atMost(10, TimeUnit.SECONDS).until(verifyUserTransaction(eventFilter, user2, true));
-    nativeReader.removeSe();
+    nativeReader.removeCard();
     await().atMost(1, TimeUnit.SECONDS).until(seRemoved(nativeReader));
 
     /*
@@ -460,7 +449,7 @@ public abstract class BaseScenario {
 
   void remoteselection_remoteTransaction() {
     // insert stub card into stub
-    nativeReader.insertSe(new StubCalypsoClassic());
+    nativeReader.insertCard(new StubCalypsoClassic());
 
     // execute remote service
     TransactionResult output =
@@ -473,7 +462,7 @@ public abstract class BaseScenario {
 
   void all_methods() {
     // insert stub card into stub
-    nativeReader.insertSe(new StubCalypsoClassic());
+    nativeReader.insertCard(new StubCalypsoClassic());
 
     // execute remote service
     TransactionResult output =

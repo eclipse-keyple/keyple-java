@@ -15,7 +15,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.eclipse.keyple.core.card.message.ProxyReader;
 import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.service.event.ObservableReader;
@@ -93,7 +92,7 @@ final class NativeClientServiceImpl extends AbstractNativeService
         .notNull(classOfT, "classOfT");
 
     // get nativeReader
-     ProxyReader nativeReader = (ProxyReader) parameters.getNativeReader();
+    ProxyReader nativeReader = (ProxyReader) parameters.getNativeReader();
 
     if (logger.isTraceEnabled()) {
       logger.trace(

@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.google.gson.Gson;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
-import org.eclipse.keyple.core.command.exception.KeypleSeCommandException;
+import org.eclipse.keyple.core.card.command.exception.KeypleCardCommandException;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.junit.Before;
@@ -36,8 +36,8 @@ public class SamCommandExceptionTest {
         new CalypsoSamAccessForbiddenException("message", CalypsoSamCommand.CARD_CIPHER_PIN, 2);
     String json = parser.toJson(new BodyError(source));
     assertThat(json).doesNotContain("stackTrace");
-    KeypleSeCommandException target =
-        (KeypleSeCommandException) parser.fromJson(json, BodyError.class).getException();
+    KeypleCardCommandException target =
+        (KeypleCardCommandException) parser.fromJson(json, BodyError.class).getException();
     assertThat(target).isEqualToComparingFieldByFieldRecursively(source);
   }
 }

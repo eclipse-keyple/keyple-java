@@ -18,8 +18,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import java.util.SortedSet;
 import org.assertj.core.util.Sets;
-import org.eclipse.keyple.core.service.PluginFactory;
 import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.PluginFactory;
 import org.eclipse.keyple.core.service.ReaderPoolPlugin;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.exception.KeypleAllocationReaderException;
@@ -65,7 +65,10 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
 
   @After
   public void tearDown() {
-    SmartCardService.getInstance().unregisterPlugin(poolPluginName);
+    SmartCardService service = SmartCardService.getInstance();
+    if (service.isRegistered(poolPluginName)) {
+      SmartCardService.getInstance().unregisterPlugin(poolPluginName);
+    }
   }
 
   @Test
@@ -221,7 +224,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
 
   @Test
   public void onIsPresent_shouldPropagate_toLocalPoolPlugin() {
-    KeypleMessageDto request = getIsSePresentDto(sessionId);
+    KeypleMessageDto request = getIsCardPresentDto(sessionId);
     NativePoolServerUtils.getAsyncNode().onMessage(request);
 
     response = captureResponse();
@@ -299,7 +302,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
     assertThat(response.getClientNodeId()).isEqualTo(request.getClientNodeId());
   }
 
-  public static KeypleMessageDto getIsSePresentDto(String sessionId) {
+  public static KeypleMessageDto getIsCardPresentDto(String sessionId) {
     return new KeypleMessageDto() //
         .setSessionId(sessionId) //
         .setAction(KeypleMessageDto.Action.IS_CARD_PRESENT.name()) //

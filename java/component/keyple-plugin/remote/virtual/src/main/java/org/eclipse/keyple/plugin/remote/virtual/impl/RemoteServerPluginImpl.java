@@ -16,7 +16,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
-
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.event.PluginEvent;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
@@ -87,9 +86,8 @@ final class RemoteServerPluginImpl extends AbstractRemotePlugin implements Remot
 
         // create a virtual reader from message parameters
         final AbstractServerVirtualReader virtualReader = createMasterReader(message);
-
+        virtualReader.register();
         readers.put(virtualReader.getName(), virtualReader);
-
         notifyObservers(
             new PluginEvent(
                 getName(), virtualReader.getName(), PluginEvent.EventType.READER_CONNECTED));
@@ -98,7 +96,7 @@ final class RemoteServerPluginImpl extends AbstractRemotePlugin implements Remot
         Assert.getInstance().notNull(message.getVirtualReaderName(), "virtualReaderName");
 
         ServerVirtualObservableReader delegateVirtualReader = createSlaveReader(message);
-
+        delegateVirtualReader.register();
         readers.put(delegateVirtualReader.getName(), delegateVirtualReader);
 
         // notify observers of this event
@@ -192,16 +190,6 @@ final class RemoteServerPluginImpl extends AbstractRemotePlugin implements Remot
       throw new KeypleReaderNotFoundException(name);
     }
     return seReader;
-  }
-
-  @Override
-  public void register() {
-
-  }
-
-  @Override
-  public void unregister() {
-
   }
 
   /**

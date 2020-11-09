@@ -15,7 +15,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
-
 import org.eclipse.keyple.core.card.message.*;
 import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
@@ -40,9 +39,9 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
   VirtualObservableReader virtualObservableReaderMocked;
   ServerVirtualObservableReader reader;
 
-  private static class MyMatchingSe extends AbstractSmartCard {
+  private static class MyMatchingCard extends AbstractSmartCard {
 
-    MyMatchingSe(CardSelectionResponse selectionResponse) {
+    MyMatchingCard(CardSelectionResponse selectionResponse) {
       super(selectionResponse);
     }
   }
@@ -70,80 +69,87 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
   public void transmitCardRequest_shouldDelegateMethodToVirtualReader() {
 
     // init request
-    CardRequest seRequest = SampleFactory.getACardRequest();
+    CardRequest cardRequest = SampleFactory.getACardRequest();
     ChannelControl channelControl = ChannelControl.KEEP_OPEN;
 
     // init response
-    CardResponse seResponse = SampleFactory.getACardResponse();
-    doReturn(seResponse)
+    CardResponse cardResponse = SampleFactory.getACardResponse();
+    doReturn(cardResponse)
         .when(virtualObservableReaderMocked)
-        .transmitCardRequest(seRequest, channelControl);
+        .transmitCardRequest(cardRequest, channelControl);
 
     // execute
-    CardResponse seResponseReturned = reader.transmitCardRequest(seRequest, channelControl);
+    CardResponse cardResponseReturned = reader.transmitCardRequest(cardRequest, channelControl);
 
     // verify
-    verify(virtualObservableReaderMocked).transmitCardRequest(seRequest, channelControl);
+    verify(virtualObservableReaderMocked).transmitCardRequest(cardRequest, channelControl);
     verifyNoMoreInteractions(virtualObservableReaderMocked);
-    assertThat(seResponseReturned).isEqualToComparingFieldByField(seResponse);
+    assertThat(cardResponseReturned).isEqualToComparingFieldByField(cardResponse);
   }
 
   @Test(expected = KeypleReaderIOException.class)
   public void transmitCardRequest_whenError_shouldThrowOriginalException() {
 
     // init request
-    CardRequest seRequest = SampleFactory.getACardRequest();
+    CardRequest cardRequest = SampleFactory.getACardRequest();
     ChannelControl channelControl = ChannelControl.KEEP_OPEN;
 
     // init response
     doThrow(new KeypleReaderIOException("test"))
         .when(virtualObservableReaderMocked)
-        .transmitCardRequest(seRequest, channelControl);
+        .transmitCardRequest(cardRequest, channelControl);
 
     // execute
-    reader.transmitCardRequest(seRequest, channelControl);
+    reader.transmitCardRequest(cardRequest, channelControl);
   }
 
   @Test
   public void transmitCardSelectionRequests_shouldDelegateMethodToVirtualReader() {
 
     // init request
-    List<CardSelectionRequest> seRequests = SampleFactory.getACardRequestList_ISO14443_4();
+    List<CardSelectionRequest> cardSelectionRequests =
+        SampleFactory.getACardRequestList_ISO14443_4();
     MultiSelectionProcessing multiCardRequestProcessing = MultiSelectionProcessing.FIRST_MATCH;
     ChannelControl channelControl = ChannelControl.KEEP_OPEN;
 
     // init response
-    List<CardSelectionResponse> seResponses = SampleFactory.getCompleteResponseList();
-    doReturn(seResponses)
+    List<CardSelectionResponse> cardResponses = SampleFactory.getCompleteResponseList();
+    doReturn(cardResponses)
         .when(virtualObservableReaderMocked)
-        .transmitCardSelectionRequests(seRequests, multiCardRequestProcessing, channelControl);
+        .transmitCardSelectionRequests(
+            cardSelectionRequests, multiCardRequestProcessing, channelControl);
 
     // execute
-    List<CardSelectionResponse> seResponsesReturned =
-        reader.transmitCardSelectionRequests(seRequests, multiCardRequestProcessing, channelControl);
+    List<CardSelectionResponse> cardResponsesReturned =
+        reader.transmitCardSelectionRequests(
+            cardSelectionRequests, multiCardRequestProcessing, channelControl);
 
     // verify
     verify(virtualObservableReaderMocked)
-        .transmitCardSelectionRequests(seRequests, multiCardRequestProcessing, channelControl);
+        .transmitCardSelectionRequests(
+            cardSelectionRequests, multiCardRequestProcessing, channelControl);
     verifyNoMoreInteractions(virtualObservableReaderMocked);
-    assertThat(seResponsesReturned).hasSameElementsAs(seResponses);
+    assertThat(cardResponsesReturned).hasSameElementsAs(cardResponses);
   }
 
   @Test(expected = KeypleReaderIOException.class)
   public void transmitCardSelectionRequests_whenError_shouldThrowOriginalException() {
 
     // init request
-    List<CardSelectionRequest> seRequests = SampleFactory.getACardRequestList_ISO14443_4();
+    List<CardSelectionRequest> cardSelectionRequests =
+        SampleFactory.getACardRequestList_ISO14443_4();
     MultiSelectionProcessing multiCardRequestProcessing = MultiSelectionProcessing.FIRST_MATCH;
     ChannelControl channelControl = ChannelControl.KEEP_OPEN;
 
     // init response
     doThrow(new KeypleReaderIOException("test"))
         .when(virtualObservableReaderMocked)
-        .transmitCardSelectionRequests(seRequests, multiCardRequestProcessing, channelControl);
+        .transmitCardSelectionRequests(
+            cardSelectionRequests, multiCardRequestProcessing, channelControl);
 
     // execute
-    reader.transmitCardSelectionRequests(seRequests, multiCardRequestProcessing, channelControl);
+    reader.transmitCardSelectionRequests(
+        cardSelectionRequests, multiCardRequestProcessing, channelControl);
   }
 
   @Test
@@ -165,7 +171,9 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
   public void isCardPresent_whenError_shouldThrowOriginalException() {
 
     // init
-    doThrow(new KeypleReaderIOException("test")).when(virtualObservableReaderMocked).isCardPresent();
+    doThrow(new KeypleReaderIOException("test"))
+        .when(virtualObservableReaderMocked)
+        .isCardPresent();
 
     // execute
     reader.isCardPresent();
@@ -239,14 +247,14 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void getInitialSeContent_whenClassIsNull_shouldThrowIAE() {
+  public void getInitialCardContent_whenClassIsNull_shouldThrowIAE() {
 
     // execute
     reader.getInitialCardContent(null);
   }
 
   @Test
-  public void getInitialSeContent_whenDataIsNull_shouldReturnNull() {
+  public void getInitialCardContent_whenDataIsNull_shouldReturnNull() {
 
     // init
     reader =
@@ -261,12 +269,13 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
   }
 
   @Test
-  public void getInitialSeContent_whenDataIsNotNull_shouldReturnParsedData() {
+  public void getInitialCardContent_whenDataIsNotNull_shouldReturnParsedData() {
 
     // init
-    MyMatchingSe matchingSe = new MyMatchingSe(SampleFactory.getCompleteResponseList().get(0));
+    MyMatchingCard matchingCard =
+        new MyMatchingCard(SampleFactory.getCompleteResponseList().get(0));
 
-    String initialCardContentJson = KeypleJsonParser.getParser().toJson(matchingSe);
+    String initialCardContentJson = KeypleJsonParser.getParser().toJson(matchingCard);
 
     reader =
         new ServerVirtualObservableReader(
@@ -277,10 +286,10 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
             null);
 
     // execute
-    MyMatchingSe result = reader.getInitialCardContent(MyMatchingSe.class);
+    MyMatchingCard result = reader.getInitialCardContent(MyMatchingCard.class);
 
     // verify
-    assertThat(result).isEqualToComparingFieldByField(matchingSe);
+    assertThat(result).isEqualToComparingFieldByField(matchingCard);
   }
 
   @Test

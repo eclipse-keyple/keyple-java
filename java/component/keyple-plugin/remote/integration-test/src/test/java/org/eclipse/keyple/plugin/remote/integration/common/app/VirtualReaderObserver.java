@@ -45,7 +45,7 @@ public class VirtualReaderObserver implements ObservableReader.ReaderObserver {
         event.getDefaultSelectionsResponse());
 
     switch (event.getEventType()) {
-      case CARD_INSERTED:
+      case CARD_MATCHED:
         eventCounter++;
 
         UserInput userInput = observableVirtualReader.getUserInputData(UserInput.class);

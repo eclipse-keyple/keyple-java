@@ -14,7 +14,6 @@ package org.eclipse.keyple.plugin.remote.virtual.impl;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
@@ -32,6 +31,9 @@ abstract class AbstractRemotePlugin extends AbstractKeypleMessageHandler impleme
 
   private final String name;
   protected final Map<String, Reader> readers;
+
+  /** Registeration status of the plugin */
+  private boolean isRegistered;
 
   /**
    * (package-private)<br>
@@ -51,7 +53,6 @@ abstract class AbstractRemotePlugin extends AbstractKeypleMessageHandler impleme
     super();
     this.name = name;
     this.readers = new ConcurrentHashMap<String, Reader>();
-    this.readers.putAll(initNativeReaders());
   }
 
   /**
@@ -95,4 +96,27 @@ abstract class AbstractRemotePlugin extends AbstractKeypleMessageHandler impleme
    * @throws KeypleReaderIOException if the communication with the reader or the Card has failed
    */
   protected abstract Map<String, Reader> initNativeReaders() throws KeypleReaderIOException;
+
+  /** {@inheritDoc} */
+  @Override
+  public void register() {
+    if (isRegistered)
+      throw new IllegalStateException(
+          String.format("This plugin, %s, is already registered", getName()));
+    isRegistered = true;
+    readers.putAll(initNativeReaders());
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public void unregister() {
+    if (!isRegistered)
+      throw new IllegalStateException(
+          String.format("This plugin, %s, is not registered", getName()));
+    isRegistered = false;
+    for (String key : readers.keySet()) {
+      final Reader seReader = readers.remove(key);
+      seReader.unregister();
+    }
+  }
 }

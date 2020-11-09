@@ -16,29 +16,29 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
-import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.message.*;
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactsCardCommonProtocols;
+import org.eclipse.keyple.core.card.message.*;
+import org.eclipse.keyple.core.card.selection.CardSelector;
+import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
+import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsRequest;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.service.util.ContactsCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 public class SampleFactory {
 
   public static KeypleReaderIOException getIOExceptionWithResponse() {
     KeypleReaderIOException ioException = new KeypleReaderIOException("Keyple Reader Exception");
-    ioException.setSeResponse(getASeResponse());
+    ioException.setCardResponse(getACardResponse());
     return ioException;
   }
 
   public static KeypleReaderIOException getIOExceptionWithResponses() {
     KeypleReaderIOException ioException = new KeypleReaderIOException("Keyple Reader Exception");
-    ioException.setSeResponses(getCompleteResponseSet());
+    ioException.setCardSelectionResponses(getCompleteResponseSet());
     return ioException;
   }
 
@@ -58,124 +58,111 @@ public class SampleFactory {
 
   public static AbstractDefaultSelectionsRequest getSelectionRequest() {
     return new DefaultSelectionsRequest(
-        getASeRequestList_ISO14443_4(),
-        MultiSeRequestProcessing.FIRST_MATCH,
-        ChannelControl.KEEP_OPEN);
+        getCardSelectionRequests(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
   }
 
   public static ObservableReader.NotificationMode getNotificationMode() {
     return ObservableReader.NotificationMode.ALWAYS;
   }
 
-  public static List<SeRequest> getASeRequestList_ISO14443_4() {
+  public static List<CardSelectionRequest> getCardSelectionRequests() {
     String poAid = "A000000291A000000191";
 
     List<ApduRequest> poApduRequests;
     poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
-    SeSelector.AidSelector aidSelector =
-        SeSelector.AidSelector.builder() //
+    CardSelector.AidSelector aidSelector =
+        CardSelector.AidSelector.builder() //
             .aidToSelect(poAid) //
             .build();
 
-    SeSelector seSelector =
-        SeSelector.builder() //
+    CardSelector seSelector =
+        CardSelector.builder() //
             .aidSelector(aidSelector) //
-            .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name()) //
+            .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name()) //
             .build();
 
-    SeRequest seRequest = new SeRequest(seSelector, poApduRequests);
+    CardSelectionRequest seRequest = new CardSelectionRequest(seSelector, getACardRequest());
 
-    List<SeRequest> seRequests = new ArrayList<SeRequest>();
+    List<CardSelectionRequest> seRequests = new ArrayList<CardSelectionRequest>();
 
     seRequests.add(seRequest);
 
     return seRequests;
   }
 
-  public static List<SeRequest> getASeRequestList() {
+  public static List<CardRequest> getACardRequestList() {
     String poAid = "A000000291A000000191";
 
     List<ApduRequest> poApduRequests;
     poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
-    SeRequest seRequest = new SeRequest(poApduRequests);
+    CardRequest seRequest = new CardRequest(poApduRequests);
 
-    List<SeRequest> seRequests = new ArrayList<SeRequest>();
+    List<CardRequest> seRequests = new ArrayList<CardRequest>();
 
     seRequests.add(seRequest);
 
     return seRequests;
   }
 
-  public static SeRequest getASeRequest_ISO14443_4() {
-    String poAid = "A000000291A000000191";
-
+  public static CardRequest getACardRequest() {
     List<ApduRequest> poApduRequests;
     poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
-    SeSelector.AidSelector aidSelector =
-        SeSelector.AidSelector.builder() //
-            .aidToSelect(poAid) //
-            .build();
-
-    SeSelector seSelector =
-        SeSelector.builder() //
-            .aidSelector(aidSelector) //
-            .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name()) //
-            .build();
-
-    SeRequest seRequest = new SeRequest(seSelector, poApduRequests);
+    CardRequest seRequest = new CardRequest(poApduRequests);
     return seRequest;
   }
 
-  public static List<SeRequest> getCompleteRequestList() {
+  public static List<CardSelectionRequest> getCompleteRequestList() {
     String poAid = "A000000291A000000191";
 
     List<ApduRequest> poApduRequests;
 
     poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
-    SeSelector.AidSelector aidSelector =
-        SeSelector.AidSelector.builder() //
+    CardSelector.AidSelector aidSelector =
+        CardSelector.AidSelector.builder() //
             .aidToSelect(poAid) //
             .build();
 
-    SeSelector aidSeSelector =
-        SeSelector.builder() //
+    CardSelector aidCardSelector =
+        CardSelector.builder() //
             .aidSelector(aidSelector) //
-            .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name()) //
+            .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name()) //
             .build();
 
-    SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter("/regex/");
+    CardSelector.AtrFilter atrFilter = new CardSelector.AtrFilter("/regex/");
 
-    SeSelector seAtrSelector =
-        SeSelector.builder() //
+    CardSelector seAtrSelector =
+        CardSelector.builder() //
             .atrFilter(atrFilter) //
-            .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name()) //
+            .cardProtocol(ContactsCardCommonProtocols.ISO_7816_3.name()) //
             .build();
 
-    SeRequest seRequest = new SeRequest(aidSeSelector, poApduRequests);
+    CardSelectionRequest cardSelectionRequest =
+        new CardSelectionRequest(aidCardSelector, getACardRequest());
 
-    SeRequest seRequest2 = new SeRequest(seAtrSelector, poApduRequests);
+    CardSelectionRequest cardSelectionRequest2 =
+        new CardSelectionRequest(seAtrSelector, getACardRequest());
 
-    List<SeRequest> seRequests = new ArrayList<SeRequest>();
-    seRequests.add(seRequest);
-    seRequests.add(seRequest2);
+    List<CardSelectionRequest> seRequests = new ArrayList<CardSelectionRequest>();
+    seRequests.add(cardSelectionRequest);
+    seRequests.add(cardSelectionRequest2);
 
     return seRequests;
   }
 
-  public static List<SeResponse> getCompleteResponseSet() {
-    List<SeResponse> seResponses = new ArrayList<SeResponse>();
+  public static List<CardSelectionResponse> getCompleteResponseSet() {
+    List<CardSelectionResponse> cardSelectionResponses = new ArrayList<CardSelectionResponse>();
 
-    seResponses.add(getASeResponse());
-    seResponses.add(getASeResponse());
+    cardSelectionResponses.add(getASelectionCardResponse());
+    cardSelectionResponses.add(getASelectionCardResponse());
 
-    return seResponses;
+    return cardSelectionResponses;
   }
 
-  public static SeResponse getASeResponse() {
+  public static CardResponse getACardResponse() {
     ApduResponse apdu = new ApduResponse(ByteArrayUtil.fromHex("9000"), new HashSet<Integer>());
     ApduResponse apdu2 = new ApduResponse(ByteArrayUtil.fromHex("9000"), new HashSet<Integer>());
 
@@ -185,7 +172,15 @@ public class SampleFactory {
     apduResponses.add(apdu);
     apduResponses.add(apdu2);
 
-    return new SeResponse(true, true, new SelectionStatus(atr, apdu, true), apduResponses);
+    return new CardResponse(true, apduResponses);
+  }
+
+  public static CardSelectionResponse getASelectionCardResponse() {
+    ApduResponse apdu = new ApduResponse(ByteArrayUtil.fromHex("9000"), new HashSet<Integer>());
+
+    AnswerToReset atr = new AnswerToReset(ByteArrayUtil.fromHex("9000"));
+
+    return new CardSelectionResponse(new SelectionStatus(atr, apdu, true), getACardResponse());
   }
 
   public static class MyKeypleUserData {

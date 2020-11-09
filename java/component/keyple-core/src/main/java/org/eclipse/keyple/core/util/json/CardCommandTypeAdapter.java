@@ -16,7 +16,7 @@ import java.lang.reflect.Type;
 import org.eclipse.keyple.core.card.command.CardCommand;
 import org.eclipse.keyple.core.util.Assert;
 
-public class SeCommandTypeAdapter
+public class CardCommandTypeAdapter
     implements JsonSerializer<CardCommand>, JsonDeserializer<CardCommand> {
 
   @Override
@@ -37,10 +37,10 @@ public class SeCommandTypeAdapter
 
   @Override
   public JsonElement serialize(
-          CardCommand seCommand, Type type, JsonSerializationContext jsonSerializationContext) {
+      CardCommand seCommand, Type type, JsonSerializationContext jsonSerializationContext) {
     JsonObject output = new JsonObject();
     Assert.getInstance()
-        .isTrue(seCommand.getClass().isEnum(), "SeCommandAdapter works only with enum");
+        .isTrue(seCommand.getClass().isEnum(), "CardCommandAdapter works only with enum");
     output.addProperty("name", ((Enum) seCommand).name());
     output.addProperty("class", seCommand.getClass().getName());
     return output;
