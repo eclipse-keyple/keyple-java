@@ -215,7 +215,6 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
             connectedLock.countDown();
           }
         }
-        ;
       }
     };
   }
