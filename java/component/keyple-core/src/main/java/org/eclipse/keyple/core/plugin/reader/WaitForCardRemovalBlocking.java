@@ -13,21 +13,29 @@ package org.eclipse.keyple.core.plugin.reader;
 
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 
-public interface SmartInsertionReader extends ObservableReaderNotifier {
+/** Interface implemented by the readers able to handle natively the card removal process. */
+public interface WaitForCardRemovalBlocking extends ObservableReaderNotifier {
   /**
-   * Waits for a card. Returns true if a card is detected before the end of the provided timeout.
+   * Wait until the card disappears.
    *
    * <p>This method must be implemented by the plugin's reader class when it implements the {@link
-   * SmartInsertionReader} interface.
+   * WaitForCardRemovalBlocking} interface. The reader implementation must manage the card removal
+   * process itself. (for example by using the analogous waitForCardAbsent method in the case of a
+   * plugin based on smartcard.io [PC/SC]).
    *
-   * <p>Returns false if no card is detected.
+   * <p>In the case where the reader plugin is not able to handle the card removal process itself
+   * (not implementing the {@link WaitForCardRemovalBlocking} interface, then it is managed by the
+   * isCardPresentPing method defined in this class.
+   *
+   * <p>Returns true if the card has disappeared.
+   *
+   * <p>*
    *
    * @return presence status
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
-   *     (disconnection)
    */
-  boolean waitForCardPresent();
+  boolean waitForCardAbsentNative();
 
-  /** Interrupts the waiting of a card */
-  void stopWaitForCard();
+  /** Interrupts the waiting of the removal of the card */
+  void stopWaitForCardRemoval();
 }

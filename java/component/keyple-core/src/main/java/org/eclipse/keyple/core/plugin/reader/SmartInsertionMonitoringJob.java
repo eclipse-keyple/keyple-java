@@ -16,8 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Detect the card insertion thanks to the method {@link SmartInsertionReader#waitForCardPresent()}.
- * This method is invoked in another thread.
+ * Detect the card insertion thanks to the method {@link
+ * WaitForCardInsertionBlocking#waitForCardPresent()}. This method is invoked in another thread.
  *
  * <p>The job waits indefinitely for the waitForCardPresent method to return.
  *
@@ -30,9 +30,9 @@ class SmartInsertionMonitoringJob extends AbstractMonitoringJob {
 
   private static final Logger logger = LoggerFactory.getLogger(SmartInsertionMonitoringJob.class);
 
-  private final SmartInsertionReader reader;
+  private final WaitForCardInsertionBlocking reader;
 
-  public SmartInsertionMonitoringJob(SmartInsertionReader reader) {
+  public SmartInsertionMonitoringJob(WaitForCardInsertionBlocking reader) {
     this.reader = reader;
   }
 
@@ -40,7 +40,7 @@ class SmartInsertionMonitoringJob extends AbstractMonitoringJob {
   @Override
   Runnable getMonitoringJob(final AbstractObservableState state) {
     /*
-     * Invoke the method SmartInsertionReader#waitForCardPresent() in another thread
+     * Invoke the method WaitForCardInsertionBlocking#waitForCardPresent() in another thread
      */
     return new Runnable() {
       @Override

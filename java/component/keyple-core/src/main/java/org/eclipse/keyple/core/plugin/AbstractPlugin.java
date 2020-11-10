@@ -85,7 +85,7 @@ public abstract class AbstractPlugin implements Plugin {
    *
    * <p>{@link Reader} are new instances.
    *
-   * <p>this method is called once in the plugin constructor.
+   * <p>this method is called once when the plugin is registered.
    *
    * @return the map of AbstractReader objects.
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed

@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Detect the card removal thanks to the method {@link
- * SmartRemovalReader#waitForCardAbsentNative()}. This method is invoked in another thread
+ * WaitForCardRemovalBlocking#waitForCardAbsentNative()}. This method is invoked in another thread
  *
  * <p>This job should be used by readers who have the ability to natively detect the disappearance
  * of the card during a communication session with an ES (between two APDU exchanges).
@@ -33,9 +33,9 @@ class SmartRemovalMonitoringJob extends AbstractMonitoringJob {
 
   private static final Logger logger = LoggerFactory.getLogger(SmartRemovalMonitoringJob.class);
 
-  private final SmartRemovalReader reader;
+  private final WaitForCardRemovalBlocking reader;
 
-  public SmartRemovalMonitoringJob(SmartRemovalReader reader) {
+  public SmartRemovalMonitoringJob(WaitForCardRemovalBlocking reader) {
     this.reader = reader;
   }
 
@@ -43,7 +43,7 @@ class SmartRemovalMonitoringJob extends AbstractMonitoringJob {
   @Override
   Runnable getMonitoringJob(final AbstractObservableState state) {
     /*
-     * Invoke the method SmartRemovalReader#waitForCardAbsentNative() in another thread
+     * Invoke the method WaitForCardRemovalBlocking#waitForCardAbsentNative() in another thread
      */
     return new Runnable() {
       @Override
