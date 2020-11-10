@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.eclipse.keyple.core.util.Assert;
-import org.eclipse.keyple.plugin.remote.KeypleClientSync;
+import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.KeypleClientSyncNode;
 import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
 import org.slf4j.Logger;
@@ -34,7 +34,7 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
 
   private static final Logger logger = LoggerFactory.getLogger(KeypleClientSyncNodeImpl.class);
 
-  private final KeypleClientSync endpoint;
+  private final SyncEndpointClient endpoint;
 
   /**
    * (package-private)<br>
@@ -50,7 +50,7 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
    */
   KeypleClientSyncNodeImpl(
       AbstractKeypleMessageHandler handler,
-      KeypleClientSync endpoint,
+      SyncEndpointClient endpoint,
       ServerPushEventStrategy pluginObservationStrategy,
       ServerPushEventStrategy readerObservationStrategy) {
 

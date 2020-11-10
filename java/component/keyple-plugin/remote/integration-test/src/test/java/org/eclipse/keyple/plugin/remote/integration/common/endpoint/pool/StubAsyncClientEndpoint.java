@@ -14,7 +14,7 @@ package org.eclipse.keyple.plugin.remote.integration.common.endpoint.pool;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
-import org.eclipse.keyple.plugin.remote.KeypleClientAsync;
+import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remote.RemotePoolClientPlugin;
 import org.eclipse.keyple.plugin.remote.integration.common.util.JacksonParser;
@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * RemotePoolClientPlugin}. Send and receive asynchronously
  * json serialized {@link KeypleMessageDto} with {@link StubAsyncServerEndpoint}.
  */
-public class StubAsyncClientEndpoint implements KeypleClientAsync {
+public class StubAsyncClientEndpoint implements AsyncEndpointClient {
 
   private static final Logger logger = LoggerFactory.getLogger(StubAsyncClientEndpoint.class);
   final StubAsyncServerEndpoint server;

@@ -13,7 +13,7 @@ package org.eclipse.keyple.plugin.remote.impl;
 
 import java.util.*;
 import org.eclipse.keyple.core.util.Assert;
-import org.eclipse.keyple.plugin.remote.KeypleClientAsync;
+import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.KeypleClientAsyncNode;
 import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remote.exception.KeypleRemoteCommunicationException;
@@ -33,7 +33,7 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
 
   private static final Logger logger = LoggerFactory.getLogger(KeypleClientAsyncNodeImpl.class);
 
-  private final KeypleClientAsync endpoint;
+  private final AsyncEndpointClient endpoint;
   private final Map<String, SessionManager> sessionManagers;
 
   /**
@@ -45,7 +45,7 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
    * @param timeoutInSecond The default timeout (in seconds) to use.
    */
   KeypleClientAsyncNodeImpl(
-      AbstractKeypleMessageHandler handler, KeypleClientAsync endpoint, int timeoutInSecond) {
+          AbstractKeypleMessageHandler handler, AsyncEndpointClient endpoint, int timeoutInSecond) {
     super(handler, timeoutInSecond);
     this.endpoint = endpoint;
     this.sessionManagers = new HashMap<String, SessionManager>();

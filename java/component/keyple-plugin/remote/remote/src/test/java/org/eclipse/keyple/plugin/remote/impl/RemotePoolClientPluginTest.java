@@ -26,8 +26,8 @@ import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
-import org.eclipse.keyple.plugin.remote.KeypleClientAsync;
-import org.eclipse.keyple.plugin.remote.KeypleClientSync;
+import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
+import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,8 +36,8 @@ import org.mockito.Mockito;
 public class RemotePoolClientPluginTest {
   Reader virtualReader;
 
-  KeypleClientSync syncEndpoint;
-  KeypleClientAsync asyncEndpoint;
+  SyncEndpointClient syncEndpoint;
+  AsyncEndpointClient asyncEndpoint;
 
   RemotePoolClientPluginImpl remotePoolPlugin;
   String groupReference = "groupReference1";
@@ -45,8 +45,8 @@ public class RemotePoolClientPluginTest {
 
   @Before
   public void setUp() {
-    asyncEndpoint = Mockito.mock(KeypleClientAsync.class);
-    syncEndpoint = Mockito.mock(KeypleClientSync.class);
+    asyncEndpoint = Mockito.mock(AsyncEndpointClient.class);
+    syncEndpoint = Mockito.mock(SyncEndpointClient.class);
   }
 
   @Test
@@ -216,7 +216,7 @@ public class RemotePoolClientPluginTest {
    *
    */
 
-  class MockAsyncEndpoint implements KeypleClientAsync {
+  class MockAsyncEndpoint implements AsyncEndpointClient {
 
     RuntimeException exception;
 
@@ -248,7 +248,7 @@ public class RemotePoolClientPluginTest {
     }
   }
 
-  class MockSyncEndpoint implements KeypleClientSync {
+  class MockSyncEndpoint implements SyncEndpointClient {
 
     RuntimeException exception;
 

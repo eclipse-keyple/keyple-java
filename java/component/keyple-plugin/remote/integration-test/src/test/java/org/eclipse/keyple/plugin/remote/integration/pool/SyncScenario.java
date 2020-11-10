@@ -18,7 +18,7 @@ import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.core.card.selection.CardSelection;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
-import org.eclipse.keyple.plugin.remote.KeypleClientSync;
+import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.integration.common.endpoint.pool.StubSyncClientEndpoint;
 import org.eclipse.keyple.plugin.remote.integration.common.util.CalypsoUtilities;
 import org.eclipse.keyple.plugin.remote.impl.NativePoolServerServiceFactory;
@@ -37,7 +37,7 @@ public class SyncScenario extends BaseScenario {
   public void setUp() {
     initNativePoolStubPlugin();
 
-    KeypleClientSync clientEndpoint = new StubSyncClientEndpoint();
+    SyncEndpointClient clientEndpoint = new StubSyncClientEndpoint();
 
     nativePoolServerService =
         new NativePoolServerServiceFactory()

@@ -9,10 +9,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.plugin.remote;
+package org.eclipse.keyple.plugin.remote.spi;
+
+import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.KeypleServerAsyncNode;
 
 /**
- * <b>Keyple Server Async</b> endpoint API to be implemented by the user.
+ * <b>Server Async Endpoint</b> endpoint API to be implemented by the user.
  *
  * <p>This interface must be implemented by a user server endpoint if you want to use a full duplex
  * communication protocol, such as Web Sockets for example.
@@ -36,11 +39,11 @@ package org.eclipse.keyple.plugin.remote;
  * </ul>
  *
  * <p>This endpoint must interact with a {@link KeypleServerAsyncNode} locally and with a {@link
- * KeypleClientAsync} endpoint remotely.
+ * AsyncEndpointClient} endpoint remotely.
  *
  * @since 1.0
  */
-public interface KeypleServerAsync {
+public interface AsyncEndpointServer {
 
   /**
    * This method is called by {@link KeypleServerAsyncNode} to send a {@link KeypleMessageDto} to

@@ -11,13 +11,15 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote;
 
+import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
+
 /**
  * <b>Keyple Client Async Node</b> API.
  *
  * <p>This kind of node should be bind on the client's side if you want to use a full duplex
  * communication protocol, such as Web Sockets for example.
  *
- * <p>Then, you should provide an implementation of the {@link KeypleClientAsync} interface in order
+ * <p>Then, you should provide an implementation of the {@link AsyncEndpointClient} interface in order
  * to interact with this node.
  *
  * <p>Keyple provides its own implementations of this interface and manages their lifecycle.<br>
@@ -44,17 +46,17 @@ package org.eclipse.keyple.plugin.remote;
 public interface KeypleClientAsyncNode {
 
   /**
-   * This method should be called by the {@link KeypleClientAsync} endpoint following the opening of
+   * This method should be called by the {@link AsyncEndpointClient} endpoint following the opening of
    * a new communication session with the server.
    *
-   * @param sessionId The session id previously transmitted to the {@link KeypleClientAsync}
+   * @param sessionId The session id previously transmitted to the {@link AsyncEndpointClient}
    *     endpoint to open a session.
    * @since 1.0
    */
   void onOpen(String sessionId);
 
   /**
-   * This method should be called by the {@link KeypleClientAsync} endpoint following the reception
+   * This method should be called by the {@link AsyncEndpointClient} endpoint following the reception
    * and deserialization of a {@link KeypleMessageDto} from the server.
    *
    * @param msg The message to process.
@@ -63,7 +65,7 @@ public interface KeypleClientAsyncNode {
   void onMessage(KeypleMessageDto msg);
 
   /**
-   * This method should be called by the {@link KeypleClientAsync} endpoint following the closing of
+   * This method should be called by the {@link AsyncEndpointClient} endpoint following the closing of
    * a communication session with the server.
    *
    * @param sessionId The session id registered during the session opening process.
@@ -72,7 +74,7 @@ public interface KeypleClientAsyncNode {
   void onClose(String sessionId);
 
   /**
-   * This method should be called by the {@link KeypleClientAsync} endpoint if a technical error
+   * This method should be called by the {@link AsyncEndpointClient} endpoint if a technical error
    * occurs when sending a message to the server.
    *
    * @param sessionId The session id registered during the session opening process.

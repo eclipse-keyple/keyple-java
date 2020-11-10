@@ -26,7 +26,7 @@ import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
-import org.eclipse.keyple.plugin.remote.KeypleServerAsync;
+import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
 import org.eclipse.keyple.plugin.remote.impl.AbstractKeypleNode;
 import org.eclipse.keyple.plugin.remote.integration.common.app.ReaderEventFilter;
 import org.eclipse.keyple.plugin.remote.integration.common.app.RemotePluginObserver;
@@ -202,7 +202,7 @@ public abstract class BaseScenario {
   }
 
   /** Init a Async Remote Server Plugin with an async server endpoint */
-  void initRemotePluginWithAsyncNode(KeypleServerAsync serverEndpoint) {
+  void initRemotePluginWithAsyncNode(AsyncEndpointServer serverEndpoint) {
     try {
       remotePlugin = RemoteServerUtils.getRemotePlugin();
       logger.info("RemotePluginServer already registered, reusing it");

@@ -11,13 +11,15 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote;
 
+import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
+
 /**
  * <b>Keyple Server Async Node</b> API.
  *
  * <p>This kind of node must be bind on the server's side if you want to use a full duplex
  * communication protocol, such as Web Sockets for example.
  *
- * <p>Then, you must provide an implementation of the {@link KeypleServerAsync} interface in order
+ * <p>Then, you must provide an implementation of the {@link AsyncEndpointServer} interface in order
  * to interact with this node.
  *
  * <p>Keyple provides its own implementations of this interface and manages their lifecycle.<br>
@@ -44,7 +46,7 @@ package org.eclipse.keyple.plugin.remote;
 public interface KeypleServerAsyncNode {
 
   /**
-   * This method must be called by the {@link KeypleServerAsync} endpoint following the reception
+   * This method must be called by the {@link AsyncEndpointServer} endpoint following the reception
    * and deserialization of a {@link KeypleMessageDto} from the client.
    *
    * @param msg The message to process.
@@ -53,7 +55,7 @@ public interface KeypleServerAsyncNode {
   void onMessage(KeypleMessageDto msg);
 
   /**
-   * This method should be called by the {@link KeypleServerAsync} endpoint following the closing of
+   * This method should be called by the {@link AsyncEndpointServer} endpoint following the closing of
    * a communication session with the client.
    *
    * @param sessionId The session id registered during the session opening process.
@@ -62,7 +64,7 @@ public interface KeypleServerAsyncNode {
   void onClose(String sessionId);
 
   /**
-   * This method must be called by the {@link KeypleServerAsync} endpoint if a technical error
+   * This method must be called by the {@link AsyncEndpointServer} endpoint if a technical error
    * occurs when sending a message to the client.
    *
    * @param sessionId The session id register during the session opening process.

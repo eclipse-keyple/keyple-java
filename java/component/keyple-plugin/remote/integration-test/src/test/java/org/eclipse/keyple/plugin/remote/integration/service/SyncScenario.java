@@ -12,7 +12,7 @@
 package org.eclipse.keyple.plugin.remote.integration.service;
 
 import java.util.UUID;
-import org.eclipse.keyple.plugin.remote.KeypleClientSync;
+import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.integration.common.app.ReaderEventFilter;
 import org.eclipse.keyple.plugin.remote.integration.common.endpoint.StubNetworkConnectionException;
 import org.eclipse.keyple.plugin.remote.integration.common.endpoint.service.StubSyncClientEndpoint;
@@ -27,7 +27,7 @@ public class SyncScenario extends BaseScenario {
 
   private static final Logger logger = LoggerFactory.getLogger(SyncScenario.class);
 
-  KeypleClientSync clientSyncEndpoint;
+  SyncEndpointClient clientSyncEndpoint;
 
   @Before
   public void setUp() {

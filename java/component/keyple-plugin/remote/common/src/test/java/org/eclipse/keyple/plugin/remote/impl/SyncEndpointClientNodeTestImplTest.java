@@ -19,7 +19,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
-import org.eclipse.keyple.plugin.remote.KeypleClientSync;
+import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remote.exception.KeypleRemoteCommunicationException;
 import org.junit.Before;
@@ -28,12 +28,12 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class KeypleClientSyncNodeTestImplTest extends AbstractKeypleSyncNodeTest {
+public class SyncEndpointClientNodeTestImplTest extends AbstractKeypleSyncNodeTest {
 
   KeypleMessageHandlerErrorMock handlerError;
-  KeypleClientSyncPollingMock endpoint;
-  KeypleClientSyncLongPollingMock endpointLongPolling;
-  KeypleClientSyncErrorMock endpointError;
+  SyncEndpointClientPollingMock endpoint;
+  SyncEndpointClientLongPollingMock endpointLongPolling;
+  SyncEndpointClientErrorMock endpointError;
 
   List<KeypleMessageDto> responses;
 
@@ -62,7 +62,7 @@ public class KeypleClientSyncNodeTestImplTest extends AbstractKeypleSyncNodeTest
     }
   }
 
-  class KeypleClientSyncPollingMock implements KeypleClientSync {
+  class SyncEndpointClientPollingMock implements SyncEndpointClient {
 
     List<KeypleMessageDto> messages = new ArrayList<KeypleMessageDto>();
 
@@ -73,7 +73,7 @@ public class KeypleClientSyncNodeTestImplTest extends AbstractKeypleSyncNodeTest
     }
   }
 
-  class KeypleClientSyncLongPollingMock implements KeypleClientSync {
+  class SyncEndpointClientLongPollingMock implements SyncEndpointClient {
 
     List<KeypleMessageDto> messages = new ArrayList<KeypleMessageDto>();
 
@@ -89,7 +89,7 @@ public class KeypleClientSyncNodeTestImplTest extends AbstractKeypleSyncNodeTest
     }
   }
 
-  class KeypleClientSyncErrorMock implements KeypleClientSync {
+  class SyncEndpointClientErrorMock implements SyncEndpointClient {
 
     List<KeypleMessageDto> messages = new ArrayList<KeypleMessageDto>();
     int cpt = 0;
@@ -141,9 +141,9 @@ public class KeypleClientSyncNodeTestImplTest extends AbstractKeypleSyncNodeTest
   public void setUp() {
     super.setUp();
     handlerError = new KeypleMessageHandlerErrorMock();
-    endpoint = new KeypleClientSyncPollingMock();
-    endpointLongPolling = new KeypleClientSyncLongPollingMock();
-    endpointError = new KeypleClientSyncErrorMock();
+    endpoint = new SyncEndpointClientPollingMock();
+    endpointLongPolling = new SyncEndpointClientLongPollingMock();
+    endpointError = new SyncEndpointClientErrorMock();
   }
 
   public void checkEventDto(KeypleMessageDto msg1, KeypleMessageDto.Action action, String body) {

@@ -15,6 +15,9 @@ import java.util.UUID;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.*;
+import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
+import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
+import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,11 +57,11 @@ public abstract class AbstractKeypleMessageHandler {
    * This method builds and bind a {@link KeypleClientAsyncNode} with the handler.<br>
    * It must be called by the factory during the initialization phase.
    *
-   * @param endpoint The {@link KeypleClientAsync} endpoint.
+   * @param endpoint The {@link AsyncEndpointClient} endpoint.
    * @param timeoutInSecond Time to wait for the server to transmit a request.
    * @since 1.0
    */
-  public void bindClientAsyncNode(KeypleClientAsync endpoint, int timeoutInSecond) {
+  public void bindClientAsyncNode(AsyncEndpointClient endpoint, int timeoutInSecond) {
     node = new KeypleClientAsyncNodeImpl(this, endpoint, timeoutInSecond);
   }
 
@@ -66,10 +69,10 @@ public abstract class AbstractKeypleMessageHandler {
    * This method builds and bind a {@link KeypleServerAsyncNode} with the handler.<br>
    * It must be called by the factory during the initialization phase.
    *
-   * @param endpoint The {@link KeypleServerAsync} endpoint.
+   * @param endpoint The {@link AsyncEndpointServer} endpoint.
    * @since 1.0
    */
-  public void bindServerAsyncNode(KeypleServerAsync endpoint) {
+  public void bindServerAsyncNode(AsyncEndpointServer endpoint) {
     node = new KeypleServerAsyncNodeImpl(this, endpoint, 20);
   }
 
@@ -77,7 +80,7 @@ public abstract class AbstractKeypleMessageHandler {
    * This method builds and bind a {@link KeypleClientSyncNode} with the handler.<br>
    * It must be called by the factory during the initialization phase.
    *
-   * @param endpoint The {@link KeypleClientSync} endpoint.
+   * @param endpoint The {@link SyncEndpointClient} endpoint.
    * @param pluginObservationStrategy The {@link ServerPushEventStrategy} associated to the plugin
    *     (null if observation is not activated).
    * @param readerObservationStrategy The {@link ServerPushEventStrategy} associated to the reader
@@ -85,7 +88,7 @@ public abstract class AbstractKeypleMessageHandler {
    * @since 1.0
    */
   public void bindClientSyncNode(
-      KeypleClientSync endpoint,
+      SyncEndpointClient endpoint,
       ServerPushEventStrategy pluginObservationStrategy,
       ServerPushEventStrategy readerObservationStrategy) {
     node =

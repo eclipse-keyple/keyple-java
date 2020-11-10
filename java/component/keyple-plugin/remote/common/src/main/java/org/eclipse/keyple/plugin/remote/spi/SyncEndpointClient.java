@@ -9,12 +9,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.plugin.remote;
+package org.eclipse.keyple.plugin.remote.spi;
+
+import org.eclipse.keyple.plugin.remote.KeypleClientSyncNode;
+import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
 
 import java.util.List;
 
 /**
- * <b>Keyple Client Sync</b> endpoint API to be implemented by the user.
+ * <b>Client Sync Endpoint</b> endpoint API to be implemented by the user.
  *
  * <p>This interface must be implemented by a user client endpoint if you want to use a
  * Client-Server communication protocol, such as standard HTTP for example.
@@ -23,7 +26,7 @@ import java.util.List;
  *
  * @since 1.0
  */
-public interface KeypleClientSync {
+public interface SyncEndpointClient {
 
   /**
    * This method is called by {@link KeypleClientSyncNode} to send a {@link KeypleMessageDto} to the

@@ -12,9 +12,9 @@
 package org.eclipse.keyple.plugin.remote.impl;
 
 import org.eclipse.keyple.core.util.Assert;
-import org.eclipse.keyple.plugin.remote.KeypleClientAsync;
+import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.KeypleClientReaderEventFilter;
-import org.eclipse.keyple.plugin.remote.KeypleClientSync;
+import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.NativeClientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +78,7 @@ public class NativeClientServiceFactory {
      * @return next configuration step
      * @since 1.0
      */
-    TimeoutStep withAsyncNode(KeypleClientAsync asyncClient);
+    TimeoutStep withAsyncNode(AsyncEndpointClient asyncClient);
 
     /**
      * Configure the service with a sync Client
@@ -87,7 +87,7 @@ public class NativeClientServiceFactory {
      * @return next configuration step
      * @since 1.0
      */
-    ReaderStep withSyncNode(KeypleClientSync syncClient);
+    ReaderStep withSyncNode(SyncEndpointClient syncClient);
   }
 
   public interface ReaderStep {
@@ -111,8 +111,8 @@ public class NativeClientServiceFactory {
 
   private static class Step implements NodeStep, ReaderStep, BuilderStep, TimeoutStep {
 
-    private KeypleClientAsync asyncEndpoint;
-    private KeypleClientSync syncEndpoint;
+    private AsyncEndpointClient asyncEndpoint;
+    private SyncEndpointClient syncEndpoint;
     private Boolean withReaderObservation;
     private KeypleClientReaderEventFilter eventFilter;
     private int timeoutInSec;
@@ -120,14 +120,14 @@ public class NativeClientServiceFactory {
     private Step() {}
 
     @Override
-    public TimeoutStep withAsyncNode(KeypleClientAsync endpoint) {
+    public TimeoutStep withAsyncNode(AsyncEndpointClient endpoint) {
       Assert.getInstance().notNull(endpoint, "endpoint");
       this.asyncEndpoint = endpoint;
       return this;
     }
 
     @Override
-    public ReaderStep withSyncNode(KeypleClientSync endpoint) {
+    public ReaderStep withSyncNode(SyncEndpointClient endpoint) {
       Assert.getInstance().notNull(endpoint, "endpoint");
       this.syncEndpoint = endpoint;
       return this;

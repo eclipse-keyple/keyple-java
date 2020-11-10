@@ -20,7 +20,7 @@ import org.eclipse.keyple.core.service.event.ObservablePlugin;
 import org.eclipse.keyple.core.service.event.PluginEvent;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.util.Assert;
-import org.eclipse.keyple.plugin.remote.KeypleServerAsync;
+import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
 import org.eclipse.keyple.plugin.remote.KeypleServerAsyncNode;
 import org.eclipse.keyple.plugin.remote.KeypleServerSyncNode;
 import org.eclipse.keyple.plugin.remote.RemoteServerPlugin;
@@ -97,7 +97,7 @@ public class RemoteServerPluginFactory implements PluginFactory {
      * @return next configuration step
      * @since 1.0
      */
-    PluginObserverStep withAsyncNode(KeypleServerAsync asyncEndpoint);
+    PluginObserverStep withAsyncNode(AsyncEndpointServer asyncEndpoint);
 
     /**
      * Configure the plugin to be used with a sync node. Retrieve the created {@link
@@ -161,7 +161,7 @@ public class RemoteServerPluginFactory implements PluginFactory {
   public static class Builder
       implements NodeStep, PluginObserverStep, EventNotificationPoolStep, BuilderStep {
 
-    private KeypleServerAsync asyncEndpoint;
+    private AsyncEndpointServer asyncEndpoint;
     private ExecutorService eventNotificationPool;
     private ObservablePlugin.PluginObserver observer;
 
@@ -171,7 +171,7 @@ public class RemoteServerPluginFactory implements PluginFactory {
      * @since 1.0
      */
     @Override
-    public PluginObserverStep withAsyncNode(KeypleServerAsync asyncEndpoint) {
+    public PluginObserverStep withAsyncNode(AsyncEndpointServer asyncEndpoint) {
       Assert.getInstance().notNull(asyncEndpoint, "asyncEndpoint");
       this.asyncEndpoint = asyncEndpoint;
       return this;

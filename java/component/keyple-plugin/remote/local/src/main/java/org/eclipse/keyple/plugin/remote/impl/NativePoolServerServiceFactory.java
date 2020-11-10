@@ -15,7 +15,7 @@ import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.ReaderPoolPlugin;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.util.Assert;
-import org.eclipse.keyple.plugin.remote.KeypleServerAsync;
+import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
 import org.eclipse.keyple.plugin.remote.NativePoolServerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +58,7 @@ public final class NativePoolServerServiceFactory {
      * @return next configuration step
      * @since 1.0
      */
-    PluginStep withAsyncNode(KeypleServerAsync endpoint);
+    PluginStep withAsyncNode(AsyncEndpointServer endpoint);
 
     /**
      * Configure the service with a sync server
@@ -82,13 +82,13 @@ public final class NativePoolServerServiceFactory {
 
   private static class Step implements NodeStep, BuilderStep, PluginStep {
 
-    private KeypleServerAsync asyncEndpoint;
+    private AsyncEndpointServer asyncEndpoint;
     private String[] poolPluginNames;
 
     private Step() {}
 
     @Override
-    public PluginStep withAsyncNode(KeypleServerAsync endpoint) {
+    public PluginStep withAsyncNode(AsyncEndpointServer endpoint) {
       Assert.getInstance().notNull(endpoint, "endpoint");
       this.asyncEndpoint = endpoint;
       return this;

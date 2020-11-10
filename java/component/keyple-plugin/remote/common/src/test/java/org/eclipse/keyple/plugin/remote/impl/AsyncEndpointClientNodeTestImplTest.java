@@ -16,7 +16,7 @@ import static org.awaitility.Awaitility.await;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
-import org.eclipse.keyple.plugin.remote.KeypleClientAsync;
+import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remote.exception.KeypleRemoteCommunicationException;
 import org.eclipse.keyple.plugin.remote.exception.KeypleTimeoutException;
@@ -28,9 +28,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
 @RunWith(MockitoJUnitRunner.class)
-public class KeypleClientAsyncNodeTestImplTest extends AbstractKeypleAsyncNodeTest {
+public class AsyncEndpointClientNodeTestImplTest extends AbstractKeypleAsyncNodeTest {
 
-  KeypleClientAsync endpoint;
+  AsyncEndpointClient endpoint;
   KeypleClientAsyncNodeImpl node;
 
   KeypleMessageDto pluginEvent;
@@ -202,7 +202,7 @@ public class KeypleClientAsyncNodeTestImplTest extends AbstractKeypleAsyncNodeTe
   @Before
   public void setUp() {
     super.setUp();
-    endpoint = mock(KeypleClientAsync.class);
+    endpoint = mock(AsyncEndpointClient.class);
     node = new KeypleClientAsyncNodeImpl(handler, endpoint, 1);
   }
 

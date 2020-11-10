@@ -28,9 +28,9 @@ import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
-import org.eclipse.keyple.plugin.remote.KeypleClientAsync;
+import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.KeypleClientReaderEventFilter;
-import org.eclipse.keyple.plugin.remote.KeypleClientSync;
+import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remote.exception.KeypleDoNotPropagateEventException;
 import org.eclipse.keyple.plugin.remote.NativeClientService;
@@ -48,8 +48,8 @@ import org.slf4j.LoggerFactory;
 public class NativeClientServiceTest extends BaseNativeTest {
 
   private static final Logger logger = LoggerFactory.getLogger(AbstractNativeServiceTest.class);
-  KeypleClientSync syncClientEndpoint;
-  KeypleClientAsync asyncClient;
+  SyncEndpointClient syncClientEndpoint;
+  AsyncEndpointClient asyncClient;
   KeypleClientReaderEventFilter eventFilter;
   MyKeypleUserData outputData;
   MyKeypleUserData inputData;
@@ -71,8 +71,8 @@ public class NativeClientServiceTest extends BaseNativeTest {
     doReturn(pluginName).when(readerPlugin).getName();
 
     SmartCardService.getInstance().registerPlugin(mockFactory);
-    syncClientEndpoint = Mockito.mock(KeypleClientSync.class);
-    asyncClient = Mockito.mock(KeypleClientAsync.class);
+    syncClientEndpoint = Mockito.mock(SyncEndpointClient.class);
+    asyncClient = Mockito.mock(AsyncEndpointClient.class);
     eventFilter = Mockito.mock(KeypleClientReaderEventFilter.class);
 
     doReturn(getACardResponse())
@@ -131,7 +131,7 @@ public class NativeClientServiceTest extends BaseNativeTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void executeService_withNullParam_throwException() {
-    syncClientEndpoint = new KeypleClientSyncMock(1);
+    syncClientEndpoint = new SyncEndpointClientMock(1);
     final NativeClientService nativeClientService =
         new NativeClientServiceFactory()
             .builder()
@@ -144,7 +144,7 @@ public class NativeClientServiceTest extends BaseNativeTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void executeService_withNullOutputData_throwException() {
-    syncClientEndpoint = new KeypleClientSyncMock(1);
+    syncClientEndpoint = new SyncEndpointClientMock(1);
     NativeClientService nativeClientService =
         new NativeClientServiceFactory()
             .builder()
@@ -162,7 +162,7 @@ public class NativeClientServiceTest extends BaseNativeTest {
   @Test(expected = IllegalArgumentException.class)
   public void executeService_activateObservation_withoutFilter_throwException() {
     // init
-    syncClientEndpoint = new KeypleClientSyncMock(1);
+    syncClientEndpoint = new SyncEndpointClientMock(1);
     new NativeClientServiceFactory()
         .builder()
         .withSyncNode(syncClientEndpoint)
@@ -173,7 +173,7 @@ public class NativeClientServiceTest extends BaseNativeTest {
   @Test
   public void executeService_activateObservation_withFilter_addObserver() {
     // init
-    syncClientEndpoint = new KeypleClientSyncMock(1);
+    syncClientEndpoint = new SyncEndpointClientMock(1);
     NativeClientService nativeClientService =
         new NativeClientServiceFactory()
             .builder()
@@ -195,7 +195,7 @@ public class NativeClientServiceTest extends BaseNativeTest {
   @Test(expected = IllegalArgumentException.class)
   public void executeService_activateObservation_onNotObservableReader_throwException() {
     // init
-    syncClientEndpoint = new KeypleClientSyncMock(1);
+    syncClientEndpoint = new SyncEndpointClientMock(1);
     NativeClientService nativeClientService =
         new NativeClientServiceFactory()
             .builder()
@@ -215,7 +215,7 @@ public class NativeClientServiceTest extends BaseNativeTest {
   @Test
   public void executeService_withSyncNode() {
     // init
-    syncClientEndpoint = new KeypleClientSyncMock(2);
+    syncClientEndpoint = new SyncEndpointClientMock(2);
     NativeClientService nativeClientService =
         new NativeClientServiceFactory()
             .builder() //
@@ -234,8 +234,8 @@ public class NativeClientServiceTest extends BaseNativeTest {
         nativeClientService.executeRemoteService(params, MyKeypleUserData.class);
 
     // verify EXECUTE_REMOTE_SERVICE request
-    assertThat(((KeypleClientSyncMock) syncClientEndpoint).getRequests().size()).isEqualTo(2);
-    KeypleMessageDto dtoRequest = ((KeypleClientSyncMock) syncClientEndpoint).getRequests().get(0);
+    assertThat(((SyncEndpointClientMock) syncClientEndpoint).getRequests().size()).isEqualTo(2);
+    KeypleMessageDto dtoRequest = ((SyncEndpointClientMock) syncClientEndpoint).getRequests().get(0);
     assertThat(dtoRequest.getAction())
         .isEqualTo(KeypleMessageDto.Action.EXECUTE_REMOTE_SERVICE.name());
     assertThat(dtoRequest.getSessionId()).isNotEmpty();
@@ -255,7 +255,7 @@ public class NativeClientServiceTest extends BaseNativeTest {
   @Test
   public void onUpdate_doNotPropagateEvent() {
     // init
-    syncClientEndpoint = new KeypleClientSyncMock(2);
+    syncClientEndpoint = new SyncEndpointClientMock(2);
     NativeClientServiceImpl nativeClientService =
         (NativeClientServiceImpl)
             new NativeClientServiceFactory()
@@ -267,14 +267,14 @@ public class NativeClientServiceTest extends BaseNativeTest {
     // test
     nativeClientService.update(readerEvent);
 
-    assertThat(((KeypleClientSyncMock) syncClientEndpoint).getRequests().size()).isEqualTo(0);
+    assertThat(((SyncEndpointClientMock) syncClientEndpoint).getRequests().size()).isEqualTo(0);
   }
 
   @Test
   public void onUpdate_withSyncNode_unregisterReader()
       throws NoSuchFieldException, IllegalAccessException {
     // init
-    syncClientEndpoint = new KeypleClientSyncMock(2);
+    syncClientEndpoint = new SyncEndpointClientMock(2);
     NativeClientServiceImpl nativeClientService =
         (NativeClientServiceImpl)
             new NativeClientServiceFactory()
@@ -287,8 +287,8 @@ public class NativeClientServiceTest extends BaseNativeTest {
     nativeClientService.update(readerEvent);
 
     // verify READER_EVENT dto
-    assertThat(((KeypleClientSyncMock) syncClientEndpoint).getRequests().size()).isEqualTo(2);
-    KeypleMessageDto dtoRequest = ((KeypleClientSyncMock) syncClientEndpoint).getRequests().get(0);
+    assertThat(((SyncEndpointClientMock) syncClientEndpoint).getRequests().size()).isEqualTo(2);
+    KeypleMessageDto dtoRequest = ((SyncEndpointClientMock) syncClientEndpoint).getRequests().get(0);
     assertThat(dtoRequest.getAction()).isEqualTo(KeypleMessageDto.Action.READER_EVENT.name());
     assertThat(dtoRequest.getSessionId()).isNotEmpty();
     assertThat(dtoRequest.getNativeReaderName()).isEqualTo(observableReaderName);
@@ -325,13 +325,13 @@ public class NativeClientServiceTest extends BaseNativeTest {
     return null;
   }
 
-  class KeypleClientSyncMock implements KeypleClientSync {
+  class SyncEndpointClientMock implements SyncEndpointClient {
 
     final List<KeypleMessageDto> requests = new ArrayList<KeypleMessageDto>();
     Integer answerNumber;
     Integer answerIt;
 
-    KeypleClientSyncMock(Integer answerNumber) {
+    SyncEndpointClientMock(Integer answerNumber) {
       this.answerNumber = answerNumber;
       this.answerIt = 0;
     }

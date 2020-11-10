@@ -15,8 +15,8 @@ import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.PluginFactory;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.util.Assert;
-import org.eclipse.keyple.plugin.remote.KeypleClientAsync;
-import org.eclipse.keyple.plugin.remote.KeypleClientSync;
+import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
+import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.KeypleServerAsyncNode;
 import org.eclipse.keyple.plugin.remote.RemotePoolClientPlugin;
 import org.slf4j.Logger;
@@ -94,7 +94,7 @@ public class RemotePoolClientPluginFactory implements PluginFactory {
      * @return next configuration step
      * @since 1.0
      */
-    TimeoutStep withAsyncNode(KeypleClientAsync asyncEndpoint);
+    TimeoutStep withAsyncNode(AsyncEndpointClient asyncEndpoint);
 
     /**
      * Configure the plugin to be used with a sync node.
@@ -103,7 +103,7 @@ public class RemotePoolClientPluginFactory implements PluginFactory {
      * @return next configuration step
      * @since 1.0
      */
-    TimeoutStep withSyncNode(KeypleClientSync syncEndpoint);
+    TimeoutStep withSyncNode(SyncEndpointClient syncEndpoint);
   }
 
   public interface TimeoutStep {
@@ -143,8 +143,8 @@ public class RemotePoolClientPluginFactory implements PluginFactory {
   /** The builder pattern to create the factory instance. */
   public static class Builder implements NodeStep, BuilderStep, TimeoutStep {
 
-    private KeypleClientAsync asyncEndpoint;
-    private KeypleClientSync syncEndpoint;
+    private AsyncEndpointClient asyncEndpoint;
+    private SyncEndpointClient syncEndpoint;
     private int timeoutInSec;
 
     /**
@@ -153,7 +153,7 @@ public class RemotePoolClientPluginFactory implements PluginFactory {
      * @since 1.0
      */
     @Override
-    public TimeoutStep withAsyncNode(KeypleClientAsync asyncEndpoint) {
+    public TimeoutStep withAsyncNode(AsyncEndpointClient asyncEndpoint) {
       Assert.getInstance().notNull(asyncEndpoint, "asyncEndpoint");
       this.asyncEndpoint = asyncEndpoint;
       return this;
@@ -165,7 +165,7 @@ public class RemotePoolClientPluginFactory implements PluginFactory {
      * @since 1.0
      */
     @Override
-    public TimeoutStep withSyncNode(KeypleClientSync syncEndpoint) {
+    public TimeoutStep withSyncNode(SyncEndpointClient syncEndpoint) {
       Assert.getInstance().notNull(syncEndpoint, "syncEndpoint");
       this.syncEndpoint = syncEndpoint;
       return this;

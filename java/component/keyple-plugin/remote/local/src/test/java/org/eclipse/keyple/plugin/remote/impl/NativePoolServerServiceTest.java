@@ -28,7 +28,7 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
-import org.eclipse.keyple.plugin.remote.KeypleServerAsync;
+import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,7 +42,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class NativePoolServerServiceTest extends BaseNativeTest {
 
   ReaderPoolPlugin poolPluginMock;
-  KeypleServerAsync asyncServer;
+  AsyncEndpointServer asyncServer;
   Gson parser;
   String groupReference = "1";
   final String clientNodeId = "clientNodeId1";
@@ -243,7 +243,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
     doReturn(Sets.newTreeSet(readerName)).when(poolPluginMock).getReaderNames();
     doReturn(poolPluginName).when(poolPluginMock).getName();
     doReturn(groupReferences).when(poolPluginMock).getReaderGroupReferences();
-    asyncServer = Mockito.mock(KeypleServerAsync.class);
+    asyncServer = Mockito.mock(AsyncEndpointServer.class);
 
     SmartCardService.getInstance()
         .registerPlugin(

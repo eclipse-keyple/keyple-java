@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
-import org.eclipse.keyple.plugin.remote.KeypleServerAsync;
+import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
 import org.eclipse.keyple.plugin.remote.RemoteServerObservableReader;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,7 +66,7 @@ public class RemoteServerPluginImplTest extends RemoteServerBaseTest {
     SmartCardService.getInstance()
         .registerPlugin(
             RemoteServerPluginFactory.builder()
-                .withAsyncNode(Mockito.mock(KeypleServerAsync.class))
+                .withAsyncNode(Mockito.mock(AsyncEndpointServer.class))
                 .withPluginObserver(pluginObserver)
                 .usingDefaultEventNotificationPool()
                 .build());
