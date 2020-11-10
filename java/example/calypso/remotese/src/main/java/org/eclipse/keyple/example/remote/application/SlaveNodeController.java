@@ -29,7 +29,7 @@ import org.eclipse.keyple.plugin.remotese.transport.factory.TransportFactory;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubPluginFactory;
 import org.eclipse.keyple.plugin.stub.StubReader;
-import org.eclipse.keyple.plugin.stub.StubSecureElement;
+import org.eclipse.keyple.plugin.stub.StubSmartCard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -182,14 +182,14 @@ public class SlaveNodeController {
     }
   }
 
-  public void insertStubSe(StubSecureElement card) {
+  public void insertStubSe(StubSmartCard card) {
     logger.info("|{}| insert card  ", node.getNodeId());
-    localReader.insertSe(card);
+    localReader.insertCard(card);
   }
 
-  public void removeSe() {
+  public void removeCard() {
     logger.info("|{}| remove card ", node.getNodeId());
-    localReader.removeSe();
+    localReader.removeCard();
   }
 
   public void disconnect(String sessionId, String nativeReaderName)
@@ -198,7 +198,7 @@ public class SlaveNodeController {
     slaveAPI.disconnectReader(sessionId, localReader.getName());
   }
 
-  public void executeScenario(final StubSecureElement card, final Boolean killAtEnd)
+  public void executeScenario(final StubSmartCard card, final Boolean killAtEnd)
       throws KeypleReaderNotFoundException, InterruptedException, KeypleReaderException,
           KeypleRemoteException {
     // logger.info("------------------------");
@@ -216,7 +216,7 @@ public class SlaveNodeController {
     this.insertStubSe(card);
     logger.info("|{}| Wait 2 seconds for PO read/session, then remove the card", node.getNodeId());
     Thread.sleep(2000);
-    this.removeSe();
+    this.removeCard();
     Thread.sleep(2000);
     logger.info("|{}| Disconnect reader", node.getNodeId());
     this.disconnect(sessionId, null);

@@ -68,9 +68,9 @@ Available packages in details:
 
 |File|Description|
 |:---|---|
-|`StubCalypsoClassic.java`|Calypso PO stub SE (`StubSecureElement`)|
-|`StubSam.java`|Calypso SAM stub SE (`StubSecureElement`)|
-|`StubHoplink.java`|Hoplink PO stub SE (`StubSecureElement`)|
+|`StubCalypsoClassic.java`|Calypso PO stub SE (`StubSmartCard`)|
+|`StubSam.java`|Calypso SAM stub SE (`StubSmartCard`)|
+|`StubHoplink.java`|Hoplink PO stub SE (`StubSmartCard`)|
 
   - `org.eclipse.keyple.example.calypso.pc`
 

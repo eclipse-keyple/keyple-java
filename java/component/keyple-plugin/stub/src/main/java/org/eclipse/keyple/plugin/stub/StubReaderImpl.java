@@ -25,15 +25,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Simulates communication with a {@link StubSecureElement}. StubReader is observable, it raises
- * {@link ReaderEvent} : CARD_INSERTED, CARD_REMOVED
+ * Simulates communication with a {@link StubSmartCard}. StubReader is observable, it raises {@link
+ * ReaderEvent} : CARD_INSERTED, CARD_REMOVED
  */
 class StubReaderImpl extends AbstractObservableLocalReader
     implements StubReader, SmartInsertionReader, SmartRemovalReader {
 
   private static final Logger logger = LoggerFactory.getLogger(StubReaderImpl.class);
 
-  private StubSecureElement card;
+  private StubSmartCard card;
   boolean isContactless = true;
 
   private final AtomicBoolean loopWaitCard = new AtomicBoolean();
@@ -151,11 +151,11 @@ class StubReaderImpl extends AbstractObservableLocalReader
   /**
    * Inserts the provided card.<br>
    *
-   * @param _se stub card to be inserted in the reader
+   * @param smartCard stub card to be inserted in the reader
    * @throws KeypleReaderProtocolNotFoundException if the card protocol is not found
    */
-  public synchronized void insertSe(StubSecureElement _se) {
-    logger.debug("Insert card {}", _se);
+  public synchronized void insertCard(StubSmartCard smartCard) {
+    logger.debug("Insert card {}", smartCard);
     /* clean channels status */
     if (isPhysicalChannelOpen()) {
       try {
@@ -164,17 +164,17 @@ class StubReaderImpl extends AbstractObservableLocalReader
         logger.error("Error while closing channel reader", e);
       }
     }
-    if (_se != null) {
-      card = _se;
+    if (smartCard != null) {
+      card = smartCard;
     }
   }
 
-  public synchronized void removeSe() {
+  public synchronized void removeCard() {
     logger.debug("Remove card {}", card != null ? card : "none");
     card = null;
   }
 
-  public StubSecureElement getSe() {
+  public StubSmartCard getSmartcard() {
     return card;
   }
 

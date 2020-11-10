@@ -38,7 +38,7 @@ import org.eclipse.keyple.example.common.calypso.stub.StubCalypsoClassic;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubPluginFactory;
 import org.eclipse.keyple.plugin.stub.StubReader;
-import org.eclipse.keyple.plugin.stub.StubSecureElement;
+import org.eclipse.keyple.plugin.stub.StubSmartCard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -150,19 +150,19 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
     logger.info("= #### file is ready to be processed as soon as the PO is detected.");
 
     /* Create 'virtual' Calypso PO */
-    StubSecureElement calypsoStubCard = new StubCalypsoClassic();
+    StubSmartCard calypsoStubCard = new StubCalypsoClassic();
 
     /* Wait a while. */
     Thread.sleep(100);
 
     logger.info("Insert stub PO.");
-    ((StubReader) poReader).insertSe(calypsoStubCard);
+    ((StubReader) poReader).insertCard(calypsoStubCard);
 
     /* Wait a while. */
     Thread.sleep(1000);
 
     logger.info("Remove stub PO.");
-    ((StubReader) poReader).removeSe();
+    ((StubReader) poReader).removeCard();
 
     System.exit(0);
   }
