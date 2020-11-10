@@ -41,12 +41,12 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
   final String PLUGIN_NAME = "AbsSmartInsertionTheadedReaderTestP";
   final String READER_NAME = "AbsSmartInsertionTheadedReaderTest";
 
-  BlankSmartInsertionTheadedReader r;
+  BlankWaitForCardInsertionBlockingThreadedReader r;
 
   // Execute tests X times
   @Parameterized.Parameters
   public static Object[][] data() {
-    int x = 0;
+    int x = 1;
     return new Object[x][0];
   }
 
@@ -279,22 +279,24 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
    * Helpers
    */
 
-  public static BlankSmartInsertionTheadedReader getSmartSpy(
+  public static BlankWaitForCardInsertionBlockingThreadedReader getSmartSpy(
       String pluginName, String readerName, Integer mockDetect) {
-    BlankSmartInsertionTheadedReader r =
-        Mockito.spy(new BlankSmartInsertionTheadedReader(pluginName, readerName, mockDetect));
+    BlankWaitForCardInsertionBlockingThreadedReader r =
+        Mockito.spy(
+            new BlankWaitForCardInsertionBlockingThreadedReader(pluginName, readerName, mockDetect));
     return r;
   }
 
-  public static BlankSmartInsertionTheadedReader getBlank(
+  public static BlankWaitForCardInsertionBlockingThreadedReader getBlank(
       String pluginName, String readerName, Integer mockDetect) {
-    BlankSmartInsertionTheadedReader r =
-        new BlankSmartInsertionTheadedReader(pluginName, readerName, mockDetect);
+    BlankWaitForCardInsertionBlockingThreadedReader r =
+        new BlankWaitForCardInsertionBlockingThreadedReader(pluginName, readerName, mockDetect);
     return r;
   }
 
-  public static BlankSmartInsertionTheadedReader getMock(String readerName) {
-    BlankSmartInsertionTheadedReader r = Mockito.mock(BlankSmartInsertionTheadedReader.class);
+  public static BlankWaitForCardInsertionBlockingThreadedReader getMock(String readerName) {
+    BlankWaitForCardInsertionBlockingThreadedReader r =
+        Mockito.mock(BlankWaitForCardInsertionBlockingThreadedReader.class);
     doReturn(readerName).when(r).getName();
     return r;
   }

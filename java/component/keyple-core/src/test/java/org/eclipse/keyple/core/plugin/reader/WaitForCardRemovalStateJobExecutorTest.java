@@ -142,7 +142,7 @@ public class WaitForCardRemovalStateJobExecutorTest extends CoreBaseTest {
     /*
      * ------------ input polling mode is STOP card has been removed within timeout
      */
-    BlankSmartPresenceTheadedReader r =
+    BlankPresenceWaitForCardBlockingThreadedReader r =
         AbsSmartPresenceTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME);
     WaitForCardRemovalState waitForCardRemovalState =
         new WaitForCardRemovalState(r, new SmartRemovalMonitoringJob(r), executorService);
@@ -167,7 +167,7 @@ public class WaitForCardRemovalStateJobExecutorTest extends CoreBaseTest {
     /*
      * ------------ input polling mode is CONTINUE card has been removed within timeout
      */
-    BlankSmartPresenceTheadedReader r =
+    BlankPresenceWaitForCardBlockingThreadedReader r =
         AbsSmartPresenceTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME);
     // r.startCardDetection(ObservableReader.PollingMode.REPEATING);
     WaitForCardRemovalState waitForCardRemovalState =
