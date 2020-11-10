@@ -15,21 +15,21 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.PluginEvent;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservablePlugin;
+import org.eclipse.keyple.core.card.message.ProxyReader;
+import org.eclipse.keyple.core.plugin.AbstractObservablePlugin;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.event.PluginEvent;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTxEngine;
 import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Remote SE Plugin Creates a virtual reader when a remote readers connect Manages the dispatch of
- * events received from remote readers
+ * Remote reader Plugin Creates a virtual reader when a remote readers connect Manages the dispatch
+ * of events received from remote readers
  */
 class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlugin {
 
@@ -44,7 +44,7 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
 
   /**
    * RemoteSePlugin is wrapped into MasterAPI and instantiated like a standard plugin
-   * by @SeProxyService. Use MasterAPI
+   * by @SmartCardService. Use MasterAPI
    */
   RemoteSePluginImpl(
       VirtualReaderSessionFactory sessionManager,
@@ -61,7 +61,7 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
   }
 
   public VirtualReaderImpl getReaderByRemoteName(String remoteName, String slaveNodeId) {
-    SeReader virtualReader =
+    Reader virtualReader =
         readers.get(RemoteSePluginImpl.generateReaderName(remoteName, slaveNodeId));
     if (virtualReader == null) {
       throw new KeypleReaderNotFoundException(remoteName);
@@ -191,8 +191,8 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
    * @return
    */
   @Override
-  protected ConcurrentMap<String, SeReader> initNativeReaders() {
-    return new ConcurrentHashMap<String, SeReader>();
+  protected ConcurrentMap<String, Reader> initNativeReaders() {
+    return new ConcurrentHashMap<String, Reader>();
   }
 
   /**

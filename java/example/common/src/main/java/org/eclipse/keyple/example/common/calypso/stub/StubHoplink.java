@@ -12,15 +12,15 @@
 package org.eclipse.keyple.example.common.calypso.stub;
 
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.plugin.stub.StubSecureElement;
+import org.eclipse.keyple.plugin.stub.StubSmartCard;
 
 /**
  * This class is an example of a Stub Implementation of SecureElement. It works with the protocol
  * ISO_14443_4 and simulates a Calypso PO with an Hoplink application
  */
-public class StubHoplink extends StubSecureElement {
+public class StubHoplink extends StubSmartCard {
 
-  static final String seProtocol = "ISO_14443_4";
+  static final String cardProtocol = "ISO_14443_4";
   final String ATR_HEX = "3B8E800180318066409089120802830190000B";
 
   public StubHoplink() {
@@ -66,7 +66,7 @@ public class StubHoplink extends StubSecureElement {
   }
 
   @Override
-  public String getSeProtocol() {
-    return seProtocol;
+  public String getCardProtocol() {
+    return cardProtocol;
   }
 }

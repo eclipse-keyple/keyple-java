@@ -16,12 +16,12 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.PluginEvent;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.event.PluginEvent;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
@@ -70,8 +70,8 @@ final class RemoteServerPluginImpl extends AbstractRemotePlugin implements Remot
    * @since 1.0
    */
   @Override
-  protected ConcurrentMap<String, SeReader> initNativeReaders() throws KeypleReaderIOException {
-    return new ConcurrentHashMap<String, SeReader>();
+  protected ConcurrentMap<String, Reader> initNativeReaders() throws KeypleReaderIOException {
+    return new ConcurrentHashMap<String, Reader>();
   }
 
   /**
@@ -86,9 +86,8 @@ final class RemoteServerPluginImpl extends AbstractRemotePlugin implements Remot
 
         // create a virtual reader from message parameters
         final AbstractServerVirtualReader virtualReader = createMasterReader(message);
-
+        virtualReader.register();
         readers.put(virtualReader.getName(), virtualReader);
-
         notifyObservers(
             new PluginEvent(
                 getName(), virtualReader.getName(), PluginEvent.EventType.READER_CONNECTED));
@@ -97,7 +96,7 @@ final class RemoteServerPluginImpl extends AbstractRemotePlugin implements Remot
         Assert.getInstance().notNull(message.getVirtualReaderName(), "virtualReaderName");
 
         ServerVirtualObservableReader delegateVirtualReader = createSlaveReader(message);
-
+        delegateVirtualReader.register();
         readers.put(delegateVirtualReader.getName(), delegateVirtualReader);
 
         // notify observers of this event

@@ -11,13 +11,10 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.stub;
 
-import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.ReaderPoolPlugin;
 
-/**
- * StubPoolPlugin allows to simulate a {@link org.eclipse.keyple.core.seproxy.ReaderPoolPlugin} and
- * a {@link StubSecureElement}
- */
+/** StubPoolPlugin allows to simulate a {@link ReaderPoolPlugin} and a {@link StubSmartCard} */
 public interface StubPoolPlugin extends ReaderPoolPlugin {
 
   /**
@@ -26,16 +23,18 @@ public interface StubPoolPlugin extends ReaderPoolPlugin {
    *
    * @param groupReference : group refence of the new stub reader
    * @param readerName : name of the new stub reader
-   * @param se : insert a se at creation (can be null)
+   * @param card : insert a card at creation (can be null)
    * @return created StubReader
+   * @since 1.0
    */
-  SeReader plugStubPoolReader(String groupReference, String readerName, StubSecureElement se);
+  Reader plugStubPoolReader(String groupReference, String readerName, StubSmartCard card);
 
   /**
    * Unplug synchronously a new reader by groupReference. A READER_DISCONNECTED event will be
    * raised.
    *
    * @param groupReference groupReference of the reader to be unplugged
+   * @since 1.0
    */
   void unplugStubPoolReader(String groupReference);
 }

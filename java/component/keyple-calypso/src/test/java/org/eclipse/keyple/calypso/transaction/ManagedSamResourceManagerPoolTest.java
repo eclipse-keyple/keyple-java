@@ -19,10 +19,10 @@ import static org.mockito.Mockito.doReturn;
 import org.eclipse.keyple.calypso.CalypsoBaseTest;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
-import org.eclipse.keyple.core.selection.SeResource;
-import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
+import org.eclipse.keyple.core.card.selection.CardResource;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.ReaderPoolPlugin;
+import org.eclipse.keyple.core.service.exception.KeypleAllocationReaderException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,7 +54,7 @@ public class ManagedSamResourceManagerPoolTest extends CalypsoBaseTest {
 
     // test
     try {
-      SeResource<CalypsoSam> out =
+      CardResource<CalypsoSam> out =
           srmSpy.allocateSamResource(
               SamResourceManager.AllocationMode.BLOCKING,
               SamIdentifier.builder()
@@ -79,16 +79,16 @@ public class ManagedSamResourceManagerPoolTest extends CalypsoBaseTest {
   public void getResource() throws Exception {
     // init plugin
     ReaderPoolPlugin poolPlugin = Mockito.mock(ReaderPoolPlugin.class);
-    doReturn(seReaderMock()).when(poolPlugin).allocateReader(any(String.class));
+    doReturn(readerMock()).when(poolPlugin).allocateReader(any(String.class));
 
     // init SamResourceManagerPool with custom pool plugin
     SamResourceManagerPool srmSpy = srmSpy(poolPlugin);
-    doReturn(samResourceMock()).when(srmSpy).createSamResource(any(SeReader.class));
+    doReturn(samResourceMock()).when(srmSpy).createSamResource(any(Reader.class));
 
     long start = System.currentTimeMillis();
 
     // test
-    SeResource<CalypsoSam> out =
+    CardResource<CalypsoSam> out =
         srmSpy.allocateSamResource(
             SamResourceManager.AllocationMode.BLOCKING,
             SamIdentifier.builder()
@@ -126,8 +126,8 @@ public class ManagedSamResourceManagerPoolTest extends CalypsoBaseTest {
     return mock;
   }
 
-  SeReader seReaderMock() {
-    SeReader mock = Mockito.mock(SeReader.class);
+  Reader readerMock() {
+    Reader mock = Mockito.mock(Reader.class);
     return mock;
   }
 }

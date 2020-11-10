@@ -20,16 +20,13 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.eclipse.keyple.core.selection.AbstractMatchingSe;
-import org.eclipse.keyple.core.seproxy.PluginFactory;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.message.SeRequest;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.card.message.*;
+import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.PluginFactory;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.core.KeypleClientAsync;
 import org.eclipse.keyple.plugin.remote.core.KeypleClientReaderEventFilter;
@@ -68,38 +65,38 @@ public class NativeClientServiceTest extends BaseNativeTest {
   public void setUp() {
     this.init();
     mockFactory = Mockito.mock(PluginFactory.class);
-    ReaderPlugin readerPlugin = Mockito.mock(ReaderPlugin.class);
+    Plugin readerPlugin = Mockito.mock(Plugin.class);
     doReturn(readerPlugin).when(mockFactory).getPlugin();
     doReturn(pluginName).when(mockFactory).getPluginName();
     doReturn(pluginName).when(readerPlugin).getName();
 
-    SeProxyService.getInstance().registerPlugin(mockFactory);
+    SmartCardService.getInstance().registerPlugin(mockFactory);
     syncClientEndpoint = Mockito.mock(KeypleClientSync.class);
     asyncClient = Mockito.mock(KeypleClientAsync.class);
     eventFilter = Mockito.mock(KeypleClientReaderEventFilter.class);
 
-    doReturn(getASeResponse())
+    doReturn(getACardResponse())
         .when(readerMocked)
-        .transmitSeRequest(any(SeRequest.class), any(ChannelControl.class));
-    doReturn(getASeResponse())
+        .transmitCardRequest(any(CardRequest.class), any(ChannelControl.class));
+    doReturn(getACardResponse())
         .when(observableReaderMocked)
-        .transmitSeRequest(any(SeRequest.class), any(ChannelControl.class));
+        .transmitCardRequest(any(CardRequest.class), any(ChannelControl.class));
     doReturn(observableReaderMocked).when(readerPlugin).getReader(observableReaderName);
     outputData = new MyKeypleUserData("output1");
     inputData = new MyKeypleUserData("input1");
-    matchingCard = new MatchingSeImpl(getASeResponse());
+    matchingCard = new MatchingSeImpl(getACardSelectionResponse());
     readerEvent =
         new ReaderEvent(
             pluginName, //
             observableReaderName, //
-            ReaderEvent.EventType.SE_INSERTED, //
+            ReaderEvent.EventType.CARD_INSERTED, //
             null);
     parser = KeypleJsonParser.getParser();
   }
 
   @After
   public void tearDown() {
-    SeProxyService.getInstance().unregisterPlugin(pluginName);
+    SmartCardService.getInstance().unregisterPlugin(pluginName);
   }
 
   @Test
@@ -370,14 +367,14 @@ public class NativeClientServiceTest extends BaseNativeTest {
 
   public interface ObservableProxyReader extends ProxyReader, ObservableReader {}
 
-  public static class MatchingSeImpl extends AbstractMatchingSe {
+  public static class MatchingSeImpl extends AbstractSmartCard {
 
     /**
      * Constructor.
      *
      * @param selectionResponse the response from the card
      */
-    protected MatchingSeImpl(SeResponse selectionResponse) {
+    protected MatchingSeImpl(CardSelectionResponse selectionResponse) {
       super(selectionResponse);
     }
   }

@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.core;
 
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.plugin.remote.core.exception.KeypleDoNotPropagateEventException;
 
 /**

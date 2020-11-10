@@ -12,12 +12,12 @@
 package org.eclipse.keyple.example.common.generic.stub;
 
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.plugin.stub.StubSecureElement;
+import org.eclipse.keyple.plugin.stub.StubSmartCard;
 
-/** Simple contact stub SE (no command) */
-public class StubMifareUL extends StubSecureElement {
+/** Simple contact card Stub (no command) */
+public class StubMifareUL extends StubSmartCard {
 
-  static final String seProtocol = "MIFARE_ULTRA_LIGHT";
+  static final String cardProtocol = "MIFARE_ULTRA_LIGHT";
   final String ATR_HEX = "3B8F8001804F0CA0000003060300030000000068";
 
   public StubMifareUL() {
@@ -31,7 +31,7 @@ public class StubMifareUL extends StubSecureElement {
   }
 
   @Override
-  public String getSeProtocol() {
-    return seProtocol;
+  public String getCardProtocol() {
+    return cardProtocol;
   }
 }

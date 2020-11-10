@@ -15,10 +15,10 @@ import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.plugin.reader.ObservableReaderNotifier;
+import org.eclipse.keyple.core.plugin.reader.ObservableReaderNotifier;
+import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsRequest;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
@@ -150,7 +150,7 @@ final class VirtualObservableReader extends AbstractVirtualReader
    * @since 1.0
    */
   @Override
-  public void startSeDetection(PollingMode pollingMode) {
+  public void startCardDetection(PollingMode pollingMode) {
     Assert.getInstance().notNull(pollingMode, "Polling Mode");
     JsonObject body = new JsonObject();
 
@@ -165,7 +165,7 @@ final class VirtualObservableReader extends AbstractVirtualReader
    * @since 1.0
    */
   @Override
-  public void stopSeDetection() {
+  public void stopCardDetection() {
     sendRequest(KeypleMessageDto.Action.STOP_CARD_DETECTION, null);
   }
 
@@ -217,7 +217,7 @@ final class VirtualObservableReader extends AbstractVirtualReader
    * @since 1.0
    */
   @Override
-  public void finalizeSeProcessing() {
+  public void finalizeCardProcessing() {
     sendRequest(KeypleMessageDto.Action.FINALIZE_CARD_PROCESSING, null);
   }
 }

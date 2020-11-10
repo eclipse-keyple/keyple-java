@@ -11,11 +11,9 @@
  ************************************************************************************** */
 package org.eclipse.keyple.calypso.command.sam;
 
-import org.eclipse.keyple.calypso.command.sam.builder.security.*;
-import org.eclipse.keyple.calypso.command.sam.parser.security.*;
-import org.eclipse.keyple.core.command.SeCommand;
+import org.eclipse.keyple.core.card.command.CardCommand;
 
-public enum CalypsoSamCommand implements SeCommand {
+public enum CalypsoSamCommand implements CardCommand {
 
   /** The sam select diversifier. */
   SELECT_DIVERSIFIER("Select Diversifier", (byte) 0x14),

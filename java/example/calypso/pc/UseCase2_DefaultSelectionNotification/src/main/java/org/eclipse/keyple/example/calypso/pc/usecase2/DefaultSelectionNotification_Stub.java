@@ -20,25 +20,25 @@ import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
-import org.eclipse.keyple.core.selection.SeResource;
-import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.card.selection.CardResource;
+import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.ObservableReader.ReaderObserver;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
+import org.eclipse.keyple.core.service.exception.KeypleException;
+import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.example.common.calypso.stub.StubCalypsoClassic;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubPluginFactory;
 import org.eclipse.keyple.plugin.stub.StubReader;
-import org.eclipse.keyple.plugin.stub.StubSecureElement;
+import org.eclipse.keyple.plugin.stub.StubSmartCard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,16 +52,16 @@ import org.slf4j.LoggerFactory;
  *       <h2>Scenario:</h2>
  *       <ul>
  *         <li>Define a default selection of ISO 14443-4 Calypso PO and set it to an observable
- *             reader, on SE detection in case the Calypso selection is successful, notify the
+ *             reader, on card detection in case the Calypso selection is successful, notify the
  *             terminal application with the PO information, then the terminal follows by operating
  *             a simple Calypso PO transaction.
  *         <li><code>
  * Default Selection Notification
- * </code> means that the SE processing is automatically started when detected.
+ * </code> means that the card processing is automatically started when detected.
  *         <li>PO messages:
  *             <ul>
- *               <li>A first SE message to notify about the selected Calypso PO
- *               <li>A second SE message to operate the simple Calypso transaction
+ *               <li>A first card message to notify about the selected Calypso PO
+ *               <li>A second card message to operate the simple Calypso transaction
  *             </ul>
  *       </ul>
  * </ul>
@@ -69,18 +69,17 @@ import org.slf4j.LoggerFactory;
 public class DefaultSelectionNotification_Stub implements ReaderObserver {
   private static final Logger logger =
       LoggerFactory.getLogger(DefaultSelectionNotification_Stub.class);
-  private final SeSelection seSelection;
+  private final CardSelection cardSelection;
 
   public DefaultSelectionNotification_Stub() throws InterruptedException {
 
-    /* Get the instance of the SeProxyService (Singleton pattern) */
-    SeProxyService seProxyService = SeProxyService.getInstance();
+    /* Get the instance of the SmartCardService (Singleton pattern) */
+    SmartCardService smartCardService = SmartCardService.getInstance();
 
     final String STUB_PLUGIN_NAME = "stub1";
 
     /* Register Stub plugin in the platform */
-    ReaderPlugin stubPlugin =
-        seProxyService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
+    Plugin stubPlugin = smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
 
     /* Plug the PO stub reader. */
     ((StubPlugin) stubPlugin).plugStubReader("poReader", true);
@@ -88,7 +87,7 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
     /*
      * Get a PO reader ready to work with Calypso PO.
      */
-    SeReader poReader = stubPlugin.getReader("poReader");
+    Reader poReader = stubPlugin.getReader("poReader");
 
     /* Check if the reader exists */
     if (poReader == null) {
@@ -102,12 +101,12 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
     /*
      * Prepare a Calypso PO selection
      */
-    seSelection = new SeSelection();
+    cardSelection = new CardSelection();
 
     /*
      * Setting of an AID based selection of a Calypso REV3 PO
      *
-     * Select the first application matching the selection AID whatever the SE communication
+     * Select the first application matching the selection AID whatever the card communication
      * protocol keep the logical channel open after the selection
      */
 
@@ -118,7 +117,7 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
                 .invalidatedPo(InvalidatedPo.REJECT)
                 .build());
@@ -132,14 +131,14 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
     /*
      * Add the selection case to the current selection (we could have added other cases here)
      */
-    seSelection.prepareSelection(poSelectionRequest);
+    cardSelection.prepareSelection(poSelectionRequest);
 
     /*
-     * Provide the SeReader with the selection operation to be processed when a PO is inserted.
+     * Provide the Reader with the selection operation to be processed when a PO is inserted.
      */
     ((ObservableReader) poReader)
         .setDefaultSelectionRequest(
-            seSelection.getSelectionOperation(),
+            cardSelection.getSelectionOperation(),
             ObservableReader.NotificationMode.MATCHED_ONLY,
             ObservableReader.PollingMode.REPEATING);
 
@@ -151,19 +150,19 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
     logger.info("= #### file is ready to be processed as soon as the PO is detected.");
 
     /* Create 'virtual' Calypso PO */
-    StubSecureElement calypsoStubSe = new StubCalypsoClassic();
+    StubSmartCard calypsoStubCard = new StubCalypsoClassic();
 
     /* Wait a while. */
     Thread.sleep(100);
 
     logger.info("Insert stub PO.");
-    ((StubReader) poReader).insertSe(calypsoStubSe);
+    ((StubReader) poReader).insertCard(calypsoStubCard);
 
     /* Wait a while. */
     Thread.sleep(1000);
 
     logger.info("Remove stub PO.");
-    ((StubReader) poReader).removeSe();
+    ((StubReader) poReader).removeCard();
 
     System.exit(0);
   }
@@ -176,19 +175,19 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
   @Override
   public void update(ReaderEvent event) {
     switch (event.getEventType()) {
-      case SE_MATCHED:
+      case CARD_MATCHED:
         boolean transactionComplete = false;
         CalypsoPo calypsoPo = null;
-        SeReader poReader = null;
+        Reader poReader = null;
         try {
           calypsoPo =
               (CalypsoPo)
-                  seSelection
+                  cardSelection
                       .processDefaultSelection(event.getDefaultSelectionsResponse())
-                      .getActiveMatchingSe();
+                      .getActiveSmartCard();
 
           poReader =
-              SeProxyService.getInstance()
+              SmartCardService.getInstance()
                   .getPlugin(event.getPluginName())
                   .getReader(event.getReaderName());
         } catch (KeyplePluginNotFoundException e) {
@@ -214,7 +213,7 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
         logger.info("= #### 2nd PO exchange: reading transaction of the EventLog file.");
 
         PoTransaction poTransaction =
-            new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPo));
+            new PoTransaction(new CardResource<CalypsoPo>(poReader, calypsoPo));
 
         // Prepare the reading order and keep the associated parser for later use once the
         // transaction has been processed.
@@ -248,11 +247,11 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
               e.getMessage());
         }
         if (!transactionComplete) {
-          // Informs the underlying layer of the end of the SE processing, in order to
+          // Informs the underlying layer of the end of the card processing, in order to
           // manage the
           // removal sequence.
           try {
-            ((ObservableReader) (event.getReader())).finalizeSeProcessing();
+            ((ObservableReader) (event.getReader())).finalizeCardProcessing();
           } catch (KeypleReaderNotFoundException e) {
             logger.error("Reader not found! {}", e.getMessage());
           } catch (KeyplePluginNotFoundException e) {
@@ -261,11 +260,11 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
         }
         logger.info("= #### End of the Calypso PO processing.");
         break;
-      case SE_INSERTED:
+      case CARD_INSERTED:
         logger.error(
-            "SE_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.");
+            "CARD_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.");
         break;
-      case SE_REMOVED:
+      case CARD_REMOVED:
         logger.info("There is no PO inserted anymore. Return to the waiting state...");
         break;
       default:

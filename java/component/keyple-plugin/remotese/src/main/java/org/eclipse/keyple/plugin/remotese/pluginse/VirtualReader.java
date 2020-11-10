@@ -11,10 +11,10 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.service.Reader;
 
 /** Define a Virtual Reader (non observable) */
-public interface VirtualReader extends SeReader {
+public interface VirtualReader extends Reader {
   /**
    * Name of the Native Reader on the slave device
    *

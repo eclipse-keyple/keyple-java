@@ -20,11 +20,11 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.event.PluginEvent;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.ObservablePlugin;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.PluginEvent;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remote.core.impl.AbstractKeypleNode;
@@ -133,7 +133,7 @@ public class RemoteServerBaseTest {
                 new ReaderEvent(
                     nativePluginName,
                     nativeReaderName,
-                    ReaderEvent.EventType.SE_INSERTED,
+                    ReaderEvent.EventType.CARD_INSERTED,
                     getDefaultSelectionsResponse())));
 
     return new KeypleMessageDto()
@@ -149,7 +149,8 @@ public class RemoteServerBaseTest {
     return new Callable<Boolean>() {
       @Override
       public Boolean call() throws Exception {
-        return ReaderEvent.EventType.SE_INSERTED.compareTo(readerObserver.event.getEventType()) == 0
+        return ReaderEvent.EventType.CARD_INSERTED.compareTo(readerObserver.event.getEventType())
+                == 0
             && remotePluginName.equals(pluginObserver.event.getPluginName())
             && !readerObserver.event.getReaderName().equals(virtualReaderName)
             && readerObserver.virtualReaderNames.size()
@@ -187,7 +188,7 @@ public class RemoteServerBaseTest {
   }
 
   void registerSyncPlugin() {
-    SeProxyService.getInstance()
+    SmartCardService.getInstance()
         .registerPlugin(
             RemoteServerPluginFactory.builder()
                 .withSyncNode()
@@ -195,10 +196,10 @@ public class RemoteServerBaseTest {
                 .usingDefaultEventNotificationPool()
                 .build());
     remotePlugin =
-        (RemoteServerPluginImpl) SeProxyService.getInstance().getPlugin(remotePluginName);
+        (RemoteServerPluginImpl) SmartCardService.getInstance().getPlugin(remotePluginName);
   }
 
   void unregisterPlugin() {
-    SeProxyService.getInstance().unregisterPlugin(remotePluginName);
+    SmartCardService.getInstance().unregisterPlugin(remotePluginName);
   }
 }

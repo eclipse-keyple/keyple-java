@@ -11,10 +11,10 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.integration.pool;
 
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.plugin.remote.integration.common.se.StubCalypsoClassic;
 import org.eclipse.keyple.plugin.remote.nativ.NativePoolServerService;
 import org.eclipse.keyple.plugin.remote.virtual.RemotePoolClientPlugin;
@@ -40,11 +40,11 @@ public abstract class BaseScenario {
     // reuse stub plugin
     try {
       nativePoolPlugin =
-          (StubPoolPlugin) SeProxyService.getInstance().getPlugin(NATIVE_POOL_PLUGIN_NAME);
+          (StubPoolPlugin) SmartCardService.getInstance().getPlugin(NATIVE_POOL_PLUGIN_NAME);
     } catch (KeyplePluginNotFoundException e) {
       nativePoolPlugin =
           (StubPoolPlugin)
-              SeProxyService.getInstance()
+              SmartCardService.getInstance()
                   .registerPlugin(new StubPoolPluginFactory(NATIVE_POOL_PLUGIN_NAME));
     }
     // plug one reader if not exists yet

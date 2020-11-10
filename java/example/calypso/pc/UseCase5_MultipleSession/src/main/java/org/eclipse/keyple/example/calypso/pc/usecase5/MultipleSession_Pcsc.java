@@ -22,14 +22,14 @@ import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.SamSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.SamSelector;
-import org.eclipse.keyple.core.selection.SeResource;
-import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.card.selection.CardResource;
+import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.SelectionsResult;
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.exception.KeypleException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
@@ -47,8 +47,8 @@ import org.slf4j.LoggerFactory;
  *   <li>
  *       <h2>Scenario:</h2>
  *       <ul>
- *         <li>Check if a ISO 14443-4 SE is in the reader, select a Calypso PO, operate a Calypso PO
- *             transaction in multiple mode including a number (N) of modification commands that
+ *         <li>Check if a ISO 14443-4 card is in the reader, select a Calypso PO, operate a Calypso
+ *             PO transaction in multiple mode including a number (N) of modification commands that
  *             exceed by one command the PO modification buffer. (open and close a secure session
  *             performed with the debit key).
  *             <p>Two sessions are performed:
@@ -60,15 +60,15 @@ import org.slf4j.LoggerFactory;
  *         <li>
  *             <p><code>
  * Explicit Selection
- * </code> means that it is the terminal application which start the SE processing.
+ * </code> means that it is the terminal application which start the card processing.
  *         <li>PO messages:
  *             <ul>
- *               <li>1 - SE message to explicitly select the application in the reader
- *               <li>2 - transaction SE message to operate the session opening in multiple mode
- *               <li>3 - transaction SE message to operate multiple updates of the same file (a
+ *               <li>1 - card message to explicitly select the application in the reader
+ *               <li>2 - transaction card message to operate the session opening in multiple mode
+ *               <li>3 - transaction card message to operate multiple updates of the same file (a
  *                   first session proceeding with the first modification commands is open and
  *                   closed)
- *               <li>4 - transaction SE message to operate the closing opening
+ *               <li>4 - transaction card message to operate the closing opening
  *             </ul>
  *       </ul>
  * </ul>
@@ -78,23 +78,23 @@ public class MultipleSession_Pcsc {
 
   public static void main(String[] args) {
 
-    // Get the instance of the SeProxyService (Singleton pattern)
-    SeProxyService seProxyService = SeProxyService.getInstance();
+    // Get the instance of the SmartCardService (Singleton pattern)
+    SmartCardService smartCardService = SmartCardService.getInstance();
 
-    // Register the PcscPlugin with SeProxyService, get the corresponding generic ReaderPlugin in
+    // Register the PcscPlugin with SmartCardService, get the corresponding generic Plugin in
     // return
-    ReaderPlugin readerPlugin = seProxyService.registerPlugin(new PcscPluginFactory());
+    Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory());
 
     // Get and configure the PO reader
-    SeReader poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
+    Reader poReader = plugin.getReader(ReaderUtilities.getContactlessReaderName());
     ((PcscReader) poReader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     // Get and configure the SAM reader
-    SeReader samReader = readerPlugin.getReader(ReaderUtilities.getContactReaderName());
+    Reader samReader = plugin.getReader(ReaderUtilities.getContactReaderName());
     ((PcscReader) samReader).setContactless(false).setIsoProtocol(PcscReader.IsoProtocol.T0);
 
     // Create a SAM resource after selecting the SAM
-    SeSelection samSelection = new SeSelection();
+    CardSelection samSelection = new CardSelection();
 
     SamSelector samSelector = SamSelector.builder().samRevision(C1).serialNumber(".*").build();
 
@@ -102,10 +102,10 @@ public class MultipleSession_Pcsc {
     samSelection.prepareSelection(new SamSelectionRequest(samSelector));
     CalypsoSam calypsoSam;
     try {
-      if (samReader.isSePresent()) {
+      if (samReader.isCardPresent()) {
         SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
         if (selectionsResult.hasActiveSelection()) {
-          calypsoSam = (CalypsoSam) selectionsResult.getActiveMatchingSe();
+          calypsoSam = (CalypsoSam) selectionsResult.getActiveSmartCard();
         } else {
           throw new IllegalStateException("Unable to open a logical channel for SAM!");
         }
@@ -117,24 +117,24 @@ public class MultipleSession_Pcsc {
     } catch (KeypleException e) {
       throw new IllegalStateException("Reader exception: " + e.getMessage());
     }
-    SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
+    CardResource<CalypsoSam> samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
 
     // display basic information about the readers and SAM
     logger.info("=============== UseCase Calypso #5: Po Authentication ==================");
     logger.info("= PO Reader  NAME = {}", poReader.getName());
-    logger.info("= SAM Reader  NAME = {}", samResource.getSeReader().getName());
+    logger.info("= SAM Reader  NAME = {}", samResource.getReader().getName());
 
     // Check if a PO is present in the reader
-    if (poReader.isSePresent()) {
+    if (poReader.isCardPresent()) {
 
       logger.info("= #### 1st PO exchange: AID based selection with reading of Environment file.");
 
       // Prepare a Calypso PO selection
-      SeSelection seSelection = new SeSelection();
+      CardSelection cardSelection = new CardSelection();
 
       // Setting of an AID based selection of a Calypso REV3 PO
       //
-      // Select the first application matching the selection AID whatever the SE
+      // Select the first application matching the selection AID whatever the card
       // communication
       // protocol keep the logical channel open after the selection
 
@@ -150,12 +150,12 @@ public class MultipleSession_Pcsc {
 
       // Add the selection case to the current selection (we could have added other cases
       // here)
-      seSelection.prepareSelection(poSelectionRequest);
+      cardSelection.prepareSelection(poSelectionRequest);
 
       // Actual PO communication: operate through a single request the Calypso PO selection
       // and the file read
       CalypsoPo calypsoPo =
-          (CalypsoPo) seSelection.processExplicitSelection(poReader).getActiveMatchingSe();
+          (CalypsoPo) cardSelection.processExplicitSelection(poReader).getActiveSmartCard();
       logger.info("The selection of the PO has succeeded.");
 
       // Go on with the reading of the first record of the EventLog file
@@ -179,7 +179,7 @@ public class MultipleSession_Pcsc {
               .build();
 
       PoTransaction poTransaction =
-          new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPo), poSecuritySettings);
+          new PoTransaction(new CardResource<CalypsoPo>(poReader, calypsoPo), poSecuritySettings);
 
       // Open Session for the debit key
       poTransaction.processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT);

@@ -11,8 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.virtual.impl;
 
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.plugin.remote.core.KeypleServerAsyncNode;
 import org.eclipse.keyple.plugin.remote.core.KeypleServerSyncNode;
 import org.eclipse.keyple.plugin.remote.virtual.RemoteServerPlugin;
@@ -29,7 +29,7 @@ public class RemoteServerUtils {
    */
   public static RemoteServerPlugin getRemotePlugin() {
     return (RemoteServerPlugin)
-        SeProxyService.getInstance().getPlugin(RemoteServerPluginFactory.DEFAULT_PLUGIN_NAME);
+        SmartCardService.getInstance().getPlugin(RemoteServerPluginFactory.DEFAULT_PLUGIN_NAME);
   }
 
   /**

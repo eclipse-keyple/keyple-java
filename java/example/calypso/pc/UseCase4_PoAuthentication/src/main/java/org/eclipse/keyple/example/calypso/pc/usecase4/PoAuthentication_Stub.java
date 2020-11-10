@@ -22,16 +22,16 @@ import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.SamSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.SamSelector;
-import org.eclipse.keyple.core.selection.SeResource;
-import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactsCardCommonProtocols;
+import org.eclipse.keyple.core.card.selection.CardResource;
+import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.SelectionsResult;
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.exception.KeypleException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.service.util.ContactsCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
@@ -40,7 +40,7 @@ import org.eclipse.keyple.example.common.calypso.stub.StubSamCalypsoClassic;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubPluginFactory;
 import org.eclipse.keyple.plugin.stub.StubReader;
-import org.eclipse.keyple.plugin.stub.StubSecureElement;
+import org.eclipse.keyple.plugin.stub.StubSmartCard;
 import org.eclipse.keyple.plugin.stub.StubSupportedProtocols;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,19 +55,19 @@ import org.slf4j.LoggerFactory;
  *       <h2>Scenario:</h2>
  *       <ul>
  *         <li>Initialize two stub readers (PO and SAM), insert a stub PO and a stub SAM.
- *         <li>Check if a ISO 14443-4 SE is in the reader, select a Calypso PO, operate a simple
+ *         <li>Check if a ISO 14443-4 card is in the reader, select a Calypso PO, operate a simple
  *             Calypso PO authentication (open and close a secure session performed with the debit
  *             key).
  *             <p>The SAM messages are handled transparently by the Calypso transaction API.
  *         <li><code>
  * Explicit Selection
- * </code> means that it is the terminal application which start the SE processing.
+ * </code> means that it is the terminal application which start the card processing.
  *         <li>4 PO messages:
  *             <ul>
- *               <li>1 - SE message to explicitly select the application in the reader
- *               <li>2 - transaction SE message to operate the session opening and a PO read
- *               <li>3 - transaction SE message to operate the reading of a file
- *               <li>4 - transaction SE message to operate the closing opening
+ *               <li>1 - card message to explicitly select the application in the reader
+ *               <li>2 - transaction card message to operate the session opening and a PO read
+ *               <li>3 - transaction card message to operate the reading of a file
+ *               <li>4 - transaction card message to operate the closing opening
  *             </ul>
  *       </ul>
  * </ul>
@@ -77,22 +77,21 @@ public class PoAuthentication_Stub {
 
   public static void main(String[] args) {
 
-    // Get the instance of the SeProxyService (Singleton pattern)
-    SeProxyService seProxyService = SeProxyService.getInstance();
+    // Get the instance of the SmartCardService (Singleton pattern)
+    SmartCardService smartCardService = SmartCardService.getInstance();
 
     final String STUB_PLUGIN_NAME = "stub1";
 
     // Register Stub plugin in the platform
-    ReaderPlugin stubPlugin =
-        seProxyService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
+    Plugin stubPlugin = smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
 
     // Plug PO and SAM stub reader.
     ((StubPlugin) stubPlugin).plugStubReader("poReader", true);
     ((StubPlugin) stubPlugin).plugStubReader("samReader", true);
 
     // Get a PO and a SAM reader ready to work with a Calypso PO.
-    SeReader poReader = stubPlugin.getReader("poReader");
-    SeReader samReader = stubPlugin.getReader("samReader");
+    Reader poReader = stubPlugin.getReader("poReader");
+    Reader samReader = stubPlugin.getReader("samReader");
 
     // activate protocols
     poReader.activateProtocol(
@@ -102,19 +101,19 @@ public class PoAuthentication_Stub {
         StubSupportedProtocols.ISO_7816_3.name(), ContactsCardCommonProtocols.ISO_7816_3.name());
 
     // Create 'virtual' Calypso PO
-    StubSecureElement calypsoStubSe = new StubCalypsoClassic();
+    StubSmartCard calypsoStubCard = new StubCalypsoClassic();
 
     logger.info("Insert stub PO.");
-    ((StubReader) poReader).insertSe(calypsoStubSe);
+    ((StubReader) poReader).insertCard(calypsoStubCard);
 
     // Create 'virtual' Calypso SAM
-    StubSecureElement calypsoSamStubSe = new StubSamCalypsoClassic();
+    StubSmartCard calypsoSamStubCard = new StubSamCalypsoClassic();
 
     logger.info("Insert stub SAM.");
-    ((StubReader) samReader).insertSe(calypsoSamStubSe);
+    ((StubReader) samReader).insertCard(calypsoSamStubCard);
 
     // Create a SAM resource after selecting the SAM
-    SeSelection samSelection = new SeSelection();
+    CardSelection samSelection = new CardSelection();
 
     SamSelector samSelector = SamSelector.builder().samRevision(C1).serialNumber(".*").build();
 
@@ -122,10 +121,10 @@ public class PoAuthentication_Stub {
     samSelection.prepareSelection(new SamSelectionRequest(samSelector));
     CalypsoSam calypsoSam;
     try {
-      if (samReader.isSePresent()) {
+      if (samReader.isCardPresent()) {
         SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
         if (selectionsResult.hasActiveSelection()) {
-          calypsoSam = (CalypsoSam) selectionsResult.getActiveMatchingSe();
+          calypsoSam = (CalypsoSam) selectionsResult.getActiveSmartCard();
         } else {
           throw new IllegalStateException("Unable to open a logical channel for SAM!");
         }
@@ -137,22 +136,22 @@ public class PoAuthentication_Stub {
     } catch (KeypleException e) {
       throw new IllegalStateException("Reader exception: " + e.getMessage());
     }
-    SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
+    CardResource<CalypsoSam> samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
 
     logger.info("=============== UseCase Calypso #4: Po Authentication ==================");
     logger.info("= PO Reader  NAME = {}", poReader.getName());
     logger.info("= SAM Reader  NAME = {}", samReader.getName());
 
     // Check if a PO is present in the reader
-    if (poReader.isSePresent()) {
+    if (poReader.isCardPresent()) {
 
       logger.info("= ##### 1st PO exchange: AID based selection with reading of Environment file.");
 
       // Prepare a Calypso PO selection
-      SeSelection seSelection = new SeSelection();
+      CardSelection cardSelection = new CardSelection();
 
       // Setting of an AID based selection of a Calypso REV3 PO
-      // Select the first application matching the selection AID whatever the SE communication
+      // Select the first application matching the selection AID whatever the card communication
       // protocol keep the logical channel open after the selection
 
       // Calypso selection: configures a PoSelectionRequest with all the desired attributes to
@@ -160,7 +159,7 @@ public class PoAuthentication_Stub {
       PoSelectionRequest poSelectionRequest =
           new PoSelectionRequest(
               PoSelector.builder()
-                  .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                  .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                   .aidSelector(AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
                   .invalidatedPo(InvalidatedPo.REJECT)
                   .build());
@@ -171,12 +170,12 @@ public class PoAuthentication_Stub {
 
       // Add the selection case to the current selection
       // (we could have added other cases here)
-      seSelection.prepareSelection(poSelectionRequest);
+      cardSelection.prepareSelection(poSelectionRequest);
 
       // Actual PO communication: operate through a single request the Calypso PO selection
       // and the file read
       CalypsoPo calypsoPo =
-          (CalypsoPo) seSelection.processExplicitSelection(poReader).getActiveMatchingSe();
+          (CalypsoPo) cardSelection.processExplicitSelection(poReader).getActiveSmartCard();
 
       logger.info("The selection of the PO has succeeded.");
 
@@ -195,7 +194,7 @@ public class PoAuthentication_Stub {
 
       PoTransaction poTransaction =
           new PoTransaction(
-              new SeResource<CalypsoPo>(poReader, calypsoPo),
+              new CardResource<CalypsoPo>(poReader, calypsoPo),
               CalypsoUtilities.getSecuritySettings(samResource));
 
       // Read the EventLog file at the Session Opening

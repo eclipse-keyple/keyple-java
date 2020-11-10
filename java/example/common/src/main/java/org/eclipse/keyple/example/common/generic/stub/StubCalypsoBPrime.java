@@ -12,12 +12,12 @@
 package org.eclipse.keyple.example.common.generic.stub;
 
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.plugin.stub.StubSecureElement;
+import org.eclipse.keyple.plugin.stub.StubSmartCard;
 
-/** Simple contact stub SE (no command) */
-public class StubCalypsoBPrime extends StubSecureElement {
+/** Simple contact card Stub (no command) */
+public class StubCalypsoBPrime extends StubSmartCard {
 
-  static final String seProtocol = "CALYPSO_OLD_CARD_PRIME";
+  static final String cardProtocol = "CALYPSO_OLD_CARD_PRIME";
   final String ATR_HEX = "3B8F8001805A0A01032003111122334482900082";
 
   public StubCalypsoBPrime() {
@@ -31,7 +31,7 @@ public class StubCalypsoBPrime extends StubSecureElement {
   }
 
   @Override
-  public String getSeProtocol() {
-    return seProtocol;
+  public String getCardProtocol() {
+    return cardProtocol;
   }
 }

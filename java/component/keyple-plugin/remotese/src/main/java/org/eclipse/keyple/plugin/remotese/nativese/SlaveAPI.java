@@ -16,15 +16,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.ReaderPoolPlugin;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.nativese.method.*;
 import org.eclipse.keyple.plugin.remotese.rm.IRemoteMethodExecutor;
@@ -40,11 +40,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * SlaveAPI is the main component of the Remote Se Architecture on the slave side.
+ * SlaveAPI is the main component of the Remote card Architecture on the slave side.
  *
  * <p>It allows also to connect/disconnect a reader trhough dedicated methods
  *
- * <p>It handles incoming {@link KeypleDto} and transfer them to the right {@link SeReader}
+ * <p>It handles incoming {@link KeypleDto} and transfer them to the right {@link Reader}
  *
  * <p>Configure the SlaveAPI with a {@link DtoNode} to enable communication with the {@link
  * org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI}
@@ -54,7 +54,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
   private static final Logger logger = LoggerFactory.getLogger(SlaveAPI.class);
 
   private final DtoNode dtoNode; // bind node
-  private final SeProxyService seProxyService;
+  private final SmartCardService smartCardService;
 
   private final RemoteMethodTxEngine rmTxEngine; // rm command processor
   private final String masterNodeId; // master node id used for connect, disconnect, and events
@@ -67,43 +67,43 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
   /**
    * Constructor with a default timeout DEFAULT_RPC_TIMEOUT and single threaded executorService
    *
-   * @param seProxyService : instance of the seProxyService
+   * @param smartCardService : instance of the smartCardService
    * @param dtoNode : Define which DTO sender will be called when a DTO needs to be sent.
    * @param masterNodeId : Master Node Id to connect to
    */
-  public SlaveAPI(SeProxyService seProxyService, DtoNode dtoNode, String masterNodeId) {
-    this(seProxyService, dtoNode, masterNodeId, DEFAULT_RPC_TIMEOUT);
+  public SlaveAPI(SmartCardService smartCardService, DtoNode dtoNode, String masterNodeId) {
+    this(smartCardService, dtoNode, masterNodeId, DEFAULT_RPC_TIMEOUT);
   }
 
   /**
    * Constructor with custom timeout and single threaded executorService
    *
-   * @param seProxyService : instance of the seProxyService
+   * @param smartCardService : instance of the smartCardService
    * @param dtoNode : Define which DTO sender will be called when a DTO needs to be sent.
    * @param masterNodeId : Master Node Id to connect to
    * @param timeout : timeout to be used before a request is abandonned
    */
   public SlaveAPI(
-      SeProxyService seProxyService, DtoNode dtoNode, String masterNodeId, long timeout) {
-    this(seProxyService, dtoNode, masterNodeId, timeout, Executors.newSingleThreadExecutor());
+      SmartCardService smartCardService, DtoNode dtoNode, String masterNodeId, long timeout) {
+    this(smartCardService, dtoNode, masterNodeId, timeout, Executors.newSingleThreadExecutor());
   }
 
   /**
    * Constructor with custom timeout and custom executorService
    *
-   * @param seProxyService : instance of the seProxyService
+   * @param smartCardService : instance of the smartCardService
    * @param dtoNode : Define which DTO sender will be called when a DTO needs to be sent.
    * @param masterNodeId : Master Node Id to connect to
    * @param timeout : timeout to be used before a request is abandonned
    * @param executorService : use an external executorService to execute async task
    */
   public SlaveAPI(
-      SeProxyService seProxyService,
+      SmartCardService smartCardService,
       DtoNode dtoNode,
       String masterNodeId,
       long timeout,
       ExecutorService executorService) {
-    this.seProxyService = seProxyService;
+    this.smartCardService = smartCardService;
     this.dtoNode = dtoNode;
     this.rmTxEngine = new RemoteMethodTxEngine(dtoNode, timeout, executorService);
     this.masterNodeId = masterNodeId;
@@ -261,7 +261,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
   /** */
 
   /**
-   * Connect a local reader to Remote SE Plugin. Override from interface {@link
+   * Connect a local reader to Remote reader Plugin. Override from interface {@link
    * INativeReaderService}
    *
    * @param localReader : native reader to be connected
@@ -269,19 +269,19 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
    * @throws KeypleReaderException : if unsuccessful
    */
   @Override
-  public String connectReader(SeReader localReader) {
+  public String connectReader(Reader localReader) {
     return connectReader(localReader, new HashMap<String, String>());
   }
 
   /**
-   * Connect a local reader to Remote SE Plugin with options Override from interface {@link
+   * Connect a local reader to Remote reader Plugin with options Override from interface {@link
    * INativeReaderService}
    *
    * @param localReader : native reader to be connected
    * @param options : options will be set as parameters of virtual reader
    */
   @Override
-  public String connectReader(SeReader localReader, Map<String, String> options) {
+  public String connectReader(Reader localReader, Map<String, String> options) {
 
     if (options == null) {
       options = new HashMap<String, String>();
@@ -312,7 +312,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
   }
 
   /**
-   * Disconnect a SeReader. Matching virtual session will be destroyed on Master node.
+   * Disconnect a Reader. Matching virtual session will be destroyed on Master node.
    *
    * @param sessionId (optional)
    * @param nativeReaderName local name of the reader, will be used coupled with the nodeId to
@@ -333,7 +333,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
     try {
       // blocking call
       disconnect.execute(rmTxEngine);
-      SeReader nativeReader = findLocalReader(nativeReaderName);
+      Reader nativeReader = findLocalReader(nativeReaderName);
       if (nativeReader instanceof ObservableReader) {
         logger.trace("Disconnected reader is observable, removing slaveAPI observer");
 
@@ -353,17 +353,17 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
    * Internal method to find a local reader by its name across multiple plugins
    *
    * @param nativeReaderName : name of the reader to be found
-   * @return Se Reader found if any
+   * @return card Reader found if any
    * @throws KeypleReaderNotFoundException if not reader were found with this name
    */
   @Override
-  public SeReader findLocalReader(String nativeReaderName) {
+  public Reader findLocalReader(String nativeReaderName) {
     logger.trace(
         "Find local reader by name {} in {} plugin(s)",
         nativeReaderName,
-        seProxyService.getPlugins().size());
-    final Collection<ReaderPlugin> plugins = seProxyService.getPlugins().values();
-    for (ReaderPlugin plugin : plugins) {
+        smartCardService.getPlugins().size());
+    final Collection<Plugin> plugins = smartCardService.getPlugins().values();
+    for (Plugin plugin : plugins) {
       try {
         return plugin.getReader(nativeReaderName);
       } catch (KeypleReaderNotFoundException e) {

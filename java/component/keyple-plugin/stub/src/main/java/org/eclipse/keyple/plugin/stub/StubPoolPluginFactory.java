@@ -11,9 +11,9 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.stub;
 
-import org.eclipse.keyple.core.seproxy.PluginFactory;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.PluginFactory;
+import org.eclipse.keyple.core.service.exception.KeyplePluginInstantiationException;
 
 /** Instantiate a {@link StubPoolPlugin} with a custom plugin name */
 public class StubPoolPluginFactory implements PluginFactory {
@@ -21,21 +21,25 @@ public class StubPoolPluginFactory implements PluginFactory {
   private String pluginName;
 
   /**
-   * Create the factory
+   * Register the plugin by passing an instance of this factory to @link
+   * SmartCardService#registerPlugin(PluginFactory)}
    *
    * @param pluginName name of the plugin that will be instantiated
+   * @since 1.0
    */
   public StubPoolPluginFactory(String pluginName) {
     this.pluginName = pluginName;
   }
 
+  /** {@inheritDoc} */
   @Override
   public String getPluginName() {
     return pluginName;
   }
 
   /** {@inheritDoc} */
-  public ReaderPlugin getPlugin() {
+  @Override
+  public Plugin getPlugin() {
     try {
       return new StubPoolPluginImpl(pluginName);
     } catch (Exception e) {

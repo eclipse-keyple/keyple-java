@@ -16,21 +16,21 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
-import org.eclipse.keyple.core.command.SeCommand;
-import org.eclipse.keyple.core.command.exception.KeypleSeCommandException;
+import org.eclipse.keyple.core.card.command.CardCommand;
+import org.eclipse.keyple.core.card.command.exception.KeypleCardCommandException;
 
 /** Force the command field to be serialized as a SeCommand.class */
 public class KeypleSeCommandExceptionSerializer
-    implements JsonSerializer<KeypleSeCommandException> {
+    implements JsonSerializer<KeypleCardCommandException> {
 
   @Override
   public JsonElement serialize(
-      KeypleSeCommandException exception,
+      KeypleCardCommandException exception,
       Type type,
       JsonSerializationContext jsonSerializationContext) {
     JsonObject jsonObject = new JsonObject();
     jsonObject.add(
-        "command", jsonSerializationContext.serialize(exception.getCommand(), SeCommand.class));
+        "command", jsonSerializationContext.serialize(exception.getCommand(), CardCommand.class));
     jsonObject.addProperty("statusCode", exception.getStatusCode());
     jsonObject.addProperty("message", exception.getMessage());
     return jsonObject;

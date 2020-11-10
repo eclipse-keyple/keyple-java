@@ -11,9 +11,9 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.virtual;
 
-import org.eclipse.keyple.core.seproxy.PluginFactory;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
+import org.eclipse.keyple.core.service.PluginFactory;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.ObservablePlugin;
 
 /**
  * <b>Remote Client Observable Plugin</b> API.
@@ -26,7 +26,7 @@ import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
  *
  * <ul>
  *   <li>To <b>register</b> the plugin, use the Keyple service method {@link
- *       SeProxyService#registerPlugin(PluginFactory)} using the factory {link
+ *       SmartCardService#registerPlugin(PluginFactory)} using the factory {link
  *       RemoteClientPluginFactory} and <b>activate the plugin observation</b>.
  *   <li>To access the plugin, use one of the following utility methods :
  *       <ul>
@@ -36,7 +36,7 @@ import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
  *             RemoteClientUtils#getSyncObservablePlugin()}
  *       </ul>
  *   <li>To <b>unregister</b> the plugin, use the Keyple service method {@link
- *       SeProxyService#unregisterPlugin(String)} using the plugin name.
+ *       SmartCardService#unregisterPlugin(String)} using the plugin name.
  * </ul>
  *
  * <p>This plugin behaves like an {@link ObservablePlugin}.

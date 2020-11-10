@@ -12,9 +12,11 @@
 package org.eclipse.keyple.plugin.remotese.nativese.method;
 
 import com.google.gson.JsonObject;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.message.*;
-import org.eclipse.keyple.core.seproxy.message.ChannelControl;
+import org.eclipse.keyple.core.card.message.CardRequest;
+import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.ChannelControl;
+import org.eclipse.keyple.core.card.message.ProxyReader;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.rm.IRemoteMethodExecutor;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
@@ -46,7 +48,7 @@ public class RmTransmitExecutor implements IRemoteMethodExecutor {
 
     KeypleDto keypleDto = transportDto.getKeypleDTO();
     TransportDto out = null;
-    SeResponse seResponse = null;
+    CardResponse cardResponse = null;
     ChannelControl channelControl;
 
     // Extract info from keypleDto
@@ -54,21 +56,22 @@ public class RmTransmitExecutor implements IRemoteMethodExecutor {
 
     channelControl = ChannelControl.valueOf(bodyJsonO.get("channelControl").getAsString());
 
-    SeRequest seRequest =
-        JsonParser.getGson().fromJson(bodyJsonO.get("seRequest").getAsString(), SeRequest.class);
+    CardRequest cardRequest =
+        JsonParser.getGson()
+            .fromJson(bodyJsonO.get("cardRequest").getAsString(), CardRequest.class);
 
     String nativeReaderName = keypleDto.getNativeReaderName();
-    logger.trace("Execute locally seRequest : {} with params {} ", seRequest, channelControl);
+    logger.trace("Execute locally cardRequest : {} with params {} ", cardRequest, channelControl);
 
     try {
       // find native reader by name
       ProxyReader reader = (ProxyReader) slaveAPI.findLocalReader(nativeReaderName);
 
       // execute transmitSet
-      seResponse = reader.transmitSeRequest(seRequest, channelControl);
+      cardResponse = reader.transmitCardRequest(cardRequest, channelControl);
 
       // prepare response
-      String parseBody = JsonParser.getGson().toJson(seResponse, SeResponse.class);
+      String parseBody = JsonParser.getGson().toJson(cardResponse, CardResponse.class);
       out =
           transportDto.nextTransportDTO(
               KeypleDtoHelper.buildResponse(

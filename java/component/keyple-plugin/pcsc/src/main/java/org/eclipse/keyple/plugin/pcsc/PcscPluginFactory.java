@@ -11,8 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.pcsc;
 
-import org.eclipse.keyple.core.seproxy.PluginFactory;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
+import org.eclipse.keyple.core.service.PluginFactory;
+import org.eclipse.keyple.core.service.exception.KeyplePluginInstantiationException;
 
 /**
  * Provides a factory to get the {@link PcscPlugin}.
@@ -26,6 +26,17 @@ public class PcscPluginFactory implements PluginFactory {
    * The plugin name
    */
   static final String PLUGIN_NAME = "PcscPlugin";
+
+  private final boolean isOsWin;
+
+  /**
+   * Constructor.
+   *
+   * @since 1.0
+   */
+  public PcscPluginFactory() {
+    isOsWin = System.getProperty("os.name").toLowerCase().contains("win");
+  }
 
   /**
    * {@inheritDoc}
@@ -46,7 +57,11 @@ public class PcscPluginFactory implements PluginFactory {
    */
   public PcscPlugin getPlugin() {
     try {
-      return PcscPluginImpl.getInstance();
+      if (isOsWin) {
+        return PcscPluginWinImpl.getInstance();
+      } else {
+        return PcscPluginImpl.getInstance();
+      }
     } catch (Exception e) {
       throw new KeyplePluginInstantiationException("Can not access smartcard.io readers", e);
     }

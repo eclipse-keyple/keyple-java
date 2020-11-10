@@ -14,7 +14,7 @@ package org.eclipse.keyple.calypso.command.po.builder.storedvalue;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.*;
 import org.eclipse.keyple.calypso.command.po.parser.storedvalue.SvDebitRespPars;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
  * The Class SvDebitCmdBuild. This class provides the dedicated constructor to build the SV Debit

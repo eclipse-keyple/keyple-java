@@ -12,10 +12,10 @@
 package org.eclipse.keyple.example.common.calypso.stub;
 
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.plugin.stub.StubSecureElement;
+import org.eclipse.keyple.plugin.stub.StubSmartCard;
 
 /** This class is an example of a Stub SAM */
-public final class StubSamCalypsoClassic extends StubSecureElement {
+public final class StubSamCalypsoClassic extends StubSmartCard {
 
   private static final String SE_PROTOCOL = "PROTOCOL_ISO7816_3";
   private static final String ATR_HEX = "3B3F9600805A0080C120000012345678829000"; // serial number
@@ -75,7 +75,7 @@ public final class StubSamCalypsoClassic extends StubSecureElement {
   }
 
   @Override
-  public String getSeProtocol() {
+  public String getCardProtocol() {
     return SE_PROTOCOL;
   }
 }

@@ -11,24 +11,30 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.stub;
 
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.ObservableReader;
 
 public interface StubReader extends ObservableReader {
 
   /**
-   * Insert a stub se into the reader. Will raise a SE_INSERTED event.
+   * Insert a card Stub into the reader. Will raise a CARD_INSERTED event.
    *
-   * @param _se stub secure element to be inserted in the reader
+   * @param smartCard stub card to be inserted in the reader
+   * @since 1.0
    */
-  void insertSe(StubSecureElement _se);
-
-  /** Remove se from reader if any */
-  void removeSe();
+  void insertCard(StubSmartCard smartCard);
 
   /**
-   * Get inserted SE
+   * Remove card from reader if any
    *
-   * @return se, can be null if no Se inserted
+   * @since 1.0
    */
-  StubSecureElement getSe();
+  void removeCard();
+
+  /**
+   * Get inserted card
+   *
+   * @return instance of a card, can be null if no card inserted
+   * @since 1.0
+   */
+  StubSmartCard getSmartcard();
 }

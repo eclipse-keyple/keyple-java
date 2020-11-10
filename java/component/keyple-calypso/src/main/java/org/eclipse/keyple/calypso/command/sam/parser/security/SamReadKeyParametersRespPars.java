@@ -18,7 +18,7 @@ import org.eclipse.keyple.calypso.command.sam.builder.security.SamReadKeyParamet
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCounterOverflowException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamDataAccessException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /** SAM read key parameters. */
 public class SamReadKeyParametersRespPars extends AbstractSamResponseParser {

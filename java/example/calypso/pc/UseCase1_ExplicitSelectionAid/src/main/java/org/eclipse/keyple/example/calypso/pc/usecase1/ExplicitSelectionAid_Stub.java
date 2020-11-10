@@ -18,18 +18,18 @@ import org.eclipse.keyple.calypso.transaction.ElementaryFile;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
-import org.eclipse.keyple.core.selection.SeResource;
-import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.card.selection.CardResource;
+import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.example.common.calypso.stub.StubCalypsoClassic;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubPluginFactory;
 import org.eclipse.keyple.plugin.stub.StubReader;
-import org.eclipse.keyple.plugin.stub.StubSecureElement;
+import org.eclipse.keyple.plugin.stub.StubSmartCard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,15 +42,15 @@ import org.slf4j.LoggerFactory;
  *   <li>
  *       <h2>Scenario:</h2>
  *       <ul>
- *         <li>Check if a ISO 14443-4 SE is in the reader, select a Calypso PO, operate a simple
+ *         <li>Check if a ISO 14443-4 card is in the reader, select a Calypso PO, operate a simple
  *             Calypso PO transaction (simple plain read, not involving a Calypso SAM).
  *         <li><code>
  * Explicit Selection
- * </code> means that it is the terminal application which start the SE processing.
+ * </code> means that it is the terminal application which start the card processing.
  *         <li>PO messages:
  *             <ul>
- *               <li>A first SE message to select the application in the reader
- *               <li>A second SE message to operate the simple Calypso transaction
+ *               <li>A first card message to select the application in the reader
+ *               <li>A second card message to operate the simple Calypso transaction
  *             </ul>
  *       </ul>
  * </ul>
@@ -60,14 +60,13 @@ public class ExplicitSelectionAid_Stub {
 
   public static void main(String[] args) {
 
-    // Get the instance of the SeProxyService (Singleton pattern)
-    SeProxyService seProxyService = SeProxyService.getInstance();
+    // Get the instance of the SmartCardService (Singleton pattern)
+    SmartCardService smartCardService = SmartCardService.getInstance();
 
     final String STUB_PLUGIN_NAME = "stub1";
 
     // Register Stub plugin in the platform
-    ReaderPlugin stubPlugin =
-        seProxyService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
+    Plugin stubPlugin = smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
 
     // Plug the PO stub reader.
     ((StubPlugin) stubPlugin).plugStubReader("poReader", true);
@@ -81,25 +80,25 @@ public class ExplicitSelectionAid_Stub {
     }
 
     // Create 'virtual' Calypso PO
-    StubSecureElement calypsoStubSe = new StubCalypsoClassic();
+    StubSmartCard calypsoStubCard = new StubCalypsoClassic();
 
     logger.info("Insert stub PO.");
-    poReader.insertSe(calypsoStubSe);
+    poReader.insertCard(calypsoStubCard);
 
     logger.info(
         "=============== UseCase Calypso #1: AID based explicit selection ==================");
     logger.info("= PO Reader  NAME = {}", poReader.getName());
 
     // Check if a PO is present in the reader
-    if (poReader.isSePresent()) {
+    if (poReader.isCardPresent()) {
 
       logger.info("= #### 1st PO exchange: AID based selection with reading of Environment file.");
 
       // Prepare a Calypso PO selection
-      SeSelection seSelection = new SeSelection();
+      CardSelection cardSelection = new CardSelection();
 
       // Setting of an AID based selection of a Calypso REV3 PO
-      // Select the first application matching the selection AID whatever the SE communication
+      // Select the first application matching the selection AID whatever the card communication
       // protocol keep the logical channel open after the selection
 
       // Calypso selection: configures a PoSelectionRequest with all the desired attributes to
@@ -107,7 +106,7 @@ public class ExplicitSelectionAid_Stub {
       PoSelectionRequest poSelectionRequest =
           new PoSelectionRequest(
               PoSelector.builder()
-                  .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                  .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                   .aidSelector(AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
                   .invalidatedPo(InvalidatedPo.REJECT)
                   .build());
@@ -118,12 +117,12 @@ public class ExplicitSelectionAid_Stub {
 
       // Add the selection case to the current selection (we could have added other cases
       // here)
-      seSelection.prepareSelection(poSelectionRequest);
+      cardSelection.prepareSelection(poSelectionRequest);
 
       // Actual PO communication: operate through a single request the Calypso PO selection
       // and the file read
       CalypsoPo calypsoPo =
-          (CalypsoPo) seSelection.processExplicitSelection(poReader).getActiveMatchingSe();
+          (CalypsoPo) cardSelection.processExplicitSelection(poReader).getActiveSmartCard();
       logger.info("The selection of the PO has succeeded.");
 
       // Retrieve the data read from the CalyspoPo updated during the transaction process
@@ -139,7 +138,7 @@ public class ExplicitSelectionAid_Stub {
       logger.info("= #### 2nd PO exchange: reading transaction of the EventLog file.");
 
       PoTransaction poTransaction =
-          new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPo));
+          new PoTransaction(new CardResource<CalypsoPo>(poReader, calypsoPo));
 
       // Prepare the reading order and keep the associated parser for later use once the
       // transaction has been processed.
@@ -165,7 +164,7 @@ public class ExplicitSelectionAid_Stub {
     }
 
     logger.info("Remove stub PO.");
-    poReader.removeSe();
+    poReader.removeCard();
 
     System.exit(0);
   }

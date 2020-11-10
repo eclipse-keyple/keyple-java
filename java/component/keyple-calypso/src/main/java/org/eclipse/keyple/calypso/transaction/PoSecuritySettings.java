@@ -16,7 +16,7 @@ import static org.eclipse.keyple.calypso.transaction.PoTransaction.SessionSettin
 import java.util.EnumMap;
 import java.util.List;
 import org.eclipse.keyple.calypso.KeyReference;
-import org.eclipse.keyple.core.selection.SeResource;
+import org.eclipse.keyple.core.card.selection.CardResource;
 
 /**
  * A class dedicated to managing the security settings involved in managing secure sessions.
@@ -27,7 +27,7 @@ import org.eclipse.keyple.core.selection.SeResource;
  * <p>The getKeyInfo method returns the specified setting value.
  */
 public class PoSecuritySettings {
-  private final SeResource<CalypsoSam> samResource;
+  private final CardResource<CalypsoSam> samResource;
   /** List of authorized KVCs */
   private final List<Byte> authorizedKvcList;
 
@@ -71,7 +71,7 @@ public class PoSecuritySettings {
 
   /** Builder pattern */
   public static final class PoSecuritySettingsBuilder {
-    private final SeResource<CalypsoSam> samResource;
+    private final CardResource<CalypsoSam> samResource;
     /** List of authorized KVCs */
     private List<Byte> authorizedKvcList;
 
@@ -97,7 +97,7 @@ public class PoSecuritySettings {
      * @param samResource the SAM resource we'll be working with<br>
      *     Needed in any cases.
      */
-    public PoSecuritySettingsBuilder(SeResource<CalypsoSam> samResource) {
+    public PoSecuritySettingsBuilder(CardResource<CalypsoSam> samResource) {
       if (samResource == null) {
         throw new IllegalStateException("SAM resource cannot be null.");
       }
@@ -250,7 +250,7 @@ public class PoSecuritySettings {
    * @return the Sam resource
    * @since 0.9
    */
-  SeResource<CalypsoSam> getSamResource() {
+  CardResource<CalypsoSam> getSamResource() {
     return samResource;
   }
 

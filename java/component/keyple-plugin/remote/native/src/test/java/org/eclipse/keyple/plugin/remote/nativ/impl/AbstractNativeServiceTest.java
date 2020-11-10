@@ -19,13 +19,11 @@ import static org.mockito.Mockito.doThrow;
 import com.google.gson.reflect.TypeToken;
 import java.util.List;
 import org.assertj.core.util.Lists;
-import org.eclipse.keyple.core.seproxy.*;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.message.SeRequest;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.card.message.*;
+import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
+import org.eclipse.keyple.core.service.*;
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
@@ -45,29 +43,29 @@ public class AbstractNativeServiceTest extends BaseNativeTest {
 
   final String pluginName = "pluginName";
 
-  final SeResponse seResponse;
-  final List<SeResponse> seResponses;
+  final CardResponse cardResponse;
+  final List<CardSelectionResponse> cardSelectionResponses;
   final KeypleReaderIOException keypleReaderIOException;
-  final KeypleReaderIOException keypleReaderIOExceptionWithSeResponse;
-  final KeypleReaderIOException keypleReaderIOExceptionWithSeResponses;
+  final KeypleReaderIOException keypleReaderIOExceptionWithCardResponse;
+  final KeypleReaderIOException keypleReaderIOExceptionWithCardResponses;
 
   AbstractNativeService service;
 
   {
-    seResponse = getASeResponse();
-    seResponses = Lists.newArrayList(seResponse);
+    cardResponse = getACardResponse();
+    cardSelectionResponses = Lists.newArrayList(getACardSelectionResponse());
 
     keypleReaderIOException = new KeypleReaderIOException("io exception test");
-    keypleReaderIOException.setSeResponse(seResponse);
-    keypleReaderIOException.setSeResponses(seResponses);
+    keypleReaderIOException.setCardResponse(cardResponse);
+    keypleReaderIOException.setCardSelectionResponses(cardSelectionResponses);
 
-    keypleReaderIOExceptionWithSeResponse =
-        new KeypleReaderIOException("io exception test with SeResponse");
-    keypleReaderIOExceptionWithSeResponse.setSeResponse(seResponse);
+    keypleReaderIOExceptionWithCardResponse =
+        new KeypleReaderIOException("io exception test with CardResponse");
+    keypleReaderIOExceptionWithCardResponse.setCardResponse(cardResponse);
 
-    keypleReaderIOExceptionWithSeResponses =
-        new KeypleReaderIOException("io exception test with SeResponses");
-    keypleReaderIOExceptionWithSeResponses.setSeResponses(seResponses);
+    keypleReaderIOExceptionWithCardResponses =
+        new KeypleReaderIOException("io exception test with CardResponses");
+    keypleReaderIOExceptionWithCardResponses.setCardSelectionResponses(cardSelectionResponses);
   }
 
   @Before
@@ -80,7 +78,7 @@ public class AbstractNativeServiceTest extends BaseNativeTest {
 
     // Plugin factory
     PluginFactory pluginFactoryMocked = Mockito.mock(PluginFactory.class);
-    ReaderPlugin pluginMocked = Mockito.mock(ReaderPlugin.class);
+    Plugin pluginMocked = Mockito.mock(Plugin.class);
     // ProxyReader mockReader = Mockito.mock(ProxyReader.class);
     doReturn(pluginMocked).when(pluginFactoryMocked).getPlugin();
     doReturn(pluginName).when(pluginFactoryMocked).getPluginName();
@@ -89,7 +87,7 @@ public class AbstractNativeServiceTest extends BaseNativeTest {
     doThrow(KeypleReaderNotFoundException.class).when(pluginMocked).getReader(readerNameUnknown);
 
     // Se Proxy Service
-    SeProxyService.getInstance().registerPlugin(pluginFactoryMocked);
+    SmartCardService.getInstance().registerPlugin(pluginFactoryMocked);
   }
 
   @Test(expected = KeypleReaderNotFoundException.class)
@@ -103,23 +101,23 @@ public class AbstractNativeServiceTest extends BaseNativeTest {
     ProxyReader seReader = service.findLocalReader(readerName);
     // results
     Assert.assertNotNull(seReader);
-    SeProxyService.getInstance().unregisterPlugin(pluginName);
+    SmartCardService.getInstance().unregisterPlugin(pluginName);
   }
 
   @Test
-  public void transmit_returnsSeResponseDto() {
+  public void transmit_returnsCardResponseDto() {
     // init
-    doReturn(seResponse)
+    doReturn(cardResponse)
         .when(readerMocked)
-        .transmitSeRequest(any(SeRequest.class), any(ChannelControl.class));
+        .transmitCardRequest(any(CardRequest.class), any(ChannelControl.class));
     KeypleMessageDto requestDto = getTransmitDto("aSessionId");
     // execute
     KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
     // results
     assertMetadataMatches(requestDto, responseDto);
     assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.TRANSMIT.name());
-    assertThat(KeypleJsonParser.getParser().fromJson(responseDto.getBody(), SeResponse.class))
-        .isEqualToComparingFieldByField(seResponse);
+    assertThat(KeypleJsonParser.getParser().fromJson(responseDto.getBody(), CardResponse.class))
+        .isEqualToComparingFieldByField(cardResponse);
   }
 
   @Test
@@ -127,40 +125,43 @@ public class AbstractNativeServiceTest extends BaseNativeTest {
     // init
     doThrow(keypleReaderIOException)
         .when(readerMocked)
-        .transmitSeRequest(any(SeRequest.class), any(ChannelControl.class));
+        .transmitCardRequest(any(CardRequest.class), any(ChannelControl.class));
     KeypleMessageDto requestDto = getTransmitDto("aSessionId");
     // execute
     KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
     // results
     assertMetadataMatches(requestDto, responseDto);
     assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.ERROR.name());
-    // check embedded seResponses
+    // check embedded cardResponses
     BodyError bodyResponse =
         KeypleJsonParser.getParser().fromJson(responseDto.getBody(), BodyError.class);
     KeypleReaderIOException error = (KeypleReaderIOException) bodyResponse.getException();
-    assertThat(error.getSeResponses()).hasSameElementsAs(seResponses);
-    assertThat(error.getSeResponse()).isEqualToComparingFieldByField(seResponse);
+    assertThat(error.getCardSelectionResponses()).hasSameElementsAs(cardSelectionResponses);
+    assertThat(error.getCardResponse()).isEqualToComparingFieldByField(cardResponse);
   }
 
   @Test
-  public void transmitSet_returnsSeResponseDto() {
+  public void transmitSet_returnsCardResponseDto() {
     // init
-    doReturn(seResponses)
+    doReturn(cardSelectionResponses)
         .when(readerMocked)
-        .transmitSeRequests( //
+        .transmitCardSelectionRequests( //
             any(List.class), //
-            any(MultiSeRequestProcessing.class), //
+            any(MultiSelectionProcessing.class), //
             any(ChannelControl.class));
     // execute
-    KeypleMessageDto requestDto = getTransmitSetDto("aSessionId");
+    KeypleMessageDto requestDto = getTransmitCardSelectionsDto("aSessionId");
     KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
     // results
     assertMetadataMatches(requestDto, responseDto);
-    assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.TRANSMIT_SET.name());
+    assertThat(responseDto.getAction())
+        .isEqualTo(KeypleMessageDto.Action.TRANSMIT_CARD_SELECTION.name());
     assertThat(
             KeypleJsonParser.getParser()
-                .fromJson(responseDto.getBody(), new TypeToken<List<SeResponse>>() {}.getType()))
-        .isEqualToComparingFieldByField(seResponses);
+                .fromJson(
+                    responseDto.getBody(),
+                    new TypeToken<List<CardSelectionResponse>>() {}.getType()))
+        .isEqualToComparingFieldByField(cardSelectionResponses);
   }
 
   @Test
@@ -168,68 +169,68 @@ public class AbstractNativeServiceTest extends BaseNativeTest {
     // init
     doThrow(keypleReaderIOException)
         .when(readerMocked)
-        .transmitSeRequests(
+        .transmitCardSelectionRequests(
             any(List.class), //
-            any(MultiSeRequestProcessing.class), //
+            any(MultiSelectionProcessing.class), //
             any(ChannelControl.class));
-    KeypleMessageDto requestDto = getTransmitSetDto("aSessionId");
+    KeypleMessageDto requestDto = getTransmitCardSelectionsDto("aSessionId");
     // execute
     KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
     // results
     assertMetadataMatches(requestDto, responseDto);
     assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.ERROR.name());
-    // check embedded seResponses
+    // check embedded cardResponses
     BodyError bodyResponse =
         KeypleJsonParser.getParser().fromJson(responseDto.getBody(), BodyError.class);
     KeypleReaderIOException error = (KeypleReaderIOException) bodyResponse.getException();
-    assertThat(error.getSeResponses()).isNotNull();
-    assertThat(error.getSeResponse()).isNotNull();
+    assertThat(error.getCardSelectionResponses()).isNotNull();
+    assertThat(error.getCardResponse()).isNotNull();
   }
 
   @Test
-  public void transmitSet_returnsIoException_withSeResponse() {
+  public void transmitSet_returnsIoException_withCardResponse() {
     // init
-    doThrow(keypleReaderIOExceptionWithSeResponse)
+    doThrow(keypleReaderIOExceptionWithCardResponse)
         .when(readerMocked)
-        .transmitSeRequests(
+        .transmitCardSelectionRequests(
             any(List.class), //
-            any(MultiSeRequestProcessing.class), //
+            any(MultiSelectionProcessing.class), //
             any(ChannelControl.class));
-    KeypleMessageDto requestDto = getTransmitSetDto("aSessionId");
+    KeypleMessageDto requestDto = getTransmitCardSelectionsDto("aSessionId");
     // execute
     KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
     // results
     assertMetadataMatches(requestDto, responseDto);
     assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.ERROR.name());
-    // check embedded seResponses
+    // check embedded cardResponses
     BodyError bodyResponse =
         KeypleJsonParser.getParser().fromJson(responseDto.getBody(), BodyError.class);
     KeypleReaderIOException error = (KeypleReaderIOException) bodyResponse.getException();
-    assertThat(error.getSeResponses()).isNull();
-    assertThat(error.getSeResponse()).isEqualToComparingFieldByField(seResponse);
+    assertThat(error.getCardSelectionResponses()).isNull();
+    assertThat(error.getCardResponse()).isEqualToComparingFieldByField(cardResponse);
   }
 
   @Test
-  public void transmitSet_returnsIoException_withSeResponses() {
+  public void transmitSet_returnsIoException_withCardResponses() {
     // init
-    doThrow(keypleReaderIOExceptionWithSeResponses)
+    doThrow(keypleReaderIOExceptionWithCardResponses)
         .when(readerMocked)
-        .transmitSeRequests(
+        .transmitCardSelectionRequests(
             any(List.class), //
-            any(MultiSeRequestProcessing.class), //
+            any(MultiSelectionProcessing.class), //
             any(ChannelControl.class));
-    KeypleMessageDto requestDto = getTransmitSetDto("aSessionId");
+    KeypleMessageDto requestDto = getTransmitCardSelectionsDto("aSessionId");
     // execute
     KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
     // results
     assertMetadataMatches(requestDto, responseDto);
     assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.ERROR.name());
-    // check embedded seResponses
+    // check embedded cardResponses
     BodyError bodyResponse =
         KeypleJsonParser.getParser().fromJson(responseDto.getBody(), BodyError.class);
     KeypleReaderIOException error = (KeypleReaderIOException) bodyResponse.getException();
-    assertThat(error.getSeResponses()).hasSameElementsAs(seResponses);
-    assertThat(error.getSeResponse()).isNull();
+    assertThat(error.getCardSelectionResponses()).hasSameElementsAs(cardSelectionResponses);
+    assertThat(error.getCardResponse()).isNull();
   }
 
   @Test
@@ -248,8 +249,8 @@ public class AbstractNativeServiceTest extends BaseNativeTest {
   @Test
   public void isSePresent() {
     // init
-    doReturn(true).when(readerMocked).isSePresent();
-    KeypleMessageDto requestDto = getIsSePresentDto("aSessionId");
+    doReturn(true).when(readerMocked).isCardPresent();
+    KeypleMessageDto requestDto = getIsCardPresentDto("aSessionId");
     // execute
     KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
     // results
@@ -289,7 +290,7 @@ public class AbstractNativeServiceTest extends BaseNativeTest {
   @Test
   public void startSeDetection() {
     // init
-    KeypleMessageDto requestDto = getStartSeDetection("aSessionId");
+    KeypleMessageDto requestDto = getStartCardDetection("aSessionId");
     // execute
     KeypleMessageDto responseDto = service.executeLocally(observableReaderMocked, requestDto);
     // results
@@ -300,9 +301,9 @@ public class AbstractNativeServiceTest extends BaseNativeTest {
   }
 
   @Test
-  public void stopSeDetection() {
+  public void stopCardDetection() {
     // init
-    KeypleMessageDto requestDto = getStopSeDetection("aSessionId");
+    KeypleMessageDto requestDto = getStopCardDetection("aSessionId");
     // execute
     KeypleMessageDto responseDto = service.executeLocally(observableReaderMocked, requestDto);
     // results
@@ -313,9 +314,9 @@ public class AbstractNativeServiceTest extends BaseNativeTest {
   }
 
   @Test
-  public void finalizeSeProcessing() {
+  public void finalizeCardProcessing() {
     // init
-    KeypleMessageDto requestDto = getFinalizeSeProcessing("aSessionId");
+    KeypleMessageDto requestDto = getFinalizeCardProcessing("aSessionId");
     // execute
     KeypleMessageDto responseDto = service.executeLocally(observableReaderMocked, requestDto);
     // results

@@ -12,14 +12,14 @@
 package org.eclipse.keyple.example.remote.application;
 
 import java.io.IOException;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.event.PluginEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.ObservablePlugin;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.PluginEvent;
+import org.eclipse.keyple.core.service.exception.KeyplePluginInstantiationException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.transport.DtoNode;
@@ -29,7 +29,7 @@ import org.eclipse.keyple.plugin.remotese.transport.factory.TransportFactory;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubPluginFactory;
 import org.eclipse.keyple.plugin.stub.StubReader;
-import org.eclipse.keyple.plugin.stub.StubSecureElement;
+import org.eclipse.keyple.plugin.stub.StubSmartCard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,7 +97,7 @@ public class SlaveNodeController {
         }.start();
 
         // if slave is server, must specify which master to connect to
-        slaveAPI = new SlaveAPI(SeProxyService.getInstance(), node, masterNodeId);
+        slaveAPI = new SlaveAPI(SmartCardService.getInstance(), node, masterNodeId);
 
         initPoReader();
 
@@ -125,7 +125,7 @@ public class SlaveNodeController {
               });
       // if slave is client, master is the configured server
       slaveAPI =
-          new SlaveAPI(SeProxyService.getInstance(), node, ((ClientNode) node).getServerNodeId());
+          new SlaveAPI(SmartCardService.getInstance(), node, ((ClientNode) node).getServerNodeId());
 
       initPoReader();
     }
@@ -144,11 +144,11 @@ public class SlaveNodeController {
 
       logger.info("|{}| Create Local StubPlugin", node.getNodeId());
 
-      /* Get the instance of the SeProxyService (Singleton pattern) */
-      SeProxyService seProxyService = SeProxyService.getInstance();
+      /* Get the instance of the SmartCardService (Singleton pattern) */
+      SmartCardService smartCardService = SmartCardService.getInstance();
 
-      /* Assign PcscPlugin to the SeProxyService */
-      ReaderPlugin stubPlugin = seProxyService.registerPlugin(new StubPluginFactory(STUB_SLAVE));
+      /* Assign PcscPlugin to the SmartCardService */
+      Plugin stubPlugin = smartCardService.registerPlugin(new StubPluginFactory(STUB_SLAVE));
 
       ObservablePlugin.PluginObserver observer =
           new ObservablePlugin.PluginObserver() {
@@ -170,8 +170,8 @@ public class SlaveNodeController {
       // get the created proxy reader
       localReader = (StubReader) stubPlugin.getReader(nativeReaderName);
 
-      // start se detectino in REPEATING MODE
-      localReader.startSeDetection(ObservableReader.PollingMode.REPEATING);
+      // start card detectino in REPEATING MODE
+      localReader.startCardDetection(ObservableReader.PollingMode.REPEATING);
 
     } catch (InterruptedException e) {
       e.printStackTrace();
@@ -182,14 +182,14 @@ public class SlaveNodeController {
     }
   }
 
-  public void insertStubSe(StubSecureElement se) {
-    logger.info("|{}| insert SE  ", node.getNodeId());
-    localReader.insertSe(se);
+  public void insertStubSe(StubSmartCard card) {
+    logger.info("|{}| insert card  ", node.getNodeId());
+    localReader.insertCard(card);
   }
 
-  public void removeSe() {
-    logger.info("|{}| remove SE ", node.getNodeId());
-    localReader.removeSe();
+  public void removeCard() {
+    logger.info("|{}| remove card ", node.getNodeId());
+    localReader.removeCard();
   }
 
   public void disconnect(String sessionId, String nativeReaderName)
@@ -198,7 +198,7 @@ public class SlaveNodeController {
     slaveAPI.disconnectReader(sessionId, localReader.getName());
   }
 
-  public void executeScenario(final StubSecureElement se, final Boolean killAtEnd)
+  public void executeScenario(final StubSmartCard card, final Boolean killAtEnd)
       throws KeypleReaderNotFoundException, InterruptedException, KeypleReaderException,
           KeypleRemoteException {
     // logger.info("------------------------");
@@ -211,12 +211,12 @@ public class SlaveNodeController {
 
     // logger.info("--------------------------------------------------");
     logger.info("|{}| Session created on server {}", node.getNodeId(), sessionId);
-    // logger.info("Wait 2 seconds, then insert SE");
+    // logger.info("Wait 2 seconds, then insert card");
     // logger.info("--------------------------------------------------");
-    this.insertStubSe(se);
-    logger.info("|{}| Wait 2 seconds for PO read/session, then remove SE", node.getNodeId());
+    this.insertStubSe(card);
+    logger.info("|{}| Wait 2 seconds for PO read/session, then remove the card", node.getNodeId());
     Thread.sleep(2000);
-    this.removeSe();
+    this.removeCard();
     Thread.sleep(2000);
     logger.info("|{}| Disconnect reader", node.getNodeId());
     this.disconnect(sessionId, null);

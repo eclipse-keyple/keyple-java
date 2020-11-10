@@ -18,7 +18,7 @@ import org.eclipse.keyple.calypso.command.sam.builder.security.SvCheckCmdBuild;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamAccessForbiddenException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamSecurityDataException;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 public class SvCheckRespPars extends AbstractSamResponseParser {
   private static final Map<Integer, StatusProperties> STATUS_TABLE;

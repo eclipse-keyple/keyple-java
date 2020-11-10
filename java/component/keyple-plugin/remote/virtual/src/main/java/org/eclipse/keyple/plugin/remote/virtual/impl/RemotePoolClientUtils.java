@@ -11,8 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.virtual.impl;
 
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.plugin.remote.core.KeypleClientAsyncNode;
 import org.eclipse.keyple.plugin.remote.virtual.RemotePoolClientPlugin;
 
@@ -38,6 +38,6 @@ public class RemotePoolClientUtils {
    */
   public static RemotePoolClientPlugin getRemotePlugin() {
     return (RemotePoolClientPlugin)
-        SeProxyService.getInstance().getPlugin(RemotePoolClientPluginFactory.DEFAULT_PLUGIN_NAME);
+        SmartCardService.getInstance().getPlugin(RemotePoolClientPluginFactory.DEFAULT_PLUGIN_NAME);
   }
 }

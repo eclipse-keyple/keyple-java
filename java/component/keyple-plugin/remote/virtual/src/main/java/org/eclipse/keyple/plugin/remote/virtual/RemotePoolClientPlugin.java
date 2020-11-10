@@ -11,9 +11,9 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.virtual;
 
-import org.eclipse.keyple.core.seproxy.PluginFactory;
-import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.service.PluginFactory;
+import org.eclipse.keyple.core.service.ReaderPoolPlugin;
+import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.plugin.remote.virtual.impl.RemotePoolClientPluginFactory;
 import org.eclipse.keyple.plugin.remote.virtual.impl.RemotePoolClientUtils;
 
@@ -27,12 +27,12 @@ import org.eclipse.keyple.plugin.remote.virtual.impl.RemotePoolClientUtils;
  *
  * <ul>
  *   <li>To <b>register</b> the plugin, use the Keyple service method {@link
- *       SeProxyService#registerPlugin(PluginFactory)} using the factory {@link
+ *       SmartCardService#registerPlugin(PluginFactory)} using the factory {@link
  *       RemotePoolClientPluginFactory}.
  *   <li>To access the plugin, use the following utility method {@link
  *       RemotePoolClientUtils#getRemotePlugin()}
  *   <li>To <b>unregister</b> the plugin, use the Keyple service method {@link
- *       SeProxyService#unregisterPlugin(String)} using the plugin name.
+ *       SmartCardService#unregisterPlugin(String)} using the plugin name.
  * </ul>
  *
  * <p>This plugin behaves like a {@link ReaderPoolPlugin}.

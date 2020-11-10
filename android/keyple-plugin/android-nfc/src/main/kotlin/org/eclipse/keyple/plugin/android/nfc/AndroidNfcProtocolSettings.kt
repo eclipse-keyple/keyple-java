@@ -56,7 +56,7 @@ object AndroidNfcProtocolSettings {
      * @throws No such Element Exception if protocol not found in settings
      */
     @Throws(NoSuchElementException::class)
-    fun getSetting(seProtocol: String): String {
-        return allSettings.getValue(seProtocol)
+    fun getSetting(cardProtocol: String): String {
+        return allSettings.getValue(cardProtocol)
     }
 }

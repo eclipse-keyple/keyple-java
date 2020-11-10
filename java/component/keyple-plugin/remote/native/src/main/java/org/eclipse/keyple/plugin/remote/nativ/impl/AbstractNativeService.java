@@ -15,13 +15,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.message.*;
+import org.eclipse.keyple.core.card.message.*;
+import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
@@ -52,10 +52,10 @@ abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
       logger.trace(
           "Try to find local reader by name '{}' in {} plugin(s)",
           nativeReaderName,
-          SeProxyService.getInstance().getPlugins().size());
+          SmartCardService.getInstance().getPlugins().size());
     }
 
-    for (ReaderPlugin plugin : SeProxyService.getInstance().getPlugins().values()) {
+    for (Plugin plugin : SmartCardService.getInstance().getPlugins().values()) {
       try {
         if (logger.isTraceEnabled()) {
           logger.trace(
@@ -111,26 +111,26 @@ abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
           case TRANSMIT:
             response = transmit();
             break;
-          case TRANSMIT_SET:
-            response = transmitSet();
+          case TRANSMIT_CARD_SELECTION:
+            response = transmitCardSelectionRequests();
             break;
           case SET_DEFAULT_SELECTION:
             response = setDefaultSelection();
             break;
           case IS_CARD_PRESENT:
-            response = isSePresent();
+            response = isCardPresent();
             break;
           case IS_READER_CONTACTLESS:
             response = isReaderContactless();
             break;
           case START_CARD_DETECTION:
-            response = startSeDetection();
+            response = startCardDetection();
             break;
           case STOP_CARD_DETECTION:
-            response = stopSeDetection();
+            response = stopCardDetection();
             break;
           case FINALIZE_CARD_PROCESSING:
-            response = finalizeSeProcessing();
+            response = finalizeCardProcessing();
             break;
           case RELEASE_CHANNEL:
             response = releaseChannel();
@@ -163,23 +163,23 @@ abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
       ChannelControl channelControl =
           ChannelControl.valueOf(bodyObject.get("channelControl").getAsString());
 
-      SeRequest seRequest =
+      CardRequest cardRequest =
           KeypleJsonParser.getParser()
-              .fromJson(bodyObject.get("seRequest").getAsString(), SeRequest.class);
+              .fromJson(bodyObject.get("cardRequest").getAsString(), CardRequest.class);
 
       if (logger.isTraceEnabled()) {
         logger.trace(
-            "Execute locally seRequest : {} with params {} on reader {}",
-            seRequest,
+            "Execute locally cardRequest : {} with params {} on reader {}",
+            cardRequest,
             channelControl,
             reader.getName());
       }
 
       // Execute the action on the reader
-      SeResponse seResponse = reader.transmitSeRequest(seRequest, channelControl);
+      CardResponse cardResponse = reader.transmitCardRequest(cardRequest, channelControl);
 
       // Build response
-      String body = KeypleJsonParser.getParser().toJson(seResponse, SeResponse.class);
+      String body = KeypleJsonParser.getParser().toJson(cardResponse, CardResponse.class);
       return new KeypleMessageDto(msg).setBody(body);
     }
 
@@ -190,39 +190,42 @@ abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
      * @return a not null reference.
      * @throws KeypleReaderIOException if a reader IO error occurs.
      */
-    private KeypleMessageDto transmitSet() {
+    private KeypleMessageDto transmitCardSelectionRequests() {
 
       // Extract info from the message
       JsonObject bodyJsonO = KeypleJsonParser.getParser().fromJson(msg.getBody(), JsonObject.class);
 
-      List<SeRequest> seRequests =
+      List<CardSelectionRequest> cardSelectionRequests =
           KeypleJsonParser.getParser()
               .fromJson(
-                  bodyJsonO.get("seRequests").getAsString(),
-                  new TypeToken<ArrayList<SeRequest>>() {}.getType());
+                  bodyJsonO.get("cardSelectionRequests").getAsString(),
+                  new TypeToken<ArrayList<CardSelectionRequest>>() {}.getType());
 
-      MultiSeRequestProcessing multiSeRequestProcessing =
-          MultiSeRequestProcessing.valueOf(bodyJsonO.get("multiSeRequestProcessing").getAsString());
+      MultiSelectionProcessing multiSelectionProcessing =
+          MultiSelectionProcessing.valueOf(bodyJsonO.get("multiSelectionProcessing").getAsString());
 
       ChannelControl channelControl =
           ChannelControl.valueOf(bodyJsonO.get("channelControl").getAsString());
 
       if (logger.isTraceEnabled()) {
         logger.trace(
-            "Execute locally seRequests : {} with params {} {}",
-            seRequests,
+            "Execute locally cardSelectionRequests : {} with params {} {}",
+            cardSelectionRequests,
             channelControl,
-            multiSeRequestProcessing);
+            multiSelectionProcessing);
       }
 
       // Execute the action on the reader
-      List<SeResponse> seResponses =
-          reader.transmitSeRequests(seRequests, multiSeRequestProcessing, channelControl);
+      List<CardSelectionResponse> cardSelectionResponses =
+          reader.transmitCardSelectionRequests(
+              cardSelectionRequests, multiSelectionProcessing, channelControl);
 
       // Build response
       String body =
           KeypleJsonParser.getParser()
-              .toJson(seResponses, new TypeToken<ArrayList<SeResponse>>() {}.getType());
+              .toJson(
+                  cardSelectionResponses,
+                  new TypeToken<ArrayList<CardSelectionResponse>>() {}.getType());
       return new KeypleMessageDto(msg).setBody(body);
     }
 
@@ -285,10 +288,10 @@ abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
      * @return a not null reference.
      * @throws KeypleReaderIOException if a reader IO error occurs.
      */
-    private KeypleMessageDto isSePresent() {
+    private KeypleMessageDto isCardPresent() {
 
       // Execute the action on the reader
-      boolean isSePresent = reader.isSePresent();
+      boolean isSePresent = reader.isCardPresent();
 
       // Build response
       String body = KeypleJsonParser.getParser().toJson(isSePresent, Boolean.class);
@@ -319,7 +322,7 @@ abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
      * @return a not null reference.
      * @throws KeypleReaderIOException if a reader IO error occurs.
      */
-    private KeypleMessageDto startSeDetection() {
+    private KeypleMessageDto startCardDetection() {
 
       // Extract info from the message
       JsonObject body = KeypleJsonParser.getParser().fromJson(msg.getBody(), JsonObject.class);
@@ -328,7 +331,7 @@ abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
           ObservableReader.PollingMode.valueOf(body.get("pollingMode").getAsString());
 
       // Execute the action on the reader
-      ((ObservableReader) reader).startSeDetection(pollingMode);
+      ((ObservableReader) reader).startCardDetection(pollingMode);
 
       return new KeypleMessageDto(msg).setBody(null);
     }
@@ -340,10 +343,10 @@ abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
      * @return a not null reference.
      * @throws KeypleReaderIOException if a reader IO error occurs.
      */
-    private KeypleMessageDto stopSeDetection() {
+    private KeypleMessageDto stopCardDetection() {
 
       // Execute the action on the reader
-      ((ObservableReader) reader).stopSeDetection();
+      ((ObservableReader) reader).stopCardDetection();
 
       return new KeypleMessageDto(msg).setBody(null);
     }
@@ -355,10 +358,10 @@ abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
      * @return a not null reference.
      * @throws KeypleReaderIOException if a reader IO error occurs.
      */
-    private KeypleMessageDto finalizeSeProcessing() {
+    private KeypleMessageDto finalizeCardProcessing() {
 
       // Execute the action on the reader
-      ((ObservableReader) reader).finalizeSeProcessing();
+      ((ObservableReader) reader).finalizeCardProcessing();
 
       return new KeypleMessageDto(msg).setBody(null);
     }

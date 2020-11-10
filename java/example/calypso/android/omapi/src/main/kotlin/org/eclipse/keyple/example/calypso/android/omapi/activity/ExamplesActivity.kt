@@ -22,8 +22,8 @@ import kotlinx.android.synthetic.main.activity_core_examples.drawerLayout
 import kotlinx.android.synthetic.main.activity_core_examples.eventRecyclerView
 import kotlinx.android.synthetic.main.activity_core_examples.navigationView
 import kotlinx.android.synthetic.main.activity_core_examples.toolbar
-import org.eclipse.keyple.core.seproxy.SeProxyService
-import org.eclipse.keyple.core.seproxy.SeReader
+import org.eclipse.keyple.core.service.Reader
+import org.eclipse.keyple.core.service.SmartCardService
 import org.eclipse.keyple.example.calypso.android.omapi.R
 import org.eclipse.keyple.example.calypso.android.omapi.adapter.EventAdapter
 import org.eclipse.keyple.example.calypso.android.omapi.model.ChoiceEventModel
@@ -36,7 +36,7 @@ abstract class ExamplesActivity : BasicActivity(), NavigationView.OnNavigationIt
     /**
      * Variables for event window
      */
-    protected lateinit var readers: Map<String, SeReader>
+    protected lateinit var readers: Map<String, Reader>
     private lateinit var adapter: RecyclerView.Adapter<*>
     private lateinit var layoutManager: RecyclerView.LayoutManager
     protected val events = arrayListOf<EventModel>()
@@ -58,7 +58,7 @@ abstract class ExamplesActivity : BasicActivity(), NavigationView.OnNavigationIt
         /**
          * Get OMAPI Readers
          */
-        readers = SeProxyService.getInstance().getPlugin(PLUGIN_NAME).readers
+        readers = SmartCardService.getInstance().getPlugin(PLUGIN_NAME).readers
 
         eventRecyclerView.layoutManager = layoutManager
         eventRecyclerView.adapter = adapter

@@ -13,10 +13,9 @@ package org.eclipse.keyple.plugin.android.omapi.simalliance
 
 import java.io.IOException
 import kotlin.experimental.or
-import org.eclipse.keyple.core.seproxy.SeSelector
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
-import org.eclipse.keyple.core.seproxy.message.ApduResponse
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractLocalReader
+import org.eclipse.keyple.core.card.message.ApduResponse
+import org.eclipse.keyple.core.card.selection.CardSelector
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiReader
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiSupportedProtocols
@@ -41,15 +40,15 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
     private val omapiVersion = nativeReader.seService.version.toFloat()
 
     /**
-     * Check if a SE is present in this reader. see [Reader.isSecureElementPresent]
-     * @return True if the SE is present, false otherwise
+     * Check if a card is present in this reader. see [Reader.isSecureElementPresent]
+     * @return True if the card is present, false otherwise
      */
-    override fun checkSePresence(): Boolean {
+    override fun checkCardPresence(): Boolean {
         return nativeReader.isSecureElementPresent
     }
 
     /**
-     * Get the SE Answer To Reset
+     * Get the card Answer To Reset
      * @return a byte array containing the ATR or null if no session was available
      */
     override fun getATR(): ByteArray? {
@@ -63,10 +62,10 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
      * Open a logical channel by selecting the application
      * @param aidSelector the selection parameters
      * @return a ApduResponse built from the FCI data resulting from the application selection
-     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+     * @throws KeypleReaderIOException if the communication with the reader or the card has failed
      */
     @Throws(KeypleReaderIOException::class)
-    override fun openChannelForAid(aidSelector: SeSelector.AidSelector): ApduResponse {
+    override fun openChannelForAid(aidSelector: CardSelector.AidSelector): ApduResponse {
         if (aidSelector.aidToSelect == null) {
             try {
                 openChannel = session?.openBasicChannel(null)
@@ -144,10 +143,10 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
     }
 
     /**
-     * Activates the provided SE protocol.
+     * Activates the provided card protocol.
      *
      *
-     *  * Ask the plugin to take this protocol into account if an SE using this protocol is
+     *  * Ask the plugin to take this protocol into account if a card using this protocol is
      * identified during the selection phase.
      *  * Activates the detection of SEs using this protocol (if the plugin allows it).
      *
@@ -160,10 +159,10 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
     }
 
     /**
-     * Deactivates the provided SE protocol.
+     * Deactivates the provided card protocol.
      *
      *
-     *  * Ask the plugin to ignore this protocol if an SE using this protocol is identified during
+     *  * Ask the plugin to ignore this protocol if a card using this protocol is identified during
      * the selection phase.
      *  * Inhibits the detection of SEs using this protocol (if the plugin allows it).
      *
@@ -192,11 +191,11 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
     }
 
     /**
-     * Transmit an APDU command (as per ISO/IEC 7816) to the SE see org.simalliance.openmobileapi.Channel#transmit(byte[])
+     * Transmit an APDU command (as per ISO/IEC 7816) to the card see org.simalliance.openmobileapi.Channel#transmit(byte[])
      *
      * @param apduIn byte buffer containing the ingoing data
      * @return apduOut response
-     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+     * @throws KeypleReaderIOException if the communication with the reader or the card has failed
      */
     @Throws(KeypleReaderIOException::class)
     override fun transmitApdu(apduIn: ByteArray): ByteArray {

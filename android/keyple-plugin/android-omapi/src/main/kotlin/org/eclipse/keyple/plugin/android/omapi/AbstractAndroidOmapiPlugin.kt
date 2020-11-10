@@ -13,9 +13,9 @@ package org.eclipse.keyple.plugin.android.omapi
 
 import android.content.Context
 import java.util.concurrent.ConcurrentSkipListMap
-import org.eclipse.keyple.core.seproxy.ReaderPlugin
-import org.eclipse.keyple.core.seproxy.SeReader
-import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin
+import org.eclipse.keyple.core.plugin.AbstractPlugin
+import org.eclipse.keyple.core.service.Plugin
+import org.eclipse.keyple.core.service.Reader
 import timber.log.Timber
 
 /**
@@ -23,11 +23,11 @@ import timber.log.Timber
  */
 const val PLUGIN_NAME = "AndroidOmapiPlugin"
 
-internal abstract class AbstractAndroidOmapiPlugin<T, V> : AbstractPlugin(PLUGIN_NAME), ReaderPlugin {
+internal abstract class AbstractAndroidOmapiPlugin<T, V> : AbstractPlugin(PLUGIN_NAME), Plugin {
 
-    abstract fun connectToSe(context: Context)
+    abstract fun connectToSe(context: Context, callback: () -> Unit)
     abstract fun getNativeReaders(): Array<T>?
-    abstract fun mapToSeReader(nativeReader: T): SeReader
+    abstract fun mapToReader(nativeReader: T): Reader
 
     protected var seService: V? = null
     private val params = mutableMapOf<String, String>()
@@ -35,23 +35,22 @@ internal abstract class AbstractAndroidOmapiPlugin<T, V> : AbstractPlugin(PLUGIN
     /**
      * Initialize plugin by connecting to {@link SEService}
      */
-    fun init(context: Context): AbstractAndroidOmapiPlugin<T, V> {
+    fun init(context: Context, callback: () -> Unit) {
         return if (seService != null) {
-            this
+            callback()
         } else {
-            Timber.d("Connect to SE")
-            connectToSe(context.applicationContext)
-            this
+            Timber.d("Connect to a card")
+            connectToSe(context.applicationContext, callback)
         }
     }
 
-    override fun initNativeReaders(): ConcurrentSkipListMap<String, SeReader> {
+    override fun initNativeReaders(): ConcurrentSkipListMap<String, Reader> {
 
         Timber.d("initNativeReaders")
-        val readers = ConcurrentSkipListMap<String, SeReader>() // empty list is returned us service not connected
+        val readers = ConcurrentSkipListMap<String, Reader>() // empty list is returned us service not connected
         getNativeReaders()?.forEach { nativeReader ->
-            val seReader = mapToSeReader(nativeReader)
-            readers[seReader.name] = seReader
+            val reader = mapToReader(nativeReader)
+            readers[reader.name] = reader
         }
 
         if (readers.isEmpty()) {

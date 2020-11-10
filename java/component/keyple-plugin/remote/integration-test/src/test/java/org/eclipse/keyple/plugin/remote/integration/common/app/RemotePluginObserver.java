@@ -12,13 +12,13 @@
 package org.eclipse.keyple.plugin.remote.integration.common.app;
 
 import org.eclipse.keyple.calypso.transaction.*;
-import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.event.PluginEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
+import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.SelectionsResult;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.ObservablePlugin;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.PluginEvent;
+import org.eclipse.keyple.core.service.exception.KeypleException;
 import org.eclipse.keyple.plugin.remote.integration.common.model.ConfigurationResult;
 import org.eclipse.keyple.plugin.remote.integration.common.model.DeviceInput;
 import org.eclipse.keyple.plugin.remote.integration.common.model.TransactionResult;
@@ -50,7 +50,7 @@ public class RemotePluginObserver implements ObservablePlugin.PluginObserver {
         // retrieve serviceId from reader
         String virtualReaderName = event.getReaderNames().first();
         RemoteServerPlugin plugin =
-            (RemoteServerPlugin) SeProxyService.getInstance().getPlugin(event.getPluginName());
+            (RemoteServerPlugin) SmartCardService.getInstance().getPlugin(event.getPluginName());
         RemoteServerReader virtualReader = plugin.getReader(virtualReaderName);
 
         // execute the business logic based on serviceId
@@ -87,9 +87,9 @@ public class RemotePluginObserver implements ObservablePlugin.PluginObserver {
       DeviceInput deviceInput = observableVirtualReader.getUserInputData(DeviceInput.class);
 
       // configure default selection on reader
-      SeSelection seSelection = CalypsoUtilities.getSeSelection();
+      CardSelection cardSelection = CalypsoUtilities.getSeSelection();
       observableVirtualReader.setDefaultSelectionRequest(
-          seSelection.getSelectionOperation(),
+          cardSelection.getSelectionOperation(),
           ObservableReader.NotificationMode.MATCHED_ONLY,
           ObservableReader.PollingMode.REPEATING);
 
@@ -103,9 +103,9 @@ public class RemotePluginObserver implements ObservablePlugin.PluginObserver {
       UserInput userInput = virtualReader.getUserInputData(UserInput.class);
 
       // remote selection
-      SeSelection seSelection = CalypsoUtilities.getSeSelection();
-      SelectionsResult selectionsResult = seSelection.processExplicitSelection(virtualReader);
-      CalypsoPo calypsoPo = (CalypsoPo) selectionsResult.getActiveMatchingSe();
+      CardSelection cardSelection = CalypsoUtilities.getSeSelection();
+      SelectionsResult selectionsResult = cardSelection.processExplicitSelection(virtualReader);
+      CalypsoPo calypsoPo = (CalypsoPo) selectionsResult.getActiveSmartCard();
 
       try {
         // execute a transaction
@@ -123,9 +123,9 @@ public class RemotePluginObserver implements ObservablePlugin.PluginObserver {
           (RemoteServerObservableReader) virtualReader;
       DeviceInput deviceInput = observableVirtualReader.getUserInputData(DeviceInput.class);
 
-      observableVirtualReader.startSeDetection(ObservableReader.PollingMode.REPEATING);
+      observableVirtualReader.startCardDetection(ObservableReader.PollingMode.REPEATING);
 
-      if (!observableVirtualReader.isSePresent()) {
+      if (!observableVirtualReader.isCardPresent()) {
         throw new IllegalStateException("Card should be inserted");
       }
 
@@ -133,7 +133,7 @@ public class RemotePluginObserver implements ObservablePlugin.PluginObserver {
         throw new IllegalStateException("Reader should be contactless");
       }
       ;
-      observableVirtualReader.stopSeDetection();
+      observableVirtualReader.stopCardDetection();
       return new ConfigurationResult().setDeviceId(deviceInput.getDeviceId()).setSuccessful(true);
     }
 

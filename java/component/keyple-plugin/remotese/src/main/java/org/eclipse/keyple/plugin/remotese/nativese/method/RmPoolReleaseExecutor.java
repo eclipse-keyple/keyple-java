@@ -12,9 +12,9 @@
 package org.eclipse.keyple.plugin.remotese.nativese.method;
 
 import com.google.gson.JsonObject;
-import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.ReaderPoolPlugin;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.plugin.remotese.rm.IRemoteMethodExecutor;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
@@ -46,16 +46,16 @@ public class RmPoolReleaseExecutor implements IRemoteMethodExecutor {
     String nativeReaderName = body.get("nativeReaderName").getAsString();
 
     // Find reader to release
-    SeReader seReader = null;
+    Reader reader = null;
     try {
-      seReader = poolPlugin.getReader(nativeReaderName);
+      reader = poolPlugin.getReader(nativeReaderName);
 
       // Execute Remote Method
-      poolPlugin.releaseReader(seReader);
+      poolPlugin.releaseReader(reader);
 
       // Build Response
       JsonObject bodyResp = new JsonObject();
-      bodyResp.addProperty("nativeReaderName", seReader.getName());
+      bodyResp.addProperty("nativeReaderName", reader.getName());
 
       out =
           transportDto.nextTransportDTO(
@@ -63,7 +63,7 @@ public class RmPoolReleaseExecutor implements IRemoteMethodExecutor {
                   getMethodName().getName(),
                   bodyResp.toString(),
                   keypleDto.getSessionId(),
-                  seReader.getName(),
+                  reader.getName(),
                   keypleDto.getVirtualReaderName(),
                   keypleDto.getTargetNodeId(),
                   keypleDto.getRequesterNodeId(),
@@ -77,7 +77,7 @@ public class RmPoolReleaseExecutor implements IRemoteMethodExecutor {
                   getMethodName().getName(),
                   e,
                   keypleDto.getSessionId(),
-                  seReader.getName(),
+                  reader.getName(),
                   keypleDto.getVirtualReaderName(),
                   keypleDto.getTargetNodeId(),
                   keypleDto.getRequesterNodeId(),

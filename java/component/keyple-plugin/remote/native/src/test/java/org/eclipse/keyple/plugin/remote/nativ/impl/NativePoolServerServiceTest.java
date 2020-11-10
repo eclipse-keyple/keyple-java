@@ -18,13 +18,13 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import java.util.SortedSet;
 import org.assertj.core.util.Sets;
-import org.eclipse.keyple.core.seproxy.PluginFactory;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.PluginFactory;
+import org.eclipse.keyple.core.service.ReaderPoolPlugin;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.exception.KeypleAllocationReaderException;
+import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
@@ -65,7 +65,10 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
 
   @After
   public void tearDown() {
-    SeProxyService.getInstance().unregisterPlugin(poolPluginName);
+    SmartCardService service = SmartCardService.getInstance();
+    if (service.isRegistered(poolPluginName)) {
+      SmartCardService.getInstance().unregisterPlugin(poolPluginName);
+    }
   }
 
   @Test
@@ -125,7 +128,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
   @Test(expected = IllegalArgumentException.class)
   public void buildService_withWrong_pluginType_throwIAE() {
     final String readerMockName = "readerPlugin";
-    SeProxyService.getInstance()
+    SmartCardService.getInstance()
         .registerPlugin(
             new PluginFactory() {
               @Override
@@ -134,8 +137,8 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
               }
 
               @Override
-              public ReaderPlugin getPlugin() {
-                ReaderPlugin plugin = Mockito.mock(ReaderPlugin.class);
+              public Plugin getPlugin() {
+                Plugin plugin = Mockito.mock(Plugin.class);
                 return plugin;
               }
             });
@@ -172,7 +175,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
 
   @Test
   public void onAllocateReader_withNoPlugin_shouldThrow_KPNFE() {
-    SeProxyService.getInstance().unregisterPlugin(poolPluginName);
+    SmartCardService.getInstance().unregisterPlugin(poolPluginName);
     KeypleMessageDto request = getAllocateReaderDto();
     NativePoolServerUtils.getAsyncNode().onMessage(getAllocateReaderDto());
 
@@ -221,7 +224,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
 
   @Test
   public void onIsPresent_shouldPropagate_toLocalPoolPlugin() {
-    KeypleMessageDto request = getIsSePresentDto(sessionId);
+    KeypleMessageDto request = getIsCardPresentDto(sessionId);
     NativePoolServerUtils.getAsyncNode().onMessage(request);
 
     response = captureResponse();
@@ -242,7 +245,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
     doReturn(groupReferences).when(poolPluginMock).getReaderGroupReferences();
     asyncServer = Mockito.mock(KeypleServerAsync.class);
 
-    SeProxyService.getInstance()
+    SmartCardService.getInstance()
         .registerPlugin(
             new PluginFactory() {
               @Override
@@ -251,7 +254,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
               }
 
               @Override
-              public ReaderPlugin getPlugin() {
+              public Plugin getPlugin() {
                 return poolPluginMock;
               }
             });
@@ -299,7 +302,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
     assertThat(response.getClientNodeId()).isEqualTo(request.getClientNodeId());
   }
 
-  public static KeypleMessageDto getIsSePresentDto(String sessionId) {
+  public static KeypleMessageDto getIsCardPresentDto(String sessionId) {
     return new KeypleMessageDto() //
         .setSessionId(sessionId) //
         .setAction(KeypleMessageDto.Action.IS_CARD_PRESENT.name()) //

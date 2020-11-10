@@ -15,7 +15,7 @@ import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
  * The {@link ReadRecordsCmdBuild} class provides the dedicated constructor to build the Read

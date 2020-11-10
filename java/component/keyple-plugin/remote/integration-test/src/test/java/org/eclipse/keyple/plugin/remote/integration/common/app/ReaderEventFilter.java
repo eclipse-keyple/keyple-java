@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.integration.common.app;
 
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.plugin.remote.core.KeypleClientReaderEventFilter;
 import org.eclipse.keyple.plugin.remote.core.exception.KeypleDoNotPropagateEventException;
 import org.eclipse.keyple.plugin.remote.integration.common.model.TransactionResult;
@@ -34,11 +34,11 @@ public class ReaderEventFilter implements KeypleClientReaderEventFilter {
   @Override
   public Object beforePropagation(ReaderEvent event) throws KeypleDoNotPropagateEventException {
     switch (event.getEventType()) {
-      case SE_MATCHED:
+      case CARD_MATCHED:
         return new UserInput().setUserId(user.getUserId());
-      case SE_REMOVED:
+      case CARD_REMOVED:
         // return null;//send null to server
-      case SE_INSERTED:
+      case CARD_INSERTED:
       default:
         throw new KeypleDoNotPropagateEventException("only SE_MATCHED are propagated");
     }

@@ -11,46 +11,33 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.stub;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotFoundException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotSupportedException;
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableLocalReader;
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableState;
-import org.eclipse.keyple.core.seproxy.plugin.reader.ObservableReaderStateService;
-import org.eclipse.keyple.core.seproxy.plugin.reader.SmartInsertionMonitoringJob;
-import org.eclipse.keyple.core.seproxy.plugin.reader.SmartInsertionReader;
-import org.eclipse.keyple.core.seproxy.plugin.reader.SmartRemovalMonitoringJob;
-import org.eclipse.keyple.core.seproxy.plugin.reader.SmartRemovalReader;
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeInsertion;
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeProcessing;
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeRemoval;
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForStartDetect;
-import org.eclipse.keyple.core.util.NamedThreadFactory;
+import org.eclipse.keyple.core.plugin.reader.AbstractObservableLocalReader;
+import org.eclipse.keyple.core.plugin.reader.ObservableReaderStateService;
+import org.eclipse.keyple.core.plugin.reader.SmartInsertionReader;
+import org.eclipse.keyple.core.plugin.reader.SmartRemovalReader;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderProtocolNotFoundException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderProtocolNotSupportedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Simulates communication with a {@link StubSecureElement}. StubReader is observable, it raises
- * {@link org.eclipse.keyple.core.seproxy.event.ReaderEvent} : SE_INSERTED, SE_REMOVED
+ * Simulates communication with a {@link StubSmartCard}. StubReader is observable, it raises {@link
+ * ReaderEvent} : CARD_INSERTED, CARD_REMOVED
  */
 class StubReaderImpl extends AbstractObservableLocalReader
     implements StubReader, SmartInsertionReader, SmartRemovalReader {
 
   private static final Logger logger = LoggerFactory.getLogger(StubReaderImpl.class);
 
-  private StubSecureElement se;
+  private StubSmartCard card;
   boolean isContactless = true;
 
-  protected final ExecutorService executorService;
-
-  private final AtomicBoolean loopWaitSe = new AtomicBoolean();
-  private final AtomicBoolean loopWaitSeRemoval = new AtomicBoolean();
+  private final AtomicBoolean loopWaitCard = new AtomicBoolean();
+  private final AtomicBoolean loopWaitCardRemoval = new AtomicBoolean();
 
   /**
    * Do not use directly
@@ -59,12 +46,6 @@ class StubReaderImpl extends AbstractObservableLocalReader
    */
   StubReaderImpl(String pluginName, String readerName) {
     super(pluginName, readerName);
-
-    // create a executor service with one thread whose name is customized
-    executorService =
-        Executors.newSingleThreadExecutor(new NamedThreadFactory("MonitoringThread-" + readerName));
-
-    stateService = initStateService();
   }
 
   /**
@@ -81,52 +62,52 @@ class StubReaderImpl extends AbstractObservableLocalReader
 
   @Override
   protected byte[] getATR() {
-    return se.getATR();
+    return card.getATR();
   }
 
   /** {@inheritDoc} */
   @Override
   protected boolean isPhysicalChannelOpen() {
-    return se != null && se.isPhysicalChannelOpen();
+    return card != null && card.isPhysicalChannelOpen();
   }
 
   /** {@inheritDoc} */
   @Override
   protected void openPhysicalChannel() {
-    if (se != null) {
-      se.openPhysicalChannel();
+    if (card != null) {
+      card.openPhysicalChannel();
     }
   }
 
   /** {@inheritDoc} */
   @Override
   public void closePhysicalChannel() {
-    if (se != null) {
-      se.closePhysicalChannel();
+    if (card != null) {
+      card.closePhysicalChannel();
     }
   }
 
   /** {@inheritDoc} */
   @Override
   public byte[] transmitApdu(byte[] apduIn) {
-    if (se == null) {
-      throw new KeypleReaderIOException("No SE available.");
+    if (card == null) {
+      throw new KeypleReaderIOException("No card available.");
     }
-    return se.processApdu(apduIn);
+    return card.processApdu(apduIn);
   }
 
   @Override
   protected boolean isCurrentProtocol(String readerProtocolName) {
-    if (se != null && se.getSeProtocol() != null) {
-      return se.getSeProtocol().equals(readerProtocolName);
+    if (card != null && card.getCardProtocol() != null) {
+      return card.getCardProtocol().equals(readerProtocolName);
     } else {
       return false;
     }
   }
 
   @Override
-  protected synchronized boolean checkSePresence() {
-    return se != null;
+  protected synchronized boolean checkCardPresence() {
+    return card != null;
   }
 
   @Override
@@ -164,17 +145,17 @@ class StubReaderImpl extends AbstractObservableLocalReader
   }
 
   /*
-   * STATE CONTROLLERS FOR INSERTING AND REMOVING SECURE ELEMENT
+   * STATE CONTROLLERS FOR INSERTING AND REMOVING CARD
    */
 
   /**
-   * Inserts the provided SE.<br>
+   * Inserts the provided card.<br>
    *
-   * @param _se stub secure element to be inserted in the reader
-   * @throws KeypleReaderProtocolNotFoundException if the SE protocol is not found
+   * @param smartCard stub card to be inserted in the reader
+   * @throws KeypleReaderProtocolNotFoundException if the card protocol is not found
    */
-  public synchronized void insertSe(StubSecureElement _se) {
-    logger.debug("Insert SE {}", _se.toString());
+  public synchronized void insertCard(StubSmartCard smartCard) {
+    logger.debug("Insert card {}", smartCard);
     /* clean channels status */
     if (isPhysicalChannelOpen()) {
       try {
@@ -183,30 +164,30 @@ class StubReaderImpl extends AbstractObservableLocalReader
         logger.error("Error while closing channel reader", e);
       }
     }
-    if (_se != null) {
-      se = _se;
+    if (smartCard != null) {
+      card = smartCard;
     }
   }
 
-  public synchronized void removeSe() {
-    logger.debug("Remove SE {}", se != null ? se : "none");
-    se = null;
+  public synchronized void removeCard() {
+    logger.debug("Remove card {}", card != null ? card : "none");
+    card = null;
   }
 
-  public StubSecureElement getSe() {
-    return se;
+  public StubSmartCard getSmartcard() {
+    return card;
   }
 
   /**
-   * This method is called by the monitoring thread to check SE presence
+   * This method is called by the monitoring thread to check the card presence
    *
-   * @return true if the SE is present
+   * @return true if the card is present
    */
   @Override
   public boolean waitForCardPresent() {
-    loopWaitSe.set(true);
-    while (loopWaitSe.get()) {
-      if (checkSePresence()) {
+    loopWaitCard.set(true);
+    while (loopWaitCard.get()) {
+      if (checkCardPresence()) {
         return true;
       }
       try {
@@ -222,20 +203,20 @@ class StubReaderImpl extends AbstractObservableLocalReader
 
   @Override
   public void stopWaitForCard() {
-    loopWaitSe.set(false);
+    loopWaitCard.set(false);
   }
 
   /**
    * Defined in the {@link SmartRemovalReader} interface, this method is called by the monitoring
-   * thread to check SE absence
+   * thread to check the card absence
    *
-   * @return true if the SE is absent
+   * @return true if the card is absent
    */
   @Override
   public boolean waitForCardAbsentNative() {
-    loopWaitSeRemoval.set(true);
-    while (loopWaitSeRemoval.get()) {
-      if (!checkSePresence()) {
+    loopWaitCardRemoval.set(true);
+    while (loopWaitCardRemoval.get()) {
+      if (!checkCardPresence()) {
         logger.trace("[{}] card removed", this.getName());
         return true;
       }
@@ -252,35 +233,15 @@ class StubReaderImpl extends AbstractObservableLocalReader
 
   @Override
   public void stopWaitForCardRemoval() {
-    loopWaitSeRemoval.set(false);
+    loopWaitCardRemoval.set(false);
   }
 
   @Override
   protected final ObservableReaderStateService initStateService() {
-    if (executorService == null) {
-      throw new IllegalArgumentException("Executor service has not been initialized");
-    }
-
-    Map<AbstractObservableState.MonitoringState, AbstractObservableState> states =
-        new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
-
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
-        new WaitForStartDetect(this));
-
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-        new WaitForSeInsertion(this, new SmartInsertionMonitoringJob(this), executorService));
-
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
-        new WaitForSeProcessing(this, new SmartRemovalMonitoringJob(this), executorService));
-
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-        new WaitForSeRemoval(this, new SmartRemovalMonitoringJob(this), executorService));
-
-    return new ObservableReaderStateService(
-        this, states, AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION);
+    return ObservableReaderStateService.builder(this)
+        .waitForCardInsertionWithSmartDetection()
+        .waitForCardProcessingWithSmartDetection()
+        .waitForCardRemovalWithSmartDetection()
+        .build();
   }
 }
