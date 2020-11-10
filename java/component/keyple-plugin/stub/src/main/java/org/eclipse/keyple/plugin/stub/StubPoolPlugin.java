@@ -25,6 +25,7 @@ public interface StubPoolPlugin extends ReaderPoolPlugin {
    * @param readerName : name of the new stub reader
    * @param card : insert a card at creation (can be null)
    * @return created StubReader
+   * @since 1.0
    */
   Reader plugStubPoolReader(String groupReference, String readerName, StubSmartCard card);
 
@@ -33,6 +34,7 @@ public interface StubPoolPlugin extends ReaderPoolPlugin {
    * raised.
    *
    * @param groupReference groupReference of the reader to be unplugged
+   * @since 1.0
    */
   void unplugStubPoolReader(String groupReference);
 }

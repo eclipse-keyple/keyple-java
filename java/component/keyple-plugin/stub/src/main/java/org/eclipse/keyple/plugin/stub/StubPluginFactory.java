@@ -21,14 +21,17 @@ public class StubPluginFactory implements PluginFactory {
   private String pluginName;
 
   /**
-   * Create the factory
+   * Register the plugin by passing an instance of this factory to @link
+   * SmartCardService#registerPlugin(PluginFactory)}
    *
    * @param pluginName name of the plugin that will be instantiated
+   * @since 1.0
    */
   public StubPluginFactory(String pluginName) {
     this.pluginName = pluginName;
   }
 
+  /** {@inheritDoc} */
   @Override
   public String getPluginName() {
     return pluginName;

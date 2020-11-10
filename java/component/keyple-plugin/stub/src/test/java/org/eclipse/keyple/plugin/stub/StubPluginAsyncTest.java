@@ -192,13 +192,9 @@ public class StubPluginAsyncTest extends BaseStubTest {
 
     Assert.assertTrue(connectedLock.await(2, TimeUnit.SECONDS));
 
-    // Thread.sleep(1000);
-
     stubPlugin.unplugStubReaders(READERS, false);
 
     Assert.assertTrue(disconnectedLock.await(2, TimeUnit.SECONDS));
-
-    Thread.sleep(1000);
 
     logger.debug("Stub Readers connected {}", stubPlugin.getReaderNames());
     Assert.assertEquals(0, stubPlugin.getReaders().size());

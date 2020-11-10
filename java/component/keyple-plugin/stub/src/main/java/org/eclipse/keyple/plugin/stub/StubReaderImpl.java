@@ -151,11 +151,11 @@ class StubReaderImpl extends AbstractObservableLocalReader
   /**
    * Inserts the provided card.<br>
    *
-   * @param _se stub card to be inserted in the reader
+   * @param smartCard stub card to be inserted in the reader
    * @throws KeypleReaderProtocolNotFoundException if the card protocol is not found
    */
-  public synchronized void insertCard(StubSmartCard _se) {
-    logger.debug("Insert card {}", _se);
+  public synchronized void insertCard(StubSmartCard smartCard) {
+    logger.debug("Insert card {}", smartCard);
     /* clean channels status */
     if (isPhysicalChannelOpen()) {
       try {
@@ -164,8 +164,8 @@ class StubReaderImpl extends AbstractObservableLocalReader
         logger.error("Error while closing channel reader", e);
       }
     }
-    if (_se != null) {
-      card = _se;
+    if (smartCard != null) {
+      card = smartCard;
     }
   }
 
@@ -174,7 +174,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
     card = null;
   }
 
-  public StubSmartCard getSe() {
+  public StubSmartCard getSmartcard() {
     return card;
   }
 

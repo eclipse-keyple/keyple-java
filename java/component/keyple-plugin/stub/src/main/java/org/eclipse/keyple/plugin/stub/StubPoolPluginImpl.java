@@ -144,7 +144,7 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
     /** Remove and Re-insert card to reset logical channel */
     StubReaderImpl stubReader = ((StubReaderImpl) reader);
     if (stubReader.checkCardPresence()) {
-      StubSmartCard card = stubReader.getSe();
+      StubSmartCard card = stubReader.getSmartcard();
       stubReader.removeCard();
       stubReader.insertCard(card);
     }
