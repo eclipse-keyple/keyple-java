@@ -25,7 +25,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class KeypleServerSyncNodeTestImplTest extends AbstractKeypleSyncNodeTest {
+public class SyncNodeServerTestImplTest extends AbstractKeypleSyncNodeTest {
 
   static final String sessionId1 = "sessionId1";
   static final String pluginSessionId = "pluginSessionId";

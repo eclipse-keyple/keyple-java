@@ -13,7 +13,7 @@ package org.eclipse.keyple.plugin.remote.impl;
 
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.plugin.remote.KeypleClientAsyncNode;
+import org.eclipse.keyple.plugin.remote.AsyncNodeClient;
 import org.eclipse.keyple.plugin.remote.RemotePoolClientPlugin;
 
 /** Use this class to access the registered {@link RemotePoolClientPlugin} */
@@ -22,11 +22,11 @@ public class RemotePoolClientUtils {
   /**
    * Retrieve the async node used in the RemotePoolClientPlugin
    *
-   * @return non nullable instance of KeypleClientAsyncNode
+   * @return non nullable instance of AsyncNodeClient
    * @since 1.0
    */
-  public static KeypleClientAsyncNode getAsyncNode() {
-    return (KeypleClientAsyncNode) ((RemotePoolClientPluginImpl) getRemotePlugin()).getNode();
+  public static AsyncNodeClient getAsyncNode() {
+    return (AsyncNodeClient) ((RemotePoolClientPluginImpl) getRemotePlugin()).getNode();
   }
 
   /**

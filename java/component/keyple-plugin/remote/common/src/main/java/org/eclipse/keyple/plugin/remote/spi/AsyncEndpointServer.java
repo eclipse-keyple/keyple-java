@@ -12,7 +12,7 @@
 package org.eclipse.keyple.plugin.remote.spi;
 
 import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
-import org.eclipse.keyple.plugin.remote.KeypleServerAsyncNode;
+import org.eclipse.keyple.plugin.remote.AsyncNodeServer;
 
 /**
  * <b>Server Async Endpoint</b> endpoint API to be implemented by the user.
@@ -26,19 +26,19 @@ import org.eclipse.keyple.plugin.remote.KeypleServerAsyncNode;
  *   <li>Associate the session with the the accessible <b>sessionId</b> value using the method
  *       {@link KeypleMessageDto#getSessionId()} on the received message in order to be able to
  *       retrieve the session later.
- *   <li>Retrieve the node {@link KeypleServerAsyncNode} using one of the following <b>server</b>
+ *   <li>Retrieve the node {@link AsyncNodeServer} using one of the following <b>server</b>
  *       utility methods, depending on your use case :
  *       <ul>
  *         <li>{@code RemoteServerUtils.getAsyncNode()}
  *         <li>{@code NativeSeServerUtils.getAsyncNode()}
  *         <li>{@code NativeSePoolServerUtils.getAsyncNode()}
  *       </ul>
- *   <li>Call the method {@link KeypleServerAsyncNode#onMessage(KeypleMessageDto)} on the node.
- *   <li>Call the method {@link KeypleServerAsyncNode#onClose(String)} on the node after the session
+ *   <li>Call the method {@link AsyncNodeServer#onMessage(KeypleMessageDto)} on the node.
+ *   <li>Call the method {@link AsyncNodeServer#onClose(String)} on the node after the session
  *       closing.
  * </ul>
  *
- * <p>This endpoint must interact with a {@link KeypleServerAsyncNode} locally and with a {@link
+ * <p>This endpoint must interact with a {@link AsyncNodeServer} locally and with a {@link
  * AsyncEndpointClient} endpoint remotely.
  *
  * @since 1.0
@@ -46,7 +46,7 @@ import org.eclipse.keyple.plugin.remote.KeypleServerAsyncNode;
 public interface AsyncEndpointServer {
 
   /**
-   * This method is called by {@link KeypleServerAsyncNode} to send a {@link KeypleMessageDto} to
+   * This method is called by {@link AsyncNodeServer} to send a {@link KeypleMessageDto} to
    * the client.<br>
    * You have to :
    *

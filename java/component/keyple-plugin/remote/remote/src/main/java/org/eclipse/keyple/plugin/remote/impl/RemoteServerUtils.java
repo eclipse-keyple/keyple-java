@@ -13,8 +13,8 @@ package org.eclipse.keyple.plugin.remote.impl;
 
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.plugin.remote.KeypleServerAsyncNode;
-import org.eclipse.keyple.plugin.remote.KeypleServerSyncNode;
+import org.eclipse.keyple.plugin.remote.AsyncNodeServer;
+import org.eclipse.keyple.plugin.remote.SyncNodeServer;
 import org.eclipse.keyple.plugin.remote.RemoteServerPlugin;
 
 /** Use this class to access the registered {@link RemoteServerPlugin} */
@@ -35,20 +35,20 @@ public class RemoteServerUtils {
   /**
    * Retrieve the async node used in the RemoteServerPlugin
    *
-   * @return non nullable instance of KeypleServerSyncNode
+   * @return non nullable instance of SyncNodeServer
    * @since 1.0
    */
-  public static KeypleServerAsyncNode getAsyncNode() {
-    return (KeypleServerAsyncNode) ((RemoteServerPluginImpl) getRemotePlugin()).getNode();
+  public static AsyncNodeServer getAsyncNode() {
+    return (AsyncNodeServer) ((RemoteServerPluginImpl) getRemotePlugin()).getNode();
   }
 
   /**
    * Retrieve the sync node used in the RemoteServerPlugin
    *
-   * @return non nullable instance of KeypleServerSyncNode
+   * @return non nullable instance of SyncNodeServer
    * @since 1.0
    */
-  public static KeypleServerSyncNode getSyncNode() {
-    return (KeypleServerSyncNode) ((RemoteServerPluginImpl) getRemotePlugin()).getNode();
+  public static SyncNodeServer getSyncNode() {
+    return (SyncNodeServer) ((RemoteServerPluginImpl) getRemotePlugin()).getNode();
   }
 }

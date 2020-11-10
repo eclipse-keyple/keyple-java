@@ -11,8 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.impl;
 
-import org.eclipse.keyple.plugin.remote.KeypleServerAsyncNode;
-import org.eclipse.keyple.plugin.remote.KeypleServerSyncNode;
+import org.eclipse.keyple.plugin.remote.AsyncNodeServer;
+import org.eclipse.keyple.plugin.remote.SyncNodeServer;
 import org.eclipse.keyple.plugin.remote.NativePoolServerService;
 
 /**
@@ -30,10 +30,10 @@ public final class NativePoolServerUtils {
    *     node.
    * @since 1.0
    */
-  public static KeypleServerAsyncNode getAsyncNode() {
+  public static AsyncNodeServer getAsyncNode() {
     NativePoolServerServiceImpl service = getNativePoolServerService();
-    if (service.getNode() instanceof KeypleServerAsyncNode) {
-      return (KeypleServerAsyncNode) service.getNode();
+    if (service.getNode() instanceof AsyncNodeServer) {
+      return (AsyncNodeServer) service.getNode();
     }
     throw new IllegalStateException(
         "The Native Pool Server Service is not bounded to an async node");
@@ -47,10 +47,10 @@ public final class NativePoolServerUtils {
    *     node.
    * @since 1.0
    */
-  public static KeypleServerSyncNode getSyncNode() {
+  public static SyncNodeServer getSyncNode() {
     NativePoolServerServiceImpl service = getNativePoolServerService();
-    if (service.getNode() instanceof KeypleServerSyncNode) {
-      return (KeypleServerSyncNode) service.getNode();
+    if (service.getNode() instanceof SyncNodeServer) {
+      return (SyncNodeServer) service.getNode();
     }
     throw new IllegalStateException(
         "The Native Pool Server Service is not bounded to an sync node");

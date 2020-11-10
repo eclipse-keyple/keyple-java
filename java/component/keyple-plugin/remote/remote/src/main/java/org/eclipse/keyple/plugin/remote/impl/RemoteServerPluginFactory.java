@@ -21,8 +21,8 @@ import org.eclipse.keyple.core.service.event.PluginEvent;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
-import org.eclipse.keyple.plugin.remote.KeypleServerAsyncNode;
-import org.eclipse.keyple.plugin.remote.KeypleServerSyncNode;
+import org.eclipse.keyple.plugin.remote.AsyncNodeServer;
+import org.eclipse.keyple.plugin.remote.SyncNodeServer;
 import org.eclipse.keyple.plugin.remote.RemoteServerPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,7 +90,7 @@ public class RemoteServerPluginFactory implements PluginFactory {
   public interface NodeStep {
     /**
      * Configure the plugin with an async server endpoint. Retrieve the created {@link
-     * KeypleServerAsyncNode} with the method {@code
+     * AsyncNodeServer} with the method {@code
      * RemoteServerUtils.getAsyncNode()}
      *
      * @param asyncEndpoint non nullable instance of an async server endpoint
@@ -101,7 +101,7 @@ public class RemoteServerPluginFactory implements PluginFactory {
 
     /**
      * Configure the plugin to be used with a sync node. Retrieve the created {@link
-     * KeypleServerSyncNode} with the method {@link RemoteServerUtils#getSyncNode()}
+     * SyncNodeServer} with the method {@link RemoteServerUtils#getSyncNode()}
      *
      * @return next configuration step
      * @since 1.0

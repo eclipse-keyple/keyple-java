@@ -14,7 +14,7 @@ package org.eclipse.keyple.plugin.remote;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
 
 /**
- * <b>Keyple Server Async Node</b> API.
+ * <b>Server Async Node</b> API.
  *
  * <p>This kind of node must be bind on the server's side if you want to use a full duplex
  * communication protocol, such as Web Sockets for example.
@@ -43,7 +43,7 @@ import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
  *
  * @since 1.0
  */
-public interface KeypleServerAsyncNode {
+public interface AsyncNodeServer {
 
   /**
    * This method must be called by the {@link AsyncEndpointServer} endpoint following the reception

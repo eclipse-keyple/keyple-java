@@ -14,7 +14,7 @@ package org.eclipse.keyple.plugin.remote.impl;
 import java.util.*;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
-import org.eclipse.keyple.plugin.remote.KeypleClientAsyncNode;
+import org.eclipse.keyple.plugin.remote.AsyncNodeClient;
 import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remote.exception.KeypleRemoteCommunicationException;
 import org.eclipse.keyple.plugin.remote.exception.KeypleTimeoutException;
@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * @since 1.0
  */
 public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
-    implements KeypleClientAsyncNode {
+    implements AsyncNodeClient {
 
   private static final Logger logger = LoggerFactory.getLogger(KeypleClientAsyncNodeImpl.class);
 

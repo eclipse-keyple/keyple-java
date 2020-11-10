@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.impl;
 
-import org.eclipse.keyple.plugin.remote.KeypleClientAsyncNode;
+import org.eclipse.keyple.plugin.remote.AsyncNodeClient;
 import org.eclipse.keyple.plugin.remote.NativeClientService;
 
 /**
@@ -40,10 +40,10 @@ public class NativeClientUtils {
    *     node.
    * @since 1.0
    */
-  public static KeypleClientAsyncNode getAsyncNode() {
+  public static AsyncNodeClient getAsyncNode() {
     NativeClientServiceImpl service = getNativeClientService();
-    if (service.getNode() instanceof KeypleClientAsyncNode) {
-      return (KeypleClientAsyncNode) service.getNode();
+    if (service.getNode() instanceof AsyncNodeClient) {
+      return (AsyncNodeClient) service.getNode();
     }
     throw new IllegalStateException("The Native Service is not bounded to an async node");
   }

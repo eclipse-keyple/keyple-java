@@ -14,7 +14,7 @@ package org.eclipse.keyple.plugin.remote;
 import java.util.List;
 
 /**
- * <b>Keyple Server Sync Node</b> API.
+ * <b>Server Sync Node</b> API.
  *
  * <p>This kind of node must be bind on the server's side if you want to use a Client-Server
  * communication protocol, such as standard HTTP for example.
@@ -40,7 +40,7 @@ import java.util.List;
  *
  * @since 1.0
  */
-public interface KeypleServerSyncNode {
+public interface SyncNodeServer {
 
   /**
    * This method must be called by the server controller endpoint following the reception and
@@ -48,7 +48,7 @@ public interface KeypleServerSyncNode {
    * request, the controller must :
    *
    * <ul>
-   *   <li>Retrieve the node {@link KeypleServerSyncNode} using one of the following utility
+   *   <li>Retrieve the node {@link SyncNodeServer} using one of the following utility
    *       methods, depending on your use case :
    *       <ul>
    *         <li>{@code RemoteServerUtils.getSyncNode()}

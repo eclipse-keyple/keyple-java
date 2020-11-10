@@ -14,7 +14,7 @@ package org.eclipse.keyple.plugin.remote;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 
 /**
- * <b>Keyple Client Sync Node</b> API.
+ * <b>Client Sync Node</b> API.
  *
  * <p>This kind of node must be bind on the client's side if you want to use a Client-Server
  * communication protocol, such as standard HTTP for example.
@@ -36,4 +36,4 @@ import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
  *
  * @since 1.0
  */
-public interface KeypleClientSyncNode {}
+public interface SyncNodeClient {}

@@ -17,7 +17,7 @@ import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
-import org.eclipse.keyple.plugin.remote.KeypleServerAsyncNode;
+import org.eclipse.keyple.plugin.remote.AsyncNodeServer;
 import org.eclipse.keyple.plugin.remote.RemotePoolClientPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,7 +87,7 @@ public class RemotePoolClientPluginFactory implements PluginFactory {
   public interface NodeStep {
     /**
      * Configure the plugin with an async server endpoint. Retrieve the created {@link
-     * KeypleServerAsyncNode} with the method {@code
+     * AsyncNodeServer} with the method {@code
      * RemotePoolClientUtils.getAsyncNode()}
      *
      * @param asyncEndpoint non nullable instance of an async server endpoint

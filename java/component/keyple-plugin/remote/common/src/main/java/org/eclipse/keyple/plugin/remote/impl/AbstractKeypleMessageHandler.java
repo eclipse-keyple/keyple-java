@@ -54,7 +54,7 @@ public abstract class AbstractKeypleMessageHandler {
   protected abstract void onMessage(KeypleMessageDto msg);
 
   /**
-   * This method builds and bind a {@link KeypleClientAsyncNode} with the handler.<br>
+   * This method builds and bind a {@link AsyncNodeClient} with the handler.<br>
    * It must be called by the factory during the initialization phase.
    *
    * @param endpoint The {@link AsyncEndpointClient} endpoint.
@@ -66,7 +66,7 @@ public abstract class AbstractKeypleMessageHandler {
   }
 
   /**
-   * This method builds and bind a {@link KeypleServerAsyncNode} with the handler.<br>
+   * This method builds and bind a {@link AsyncNodeServer} with the handler.<br>
    * It must be called by the factory during the initialization phase.
    *
    * @param endpoint The {@link AsyncEndpointServer} endpoint.
@@ -77,7 +77,7 @@ public abstract class AbstractKeypleMessageHandler {
   }
 
   /**
-   * This method builds and bind a {@link KeypleClientSyncNode} with the handler.<br>
+   * This method builds and bind a {@link SyncNodeClient} with the handler.<br>
    * It must be called by the factory during the initialization phase.
    *
    * @param endpoint The {@link SyncEndpointClient} endpoint.
@@ -97,7 +97,7 @@ public abstract class AbstractKeypleMessageHandler {
   }
 
   /**
-   * This method builds and bind a {@link KeypleServerSyncNode} with the handler.<br>
+   * This method builds and bind a {@link SyncNodeServer} with the handler.<br>
    * It must be called by the factory during the initialization phase.
    *
    * @since 1.0

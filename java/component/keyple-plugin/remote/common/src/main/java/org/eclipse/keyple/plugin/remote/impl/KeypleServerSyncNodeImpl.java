@@ -16,7 +16,7 @@ import com.google.gson.JsonParser;
 import java.util.*;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
-import org.eclipse.keyple.plugin.remote.KeypleServerSyncNode;
+import org.eclipse.keyple.plugin.remote.SyncNodeServer;
 import org.eclipse.keyple.plugin.remote.exception.KeypleTimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * @since 1.0
  */
 public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
-    implements KeypleServerSyncNode {
+    implements SyncNodeServer {
 
   private static final Logger logger = LoggerFactory.getLogger(KeypleServerSyncNodeImpl.class);
 

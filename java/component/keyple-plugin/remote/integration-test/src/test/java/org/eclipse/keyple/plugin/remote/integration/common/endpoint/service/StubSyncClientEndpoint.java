@@ -18,9 +18,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.service.exception.KeypleRuntimeException;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
+import org.eclipse.keyple.plugin.remote.SyncNodeServer;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
-import org.eclipse.keyple.plugin.remote.KeypleServerSyncNode;
 import org.eclipse.keyple.plugin.remote.RemoteServerPlugin;
 import org.eclipse.keyple.plugin.remote.integration.common.endpoint.StubNetworkConnectionException;
 import org.eclipse.keyple.plugin.remote.integration.common.util.JacksonParser;
@@ -77,7 +77,7 @@ public class StubSyncClientEndpoint implements SyncEndpointClient {
     return new Callable<String>() {
       @Override
       public String call() throws Exception {
-        KeypleServerSyncNode serverSyncNode;
+        SyncNodeServer serverSyncNode;
 
         // Send the dto to the sync node
         List<KeypleMessageDto> responses =
