@@ -143,14 +143,6 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
    */
   protected long threadWaitTimeout = SETTING_THREAD_TIMEOUT_DEFAULT;
 
-  /**
-   * List of names of the physical (native) connected readers This list helps synchronizing physical
-   * readers managed by third-party library such as smardcard.io and the list of keyple {@link
-   * Reader} Insertion, removal, and access operations safely execute concurrently by multiple
-   * threads.
-   */
-  private final SortedSet<String> nativeReadersNames = new ConcurrentSkipListSet<String>();
-
   /** Thread in charge of reporting live events */
   private class EventThread extends Thread {
     private final String pluginName;
@@ -188,8 +180,6 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
             this.pluginName,
             reader.getName());
       }
-      /* add reader name to the current list */
-      nativeReadersNames.add(readerName);
     }
 
     /**
@@ -205,8 +195,6 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
             this.pluginName,
             reader.getName());
       }
-      /* remove reader name from the current list */
-      nativeReadersNames.remove(reader.getName());
     }
 
     /**
@@ -234,7 +222,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
      *
      * @param actualNativeReadersNames the list of readers currently known by the system
      */
-    private void processChanges(SortedSet<String> actualNativeReadersNames) {
+    private void processChanges(Set<String> actualNativeReadersNames) {
       SortedSet<String> changedReaderNames = new ConcurrentSkipListSet<String>();
       /*
        * parse the current readers list, notify for disappeared readers, update
@@ -263,7 +251,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
        * list
        */
       for (String readerName : actualNativeReadersNames) {
-        if (!nativeReadersNames.contains(readerName)) {
+        if (!getReaderNames().contains(readerName)) {
           addReader(readerName);
           /* add to the notification list */
           changedReaderNames.add(readerName);
@@ -285,23 +273,23 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
       try {
         while (running) {
           /* retrieves the current readers names list */
-          SortedSet<String> actualNativeReadersNames =
+          Set<String> actualNativeReadersNames =
               AbstractThreadedObservablePlugin.this.fetchNativeReadersNames();
           /*
            * checks if it has changed this algorithm favors cases where nothing change
            */
-          if (!nativeReadersNames.equals(actualNativeReadersNames)) {
+          Set<String> currentlyRegisteredReaderNames = getReaderNames();
+          if (!currentlyRegisteredReaderNames.containsAll(actualNativeReadersNames)
+              || !actualNativeReadersNames.containsAll(currentlyRegisteredReaderNames)) {
             processChanges(actualNativeReadersNames);
           }
           /* sleep for a while. */
           Thread.sleep(threadWaitTimeout);
         }
       } catch (InterruptedException e) {
-        logger.warn(
-            "[{}] An exception occurred while monitoring plugin: {}",
-            this.pluginName,
-            e.getMessage(),
-            e);
+        logger.info(
+            "[{}] The observation of this plugin is stopped, possibly because there is no more registered observer.",
+            this.pluginName);
         // Restore interrupted state...
         Thread.currentThread().interrupt();
       } catch (KeypleReaderException e) {
