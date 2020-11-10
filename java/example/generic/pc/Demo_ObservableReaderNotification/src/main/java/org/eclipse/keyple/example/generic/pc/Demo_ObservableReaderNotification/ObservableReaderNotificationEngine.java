@@ -112,14 +112,18 @@ public class ObservableReaderNotificationEngine {
             readerName,
             event.getEventType());
 
-        /* We retrieve the reader object from its name. */
-        try {
-          reader =
-              SmartCardService.getInstance().getPlugin(event.getPluginName()).getReader(readerName);
-        } catch (KeyplePluginNotFoundException e) {
-          e.printStackTrace();
-        } catch (KeypleReaderNotFoundException e) {
-          e.printStackTrace();
+        if (event.getEventType() != PluginEvent.EventType.READER_DISCONNECTED) {
+          /* We retrieve the reader object from its name. */
+          try {
+            reader =
+                SmartCardService.getInstance()
+                    .getPlugin(event.getPluginName())
+                    .getReader(readerName);
+          } catch (KeyplePluginNotFoundException e) {
+            e.printStackTrace();
+          } catch (KeypleReaderNotFoundException e) {
+            e.printStackTrace();
+          }
         }
         switch (event.getEventType()) {
           case READER_CONNECTED:
