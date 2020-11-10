@@ -14,7 +14,6 @@ package org.eclipse.keyple.plugin.stub;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.core.plugin.AbstractThreadedObservablePlugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
@@ -22,21 +21,13 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * This plugin allows to simulate card communication by creating @{@link StubReaderImpl} and @{@link
- * StubSecureElement}. Plug a new StubReader with StubPlugin#plugStubReader and insert an
- * implementation of your own of {@link StubSecureElement} to start simulation communication. This
- * class is a singleton, use StubPlugin#getInstance to access it
- */
+/** Implementation of {@link StubPlugin} */
 final class StubPluginImpl extends AbstractThreadedObservablePlugin implements StubPlugin {
 
   private static final Logger logger = LoggerFactory.getLogger(StubPluginImpl.class);
 
-  private final Map<String, String> parameters = new HashMap<String, String>();
-
   // simulated list of real-time connected stubReader
-  private SortedSet<String> connectedStubNames =
-      Collections.synchronizedSortedSet(new ConcurrentSkipListSet<String>());
+  private SortedSet<String> connectedStubNames = new TreeSet<String>();
 
   /**
    * Constructor
@@ -60,55 +51,60 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
   @Override
   public void plugStubReader(String readerName, boolean isContactless, Boolean synchronous) {
 
-    logger.info("Plugging a new reader with readerName {}", readerName);
     /* add the native reader to the native readers list */
-    Boolean exist = connectedStubNames.contains(readerName);
-
-    if (!exist && synchronous) {
+    if (connectedStubNames.contains(readerName)) {
+      logger.error("Reader with readerName {} was already plugged", readerName);
+      return;
+    }
+    if (synchronous) {
       /* add the reader as a new reader to the readers list */
       StubReaderImpl stubReader = new StubReaderImpl(this.getName(), readerName, isContactless);
-      stubReader.register();
-      readers.put(readerName, new StubReaderImpl(this.getName(), readerName, isContactless));
+      readers.put(readerName, stubReader);
+      if (this.countObservers() == 0) {
+        // if no observer, no monitoring thread is started, then it needs to be registered manually
+        stubReader.register();
+      }
     }
-
     connectedStubNames.add(readerName);
 
-    if (exist) {
-      logger.error("Reader with readerName {} was already plugged", readerName);
-    }
+    logger.info(
+        "Plugged a new reader with readerName:{} synchronously:{}", readerName, synchronous);
   }
 
   @Override
   public void plugStubReaders(Set<String> readerNames, Boolean synchronous) {
-    logger.debug("Plugging {} readers ..", readerNames.size());
+    logger.info("Plugging {} readers ..", readerNames.size());
 
     /* plug stub readers that were not plugged already */
-    // duplicate readerNames
     Set<String> newNames = new HashSet<String>(readerNames);
-    // remove already connected stubNames
     newNames.removeAll(connectedStubNames);
 
-    logger.debug("New readers to be created #{}", newNames.size());
+    logger.info("New readers to be created #{}", newNames.size());
 
     /*
      * Add new readerNames to the connectedStubNames
      */
-
-    if (!newNames.isEmpty()) {
-      if (synchronous) {
-        ConcurrentMap<String, StubReaderImpl> newReaders =
-            new ConcurrentHashMap<String, StubReaderImpl>();
-        for (String name : newNames) {
-          newReaders.put(name, new StubReaderImpl(this.getName(), name));
-        }
-        readers.putAll(newReaders);
-      }
-
-      connectedStubNames.addAll(readerNames);
-
-    } else {
+    if (newNames.isEmpty()) {
       logger.error("All {} readers were already plugged", readerNames.size());
+      return;
     }
+
+    if (synchronous) {
+      ConcurrentMap<String, StubReaderImpl> newReaders =
+          new ConcurrentHashMap<String, StubReaderImpl>();
+      for (String name : newNames) {
+        StubReaderImpl stubReader = new StubReaderImpl(this.getName(), name, true);
+        newReaders.put(name, stubReader);
+        if (this.countObservers() == 0) {
+          // if no observer, no monitoring thread is started, then it needs to be registered
+          // manually
+          stubReader.register();
+        }
+      }
+      readers.putAll(newReaders);
+    }
+
+    connectedStubNames.addAll(readerNames);
   }
 
   /** {@inheritDoc} */
@@ -116,41 +112,51 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
   public void unplugStubReader(String readerName, Boolean synchronous) {
 
     if (!connectedStubNames.contains(readerName)) {
-      logger.warn("unplugStubReader() No reader found with name {}", readerName);
-    } else {
-      /* remove the reader from the readers list */
-      if (synchronous) {
-        connectedStubNames.remove(readerName);
-        readers.remove(readerName);
-      } else {
-        connectedStubNames.remove(readerName);
-      }
-      /* remove the native reader from the native readers list */
-      logger.info(
-          "Unplugged reader with name {}, connectedStubNames size {}",
-          readerName,
-          connectedStubNames.size());
+      logger.warn("No reader found with name {}", readerName);
+      return;
     }
+
+    /* remove the reader from the readers list */
+    if (synchronous) {
+      Reader reader = readers.get(readerName);
+      readers.remove(readerName);
+      // if no observer, no monitoring thread is started, then it needs to be unregistered manually
+      if (this.countObservers() == 0) {
+        reader.unregister();
+      }
+    }
+
+    connectedStubNames.remove(readerName);
+
+    /* remove the native reader from the native readers list */
+    logger.info(
+        "Unplugged reader with name {}, remaining stub readers {}",
+        readerName,
+        connectedStubNames.size());
   }
 
   @Override
   public void unplugStubReaders(Set<String> readerNames, Boolean synchronous) {
-    logger.info("Unplug {} stub readers", readerNames.size());
-    logger.debug("Unplug stub readers.. {}", readerNames);
-    List<StubReaderImpl> readersToDelete = new ArrayList<StubReaderImpl>();
+    logger.trace("Unplug stub readers.. {}", readerNames);
+    List<Reader> readersToDelete = new ArrayList<Reader>();
     for (String name : readerNames) {
       try {
-        readersToDelete.add((StubReaderImpl) getReader(name));
+        readersToDelete.add(getReader(name));
       } catch (KeypleReaderNotFoundException e) {
         logger.warn("unplugStubReaders() No reader found with name {}", name);
       }
     }
-    connectedStubNames.removeAll(readerNames);
     if (synchronous) {
-      for (StubReaderImpl reader : readersToDelete) {
+      for (Reader reader : readersToDelete) {
+        // if no observer, no monitoring thread is started, then it needs to be unregistered
+        // manually
+        if (this.countObservers() == 0) {
+          reader.unregister();
+        }
         readers.remove(reader.getName());
       }
     }
+    connectedStubNames.removeAll(readerNames);
   }
 
   /**
@@ -160,9 +166,6 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
    */
   @Override
   public SortedSet<String> fetchNativeReadersNames() {
-    if (connectedStubNames.isEmpty()) {
-      logger.trace("No reader available.");
-    }
     return connectedStubNames;
   }
 
@@ -174,9 +177,7 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
    */
   @Override
   protected ConcurrentMap<String, Reader> initNativeReaders() {
-    /* init Stub Readers response object */
-    ConcurrentMap<String, Reader> newNativeReaders = new ConcurrentHashMap<String, Reader>();
-    return newNativeReaders;
+    return new ConcurrentHashMap<String, Reader>();
   }
 
   /**

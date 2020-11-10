@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
-public abstract class StubSecureElement {
+public abstract class StubSmartCard {
 
   /**
    * Getter for ATR

@@ -12,10 +12,10 @@
 package org.eclipse.keyple.example.common.generic.stub;
 
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.plugin.stub.StubSecureElement;
+import org.eclipse.keyple.plugin.stub.StubSmartCard;
 
 /** Simple contact card Stub (no command) */
-public class StubMemoryST25 extends StubSecureElement {
+public class StubMemoryST25 extends StubSmartCard {
 
   static final String cardProtocol = "MEMORY_ST25";
   final String ATR_HEX = "3B8F8001804F0CA000000306070007D0020C00B6";

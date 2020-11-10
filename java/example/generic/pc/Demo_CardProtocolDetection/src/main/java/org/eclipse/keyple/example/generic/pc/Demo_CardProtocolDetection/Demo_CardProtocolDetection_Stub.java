@@ -79,33 +79,33 @@ public class Demo_CardProtocolDetection_Stub {
 
     Thread.sleep(300);
 
-    poReader.removeSe();
+    poReader.removeCard();
 
     Thread.sleep(100);
 
-    poReader.insertSe(new StubMifareClassic());
+    poReader.insertCard(new StubMifareClassic());
 
     Thread.sleep(300);
 
-    poReader.removeSe();
+    poReader.removeCard();
 
     Thread.sleep(100);
 
     // insert Mifare UltraLight
-    poReader.insertSe(new StubMifareUL());
+    poReader.insertCard(new StubMifareUL());
 
     Thread.sleep(300);
 
-    poReader.removeSe();
+    poReader.removeCard();
 
     Thread.sleep(100);
 
     // insert Mifare Desfire
-    poReader.insertSe(new StubMifareDesfire());
+    poReader.insertCard(new StubMifareDesfire());
 
     Thread.sleep(300);
 
-    poReader.removeSe();
+    poReader.removeCard();
 
     Thread.sleep(100);
 
