@@ -47,7 +47,7 @@ public class BlankSmartSelectionReader extends AbstractLocalReader implements Sm
   }
 
   @Override
-  void terminateCardCommunication() {}
+  void finalizeCardProcessing() {}
 
   @Override
   protected void activateReaderProtocol(String readerProtocolName) {}

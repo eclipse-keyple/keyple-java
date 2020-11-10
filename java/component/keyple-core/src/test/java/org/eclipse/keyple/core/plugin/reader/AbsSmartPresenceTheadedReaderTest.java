@@ -11,7 +11,6 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.plugin.reader;
 
-import static org.eclipse.keyple.core.plugin.reader.AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION;
 import static org.eclipse.keyple.core.plugin.reader.AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION;
 import static org.mockito.Mockito.doReturn;
 
@@ -41,12 +40,12 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
   final String PLUGIN_NAME = "AbsSmartPresenceTheadedReaderTestP";
   final String READER_NAME = "AbsSmartPresenceTheadedReaderTest";
 
-  BlankSmartPresenceTheadedReader r;
+  BlankPresenceWaitForCardBlockingThreadedReader r;
 
   // Execute tests 10 times
   @Parameterized.Parameters
   public static Object[][] data() {
-    int x = 0;
+    int x = 1;
     return new Object[x][0];
   }
 
@@ -71,7 +70,9 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
   public void startRemovalSequence() throws Exception {
 
     // card matched
-    doReturn(true).when(r).processCardInserted();
+    doReturn(new ReaderEvent("", "", ReaderEvent.EventType.CARD_REMOVED, null))
+        .when(r)
+        .processCardInserted();
 
     r.addObserver(getObs());
     Thread.sleep(100);
@@ -87,8 +88,10 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
   public void startRemovalSequence_CONTINUE() throws Exception {
 
     // card matched
-    doReturn(true).when(r).processCardInserted();
-    // use mocked BlankSmartPresenceTheadedReader methods
+    doReturn(new ReaderEvent("", "", ReaderEvent.EventType.CARD_REMOVED, null))
+        .when(r)
+        .processCardInserted();
+    // use mocked BlankPresenceWaitForCardBlockingThreadedReader methods
 
     r.addObserver(getObs());
     r.startCardDetection(ObservableReader.PollingMode.REPEATING); // WAIT_FOR_SE_INSERTION
@@ -97,14 +100,16 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
     r.finalizeCardProcessing();
     Thread.sleep(100);
 
-    Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentMonitoringState());
+    Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentMonitoringState());
   }
 
   @Test
   public void startRemovalSequence_noping_STOP() throws Exception {
 
     // card matched
-    doReturn(true).when(r).processCardInserted();
+    doReturn(new ReaderEvent("", "", ReaderEvent.EventType.CARD_REMOVED, null))
+        .when(r)
+        .processCardInserted();
     doReturn(false).when(r).isCardPresentPing();
 
     r.addObserver(getObs());
@@ -114,14 +119,15 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
     r.finalizeCardProcessing();
     Thread.sleep(100);
 
-    Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentMonitoringState());
+    Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentMonitoringState());
   }
 
   @Test
   public void startRemovalSequence_ping_STOP() throws Exception {
-
     // card matched
-    doReturn(true).when(r).processCardInserted();
+    doReturn(new ReaderEvent("", "", ReaderEvent.EventType.CARD_REMOVED, null))
+        .when(r)
+        .processCardInserted();
     // doReturn(true).when(r).isCardPresentPing();
     doReturn(true).when(r).isCardPresent();
 
@@ -139,15 +145,18 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
    * Helpers
    */
 
-  public static BlankSmartPresenceTheadedReader getSmartSpy(String pluginName, String readerName) {
-    BlankSmartPresenceTheadedReader r =
-        Mockito.spy(new BlankSmartPresenceTheadedReader(pluginName, readerName, 1));
+  public static BlankPresenceWaitForCardBlockingThreadedReader getSmartSpy(
+      String pluginName, String readerName) {
+    BlankPresenceWaitForCardBlockingThreadedReader r =
+        Mockito.spy(
+            new BlankPresenceWaitForCardBlockingThreadedReader(pluginName, readerName, 1));
     return r;
   }
 
-  public static BlankSmartPresenceTheadedReader getSmartPresenceMock(
+  public static BlankPresenceWaitForCardBlockingThreadedReader getSmartPresenceMock(
       String pluginName, String readerName) {
-    BlankSmartPresenceTheadedReader r = Mockito.mock(BlankSmartPresenceTheadedReader.class);
+    BlankPresenceWaitForCardBlockingThreadedReader r =
+        Mockito.mock(BlankPresenceWaitForCardBlockingThreadedReader.class);
     doReturn("test").when(r).getName();
     return r;
   }
