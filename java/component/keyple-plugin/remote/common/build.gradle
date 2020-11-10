@@ -6,8 +6,8 @@ apply plugin: 'jacoco'
 apply plugin: 'org.sonarqube'
 
 sourceCompatibility = 1.6
-archivesBaseName = "keyple-java-plugin-remote-core"
-project.description ='Keyple Plugin Remote (Core)'
+archivesBaseName = "keyple-java-plugin-remote-common"
+project.description ='Keyple Plugin Remote (Common)'
 
 //copy license file from root folder to each generated artifact
 task copyLICENSEplugin(type: Copy) {
@@ -159,7 +159,7 @@ uploadArchives {
 task installPlugin{
     group 'keyple'
     description 'Builds and installs the Keyple Plugin Remote (Core) into maven local repository'
-    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-core:uploadArchives'
+    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-common:uploadArchives'
 
     doLast {
         println 'Keyple Plugin Remote (Core) has been installed into maven local repo at path : ' + project.getRepositories().get(0).getAt("url")

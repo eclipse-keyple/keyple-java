@@ -6,8 +6,8 @@ apply plugin: 'jacoco'
 apply plugin: 'org.sonarqube'
 
 sourceCompatibility = 1.6
-archivesBaseName = "keyple-java-plugin-remote-native"
-project.description ='Keyple Plugin Remote (Native)'
+archivesBaseName = "keyple-java-plugin-remote-local"
+project.description ='Keyple Plugin Remote (Local)'
 
 //copy license file from root folder to each generated artifact
 task copyLICENSEplugin(type: Copy) {
@@ -182,8 +182,8 @@ task installPlugin{
 dependencies {
 
     //use keyple library : core
-    //api project(path:':java:component:keyple-plugin:remote:keyple-plugin-remote-core')
-    api group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remote-core', version: project.version
+    api project(path:':java:component:keyple-plugin:remote:keyple-plugin-remote-common')
+    //api group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remote-common', version: project.version
 
     implementation "com.google.code.gson:gson:${gson_version}"
 

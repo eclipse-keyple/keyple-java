@@ -13,13 +13,13 @@ dependencies {
     Test
      */
 
-    implementation project(path:':java:component:keyple-plugin:remote:keyple-plugin-remote-core')
+    implementation project(path:':java:component:keyple-plugin:remote:keyple-plugin-remote-common')
 
-    implementation project(path:':java:component:keyple-plugin:remote:keyple-plugin-remote-native')
+    implementation project(path:':java:component:keyple-plugin:remote:keyple-plugin-remote-local')
 
-    implementation project(path:':java:component:keyple-plugin:remote:keyple-plugin-remote-native', configuration: 'testOutput')
+    implementation project(path:':java:component:keyple-plugin:remote:keyple-plugin-remote-local', configuration: 'testOutput')
 
-    implementation project(path:':java:component:keyple-plugin:remote:keyple-plugin-remote-virtual')
+    implementation project(path:':java:component:keyple-plugin:remote:keyple-plugin-remote-remote')
 
     //implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-stub', version: project.version
     implementation project(path:':java:component:keyple-plugin:keyple-plugin-stub')
