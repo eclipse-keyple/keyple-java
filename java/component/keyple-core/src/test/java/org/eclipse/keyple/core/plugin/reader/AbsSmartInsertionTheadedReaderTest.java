@@ -283,7 +283,8 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
       String pluginName, String readerName, Integer mockDetect) {
     BlankWaitForCardInsertionBlockingThreadedReader r =
         Mockito.spy(
-            new BlankWaitForCardInsertionBlockingThreadedReader(pluginName, readerName, mockDetect));
+            new BlankWaitForCardInsertionBlockingThreadedReader(
+                pluginName, readerName, mockDetect));
     return r;
   }
 

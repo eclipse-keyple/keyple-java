@@ -14,8 +14,7 @@ package org.eclipse.keyple.core.plugin.reader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BlankPresenceWaitForCardBlockingThreadedReader
-    extends AbstractObservableLocalReader
+public class BlankPresenceWaitForCardBlockingThreadedReader extends AbstractObservableLocalReader
     implements WaitForCardInsertionBlocking,
         WaitForCardRemovalDuringProcessing,
         WaitForCardRemovalBlocking {
