@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
-import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
 import org.eclipse.keyple.plugin.remote.RemotePoolClientPlugin;
 import org.eclipse.keyple.plugin.remote.integration.common.util.JacksonParser;
@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Simulate a async server to test {@link
  * RemotePoolClientPlugin}. Send and receive asynchronously
- * serialized {@link KeypleMessageDto} with connected {@link StubAsyncClientEndpoint}
+ * serialized {@link MessageDto} with connected {@link StubAsyncClientEndpoint}
  */
 public class StubAsyncServerEndpoint implements AsyncEndpointServer {
 
@@ -55,7 +55,7 @@ public class StubAsyncServerEndpoint implements AsyncEndpointServer {
    * @param jsonData incoming json data
    */
   public void onData(final String jsonData, final StubAsyncClientEndpoint client) {
-    final KeypleMessageDto message = JacksonParser.fromJson(jsonData);
+    final MessageDto message = JacksonParser.fromJson(jsonData);
     clients.put(message.getSessionId(), client);
     taskPool.submit(
         new Runnable() {
@@ -67,7 +67,7 @@ public class StubAsyncServerEndpoint implements AsyncEndpointServer {
   }
 
   @Override
-  public void sendMessage(final KeypleMessageDto msg) {
+  public void sendMessage(final MessageDto msg) {
     final String data = JacksonParser.toJson(msg);
     logger.trace("Data sent to client {}", data);
     final StubAsyncClientEndpoint client = clients.get(msg.getSessionId());

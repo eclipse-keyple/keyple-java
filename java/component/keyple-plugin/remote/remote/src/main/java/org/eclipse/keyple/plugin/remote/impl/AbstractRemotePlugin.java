@@ -23,10 +23,10 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
  * (package-private)<br>
  * Abstract class for all Remote Plugins.
  *
- * <p>This object behaves both as a {@link AbstractKeypleMessageHandler} and as a {@link
+ * <p>This object behaves both as a {@link AbstractMessageHandler} and as a {@link
  * org.eclipse.keyple.core.service.Plugin}.
  */
-abstract class AbstractRemotePlugin extends AbstractKeypleMessageHandler implements Plugin {
+abstract class AbstractRemotePlugin extends AbstractMessageHandler implements Plugin {
 
   private final String name;
   protected final Map<String, Reader> readers;

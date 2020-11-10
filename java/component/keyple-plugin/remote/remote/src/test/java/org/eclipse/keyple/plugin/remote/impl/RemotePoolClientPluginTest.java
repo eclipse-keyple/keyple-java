@@ -26,9 +26,9 @@ import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
+import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
-import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -209,7 +209,7 @@ public class RemotePoolClientPluginTest {
                         .withAsyncNode(asyncEndpoint)
                         .usingDefaultTimeout()
                         .build());
-    remotePoolPlugin.onMessage(new KeypleMessageDto());
+    remotePoolPlugin.onMessage(new MessageDto());
   }
 
   /*
@@ -231,7 +231,7 @@ public class RemotePoolClientPluginTest {
     }
 
     @Override
-    public void sendMessage(final KeypleMessageDto msg) {
+    public void sendMessage(final MessageDto msg) {
       new Thread(
               new Runnable() {
                 @Override
@@ -258,25 +258,25 @@ public class RemotePoolClientPluginTest {
     }
 
     @Override
-    public List<KeypleMessageDto> sendRequest(KeypleMessageDto msg) {
+    public List<MessageDto> sendRequest(MessageDto msg) {
       return Arrays.asList(getResponse(msg, exception));
     }
   }
 
-  private KeypleMessageDto getResponse(KeypleMessageDto msg, RuntimeException exception) {
+  private MessageDto getResponse(MessageDto msg, RuntimeException exception) {
     JsonObject body;
     if (exception != null) {
-      return new KeypleMessageDto(msg)
-          .setAction(KeypleMessageDto.Action.ERROR.name())
+      return new MessageDto(msg)
+          .setAction(MessageDto.Action.ERROR.name())
           .setBody(KeypleJsonParser.getParser().toJson(new BodyError(exception)))
           .setServerNodeId(serverNodeId);
     }
 
-    switch (KeypleMessageDto.Action.valueOf(msg.getAction())) {
+    switch (MessageDto.Action.valueOf(msg.getAction())) {
       case RELEASE_READER:
-        return new KeypleMessageDto(msg).setBody(null).setServerNodeId(serverNodeId);
+        return new MessageDto(msg).setBody(null).setServerNodeId(serverNodeId);
       case ALLOCATE_READER:
-        return new KeypleMessageDto(msg)
+        return new MessageDto(msg)
             .setNativeReaderName("nativeReaderName")
             .setBody(null)
             .setServerNodeId(serverNodeId);
@@ -284,11 +284,11 @@ public class RemotePoolClientPluginTest {
         SortedSet<String> groupReferences = Sets.newTreeSet(groupReference);
         body = new JsonObject();
         body.add("readerGroupReferences", KeypleJsonParser.getParser().toJsonTree(groupReferences));
-        return new KeypleMessageDto(msg).setBody(body.toString()).setServerNodeId(serverNodeId);
+        return new MessageDto(msg).setBody(body.toString()).setServerNodeId(serverNodeId);
       case IS_CARD_PRESENT:
         String bodyJson = KeypleJsonParser.getParser().toJson(true, Boolean.class);
 
-        return new KeypleMessageDto(msg).setBody(bodyJson).setServerNodeId(serverNodeId);
+        return new MessageDto(msg).setBody(bodyJson).setServerNodeId(serverNodeId);
 
       default:
         return null;

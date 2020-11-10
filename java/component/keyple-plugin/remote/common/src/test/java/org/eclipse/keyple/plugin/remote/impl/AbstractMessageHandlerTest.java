@@ -16,26 +16,26 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
-import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.junit.Before;
 import org.junit.Test;
 
-public class AbstractKeypleMessageHandlerTest {
+public class AbstractMessageHandlerTest {
 
-  AbstractKeypleMessageHandler handler;
+  AbstractMessageHandler handler;
   Gson parser = KeypleJsonParser.getParser();
 
-  KeypleMessageDto response =
-      new KeypleMessageDto().setAction(KeypleMessageDto.Action.SET_DEFAULT_SELECTION.name());
+  MessageDto response =
+      new MessageDto().setAction(MessageDto.Action.SET_DEFAULT_SELECTION.name());
 
-  KeypleMessageDto responseWithKRIoExceptionException =
-      new KeypleMessageDto()
-          .setAction(KeypleMessageDto.Action.ERROR.name())
+  MessageDto responseWithKRIoExceptionException =
+      new MessageDto()
+          .setAction(MessageDto.Action.ERROR.name())
           .setBody(parser.toJson(new BodyError(new KeypleReaderIOException("keyple io reader"))));
 
-  KeypleMessageDto responseWithKRNotFounExceptionException =
-      new KeypleMessageDto()
-          .setAction(KeypleMessageDto.Action.ERROR.name())
+  MessageDto responseWithKRNotFounExceptionException =
+      new MessageDto()
+          .setAction(MessageDto.Action.ERROR.name())
           .setBody(
               parser.toJson(
                   new BodyError(new KeypleReaderNotFoundException("keyple reader not found"))));
@@ -43,9 +43,9 @@ public class AbstractKeypleMessageHandlerTest {
   @Before
   public void setUp() {
     handler =
-        new AbstractKeypleMessageHandler() {
+        new AbstractMessageHandler() {
           @Override
-          protected void onMessage(KeypleMessageDto msg) {}
+          protected void onMessage(MessageDto msg) {}
         };
   }
 

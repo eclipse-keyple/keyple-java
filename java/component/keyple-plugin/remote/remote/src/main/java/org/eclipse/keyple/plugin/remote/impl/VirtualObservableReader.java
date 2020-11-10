@@ -21,7 +21,7 @@ import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
-import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +53,7 @@ final class VirtualObservableReader extends AbstractVirtualReader
   VirtualObservableReader(
       String pluginName,
       String nativeReaderName,
-      AbstractKeypleNode node,
+      AbstractNode node,
       String sessionId,
       String clientNodeId,
       ExecutorService eventNotificationPool) {
@@ -155,7 +155,7 @@ final class VirtualObservableReader extends AbstractVirtualReader
 
     body.addProperty("pollingMode", pollingMode.name());
 
-    sendRequest(KeypleMessageDto.Action.START_CARD_DETECTION, body);
+    sendRequest(MessageDto.Action.START_CARD_DETECTION, body);
   }
 
   /**
@@ -165,7 +165,7 @@ final class VirtualObservableReader extends AbstractVirtualReader
    */
   @Override
   public void stopCardDetection() {
-    sendRequest(KeypleMessageDto.Action.STOP_CARD_DETECTION, null);
+    sendRequest(MessageDto.Action.STOP_CARD_DETECTION, null);
   }
 
   /**
@@ -207,7 +207,7 @@ final class VirtualObservableReader extends AbstractVirtualReader
       body.addProperty("pollingMode", pollingMode.name());
     }
 
-    sendRequest(KeypleMessageDto.Action.SET_DEFAULT_SELECTION, body);
+    sendRequest(MessageDto.Action.SET_DEFAULT_SELECTION, body);
   }
 
   /**
@@ -217,6 +217,6 @@ final class VirtualObservableReader extends AbstractVirtualReader
    */
   @Override
   public void finalizeCardProcessing() {
-    sendRequest(KeypleMessageDto.Action.FINALIZE_CARD_PROCESSING, null);
+    sendRequest(MessageDto.Action.FINALIZE_CARD_PROCESSING, null);
   }
 }

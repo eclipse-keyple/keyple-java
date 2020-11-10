@@ -28,30 +28,30 @@ import org.slf4j.LoggerFactory;
  *
  * @since 1.0
  */
-public abstract class AbstractKeypleMessageHandler {
+public abstract class AbstractMessageHandler {
 
-  private static final Logger logger = LoggerFactory.getLogger(AbstractKeypleMessageHandler.class);
+  private static final Logger logger = LoggerFactory.getLogger(AbstractMessageHandler.class);
 
   /**
    * (protected)<br>
    * The bounded node.
    */
-  protected AbstractKeypleNode node;
+  protected AbstractNode node;
 
   /**
    * (protected)<br>
    * Constructor.
    */
-  protected AbstractKeypleMessageHandler() {}
+  protected AbstractMessageHandler() {}
 
   /**
    * (protected)<br>
    * This method processes an incoming message.<br>
-   * It should be called by a node following the reception of a {@link KeypleMessageDto}.
+   * It should be called by a node following the reception of a {@link MessageDto}.
    *
    * @param msg The message to process.
    */
-  protected abstract void onMessage(KeypleMessageDto msg);
+  protected abstract void onMessage(MessageDto msg);
 
   /**
    * This method builds and bind a {@link AsyncNodeClient} with the handler.<br>
@@ -62,7 +62,7 @@ public abstract class AbstractKeypleMessageHandler {
    * @since 1.0
    */
   public void bindClientAsyncNode(AsyncEndpointClient endpoint, int timeoutInSecond) {
-    node = new KeypleClientAsyncNodeImpl(this, endpoint, timeoutInSecond);
+    node = new AsyncNodeClientImpl(this, endpoint, timeoutInSecond);
   }
 
   /**
@@ -73,7 +73,7 @@ public abstract class AbstractKeypleMessageHandler {
    * @since 1.0
    */
   public void bindServerAsyncNode(AsyncEndpointServer endpoint) {
-    node = new KeypleServerAsyncNodeImpl(this, endpoint, 20);
+    node = new AsyncNodeServerImpl(this, endpoint, 20);
   }
 
   /**
@@ -92,7 +92,7 @@ public abstract class AbstractKeypleMessageHandler {
       ServerPushEventStrategy pluginObservationStrategy,
       ServerPushEventStrategy readerObservationStrategy) {
     node =
-        new KeypleClientSyncNodeImpl(
+        new SyncNodeClientImpl(
             this, endpoint, pluginObservationStrategy, readerObservationStrategy);
   }
 
@@ -103,7 +103,7 @@ public abstract class AbstractKeypleMessageHandler {
    * @since 1.0
    */
   public void bindServerSyncNode() {
-    node = new KeypleServerSyncNodeImpl(this, 20);
+    node = new SyncNodeServerImpl(this, 20);
   }
 
   /**
@@ -112,7 +112,7 @@ public abstract class AbstractKeypleMessageHandler {
    * @return a not null reference.
    * @since 1.0
    */
-  public AbstractKeypleNode getNode() {
+  public AbstractNode getNode() {
     return node;
   }
 
@@ -122,8 +122,8 @@ public abstract class AbstractKeypleMessageHandler {
    *
    * @param message not null instance
    */
-  protected void checkError(KeypleMessageDto message) {
-    if (message.getAction().equals(KeypleMessageDto.Action.ERROR.name())) {
+  protected void checkError(MessageDto message) {
+    if (message.getAction().equals(MessageDto.Action.ERROR.name())) {
       BodyError body = KeypleJsonParser.getParser().fromJson(message.getBody(), BodyError.class);
       throw body.getException();
     }

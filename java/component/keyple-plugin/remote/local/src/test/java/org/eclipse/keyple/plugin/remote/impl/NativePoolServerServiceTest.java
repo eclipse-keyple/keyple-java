@@ -27,7 +27,7 @@ import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
-import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
 import org.junit.After;
 import org.junit.Before;
@@ -50,11 +50,11 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
   final String sessionId = "session1";
   final SortedSet<String> groupReferences = Sets.newTreeSet(groupReference);
   final String poolPluginName = "poolPluginMock";
-  KeypleMessageDto response;
+  MessageDto response;
 
   NativePoolServerServiceImpl service;
 
-  @Captor ArgumentCaptor<KeypleMessageDto> responseCaptor;
+  @Captor ArgumentCaptor<MessageDto> responseCaptor;
 
   @Before
   public void setUp() {
@@ -155,7 +155,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
 
   @Test
   public void onAllocateReader_shouldPropagate_toLocalPoolPlugin() {
-    KeypleMessageDto request = getAllocateReaderDto();
+    MessageDto request = getAllocateReaderDto();
     NativePoolServerUtils.getAsyncNode().onMessage(getAllocateReaderDto());
     response = captureResponse();
     assertMetadataMatches(request, response);
@@ -166,7 +166,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
   public void onAllocateReader_shouldPropagate_AllocationException() {
     KeypleAllocationReaderException e = new KeypleAllocationReaderException("");
     doThrow(e).when(poolPluginMock).allocateReader(groupReference);
-    KeypleMessageDto request = getAllocateReaderDto();
+    MessageDto request = getAllocateReaderDto();
     NativePoolServerUtils.getAsyncNode().onMessage(getAllocateReaderDto());
     response = captureResponse();
     assertMetadataMatches(request, response);
@@ -176,7 +176,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
   @Test
   public void onAllocateReader_withNoPlugin_shouldThrow_KPNFE() {
     SmartCardService.getInstance().unregisterPlugin(poolPluginName);
-    KeypleMessageDto request = getAllocateReaderDto();
+    MessageDto request = getAllocateReaderDto();
     NativePoolServerUtils.getAsyncNode().onMessage(getAllocateReaderDto());
 
     response = captureResponse();
@@ -186,7 +186,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
 
   @Test
   public void onReleaseReader_shouldPropagate_toLocalPoolPlugin() {
-    KeypleMessageDto request = getReleaseReaderDto();
+    MessageDto request = getReleaseReaderDto();
     NativePoolServerUtils.getAsyncNode().onMessage(request);
     verify(poolPluginMock, times(1)).releaseReader(readerMocked);
   }
@@ -194,7 +194,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
   @Test
   public void onReleaseReader_withNoPlugin_shouldThrow_KPNFE() {
     doReturn(Sets.newTreeSet()).when(poolPluginMock).getReaderNames();
-    KeypleMessageDto request = getReleaseReaderDto();
+    MessageDto request = getReleaseReaderDto();
     NativePoolServerUtils.getAsyncNode().onMessage(request);
 
     response = captureResponse();
@@ -204,7 +204,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
 
   @Test
   public void onGroupReferences_shouldPropagate_toLocalPoolPlugin() {
-    KeypleMessageDto request = getGroupReferencesDto();
+    MessageDto request = getGroupReferencesDto();
     NativePoolServerUtils.getAsyncNode().onMessage(request);
 
     response = captureResponse();
@@ -214,7 +214,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
 
   @Test
   public void onGroupReferences_shouldPropagate_AllocationError() {
-    KeypleMessageDto request = getGroupReferencesDto();
+    MessageDto request = getGroupReferencesDto();
     NativePoolServerUtils.getAsyncNode().onMessage(request);
 
     response = captureResponse();
@@ -224,11 +224,11 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
 
   @Test
   public void onIsPresent_shouldPropagate_toLocalPoolPlugin() {
-    KeypleMessageDto request = getIsCardPresentDto(sessionId);
+    MessageDto request = getIsCardPresentDto(sessionId);
     NativePoolServerUtils.getAsyncNode().onMessage(request);
 
     response = captureResponse();
-    KeypleMessageDto response = responseCaptor.getValue();
+    MessageDto response = responseCaptor.getValue();
     assertMetadataMatches(request, response);
   }
 
@@ -268,19 +268,19 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
                 .getService();
   }
 
-  private KeypleMessageDto getAllocateReaderDto() {
+  private MessageDto getAllocateReaderDto() {
     JsonObject body = new JsonObject();
     body.addProperty("groupReference", groupReference);
-    return new KeypleMessageDto()
-        .setAction(KeypleMessageDto.Action.ALLOCATE_READER.name())
+    return new MessageDto()
+        .setAction(MessageDto.Action.ALLOCATE_READER.name())
         .setClientNodeId(clientNodeId)
         .setSessionId(sessionId)
         .setBody(body.toString());
   }
 
-  private KeypleMessageDto getReleaseReaderDto() {
-    return new KeypleMessageDto()
-        .setAction(KeypleMessageDto.Action.RELEASE_READER.name())
+  private MessageDto getReleaseReaderDto() {
+    return new MessageDto()
+        .setAction(MessageDto.Action.RELEASE_READER.name())
         .setClientNodeId(clientNodeId)
         .setSessionId(sessionId)
         .setNativeReaderName(readerName)
@@ -288,31 +288,31 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
         .setBody(null);
   }
 
-  private KeypleMessageDto getGroupReferencesDto() {
-    return new KeypleMessageDto()
-        .setAction(KeypleMessageDto.Action.GET_READER_GROUP_REFERENCES.name())
+  private MessageDto getGroupReferencesDto() {
+    return new MessageDto()
+        .setAction(MessageDto.Action.GET_READER_GROUP_REFERENCES.name())
         .setClientNodeId(clientNodeId)
         .setSessionId(sessionId)
         .setBody(null);
   }
 
-  public static void assertMetadataMatches(KeypleMessageDto request, KeypleMessageDto response) {
+  public static void assertMetadataMatches(MessageDto request, MessageDto response) {
     assertThat(response).isNotNull();
     assertThat(response.getSessionId()).isEqualTo(request.getSessionId());
     assertThat(response.getClientNodeId()).isEqualTo(request.getClientNodeId());
   }
 
-  public static KeypleMessageDto getIsCardPresentDto(String sessionId) {
-    return new KeypleMessageDto() //
+  public static MessageDto getIsCardPresentDto(String sessionId) {
+    return new MessageDto() //
         .setSessionId(sessionId) //
-        .setAction(KeypleMessageDto.Action.IS_CARD_PRESENT.name()) //
+        .setAction(MessageDto.Action.IS_CARD_PRESENT.name()) //
         .setServerNodeId("serverNodeId") //
         .setClientNodeId("clientNodeId") //
         .setNativeReaderName(readerName)
         .setBody(null);
   }
 
-  private SortedSet<String> getReferenceGroupFromDto(KeypleMessageDto msg) {
+  private SortedSet<String> getReferenceGroupFromDto(MessageDto msg) {
     String readerGroupReferencesJson =
         KeypleJsonParser.getParser()
             .fromJson(msg.getBody(), JsonObject.class)
@@ -321,12 +321,12 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
     return KeypleJsonParser.getParser().fromJson(readerGroupReferencesJson, SortedSet.class);
   }
 
-  private RuntimeException getExceptionFromDto(KeypleMessageDto msg) {
+  private RuntimeException getExceptionFromDto(MessageDto msg) {
     String bodyResponse = msg.getBody();
     return KeypleJsonParser.getParser().fromJson(bodyResponse, BodyError.class).getException();
   }
 
-  private KeypleMessageDto captureResponse() {
+  private MessageDto captureResponse() {
     Mockito.verify(asyncServer).sendMessage(responseCaptor.capture());
     return responseCaptor.getValue();
   }

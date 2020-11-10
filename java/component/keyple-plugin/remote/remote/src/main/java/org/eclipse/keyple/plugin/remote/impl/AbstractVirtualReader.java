@@ -19,7 +19,7 @@ import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
 import org.eclipse.keyple.core.plugin.reader.AbstractReader;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
-import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +33,7 @@ abstract class AbstractVirtualReader extends AbstractReader {
 
   private static final Logger logger = LoggerFactory.getLogger(AbstractVirtualReader.class);
 
-  protected final AbstractKeypleNode node;
+  protected final AbstractNode node;
   protected final String nativeReaderName;
 
   private String sessionId;
@@ -52,7 +52,7 @@ abstract class AbstractVirtualReader extends AbstractReader {
   AbstractVirtualReader(
       String pluginName,
       String nativeReaderName,
-      AbstractKeypleNode node,
+      AbstractNode node,
       String sessionId,
       String clientNodeId) {
     super(pluginName, UUID.randomUUID().toString());
@@ -85,7 +85,7 @@ abstract class AbstractVirtualReader extends AbstractReader {
     body.addProperty("channelControl", channelControl.name());
 
     // Send the message as a request
-    KeypleMessageDto response = sendRequest(KeypleMessageDto.Action.TRANSMIT_CARD_SELECTION, body);
+    MessageDto response = sendRequest(MessageDto.Action.TRANSMIT_CARD_SELECTION, body);
 
     // Extract the response
     return KeypleJsonParser.getParser()
@@ -109,7 +109,7 @@ abstract class AbstractVirtualReader extends AbstractReader {
     body.addProperty("channelControl", channelControl.name());
 
     // Send the message as a request
-    KeypleMessageDto response = sendRequest(KeypleMessageDto.Action.TRANSMIT, body);
+    MessageDto response = sendRequest(MessageDto.Action.TRANSMIT, body);
 
     // Extract the response
     return KeypleJsonParser.getParser().fromJson(response.getBody(), CardResponse.class);
@@ -124,7 +124,7 @@ abstract class AbstractVirtualReader extends AbstractReader {
   public boolean isCardPresent() {
 
     // Send the message as a request
-    KeypleMessageDto response = sendRequest(KeypleMessageDto.Action.IS_CARD_PRESENT, null);
+    MessageDto response = sendRequest(MessageDto.Action.IS_CARD_PRESENT, null);
 
     // Extract the response
     return KeypleJsonParser.getParser().fromJson(response.getBody(), Boolean.class);
@@ -138,7 +138,7 @@ abstract class AbstractVirtualReader extends AbstractReader {
   @Override
   public void releaseChannel() {
     // Send the message as a request even if no return is expected
-    sendRequest(KeypleMessageDto.Action.RELEASE_CHANNEL, null);
+    sendRequest(MessageDto.Action.RELEASE_CHANNEL, null);
   }
 
   /**
@@ -170,7 +170,7 @@ abstract class AbstractVirtualReader extends AbstractReader {
    */
   @Override
   public boolean isContactless() {
-    KeypleMessageDto response = sendRequest(KeypleMessageDto.Action.IS_READER_CONTACTLESS, null);
+    MessageDto response = sendRequest(MessageDto.Action.IS_READER_CONTACTLESS, null);
 
     // Extract the response
     return KeypleJsonParser.getParser().fromJson(response.getBody(), Boolean.class);
@@ -186,11 +186,11 @@ abstract class AbstractVirtualReader extends AbstractReader {
    * @param body The body (optional).
    * @return a not null reference.
    */
-  protected KeypleMessageDto sendRequest(KeypleMessageDto.Action action, JsonObject body) {
+  protected MessageDto sendRequest(MessageDto.Action action, JsonObject body) {
 
     // Build the message
-    KeypleMessageDto message =
-        new KeypleMessageDto() //
+    MessageDto message =
+        new MessageDto() //
             .setSessionId(sessionId != null ? sessionId : UUID.randomUUID().toString()) //
             .setAction(action.name()) //
             .setVirtualReaderName(getName()) //
@@ -199,7 +199,7 @@ abstract class AbstractVirtualReader extends AbstractReader {
             .setBody(body != null ? body.toString() : null);
 
     // Send the message as a request
-    KeypleMessageDto response = node.sendRequest(message);
+    MessageDto response = node.sendRequest(message);
 
     // Extract the response
     checkError(response);
@@ -212,8 +212,8 @@ abstract class AbstractVirtualReader extends AbstractReader {
    *
    * @param message The message to check (must be not null)
    */
-  private void checkError(KeypleMessageDto message) {
-    if (message.getAction().equals(KeypleMessageDto.Action.ERROR.name())) {
+  private void checkError(MessageDto message) {
+    if (message.getAction().equals(MessageDto.Action.ERROR.name())) {
       BodyError body = KeypleJsonParser.getParser().fromJson(message.getBody(), BodyError.class);
       throw body.getException();
     }

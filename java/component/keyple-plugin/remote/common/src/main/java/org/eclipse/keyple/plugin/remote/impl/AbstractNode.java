@@ -13,7 +13,7 @@ package org.eclipse.keyple.plugin.remote.impl;
 
 import java.util.Arrays;
 import java.util.UUID;
-import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.exception.KeypleRemoteCommunicationException;
 import org.eclipse.keyple.plugin.remote.exception.KeypleTimeoutException;
 import org.slf4j.Logger;
@@ -26,9 +26,9 @@ import org.slf4j.LoggerFactory;
  *
  * @since 1.0
  */
-public abstract class AbstractKeypleNode {
+public abstract class AbstractNode {
 
-  private static final Logger logger = LoggerFactory.getLogger(AbstractKeypleNode.class);
+  private static final Logger logger = LoggerFactory.getLogger(AbstractNode.class);
 
   /**
    * (protected)<br>
@@ -40,7 +40,7 @@ public abstract class AbstractKeypleNode {
    * (protected)<br>
    * The associated handler.
    */
-  protected final AbstractKeypleMessageHandler handler;
+  protected final AbstractMessageHandler handler;
 
   /**
    * (private)<br>
@@ -55,7 +55,7 @@ public abstract class AbstractKeypleNode {
    * @param handler The associated handler (must be not null).
    * @param timeoutInSecond The default timeout (in seconds) to use.
    */
-  AbstractKeypleNode(AbstractKeypleMessageHandler handler, int timeoutInSecond) {
+  AbstractNode(AbstractMessageHandler handler, int timeoutInSecond) {
     this.nodeId = UUID.randomUUID().toString();
     this.handler = handler;
     this.timeout = timeoutInSecond * 1000;
@@ -76,7 +76,7 @@ public abstract class AbstractKeypleNode {
    * @return null if there is no response.
    * @since 1.0
    */
-  public abstract KeypleMessageDto sendRequest(KeypleMessageDto msg);
+  public abstract MessageDto sendRequest(MessageDto msg);
 
   /**
    * Send a message (for internal use only).
@@ -84,7 +84,7 @@ public abstract class AbstractKeypleNode {
    * @param msg The message to send (must be not null).
    * @since 1.0
    */
-  public abstract void sendMessage(KeypleMessageDto msg);
+  public abstract void sendMessage(MessageDto msg);
 
   /**
    * Close the session having the provided session id (for internal use only).
@@ -141,7 +141,7 @@ public abstract class AbstractKeypleNode {
     protected final String sessionId;
 
     protected volatile SessionManagerState state;
-    protected volatile KeypleMessageDto response;
+    protected volatile MessageDto response;
     protected volatile Throwable error;
 
     /**

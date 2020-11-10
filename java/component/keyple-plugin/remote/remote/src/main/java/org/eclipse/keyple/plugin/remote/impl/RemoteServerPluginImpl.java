@@ -24,7 +24,7 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
-import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.RemoteServerObservableReader;
 import org.eclipse.keyple.plugin.remote.RemoteServerPlugin;
 import org.eclipse.keyple.plugin.remote.RemoteServerReader;
@@ -80,8 +80,8 @@ final class RemoteServerPluginImpl extends AbstractRemotePlugin implements Remot
    * @since 1.0
    */
   @Override
-  protected void onMessage(KeypleMessageDto message) {
-    switch (KeypleMessageDto.Action.valueOf(message.getAction())) {
+  protected void onMessage(MessageDto message) {
+    switch (MessageDto.Action.valueOf(message.getAction())) {
       case EXECUTE_REMOTE_SERVICE:
 
         // create a virtual reader from message parameters
@@ -165,9 +165,9 @@ final class RemoteServerPluginImpl extends AbstractRemotePlugin implements Remot
     body.addProperty("unregisterVirtualReader", unregisterVirtualReader);
 
     // Build the message
-    KeypleMessageDto message =
-        new KeypleMessageDto() //
-            .setAction(KeypleMessageDto.Action.TERMINATE_SERVICE.name()) //
+    MessageDto message =
+        new MessageDto() //
+            .setAction(MessageDto.Action.TERMINATE_SERVICE.name()) //
             .setVirtualReaderName(virtualReaderName) //
             .setSessionId(virtualReader.getSessionId()) //
             .setClientNodeId(virtualReader.getClientNodeId()) //
@@ -268,7 +268,7 @@ final class RemoteServerPluginImpl extends AbstractRemotePlugin implements Remot
    * @param message incoming message
    * @return non null instance of AbstractServerVirtualReader
    */
-  private AbstractServerVirtualReader createMasterReader(KeypleMessageDto message) {
+  private AbstractServerVirtualReader createMasterReader(MessageDto message) {
     final JsonObject body =
         KeypleJsonParser.getParser().fromJson(message.getBody(), JsonObject.class);
     final String serviceId = body.get("serviceId").getAsString();
@@ -316,7 +316,7 @@ final class RemoteServerPluginImpl extends AbstractRemotePlugin implements Remot
    * @param message incoming reader event message
    * @return non null instance of a ServerVirtualObservableReader
    */
-  private ServerVirtualObservableReader createSlaveReader(KeypleMessageDto message) {
+  private ServerVirtualObservableReader createSlaveReader(MessageDto message) {
     final ServerVirtualObservableReader virtualObservableReader =
         (ServerVirtualObservableReader) getReader(message.getVirtualReaderName());
     final JsonObject body =

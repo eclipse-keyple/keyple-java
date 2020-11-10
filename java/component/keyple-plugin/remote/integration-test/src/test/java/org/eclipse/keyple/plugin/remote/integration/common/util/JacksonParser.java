@@ -16,13 +16,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.eclipse.keyple.core.service.exception.KeypleRuntimeException;
-import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.MessageDto;
 
 public class JacksonParser {
 
   private static ObjectMapper parser = new ObjectMapper();
 
-  public static String toJson(KeypleMessageDto message) {
+  public static String toJson(MessageDto message) {
     try {
       return parser.writeValueAsString(message);
     } catch (JsonProcessingException e) {
@@ -30,15 +30,15 @@ public class JacksonParser {
     }
   }
 
-  public static KeypleMessageDto fromJson(String data) {
+  public static MessageDto fromJson(String data) {
     try {
-      return parser.readValue(data, KeypleMessageDto.class);
+      return parser.readValue(data, MessageDto.class);
     } catch (JsonProcessingException e) {
       throw new KeypleRuntimeException("Error while deserializing dto", e);
     }
   }
 
-  public static String toJson(List<KeypleMessageDto> messages) {
+  public static String toJson(List<MessageDto> messages) {
     try {
       return parser.writeValueAsString(messages);
     } catch (JsonProcessingException e) {
@@ -46,9 +46,9 @@ public class JacksonParser {
     }
   }
 
-  public static List<KeypleMessageDto> fromJsonList(String data) {
+  public static List<MessageDto> fromJsonList(String data) {
     try {
-      return parser.readValue(data, new TypeReference<List<KeypleMessageDto>>() {});
+      return parser.readValue(data, new TypeReference<List<MessageDto>>() {});
     } catch (JsonProcessingException e) {
       throw new KeypleRuntimeException("Error while deserializing dto", e);
     }

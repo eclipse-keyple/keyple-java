@@ -14,8 +14,8 @@ package org.eclipse.keyple.plugin.remote.integration.common.endpoint.pool;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
+import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
-import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remote.RemotePoolClientPlugin;
 import org.eclipse.keyple.plugin.remote.integration.common.util.JacksonParser;
 import org.eclipse.keyple.plugin.remote.impl.RemotePoolClientUtils;
@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Async client endpoint to test {@link
  * RemotePoolClientPlugin}. Send and receive asynchronously
- * json serialized {@link KeypleMessageDto} with {@link StubAsyncServerEndpoint}.
+ * json serialized {@link MessageDto} with {@link StubAsyncServerEndpoint}.
  */
 public class StubAsyncClientEndpoint implements AsyncEndpointClient {
 
@@ -49,7 +49,7 @@ public class StubAsyncClientEndpoint implements AsyncEndpointClient {
           @Override
           public void run() {
             logger.trace("Data received from server : {}", data);
-            KeypleMessageDto message = JacksonParser.fromJson(data);
+            MessageDto message = JacksonParser.fromJson(data);
             RemotePoolClientUtils.getAsyncNode().onMessage(message);
           }
         });
@@ -61,7 +61,7 @@ public class StubAsyncClientEndpoint implements AsyncEndpointClient {
   }
 
   @Override
-  public void sendMessage(final KeypleMessageDto msg) {
+  public void sendMessage(final MessageDto msg) {
     final StubAsyncClientEndpoint thisClient = this;
     // submit task to server
     taskPool.submit(

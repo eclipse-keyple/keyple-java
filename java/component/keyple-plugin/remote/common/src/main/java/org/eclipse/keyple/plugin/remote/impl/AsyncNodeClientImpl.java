@@ -13,25 +13,25 @@ package org.eclipse.keyple.plugin.remote.impl;
 
 import java.util.*;
 import org.eclipse.keyple.core.util.Assert;
+import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.AsyncNodeClient;
-import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remote.exception.KeypleRemoteCommunicationException;
 import org.eclipse.keyple.plugin.remote.exception.KeypleTimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Keyple Client Async Node implementation.
+ * Client Async Node implementation.
  *
  * <p>This is an internal class an must not be used by the user.
  *
  * @since 1.0
  */
-public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
+public final class AsyncNodeClientImpl extends AbstractNode
     implements AsyncNodeClient {
 
-  private static final Logger logger = LoggerFactory.getLogger(KeypleClientAsyncNodeImpl.class);
+  private static final Logger logger = LoggerFactory.getLogger(AsyncNodeClientImpl.class);
 
   private final AsyncEndpointClient endpoint;
   private final Map<String, SessionManager> sessionManagers;
@@ -44,8 +44,8 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
    * @param endpoint The user client async endpoint (must be not null).
    * @param timeoutInSecond The default timeout (in seconds) to use.
    */
-  KeypleClientAsyncNodeImpl(
-          AbstractKeypleMessageHandler handler, AsyncEndpointClient endpoint, int timeoutInSecond) {
+  AsyncNodeClientImpl(
+          AbstractMessageHandler handler, AsyncEndpointClient endpoint, int timeoutInSecond) {
     super(handler, timeoutInSecond);
     this.endpoint = endpoint;
     this.sessionManagers = new HashMap<String, SessionManager>();
@@ -71,7 +71,7 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
 
   /** {@inheritDoc} */
   @Override
-  public KeypleMessageDto sendRequest(KeypleMessageDto msg) {
+  public MessageDto sendRequest(MessageDto msg) {
     msg.setClientNodeId(nodeId);
     SessionManager manager = sessionManagers.get(msg.getSessionId());
     return manager.sendRequest(msg);
@@ -79,7 +79,7 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
 
   /** {@inheritDoc} */
   @Override
-  public void sendMessage(KeypleMessageDto msg) {
+  public void sendMessage(MessageDto msg) {
     msg.setClientNodeId(nodeId);
     SessionManager manager = sessionManagers.get(msg.getSessionId());
     manager.sendMessage(msg);
@@ -87,7 +87,7 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
 
   /** {@inheritDoc} */
   @Override
-  public void onMessage(KeypleMessageDto msg) {
+  public void onMessage(MessageDto msg) {
 
     Assert.getInstance() //
         .notNull(msg, "msg") //
@@ -98,7 +98,7 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
 
     SessionManager manager = getManagerForEndpoint(msg.getSessionId());
     if (manager != null) {
-      KeypleMessageDto.Action action = KeypleMessageDto.Action.valueOf(msg.getAction());
+      MessageDto.Action action = MessageDto.Action.valueOf(msg.getAction());
       switch (action) {
         case PLUGIN_EVENT:
         case READER_EVENT:
@@ -218,7 +218,7 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
      * @throws KeypleTimeoutException if a timeout occurs.
      * @throws RuntimeException if an error occurs.
      */
-    private synchronized KeypleMessageDto sendRequest(KeypleMessageDto msg) {
+    private synchronized MessageDto sendRequest(MessageDto msg) {
       checkIfExternalErrorOccurred();
       state = SessionManagerState.SEND_REQUEST_BEGIN;
       response = null;
@@ -234,7 +234,7 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
      * @param msg The response received from the endpoint.
      * @throws IllegalStateException in case of bad use.
      */
-    private synchronized void onResponse(KeypleMessageDto msg) {
+    private synchronized void onResponse(MessageDto msg) {
       checkState(SessionManagerState.SEND_REQUEST_BEGIN);
       response = msg;
       state = SessionManagerState.SEND_REQUEST_END;
@@ -247,7 +247,7 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
      *
      * @param msg The event received from the endpoint.
      */
-    private void onEvent(KeypleMessageDto msg) {
+    private void onEvent(MessageDto msg) {
       handler.onMessage(msg);
     }
 
@@ -258,7 +258,7 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
      * @param msg The message to send.
      * @throws RuntimeException if an error occurs.
      */
-    private synchronized void sendMessage(KeypleMessageDto msg) {
+    private synchronized void sendMessage(MessageDto msg) {
       checkIfExternalErrorOccurred();
       state = SessionManagerState.SEND_MESSAGE;
       endpoint.sendMessage(msg);

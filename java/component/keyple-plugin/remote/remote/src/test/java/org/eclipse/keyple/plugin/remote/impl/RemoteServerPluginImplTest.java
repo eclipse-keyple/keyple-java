@@ -19,7 +19,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservableReader;
-import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
 import org.eclipse.keyple.plugin.remote.RemoteServerObservableReader;
 import org.junit.Before;
@@ -33,10 +33,10 @@ public class RemoteServerPluginImplTest extends RemoteServerBaseTest {
   public void setUp() {
     pluginObserver = new MockPluginObserver(true);
     readerObserver = new MockReaderObserver();
-    messageArgumentCaptor = ArgumentCaptor.forClass(KeypleMessageDto.class);
+    messageArgumentCaptor = ArgumentCaptor.forClass(MessageDto.class);
     remotePlugin = Mockito.spy(new RemoteServerPluginImpl(remotePluginName, eventNotificationPool));
     remotePlugin.addObserver(pluginObserver);
-    node = Mockito.mock(AbstractKeypleNode.class);
+    node = Mockito.mock(AbstractNode.class);
     doReturn(node).when(remotePlugin).getNode();
     doAnswer(aVoid()).when(node).sendMessage(messageArgumentCaptor.capture());
     remotePlugin.register();
@@ -90,7 +90,7 @@ public class RemoteServerPluginImplTest extends RemoteServerBaseTest {
   @Test
   public void onMessage_executeRemoteService_createVirtualReader_shouldRaisePluginEvent() {
     String sessionId = UUID.randomUUID().toString();
-    KeypleMessageDto message = executeRemoteServiceMessage(sessionId, false);
+    MessageDto message = executeRemoteServiceMessage(sessionId, false);
     remotePlugin.onMessage(message);
     AbstractServerVirtualReader virtualReader =
         (AbstractServerVirtualReader) remotePlugin.getReaders().values().iterator().next();
@@ -105,7 +105,7 @@ public class RemoteServerPluginImplTest extends RemoteServerBaseTest {
   public void
       onMessage_executeRemoteService_createObservableVirtualReader_shouldRaisePluginEvent() {
     String sessionId = UUID.randomUUID().toString();
-    KeypleMessageDto message = executeRemoteServiceMessage(sessionId, true);
+    MessageDto message = executeRemoteServiceMessage(sessionId, true);
     remotePlugin.onMessage(message);
     ServerVirtualObservableReader virtualReader =
         (ServerVirtualObservableReader) remotePlugin.getReaders().values().iterator().next();
@@ -125,7 +125,7 @@ public class RemoteServerPluginImplTest extends RemoteServerBaseTest {
 
     // terminate service without unregistering reader
     pluginObserver.terminateService(userOutputData);
-    KeypleMessageDto terminateServiceMsg = messageArgumentCaptor.getValue();
+    MessageDto terminateServiceMsg = messageArgumentCaptor.getValue();
     assertThat(terminateServiceMsg.getSessionId()).isEqualTo(sessionId0);
     validateTerminateServiceResponse(terminateServiceMsg, false);
     assertThat(remotePlugin.getReaders()).hasSize(1);
@@ -145,7 +145,7 @@ public class RemoteServerPluginImplTest extends RemoteServerBaseTest {
 
     // terminate service without unregistering reader
     pluginObserver.terminateService(userOutputData);
-    KeypleMessageDto terminateServiceMsg = messageArgumentCaptor.getValue();
+    MessageDto terminateServiceMsg = messageArgumentCaptor.getValue();
     assertThat(terminateServiceMsg.getSessionId()).isEqualTo(sessionId0);
     validateTerminateServiceResponse(terminateServiceMsg, true);
     assertThat(remotePlugin.getReaders()).hasSize(0);
@@ -167,7 +167,7 @@ public class RemoteServerPluginImplTest extends RemoteServerBaseTest {
     String virtualReaderName = remotePlugin.getReaders().values().iterator().next().getName();
 
     // send a SE_INSERTED event (1)
-    KeypleMessageDto readerEventMessage = readerEventMessage(sessionId1, virtualReaderName);
+    MessageDto readerEventMessage = readerEventMessage(sessionId1, virtualReaderName);
     remotePlugin.onMessage(readerEventMessage);
 
     // validate the SE_INSERTED event (1)
@@ -177,7 +177,7 @@ public class RemoteServerPluginImplTest extends RemoteServerBaseTest {
         .hasSize(2); // one master virtual reader, one slave virtual reader
 
     // send another SE_INSERTED event (2)
-    KeypleMessageDto readerEventMessage2 = readerEventMessage(sessionId2, virtualReaderName);
+    MessageDto readerEventMessage2 = readerEventMessage(sessionId2, virtualReaderName);
     remotePlugin.onMessage(readerEventMessage2);
 
     // validate the SE_INSERTED event (2)
@@ -200,7 +200,7 @@ public class RemoteServerPluginImplTest extends RemoteServerBaseTest {
     String virtualReaderName = remotePlugin.getReaders().values().iterator().next().getName();
 
     // send a SE_INSERTED event (1)
-    KeypleMessageDto readerEventMessage = readerEventMessage(sessionId1, virtualReaderName);
+    MessageDto readerEventMessage = readerEventMessage(sessionId1, virtualReaderName);
     remotePlugin.onMessage(readerEventMessage);
 
     // validate the SE_INSERTED event (1)
@@ -209,7 +209,7 @@ public class RemoteServerPluginImplTest extends RemoteServerBaseTest {
 
     // terminate service on slave reader
     readerObserver.terminateService(userOutputData);
-    KeypleMessageDto terminateServiceMsg = messageArgumentCaptor.getValue();
+    MessageDto terminateServiceMsg = messageArgumentCaptor.getValue();
     assertThat(terminateServiceMsg.getVirtualReaderName()).isNotEqualTo(virtualReaderName);
     assertThat(terminateServiceMsg.getSessionId()).isEqualTo(sessionId1);
     validateTerminateServiceResponse(terminateServiceMsg, false);
@@ -230,7 +230,7 @@ public class RemoteServerPluginImplTest extends RemoteServerBaseTest {
     String virtualReaderName = remotePlugin.getReaders().values().iterator().next().getName();
 
     // send a SE_INSERTED event (1)
-    KeypleMessageDto readerEventMessage = readerEventMessage(sessionId1, virtualReaderName);
+    MessageDto readerEventMessage = readerEventMessage(sessionId1, virtualReaderName);
     remotePlugin.onMessage(readerEventMessage);
 
     // validate the SE_INSERTED event (1)
@@ -244,7 +244,7 @@ public class RemoteServerPluginImplTest extends RemoteServerBaseTest {
 
     // terminate service on slave reader
     readerObserver.terminateService(userOutputData);
-    KeypleMessageDto terminateServiceMsg = messageArgumentCaptor.getValue();
+    MessageDto terminateServiceMsg = messageArgumentCaptor.getValue();
     assertThat(terminateServiceMsg.getVirtualReaderName()).isNotEqualTo(virtualReaderName);
     assertThat(terminateServiceMsg.getSessionId()).isEqualTo(sessionId1);
     validateTerminateServiceResponse(terminateServiceMsg, true);

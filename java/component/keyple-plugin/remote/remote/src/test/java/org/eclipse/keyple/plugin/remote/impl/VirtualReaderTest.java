@@ -22,7 +22,7 @@ import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
-import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.exception.KeypleTimeoutException;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,11 +36,11 @@ public class VirtualReaderTest {
   static final String nativeReaderName = "nativeReaderName";
 
   VirtualReader reader;
-  AbstractKeypleNode node;
+  AbstractNode node;
 
   @Before
   public void setUp() {
-    node = mock(AbstractKeypleNode.class);
+    node = mock(AbstractNode.class);
     reader = new VirtualReader(pluginName, nativeReaderName, node, "val1", null);
   }
 
@@ -59,14 +59,14 @@ public class VirtualReaderTest {
     // init response
     CardResponse cardResponse = SampleFactory.getACardResponse();
 
-    KeypleMessageDto responseDto =
-        new KeypleMessageDto() //
-            .setAction(KeypleMessageDto.Action.TRANSMIT.name()) //
+    MessageDto responseDto =
+        new MessageDto() //
+            .setAction(MessageDto.Action.TRANSMIT.name()) //
             .setVirtualReaderName(reader.getName()) //
             .setNativeReaderName(reader.nativeReaderName) //
             .setBody(KeypleJsonParser.getParser().toJson(cardResponse, CardResponse.class));
 
-    doReturn(responseDto).when(node).sendRequest(any(KeypleMessageDto.class));
+    doReturn(responseDto).when(node).sendRequest(any(MessageDto.class));
 
     // execute
     CardResponse cardResponseReturned = reader.processCardRequest(cardRequest, channelControl);
@@ -115,16 +115,16 @@ public class VirtualReaderTest {
     // init response
     List<CardSelectionResponse> cardResponses = SampleFactory.getCompleteResponseList();
 
-    KeypleMessageDto responseDto =
-        new KeypleMessageDto() //
-            .setAction(KeypleMessageDto.Action.TRANSMIT_CARD_SELECTION.name()) //
+    MessageDto responseDto =
+        new MessageDto() //
+            .setAction(MessageDto.Action.TRANSMIT_CARD_SELECTION.name()) //
             .setVirtualReaderName(reader.getName()) //
             .setNativeReaderName(reader.nativeReaderName) //
             .setBody(
                 KeypleJsonParser.getParser()
                     .toJson(cardResponses, new TypeToken<ArrayList<CardResponse>>() {}.getType()));
 
-    doReturn(responseDto).when(node).sendRequest(any(KeypleMessageDto.class));
+    doReturn(responseDto).when(node).sendRequest(any(MessageDto.class));
 
     // execute
     List<CardSelectionResponse> cardResponsesReturned =
@@ -173,14 +173,14 @@ public class VirtualReaderTest {
   public void isSePresent_whenOk_shouldCallTheHandlerAndReturnResponses() {
 
     // init
-    KeypleMessageDto responseDto =
-        new KeypleMessageDto() //
-            .setAction(KeypleMessageDto.Action.IS_CARD_PRESENT.name()) //
+    MessageDto responseDto =
+        new MessageDto() //
+            .setAction(MessageDto.Action.IS_CARD_PRESENT.name()) //
             .setVirtualReaderName(reader.getName()) //
             .setNativeReaderName(reader.nativeReaderName) //
             .setBody(KeypleJsonParser.getParser().toJson(true, Boolean.class));
 
-    doReturn(responseDto).when(node).sendRequest(any(KeypleMessageDto.class));
+    doReturn(responseDto).when(node).sendRequest(any(MessageDto.class));
 
     // execute
     boolean result = reader.isCardPresent();
@@ -209,14 +209,14 @@ public class VirtualReaderTest {
   public void isReaderContactless_whenOk_shouldCallTheHandlerAndReturnResponses() {
 
     // init
-    KeypleMessageDto responseDto =
-        new KeypleMessageDto() //
-            .setAction(KeypleMessageDto.Action.IS_READER_CONTACTLESS.name()) //
+    MessageDto responseDto =
+        new MessageDto() //
+            .setAction(MessageDto.Action.IS_READER_CONTACTLESS.name()) //
             .setVirtualReaderName(reader.getName()) //
             .setNativeReaderName(reader.nativeReaderName) //
             .setBody(KeypleJsonParser.getParser().toJson(true, Boolean.class));
 
-    doReturn(responseDto).when(node).sendRequest(any(KeypleMessageDto.class));
+    doReturn(responseDto).when(node).sendRequest(any(MessageDto.class));
 
     // execute
     boolean result = reader.isContactless();
@@ -245,13 +245,13 @@ public class VirtualReaderTest {
   public void releaseChannel_whenOk_shouldCallTheHandlerAndReturnResponses() {
 
     // init response
-    KeypleMessageDto responseDto =
-        new KeypleMessageDto() //
-            .setAction(KeypleMessageDto.Action.RELEASE_CHANNEL.name()) //
+    MessageDto responseDto =
+        new MessageDto() //
+            .setAction(MessageDto.Action.RELEASE_CHANNEL.name()) //
             .setVirtualReaderName(reader.getName()) //
             .setNativeReaderName(reader.nativeReaderName);
 
-    doReturn(responseDto).when(node).sendRequest(any(KeypleMessageDto.class));
+    doReturn(responseDto).when(node).sendRequest(any(MessageDto.class));
 
     // execute
     reader.releaseChannel();
@@ -290,20 +290,20 @@ public class VirtualReaderTest {
   }
 
   private void mockTimeout() {
-    doThrow(new KeypleTimeoutException("test")).when(node).sendRequest(any(KeypleMessageDto.class));
+    doThrow(new KeypleTimeoutException("test")).when(node).sendRequest(any(MessageDto.class));
   }
 
   private void mockError() {
 
     KeypleReaderIOException error = SampleFactory.getASimpleKeypleException();
 
-    KeypleMessageDto responseDto =
-        new KeypleMessageDto() //
-            .setAction(KeypleMessageDto.Action.ERROR.name()) //
+    MessageDto responseDto =
+        new MessageDto() //
+            .setAction(MessageDto.Action.ERROR.name()) //
             .setVirtualReaderName(reader.getName()) //
             .setNativeReaderName(reader.nativeReaderName) //
             .setBody(KeypleJsonParser.getParser().toJson(new BodyError(error)));
 
-    doReturn(responseDto).when(node).sendRequest(any(KeypleMessageDto.class));
+    doReturn(responseDto).when(node).sendRequest(any(MessageDto.class));
   }
 }

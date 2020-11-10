@@ -16,23 +16,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.eclipse.keyple.core.util.Assert;
+import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.SyncNodeClient;
-import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Keyple Client Sync Node implementation.
+ * Client Sync Node implementation.
  *
  * <p>This is an internal class an must not be used by the user.
  *
  * @since 1.0
  */
-public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
+public final class SyncNodeClientImpl extends AbstractNode
     implements SyncNodeClient {
 
-  private static final Logger logger = LoggerFactory.getLogger(KeypleClientSyncNodeImpl.class);
+  private static final Logger logger = LoggerFactory.getLogger(SyncNodeClientImpl.class);
 
   private final SyncEndpointClient endpoint;
 
@@ -48,8 +48,8 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
    * @param readerObservationStrategy The server push event strategy associated to the reader
    *     observation (null if must not be activate).<br>
    */
-  KeypleClientSyncNodeImpl(
-      AbstractKeypleMessageHandler handler,
+  SyncNodeClientImpl(
+      AbstractMessageHandler handler,
       SyncEndpointClient endpoint,
       ServerPushEventStrategy pluginObservationStrategy,
       ServerPushEventStrategy readerObservationStrategy) {
@@ -59,12 +59,12 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
 
     if (pluginObservationStrategy != null) {
       EventObserver pluginEventObserver =
-          new EventObserver(pluginObservationStrategy, KeypleMessageDto.Action.CHECK_PLUGIN_EVENT);
+          new EventObserver(pluginObservationStrategy, MessageDto.Action.CHECK_PLUGIN_EVENT);
       pluginEventObserver.start();
     }
     if (readerObservationStrategy != null) {
       EventObserver readerEventObserver =
-          new EventObserver(readerObservationStrategy, KeypleMessageDto.Action.CHECK_READER_EVENT);
+          new EventObserver(readerObservationStrategy, MessageDto.Action.CHECK_READER_EVENT);
       readerEventObserver.start();
     }
   }
@@ -77,15 +77,15 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
 
   /** {@inheritDoc} */
   @Override
-  public KeypleMessageDto sendRequest(KeypleMessageDto msg) {
+  public MessageDto sendRequest(MessageDto msg) {
 
     msg.setClientNodeId(nodeId);
-    List<KeypleMessageDto> responses = endpoint.sendRequest(msg);
+    List<MessageDto> responses = endpoint.sendRequest(msg);
 
     if (responses == null || responses.isEmpty()) {
       return null;
     } else if (responses.size() == 1) {
-      KeypleMessageDto response = responses.get(0);
+      MessageDto response = responses.get(0);
       Assert.getInstance() //
           .notNull(response, "msg") //
           .notEmpty(response.getSessionId(), "sessionId") //
@@ -103,7 +103,7 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
 
   /** {@inheritDoc} */
   @Override
-  public void sendMessage(KeypleMessageDto msg) {
+  public void sendMessage(MessageDto msg) {
     msg.setClientNodeId(nodeId);
     endpoint.sendRequest(msg);
   }
@@ -122,8 +122,8 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
   private class EventObserver {
 
     private final ServerPushEventStrategy strategy;
-    private final KeypleMessageDto.Action action;
-    private final KeypleMessageDto msg;
+    private final MessageDto.Action action;
+    private final MessageDto msg;
     private final Thread thread;
 
     /**
@@ -133,7 +133,7 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
      * @param strategy The server push event strategy (must not be null).
      * @param action The action to perform (must not be null).
      */
-    private EventObserver(ServerPushEventStrategy strategy, KeypleMessageDto.Action action) {
+    private EventObserver(ServerPushEventStrategy strategy, MessageDto.Action action) {
       this.strategy = strategy;
       this.action = action;
       this.msg = buildMessage();
@@ -152,13 +152,13 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
      *
      * @return a not null reference
      */
-    private KeypleMessageDto buildMessage() {
+    private MessageDto buildMessage() {
       JsonObject body = new JsonObject();
       body.addProperty("strategy", strategy.getType().name());
       if (strategy.getType() == ServerPushEventStrategy.Type.LONG_POLLING) {
         body.addProperty("duration", strategy.getDuration());
       }
-      return new KeypleMessageDto() //
+      return new MessageDto() //
           .setSessionId(UUID.randomUUID().toString()) //
           .setAction(action.name()) //
           .setClientNodeId(nodeId) //
@@ -215,7 +215,7 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
      * If so, then forward the events to the handler.
      */
     private void checkForEvents() {
-      List<KeypleMessageDto> responses;
+      List<MessageDto> responses;
       try {
         responses = endpoint.sendRequest(msg);
       } catch (Exception e) {
@@ -223,7 +223,7 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
         responses = retryRequest();
       }
       if (responses != null && !responses.isEmpty()) {
-        for (KeypleMessageDto event : responses) {
+        for (MessageDto event : responses) {
           handler.onMessage(event);
         }
       }
@@ -237,8 +237,8 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
      *
      * @return a not null list.
      */
-    private List<KeypleMessageDto> retryRequest() {
-      List<KeypleMessageDto> responses;
+    private List<MessageDto> retryRequest() {
+      List<MessageDto> responses;
       int timer1 = 0;
       int timer2 = 1000;
       int timer;
@@ -260,7 +260,7 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
           Thread.currentThread().interrupt();
         }
       }
-      return new ArrayList<KeypleMessageDto>();
+      return new ArrayList<MessageDto>();
     }
 
     /**

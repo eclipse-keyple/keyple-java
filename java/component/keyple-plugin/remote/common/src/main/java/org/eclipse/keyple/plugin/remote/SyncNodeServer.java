@@ -44,7 +44,7 @@ public interface SyncNodeServer {
 
   /**
    * This method must be called by the server controller endpoint following the reception and
-   * deserialization of a {@link KeypleMessageDto} from the client. Following the receive of a
+   * deserialization of a {@link MessageDto} from the client. Following the receive of a
    * request, the controller must :
    *
    * <ul>
@@ -64,5 +64,5 @@ public interface SyncNodeServer {
    * @throws IllegalArgumentException if some arguments are incorrect.
    * @since 1.0
    */
-  List<KeypleMessageDto> onRequest(KeypleMessageDto msg);
+  List<MessageDto> onRequest(MessageDto msg);
 }

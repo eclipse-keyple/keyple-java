@@ -12,7 +12,7 @@
 package org.eclipse.keyple.plugin.remote.spi;
 
 import org.eclipse.keyple.plugin.remote.AsyncNodeClient;
-import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.MessageDto;
 
 /**
  * <b>Client Async Endpoint</b> endpoint API to be implemented by the user.
@@ -51,20 +51,20 @@ public interface AsyncEndpointClient {
   void openSession(String sessionId);
 
   /**
-   * This method is called by {@link AsyncNodeClient} to send a {@link KeypleMessageDto} to
+   * This method is called by {@link AsyncNodeClient} to send a {@link MessageDto} to
    * the server.<br>
    * You have to :
    *
    * <ul>
    *   <li>Find the opened session using the accessible <b>sessionId</b> value using the method
-   *       {@link KeypleMessageDto#getSessionId()} on the provided message to send.
-   *   <li>Serialize and send the {@link KeypleMessageDto} to the server.
+   *       {@link MessageDto#getSessionId()} on the provided message to send.
+   *   <li>Serialize and send the {@link MessageDto} to the server.
    * </ul>
    *
    * @param msg The message to send.
    * @since 1.0
    */
-  void sendMessage(KeypleMessageDto msg);
+  void sendMessage(MessageDto msg);
 
   /**
    * This method is called by {@link AsyncNodeClient} to close a communication session with

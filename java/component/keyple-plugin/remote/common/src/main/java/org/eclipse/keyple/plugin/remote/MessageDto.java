@@ -23,7 +23,7 @@ package org.eclipse.keyple.plugin.remote;
  *
  * @since 1.0
  */
-public class KeypleMessageDto {
+public class MessageDto {
 
   private String sessionId;
   private String action;
@@ -65,7 +65,7 @@ public class KeypleMessageDto {
    *
    * @since 1.0
    */
-  public KeypleMessageDto() {}
+  public MessageDto() {}
 
   /**
    * Constructor by copy.
@@ -73,7 +73,7 @@ public class KeypleMessageDto {
    * @param from The source dto to copy.
    * @since 1.0
    */
-  public KeypleMessageDto(KeypleMessageDto from) {
+  public MessageDto(MessageDto from) {
     sessionId = from.getSessionId();
     action = from.getAction();
     clientNodeId = from.getClientNodeId();
@@ -103,7 +103,7 @@ public class KeypleMessageDto {
    * @return the object instance.
    * @since 1.0
    */
-  public final KeypleMessageDto setSessionId(String sessionId) {
+  public final MessageDto setSessionId(String sessionId) {
     this.sessionId = sessionId;
     return this;
   }
@@ -126,7 +126,7 @@ public class KeypleMessageDto {
    * @return the object instance.
    * @since 1.0
    */
-  public final KeypleMessageDto setAction(String action) {
+  public final MessageDto setAction(String action) {
     this.action = action;
     return this;
   }
@@ -148,7 +148,7 @@ public class KeypleMessageDto {
    * @return the object instance.
    * @since 1.0
    */
-  public final KeypleMessageDto setClientNodeId(String clientNodeId) {
+  public final MessageDto setClientNodeId(String clientNodeId) {
     this.clientNodeId = clientNodeId;
     return this;
   }
@@ -172,7 +172,7 @@ public class KeypleMessageDto {
    * @return the object instance.
    * @since 1.0
    */
-  public final KeypleMessageDto setServerNodeId(String serverNodeId) {
+  public final MessageDto setServerNodeId(String serverNodeId) {
     this.serverNodeId = serverNodeId;
     return this;
   }
@@ -194,7 +194,7 @@ public class KeypleMessageDto {
    * @return the object instance.
    * @since 1.0
    */
-  public final KeypleMessageDto setNativeReaderName(String nativeReaderName) {
+  public final MessageDto setNativeReaderName(String nativeReaderName) {
     this.nativeReaderName = nativeReaderName;
     return this;
   }
@@ -216,7 +216,7 @@ public class KeypleMessageDto {
    * @return the object instance.
    * @since 1.0
    */
-  public final KeypleMessageDto setVirtualReaderName(String virtualReaderName) {
+  public final MessageDto setVirtualReaderName(String virtualReaderName) {
     this.virtualReaderName = virtualReaderName;
     return this;
   }
@@ -238,7 +238,7 @@ public class KeypleMessageDto {
    * @return the object instance.
    * @since 1.0
    */
-  public final KeypleMessageDto setBody(String body) {
+  public final MessageDto setBody(String body) {
     this.body = body;
     return this;
   }

@@ -22,7 +22,7 @@ import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.KeypleClientReaderEventFilter;
-import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.exception.KeypleDoNotPropagateEventException;
 import org.eclipse.keyple.plugin.remote.NativeClientService;
 import org.eclipse.keyple.plugin.remote.RemoteServiceParameters;
@@ -105,14 +105,14 @@ final class NativeClientServiceImpl extends AbstractNativeService
     String sessionId = generateSessionId();
 
     // build keypleMessageDto EXECUTE_REMOTE_SERVICE with user params
-    KeypleMessageDto remoteServiceDto = buildRemoteServiceMessage(parameters, sessionId);
+    MessageDto remoteServiceDto = buildRemoteServiceMessage(parameters, sessionId);
 
     try {
       // Open a new session on the node
       node.openSession(sessionId);
 
       // send keypleMessageDto through the node
-      KeypleMessageDto receivedDto = node.sendRequest(remoteServiceDto);
+      MessageDto receivedDto = node.sendRequest(remoteServiceDto);
 
       T userOutputData;
 
@@ -169,7 +169,7 @@ final class NativeClientServiceImpl extends AbstractNativeService
 
   /** {@inheritDoc} */
   @Override
-  protected void onMessage(KeypleMessageDto msg) {
+  protected void onMessage(MessageDto msg) {
     throw new UnsupportedOperationException("onMessage");
   }
 
@@ -203,14 +203,14 @@ final class NativeClientServiceImpl extends AbstractNativeService
       String sessionId = generateSessionId();
 
       // Build an event message with the user data
-      KeypleMessageDto eventMessageDto = buildEventMessage(event, userData, sessionId);
+      MessageDto eventMessageDto = buildEventMessage(event, userData, sessionId);
 
       try {
         // Open a new session on the node
         node.openSession(sessionId);
 
         // send keypleMessageDto through the node
-        KeypleMessageDto receivedDto = node.sendRequest(eventMessageDto);
+        MessageDto receivedDto = node.sendRequest(eventMessageDto);
 
         // Process all the transaction
         receivedDto = processTransaction(nativeReader, receivedDto);
@@ -248,16 +248,16 @@ final class NativeClientServiceImpl extends AbstractNativeService
    * @return a not null reference.
    * @throws RuntimeException if an error occurs.
    */
-  private KeypleMessageDto processTransaction(
-      ProxyReader nativeReader, KeypleMessageDto receivedDto) {
+  private MessageDto processTransaction(
+      ProxyReader nativeReader, MessageDto receivedDto) {
 
     // check server response : while dto is not a terminate service, execute dto locally and send
     // back response.
-    while (!receivedDto.getAction().equals(KeypleMessageDto.Action.TERMINATE_SERVICE.name())
-        && !receivedDto.getAction().equals(KeypleMessageDto.Action.ERROR.name())) {
+    while (!receivedDto.getAction().equals(MessageDto.Action.TERMINATE_SERVICE.name())
+        && !receivedDto.getAction().equals(MessageDto.Action.ERROR.name())) {
 
       // execute dto request locally
-      KeypleMessageDto responseDto = executeLocally(nativeReader, receivedDto);
+      MessageDto responseDto = executeLocally(nativeReader, receivedDto);
 
       // get response dto - send dto response to server
       receivedDto = node.sendRequest(responseDto);
@@ -278,7 +278,7 @@ final class NativeClientServiceImpl extends AbstractNativeService
    * @param <T> The type of the output data.
    * @return null if there is no user data to extract.
    */
-  private <T> T extractUserOutputData(KeypleMessageDto msg, Class<T> classOfT) {
+  private <T> T extractUserOutputData(MessageDto msg, Class<T> classOfT) {
     if (classOfT == null) {
       return null;
     }
@@ -294,7 +294,7 @@ final class NativeClientServiceImpl extends AbstractNativeService
    * @param msg The message to analyse.
    * @return true if the virtual reader can be unregistered.
    */
-  private boolean canUnregisterVirtualReader(KeypleMessageDto msg) {
+  private boolean canUnregisterVirtualReader(MessageDto msg) {
     Gson parser = KeypleJsonParser.getParser();
     JsonObject body = parser.fromJson(msg.getBody(), JsonObject.class);
     return parser.fromJson(body.get("unregisterVirtualReader"), Boolean.class);
@@ -308,7 +308,7 @@ final class NativeClientServiceImpl extends AbstractNativeService
    * @param sessionId The session id to use.
    * @return a not null reference.
    */
-  private KeypleMessageDto buildRemoteServiceMessage(
+  private MessageDto buildRemoteServiceMessage(
       RemoteServiceParameters parameters, String sessionId) {
 
     JsonObject body = new JsonObject();
@@ -329,9 +329,9 @@ final class NativeClientServiceImpl extends AbstractNativeService
         "isObservable",
         withReaderObservation && (parameters.getNativeReader() instanceof ObservableReader));
 
-    return new KeypleMessageDto()
+    return new MessageDto()
         .setSessionId(sessionId)
-        .setAction(KeypleMessageDto.Action.EXECUTE_REMOTE_SERVICE.name())
+        .setAction(MessageDto.Action.EXECUTE_REMOTE_SERVICE.name())
         .setNativeReaderName(parameters.getNativeReader().getName())
         .setBody(body.toString());
   }
@@ -345,7 +345,7 @@ final class NativeClientServiceImpl extends AbstractNativeService
    * @param sessionId The session id to use.
    * @return a not null reference.
    */
-  private KeypleMessageDto buildEventMessage(
+  private MessageDto buildEventMessage(
       ReaderEvent readerEvent, Object userInputData, String sessionId) {
 
     JsonObject body = new JsonObject();
@@ -353,9 +353,9 @@ final class NativeClientServiceImpl extends AbstractNativeService
     body.add("readerEvent", KeypleJsonParser.getParser().toJsonTree(readerEvent));
     body.add("userInputData", KeypleJsonParser.getParser().toJsonTree(userInputData));
 
-    return new KeypleMessageDto()
+    return new MessageDto()
         .setSessionId(sessionId)
-        .setAction(KeypleMessageDto.Action.READER_EVENT.name())
+        .setAction(MessageDto.Action.READER_EVENT.name())
         .setNativeReaderName(readerEvent.getReaderName())
         .setVirtualReaderName(virtualReaders.get(readerEvent.getReaderName()))
         .setBody(body.toString());

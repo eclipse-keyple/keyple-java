@@ -24,7 +24,7 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
-import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * (package-private)<br>
  * Abstract class for all Native Services.
  */
-abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
+abstract class AbstractNativeService extends AbstractMessageHandler {
 
   private static final Logger logger = LoggerFactory.getLogger(AbstractNativeService.class);
 
@@ -76,7 +76,7 @@ abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
    * @param msg The message to process (must be not null).
    * @return a not null reference
    */
-  protected KeypleMessageDto executeLocally(ProxyReader nativeReader, KeypleMessageDto msg) {
+  protected MessageDto executeLocally(ProxyReader nativeReader, MessageDto msg) {
     return new NativeReaderExecutor(nativeReader, msg).execute();
   }
 
@@ -87,13 +87,13 @@ abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
   private static final class NativeReaderExecutor {
 
     private final ProxyReader reader;
-    private final KeypleMessageDto msg;
-    private final KeypleMessageDto.Action action;
+    private final MessageDto msg;
+    private final MessageDto.Action action;
 
-    private NativeReaderExecutor(ProxyReader reader, KeypleMessageDto msg) {
+    private NativeReaderExecutor(ProxyReader reader, MessageDto msg) {
       this.reader = reader;
       this.msg = msg;
-      this.action = KeypleMessageDto.Action.valueOf(msg.getAction());
+      this.action = MessageDto.Action.valueOf(msg.getAction());
     }
 
     /**
@@ -102,9 +102,9 @@ abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
      *
      * @return not null reference which can eventually contain an exception.
      */
-    private KeypleMessageDto execute() {
+    private MessageDto execute() {
 
-      KeypleMessageDto response;
+      MessageDto response;
       try {
         switch (action) {
           case TRANSMIT:
@@ -139,8 +139,8 @@ abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
         }
       } catch (KeypleReaderIOException e) {
         response =
-            new KeypleMessageDto(msg) //
-                .setAction(KeypleMessageDto.Action.ERROR.name()) //
+            new MessageDto(msg) //
+                .setAction(MessageDto.Action.ERROR.name()) //
                 .setBody(KeypleJsonParser.getParser().toJson(new BodyError(e)));
       }
       return response;
@@ -153,7 +153,7 @@ abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
      * @return a not null reference.
      * @throws KeypleReaderIOException if a reader IO error occurs.
      */
-    private KeypleMessageDto transmit() {
+    private MessageDto transmit() {
 
       // Extract info from the message
       JsonObject bodyObject =
@@ -179,7 +179,7 @@ abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
 
       // Build response
       String body = KeypleJsonParser.getParser().toJson(cardResponse, CardResponse.class);
-      return new KeypleMessageDto(msg).setBody(body);
+      return new MessageDto(msg).setBody(body);
     }
 
     /**
@@ -189,7 +189,7 @@ abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
      * @return a not null reference.
      * @throws KeypleReaderIOException if a reader IO error occurs.
      */
-    private KeypleMessageDto transmitCardSelectionRequests() {
+    private MessageDto transmitCardSelectionRequests() {
 
       // Extract info from the message
       JsonObject bodyJsonO = KeypleJsonParser.getParser().fromJson(msg.getBody(), JsonObject.class);
@@ -225,7 +225,7 @@ abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
               .toJson(
                   cardSelectionResponses,
                   new TypeToken<ArrayList<CardSelectionResponse>>() {}.getType());
-      return new KeypleMessageDto(msg).setBody(body);
+      return new MessageDto(msg).setBody(body);
     }
 
     /**
@@ -235,7 +235,7 @@ abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
      * @return a not null reference.
      * @throws KeypleReaderIOException if a reader IO error occurs.
      */
-    private KeypleMessageDto setDefaultSelection() {
+    private MessageDto setDefaultSelection() {
 
       ObservableReader reader = (ObservableReader) this.reader;
 
@@ -277,7 +277,7 @@ abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
       }
 
       // Build response
-      return new KeypleMessageDto(msg).setBody(null);
+      return new MessageDto(msg).setBody(null);
     }
 
     /**
@@ -287,14 +287,14 @@ abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
      * @return a not null reference.
      * @throws KeypleReaderIOException if a reader IO error occurs.
      */
-    private KeypleMessageDto isCardPresent() {
+    private MessageDto isCardPresent() {
 
       // Execute the action on the reader
       boolean isSePresent = reader.isCardPresent();
 
       // Build response
       String body = KeypleJsonParser.getParser().toJson(isSePresent, Boolean.class);
-      return new KeypleMessageDto(msg).setBody(body);
+      return new MessageDto(msg).setBody(body);
     }
 
     /**
@@ -304,14 +304,14 @@ abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
      * @return a not null reference.
      * @throws KeypleReaderIOException if a reader IO error occurs.
      */
-    private KeypleMessageDto isReaderContactless() {
+    private MessageDto isReaderContactless() {
 
       // Execute the action on the reader
       boolean isContactless = reader.isContactless();
 
       // Build response
       String body = KeypleJsonParser.getParser().toJson(isContactless, Boolean.class);
-      return new KeypleMessageDto(msg).setBody(body);
+      return new MessageDto(msg).setBody(body);
     }
 
     /**
@@ -321,7 +321,7 @@ abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
      * @return a not null reference.
      * @throws KeypleReaderIOException if a reader IO error occurs.
      */
-    private KeypleMessageDto startCardDetection() {
+    private MessageDto startCardDetection() {
 
       // Extract info from the message
       JsonObject body = KeypleJsonParser.getParser().fromJson(msg.getBody(), JsonObject.class);
@@ -332,7 +332,7 @@ abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
       // Execute the action on the reader
       ((ObservableReader) reader).startCardDetection(pollingMode);
 
-      return new KeypleMessageDto(msg).setBody(null);
+      return new MessageDto(msg).setBody(null);
     }
 
     /**
@@ -342,12 +342,12 @@ abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
      * @return a not null reference.
      * @throws KeypleReaderIOException if a reader IO error occurs.
      */
-    private KeypleMessageDto stopCardDetection() {
+    private MessageDto stopCardDetection() {
 
       // Execute the action on the reader
       ((ObservableReader) reader).stopCardDetection();
 
-      return new KeypleMessageDto(msg).setBody(null);
+      return new MessageDto(msg).setBody(null);
     }
 
     /**
@@ -357,12 +357,12 @@ abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
      * @return a not null reference.
      * @throws KeypleReaderIOException if a reader IO error occurs.
      */
-    private KeypleMessageDto finalizeCardProcessing() {
+    private MessageDto finalizeCardProcessing() {
 
       // Execute the action on the reader
       ((ObservableReader) reader).finalizeCardProcessing();
 
-      return new KeypleMessageDto(msg).setBody(null);
+      return new MessageDto(msg).setBody(null);
     }
 
     /**
@@ -372,12 +372,12 @@ abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
      * @return a not null reference.
      * @throws KeypleReaderIOException if a reader IO error occurs.
      */
-    private KeypleMessageDto releaseChannel() {
+    private MessageDto releaseChannel() {
 
       // Execute the action on the reader
       reader.releaseChannel();
 
-      return new KeypleMessageDto(msg).setBody(null);
+      return new MessageDto(msg).setBody(null);
     }
   }
 }

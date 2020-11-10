@@ -13,7 +13,7 @@ package org.eclipse.keyple.plugin.remote.impl;
 
 import com.google.gson.JsonObject;
 
-public abstract class AbstractKeypleSyncNodeTest extends AbstractKeypleNodeTest {
+public abstract class AbstractSyncNodeTest extends AbstractNodeTest {
 
   String bodyPolling;
   String bodyLongPolling;

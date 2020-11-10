@@ -28,10 +28,10 @@ import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
+import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.KeypleClientReaderEventFilter;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
-import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remote.exception.KeypleDoNotPropagateEventException;
 import org.eclipse.keyple.plugin.remote.NativeClientService;
 import org.eclipse.keyple.plugin.remote.RemoteServiceParameters;
@@ -235,9 +235,9 @@ public class NativeClientServiceTest extends BaseNativeTest {
 
     // verify EXECUTE_REMOTE_SERVICE request
     assertThat(((SyncEndpointClientMock) syncClientEndpoint).getRequests().size()).isEqualTo(2);
-    KeypleMessageDto dtoRequest = ((SyncEndpointClientMock) syncClientEndpoint).getRequests().get(0);
+    MessageDto dtoRequest = ((SyncEndpointClientMock) syncClientEndpoint).getRequests().get(0);
     assertThat(dtoRequest.getAction())
-        .isEqualTo(KeypleMessageDto.Action.EXECUTE_REMOTE_SERVICE.name());
+        .isEqualTo(MessageDto.Action.EXECUTE_REMOTE_SERVICE.name());
     assertThat(dtoRequest.getSessionId()).isNotEmpty();
     assertThat(dtoRequest.getNativeReaderName()).isEqualTo(readerName);
     JsonObject body = parser.fromJson(dtoRequest.getBody(), JsonObject.class);
@@ -288,8 +288,8 @@ public class NativeClientServiceTest extends BaseNativeTest {
 
     // verify READER_EVENT dto
     assertThat(((SyncEndpointClientMock) syncClientEndpoint).getRequests().size()).isEqualTo(2);
-    KeypleMessageDto dtoRequest = ((SyncEndpointClientMock) syncClientEndpoint).getRequests().get(0);
-    assertThat(dtoRequest.getAction()).isEqualTo(KeypleMessageDto.Action.READER_EVENT.name());
+    MessageDto dtoRequest = ((SyncEndpointClientMock) syncClientEndpoint).getRequests().get(0);
+    assertThat(dtoRequest.getAction()).isEqualTo(MessageDto.Action.READER_EVENT.name());
     assertThat(dtoRequest.getSessionId()).isNotEmpty();
     assertThat(dtoRequest.getNativeReaderName()).isEqualTo(observableReaderName);
     JsonObject body = KeypleJsonParser.getParser().fromJson(dtoRequest.getBody(), JsonObject.class);
@@ -327,7 +327,7 @@ public class NativeClientServiceTest extends BaseNativeTest {
 
   class SyncEndpointClientMock implements SyncEndpointClient {
 
-    final List<KeypleMessageDto> requests = new ArrayList<KeypleMessageDto>();
+    final List<MessageDto> requests = new ArrayList<MessageDto>();
     Integer answerNumber;
     Integer answerIt;
 
@@ -337,11 +337,11 @@ public class NativeClientServiceTest extends BaseNativeTest {
     }
 
     @Override
-    public List<KeypleMessageDto> sendRequest(KeypleMessageDto msg) {
-      logger.trace("Mock send a KeypleMessageDto request {}", msg);
+    public List<MessageDto> sendRequest(MessageDto msg) {
+      logger.trace("Mock send a MessageDto request {}", msg);
       requests.add(msg);
 
-      List<KeypleMessageDto> responses = new ArrayList<KeypleMessageDto>();
+      List<MessageDto> responses = new ArrayList<MessageDto>();
       if (answerNumber == 1) {
         responses.add(getTerminateDto(msg.getSessionId(), true));
       }
@@ -352,7 +352,7 @@ public class NativeClientServiceTest extends BaseNativeTest {
       return responses;
     }
 
-    public List<KeypleMessageDto> getRequests() {
+    public List<MessageDto> getRequests() {
       return requests;
     }
   }
@@ -408,13 +408,13 @@ public class NativeClientServiceTest extends BaseNativeTest {
     }
   }
 
-  public KeypleMessageDto getTerminateDto(String sessionId, boolean unregister) {
+  public MessageDto getTerminateDto(String sessionId, boolean unregister) {
     JsonObject body = new JsonObject();
     body.addProperty("userOutputData", parser.toJson(outputData, MyKeypleUserData.class));
     body.addProperty("unregisterVirtualReader", parser.toJson(unregister, Boolean.class));
-    return new KeypleMessageDto()
+    return new MessageDto()
         .setSessionId(sessionId) //
-        .setAction(KeypleMessageDto.Action.TERMINATE_SERVICE.name()) //
+        .setAction(MessageDto.Action.TERMINATE_SERVICE.name()) //
         .setServerNodeId("serverNodeId") //
         .setClientNodeId("clientNodeId") //
         .setNativeReaderName(readerName)

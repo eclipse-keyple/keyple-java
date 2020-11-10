@@ -15,23 +15,23 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.util.*;
 import org.eclipse.keyple.core.util.Assert;
-import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.SyncNodeServer;
 import org.eclipse.keyple.plugin.remote.exception.KeypleTimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Keyple Server Sync Node implementation.
+ * Server Sync Node implementation.
  *
  * <p>This is an internal class an must not be used by the user.
  *
  * @since 1.0
  */
-public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
+public final class SyncNodeServerImpl extends AbstractNode
     implements SyncNodeServer {
 
-  private static final Logger logger = LoggerFactory.getLogger(KeypleServerSyncNodeImpl.class);
+  private static final Logger logger = LoggerFactory.getLogger(SyncNodeServerImpl.class);
 
   private final Map<String, SessionManager> sessionManagers;
   private final Map<String, ServerPushEventManager> pluginManagers;
@@ -45,7 +45,7 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
    * @param handler The associated handler (must be not null).
    * @param timeoutInSecond The default timeout (in seconds) to use.
    */
-  KeypleServerSyncNodeImpl(AbstractKeypleMessageHandler handler, int timeoutInSecond) {
+  SyncNodeServerImpl(AbstractMessageHandler handler, int timeoutInSecond) {
     super(handler, timeoutInSecond);
     jsonParser = new JsonParser();
     this.sessionManagers = new HashMap<String, SessionManager>();
@@ -61,7 +61,7 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
 
   /** {@inheritDoc} */
   @Override
-  public List<KeypleMessageDto> onRequest(KeypleMessageDto msg) {
+  public List<MessageDto> onRequest(MessageDto msg) {
 
     // Check mandatory fields
     Assert.getInstance() //
@@ -70,8 +70,8 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
         .notEmpty(msg.getAction(), "action") //
         .notEmpty(msg.getClientNodeId(), "clientNodeId");
 
-    List<KeypleMessageDto> responses;
-    KeypleMessageDto.Action action = KeypleMessageDto.Action.valueOf(msg.getAction());
+    List<MessageDto> responses;
+    MessageDto.Action action = MessageDto.Action.valueOf(msg.getAction());
     switch (action) {
       case CHECK_PLUGIN_EVENT:
         responses = checkEvents(msg, pluginManagers);
@@ -82,7 +82,7 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
       default:
         responses = processOnRequest(msg);
     }
-    return responses != null ? responses : new ArrayList<KeypleMessageDto>(0);
+    return responses != null ? responses : new ArrayList<MessageDto>(0);
   }
 
   /**
@@ -93,8 +93,8 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
    * @param eventManagers The event managers map.
    * @return a null list or a not empty list
    */
-  private List<KeypleMessageDto> checkEvents(
-      KeypleMessageDto msg, Map<String, ServerPushEventManager> eventManagers) {
+  private List<MessageDto> checkEvents(
+          MessageDto msg, Map<String, ServerPushEventManager> eventManagers) {
     ServerPushEventManager manager = getEventManager(msg, eventManagers);
     return manager.checkEvents(msg);
   }
@@ -108,19 +108,19 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
    * @return a nullable list or which contains at most one element.
    * @throws KeypleTimeoutException if a timeout occurs.
    */
-  private List<KeypleMessageDto> processOnRequest(KeypleMessageDto msg) {
+  private List<MessageDto> processOnRequest(MessageDto msg) {
     SessionManager manager = sessionManagers.get(msg.getSessionId());
     if (manager == null) {
       manager = new SessionManager(msg.getSessionId());
       sessionManagers.put(msg.getSessionId(), manager);
     }
-    KeypleMessageDto response = manager.onRequest(msg);
+    MessageDto response = manager.onRequest(msg);
     return response != null ? Collections.singletonList(response) : null;
   }
 
   /** {@inheritDoc} */
   @Override
-  public KeypleMessageDto sendRequest(KeypleMessageDto msg) {
+  public MessageDto sendRequest(MessageDto msg) {
     msg.setServerNodeId(nodeId);
     SessionManager manager = sessionManagers.get(msg.getSessionId());
     try {
@@ -133,9 +133,9 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
 
   /** {@inheritDoc} */
   @Override
-  public void sendMessage(KeypleMessageDto msg) {
+  public void sendMessage(MessageDto msg) {
     msg.setServerNodeId(nodeId);
-    KeypleMessageDto.Action action = KeypleMessageDto.Action.valueOf(msg.getAction());
+    MessageDto.Action action = MessageDto.Action.valueOf(msg.getAction());
     switch (action) {
       case PLUGIN_EVENT:
         postEvent(msg, pluginManagers);
@@ -162,7 +162,7 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
    * @param msg The message containing the event to post (must be not null).
    * @param eventManagers The event managers map.
    */
-  private void postEvent(KeypleMessageDto msg, Map<String, ServerPushEventManager> eventManagers) {
+  private void postEvent(MessageDto msg, Map<String, ServerPushEventManager> eventManagers) {
     ServerPushEventManager manager = getEventManager(msg, eventManagers);
     manager.postEvent(msg);
   }
@@ -176,7 +176,7 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
    * @return a not null reference.
    */
   private ServerPushEventManager getEventManager(
-      KeypleMessageDto msg, Map<String, ServerPushEventManager> eventManagers) {
+          MessageDto msg, Map<String, ServerPushEventManager> eventManagers) {
     ServerPushEventManager manager = eventManagers.get(msg.getClientNodeId());
     if (manager == null) {
       manager = new ServerPushEventManager(msg.getClientNodeId());
@@ -192,7 +192,7 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
    *
    * @param msg The message to process (must be not null).
    */
-  private void processSendMessage(KeypleMessageDto msg) {
+  private void processSendMessage(MessageDto msg) {
     SessionManager manager = sessionManagers.get(msg.getSessionId());
     if (manager == null) {
       throw new IllegalStateException("Session is closed");
@@ -235,7 +235,7 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
      * @return a not null reference on a message to return to the client.
      * @throws KeypleTimeoutException if a timeout occurs.
      */
-    private synchronized KeypleMessageDto onRequest(KeypleMessageDto msg) {
+    private synchronized MessageDto onRequest(MessageDto msg) {
       checkState(SessionManagerState.INITIALIZED, SessionManagerState.SEND_REQUEST_BEGIN);
       if (state == SessionManagerState.INITIALIZED) {
         // Process the message as a client request
@@ -258,7 +258,7 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
      * @return The response.
      * @throws KeypleTimeoutException if a timeout occurs.
      */
-    private synchronized KeypleMessageDto sendRequest(KeypleMessageDto msg) {
+    private synchronized MessageDto sendRequest(MessageDto msg) {
       postMessageAndNotify(msg, SessionManagerState.SEND_REQUEST_BEGIN);
       waitForState(SessionManagerState.SEND_REQUEST_END);
       return response;
@@ -270,7 +270,7 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
      *
      * @param msg The message to send.
      */
-    private synchronized void sendMessage(KeypleMessageDto msg) {
+    private synchronized void sendMessage(MessageDto msg) {
       postMessageAndNotify(msg, SessionManagerState.SEND_MESSAGE);
     }
 
@@ -281,7 +281,7 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
      * @param msg The message to post.
      * @param targetState The new state to set before to notify the waiting task.
      */
-    private void postMessageAndNotify(KeypleMessageDto msg, SessionManagerState targetState) {
+    private void postMessageAndNotify(MessageDto msg, SessionManagerState targetState) {
       response = msg;
       state = targetState;
       notify();
@@ -296,7 +296,7 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
 
     private final String clientNodeId;
 
-    private volatile List<KeypleMessageDto> events;
+    private volatile List<MessageDto> events;
     private ServerPushEventStrategy strategy;
 
     /**
@@ -318,11 +318,11 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
      *
      * @param msg The message containing the event to post (must be not null).
      */
-    private synchronized void postEvent(KeypleMessageDto msg) {
+    private synchronized void postEvent(MessageDto msg) {
 
       // Post the event
       if (events == null) {
-        events = new ArrayList<KeypleMessageDto>(1);
+        events = new ArrayList<MessageDto>(1);
       }
       events.add(msg);
 
@@ -340,7 +340,7 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
      * @param msg The client message containing all client info (node id, strategy, ...)
      * @return a null list or a not empty list
      */
-    private synchronized List<KeypleMessageDto> checkEvents(KeypleMessageDto msg) {
+    private synchronized List<MessageDto> checkEvents(MessageDto msg) {
       try {
         // We're checking to see if any events are already present
         if (events != null) {
@@ -368,7 +368,7 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
      * @return a not null {@link ServerPushEventStrategy}
      * @throws IllegalArgumentException in case of first client call with bad arguments.
      */
-    private ServerPushEventStrategy getStrategy(KeypleMessageDto msg) {
+    private ServerPushEventStrategy getStrategy(MessageDto msg) {
 
       // Gets the client registered strategy if exists.
       if (strategy == null) {

@@ -26,7 +26,7 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
-import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -110,12 +110,12 @@ public class AbstractNativeServiceTest extends BaseNativeTest {
     doReturn(cardResponse)
         .when(readerMocked)
         .transmitCardRequest(any(CardRequest.class), any(ChannelControl.class));
-    KeypleMessageDto requestDto = getTransmitDto("aSessionId");
+    MessageDto requestDto = getTransmitDto("aSessionId");
     // execute
-    KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
+    MessageDto responseDto = service.executeLocally(readerMocked, requestDto);
     // results
     assertMetadataMatches(requestDto, responseDto);
-    assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.TRANSMIT.name());
+    assertThat(responseDto.getAction()).isEqualTo(MessageDto.Action.TRANSMIT.name());
     assertThat(KeypleJsonParser.getParser().fromJson(responseDto.getBody(), CardResponse.class))
         .isEqualToComparingFieldByField(cardResponse);
   }
@@ -126,12 +126,12 @@ public class AbstractNativeServiceTest extends BaseNativeTest {
     doThrow(keypleReaderIOException)
         .when(readerMocked)
         .transmitCardRequest(any(CardRequest.class), any(ChannelControl.class));
-    KeypleMessageDto requestDto = getTransmitDto("aSessionId");
+    MessageDto requestDto = getTransmitDto("aSessionId");
     // execute
-    KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
+    MessageDto responseDto = service.executeLocally(readerMocked, requestDto);
     // results
     assertMetadataMatches(requestDto, responseDto);
-    assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.ERROR.name());
+    assertThat(responseDto.getAction()).isEqualTo(MessageDto.Action.ERROR.name());
     // check embedded cardResponses
     BodyError bodyResponse =
         KeypleJsonParser.getParser().fromJson(responseDto.getBody(), BodyError.class);
@@ -150,12 +150,12 @@ public class AbstractNativeServiceTest extends BaseNativeTest {
             any(MultiSelectionProcessing.class), //
             any(ChannelControl.class));
     // execute
-    KeypleMessageDto requestDto = getTransmitCardSelectionsDto("aSessionId");
-    KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
+    MessageDto requestDto = getTransmitCardSelectionsDto("aSessionId");
+    MessageDto responseDto = service.executeLocally(readerMocked, requestDto);
     // results
     assertMetadataMatches(requestDto, responseDto);
     assertThat(responseDto.getAction())
-        .isEqualTo(KeypleMessageDto.Action.TRANSMIT_CARD_SELECTION.name());
+        .isEqualTo(MessageDto.Action.TRANSMIT_CARD_SELECTION.name());
     assertThat(
             KeypleJsonParser.getParser()
                 .fromJson(
@@ -173,12 +173,12 @@ public class AbstractNativeServiceTest extends BaseNativeTest {
             any(List.class), //
             any(MultiSelectionProcessing.class), //
             any(ChannelControl.class));
-    KeypleMessageDto requestDto = getTransmitCardSelectionsDto("aSessionId");
+    MessageDto requestDto = getTransmitCardSelectionsDto("aSessionId");
     // execute
-    KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
+    MessageDto responseDto = service.executeLocally(readerMocked, requestDto);
     // results
     assertMetadataMatches(requestDto, responseDto);
-    assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.ERROR.name());
+    assertThat(responseDto.getAction()).isEqualTo(MessageDto.Action.ERROR.name());
     // check embedded cardResponses
     BodyError bodyResponse =
         KeypleJsonParser.getParser().fromJson(responseDto.getBody(), BodyError.class);
@@ -196,12 +196,12 @@ public class AbstractNativeServiceTest extends BaseNativeTest {
             any(List.class), //
             any(MultiSelectionProcessing.class), //
             any(ChannelControl.class));
-    KeypleMessageDto requestDto = getTransmitCardSelectionsDto("aSessionId");
+    MessageDto requestDto = getTransmitCardSelectionsDto("aSessionId");
     // execute
-    KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
+    MessageDto responseDto = service.executeLocally(readerMocked, requestDto);
     // results
     assertMetadataMatches(requestDto, responseDto);
-    assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.ERROR.name());
+    assertThat(responseDto.getAction()).isEqualTo(MessageDto.Action.ERROR.name());
     // check embedded cardResponses
     BodyError bodyResponse =
         KeypleJsonParser.getParser().fromJson(responseDto.getBody(), BodyError.class);
@@ -219,12 +219,12 @@ public class AbstractNativeServiceTest extends BaseNativeTest {
             any(List.class), //
             any(MultiSelectionProcessing.class), //
             any(ChannelControl.class));
-    KeypleMessageDto requestDto = getTransmitCardSelectionsDto("aSessionId");
+    MessageDto requestDto = getTransmitCardSelectionsDto("aSessionId");
     // execute
-    KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
+    MessageDto responseDto = service.executeLocally(readerMocked, requestDto);
     // results
     assertMetadataMatches(requestDto, responseDto);
-    assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.ERROR.name());
+    assertThat(responseDto.getAction()).isEqualTo(MessageDto.Action.ERROR.name());
     // check embedded cardResponses
     BodyError bodyResponse =
         KeypleJsonParser.getParser().fromJson(responseDto.getBody(), BodyError.class);
@@ -236,13 +236,13 @@ public class AbstractNativeServiceTest extends BaseNativeTest {
   @Test
   public void setDefaultSelection() {
     // init
-    KeypleMessageDto requestDto = getSetDefaultSelectionDto("aSessionId");
+    MessageDto requestDto = getSetDefaultSelectionDto("aSessionId");
     // execute
-    KeypleMessageDto responseDto = service.executeLocally(observableReaderMocked, requestDto);
+    MessageDto responseDto = service.executeLocally(observableReaderMocked, requestDto);
     // results
     assertMetadataMatches(requestDto, responseDto);
     assertThat(responseDto.getAction())
-        .isEqualTo(KeypleMessageDto.Action.SET_DEFAULT_SELECTION.name());
+        .isEqualTo(MessageDto.Action.SET_DEFAULT_SELECTION.name());
     assertThat(responseDto.getBody()).isNull();
   }
 
@@ -250,12 +250,12 @@ public class AbstractNativeServiceTest extends BaseNativeTest {
   public void isSePresent() {
     // init
     doReturn(true).when(readerMocked).isCardPresent();
-    KeypleMessageDto requestDto = getIsCardPresentDto("aSessionId");
+    MessageDto requestDto = getIsCardPresentDto("aSessionId");
     // execute
-    KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
+    MessageDto responseDto = service.executeLocally(readerMocked, requestDto);
     // results
     assertMetadataMatches(requestDto, responseDto);
-    assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.IS_CARD_PRESENT.name());
+    assertThat(responseDto.getAction()).isEqualTo(MessageDto.Action.IS_CARD_PRESENT.name());
     boolean bodyValue = KeypleJsonParser.getParser().fromJson(responseDto.getBody(), Boolean.class);
     assertThat(bodyValue).isTrue();
   }
@@ -264,13 +264,13 @@ public class AbstractNativeServiceTest extends BaseNativeTest {
   public void isContactless() {
     // init
     doReturn(true).when(readerMocked).isContactless();
-    KeypleMessageDto requestDto = getIsContactless("aSessionId");
+    MessageDto requestDto = getIsContactless("aSessionId");
     // execute
-    KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
+    MessageDto responseDto = service.executeLocally(readerMocked, requestDto);
     // results
     assertMetadataMatches(requestDto, responseDto);
     assertThat(responseDto.getAction())
-        .isEqualTo(KeypleMessageDto.Action.IS_READER_CONTACTLESS.name());
+        .isEqualTo(MessageDto.Action.IS_READER_CONTACTLESS.name());
     boolean bodyValue = KeypleJsonParser.getParser().fromJson(responseDto.getBody(), Boolean.class);
     assertThat(bodyValue).isTrue();
   }
@@ -278,51 +278,51 @@ public class AbstractNativeServiceTest extends BaseNativeTest {
   @Test
   public void releaseChannelDto() {
     // init
-    KeypleMessageDto requestDto = getReleaseChannelDto("aSessionId");
+    MessageDto requestDto = getReleaseChannelDto("aSessionId");
     // execute
-    KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
+    MessageDto responseDto = service.executeLocally(readerMocked, requestDto);
     // results
     assertMetadataMatches(requestDto, responseDto);
-    assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.RELEASE_CHANNEL.name());
+    assertThat(responseDto.getAction()).isEqualTo(MessageDto.Action.RELEASE_CHANNEL.name());
     assertThat(responseDto.getBody()).isNull();
   }
 
   @Test
   public void startSeDetection() {
     // init
-    KeypleMessageDto requestDto = getStartCardDetection("aSessionId");
+    MessageDto requestDto = getStartCardDetection("aSessionId");
     // execute
-    KeypleMessageDto responseDto = service.executeLocally(observableReaderMocked, requestDto);
+    MessageDto responseDto = service.executeLocally(observableReaderMocked, requestDto);
     // results
     assertMetadataMatches(requestDto, responseDto);
     assertThat(responseDto.getAction())
-        .isEqualTo(KeypleMessageDto.Action.START_CARD_DETECTION.name());
+        .isEqualTo(MessageDto.Action.START_CARD_DETECTION.name());
     assertThat(responseDto.getBody()).isNull();
   }
 
   @Test
   public void stopCardDetection() {
     // init
-    KeypleMessageDto requestDto = getStopCardDetection("aSessionId");
+    MessageDto requestDto = getStopCardDetection("aSessionId");
     // execute
-    KeypleMessageDto responseDto = service.executeLocally(observableReaderMocked, requestDto);
+    MessageDto responseDto = service.executeLocally(observableReaderMocked, requestDto);
     // results
     assertMetadataMatches(requestDto, responseDto);
     assertThat(responseDto.getAction())
-        .isEqualTo(KeypleMessageDto.Action.STOP_CARD_DETECTION.name());
+        .isEqualTo(MessageDto.Action.STOP_CARD_DETECTION.name());
     assertThat(responseDto.getBody()).isNull();
   }
 
   @Test
   public void finalizeCardProcessing() {
     // init
-    KeypleMessageDto requestDto = getFinalizeCardProcessing("aSessionId");
+    MessageDto requestDto = getFinalizeCardProcessing("aSessionId");
     // execute
-    KeypleMessageDto responseDto = service.executeLocally(observableReaderMocked, requestDto);
+    MessageDto responseDto = service.executeLocally(observableReaderMocked, requestDto);
     // results
     assertMetadataMatches(requestDto, responseDto);
     assertThat(responseDto.getAction())
-        .isEqualTo(KeypleMessageDto.Action.FINALIZE_CARD_PROCESSING.name());
+        .isEqualTo(MessageDto.Action.FINALIZE_CARD_PROCESSING.name());
     assertThat(responseDto.getBody()).isNull();
   }
 }

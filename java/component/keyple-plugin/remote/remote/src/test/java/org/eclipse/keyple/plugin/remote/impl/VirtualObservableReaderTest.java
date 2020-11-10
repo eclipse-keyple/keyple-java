@@ -26,7 +26,7 @@ import org.eclipse.keyple.core.card.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
-import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,7 +41,7 @@ public class VirtualObservableReaderTest {
   static final String nativeReaderName = "nativeReaderName";
 
   VirtualObservableReader reader;
-  AbstractKeypleNode node;
+  AbstractNode node;
   ObservableReader.ReaderObserver observer;
 
   static final DefaultSelectionsRequest abstractDefaultSelectionsRequest =
@@ -51,18 +51,18 @@ public class VirtualObservableReaderTest {
   static final ObservableReader.PollingMode pollingMode = ObservableReader.PollingMode.REPEATING;;
   static final ReaderEvent event =
       new ReaderEvent(pluginName, nativeReaderName, ReaderEvent.EventType.CARD_INSERTED, null);;
-  static final KeypleMessageDto response =
-      new KeypleMessageDto().setAction(KeypleMessageDto.Action.SET_DEFAULT_SELECTION.name());;
+  static final MessageDto response =
+      new MessageDto().setAction(MessageDto.Action.SET_DEFAULT_SELECTION.name());;
 
   static final ExecutorService notificationPool = Executors.newCachedThreadPool();;
 
-  final ArgumentCaptor<KeypleMessageDto> messageArgumentCaptor =
-      ArgumentCaptor.forClass(KeypleMessageDto.class);
+  final ArgumentCaptor<MessageDto> messageArgumentCaptor =
+      ArgumentCaptor.forClass(MessageDto.class);
 
   @Before
   public void setUp() {
-    node = Mockito.mock(AbstractKeypleNode.class);
-    doReturn(response).when(node).sendRequest(any(KeypleMessageDto.class));
+    node = Mockito.mock(AbstractNode.class);
+    doReturn(response).when(node).sendRequest(any(MessageDto.class));
     observer = new MockObserver();
     reader =
         new VirtualObservableReader(
@@ -107,8 +107,8 @@ public class VirtualObservableReaderTest {
     reader.setDefaultSelectionRequest(
         abstractDefaultSelectionsRequest, notificationMode, pollingMode);
     verify(node).sendRequest(messageArgumentCaptor.capture());
-    KeypleMessageDto request = messageArgumentCaptor.getValue();
-    assertThat(request.getAction()).isEqualTo(KeypleMessageDto.Action.SET_DEFAULT_SELECTION.name());
+    MessageDto request = messageArgumentCaptor.getValue();
+    assertThat(request.getAction()).isEqualTo(MessageDto.Action.SET_DEFAULT_SELECTION.name());
     JsonObject body = KeypleJsonParser.getParser().fromJson(request.getBody(), JsonObject.class);
     assertThat(
             KeypleJsonParser.getParser()
@@ -135,8 +135,8 @@ public class VirtualObservableReaderTest {
   public void startSeDetection_shouldSendDto() {
     reader.startCardDetection(pollingMode);
     verify(node).sendRequest(messageArgumentCaptor.capture());
-    KeypleMessageDto request = messageArgumentCaptor.getValue();
-    assertThat(request.getAction()).isEqualTo(KeypleMessageDto.Action.START_CARD_DETECTION.name());
+    MessageDto request = messageArgumentCaptor.getValue();
+    assertThat(request.getAction()).isEqualTo(MessageDto.Action.START_CARD_DETECTION.name());
     JsonObject body = KeypleJsonParser.getParser().fromJson(request.getBody(), JsonObject.class);
     assertThat(
             KeypleJsonParser.getParser()
@@ -149,8 +149,8 @@ public class VirtualObservableReaderTest {
   public void stopSeDetection_shouldSendDto() {
     reader.stopCardDetection();
     verify(node).sendRequest(messageArgumentCaptor.capture());
-    KeypleMessageDto request = messageArgumentCaptor.getValue();
-    assertThat(request.getAction()).isEqualTo(KeypleMessageDto.Action.STOP_CARD_DETECTION.name());
+    MessageDto request = messageArgumentCaptor.getValue();
+    assertThat(request.getAction()).isEqualTo(MessageDto.Action.STOP_CARD_DETECTION.name());
     JsonObject body = KeypleJsonParser.getParser().fromJson(request.getBody(), JsonObject.class);
     assertThat(body).isNull();
   }
@@ -159,9 +159,9 @@ public class VirtualObservableReaderTest {
   public void finalizeSeProcessing_shouldSendDto() {
     reader.finalizeCardProcessing();
     verify(node).sendRequest(messageArgumentCaptor.capture());
-    KeypleMessageDto request = messageArgumentCaptor.getValue();
+    MessageDto request = messageArgumentCaptor.getValue();
     assertThat(request.getAction())
-        .isEqualTo(KeypleMessageDto.Action.FINALIZE_CARD_PROCESSING.name());
+        .isEqualTo(MessageDto.Action.FINALIZE_CARD_PROCESSING.name());
     JsonObject body = KeypleJsonParser.getParser().fromJson(request.getBody(), JsonObject.class);
     assertThat(body).isNull();
   }

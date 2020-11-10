@@ -26,7 +26,7 @@ import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.PluginEvent;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
-import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.RemoteServerObservableReader;
 import org.eclipse.keyple.plugin.remote.RemoteServerReader;
 import org.mockito.ArgumentCaptor;
@@ -45,10 +45,10 @@ public class RemoteServerBaseTest {
   static ExecutorService eventNotificationPool = Executors.newCachedThreadPool();
 
   RemoteServerPluginImpl remotePlugin;
-  AbstractKeypleNode node;
+  AbstractNode node;
   RemoteServerPluginImplTest.MockPluginObserver pluginObserver;
   RemoteServerPluginImplTest.MockReaderObserver readerObserver;
-  ArgumentCaptor<KeypleMessageDto> messageArgumentCaptor;
+  ArgumentCaptor<MessageDto> messageArgumentCaptor;
 
   /*
    * Private helpers
@@ -94,16 +94,16 @@ public class RemoteServerBaseTest {
     }
   }
 
-  KeypleMessageDto executeRemoteServiceMessage(String sessionId, boolean isObservable) {
+  MessageDto executeRemoteServiceMessage(String sessionId, boolean isObservable) {
     JsonObject body = new JsonObject();
     body.addProperty("serviceId", serviceId);
     body.addProperty("initialCardContent", "");
     body.addProperty("userInputData", "anyObject");
     body.addProperty("isObservable", isObservable);
 
-    return new KeypleMessageDto()
+    return new MessageDto()
         .setSessionId(sessionId)
-        .setAction(KeypleMessageDto.Action.EXECUTE_REMOTE_SERVICE.name())
+        .setAction(MessageDto.Action.EXECUTE_REMOTE_SERVICE.name())
         .setClientNodeId(clientId)
         .setNativeReaderName(nativeReaderName)
         .setBody(body.toString());
@@ -122,7 +122,7 @@ public class RemoteServerBaseTest {
     };
   }
 
-  KeypleMessageDto readerEventMessage(String sessionId, String virtualReaderName) {
+  MessageDto readerEventMessage(String sessionId, String virtualReaderName) {
     JsonObject body = new JsonObject();
     body.addProperty("userInputData", "anyObject");
     body.add(
@@ -135,9 +135,9 @@ public class RemoteServerBaseTest {
                     ReaderEvent.EventType.CARD_INSERTED,
                     getDefaultSelectionsResponse())));
 
-    return new KeypleMessageDto()
+    return new MessageDto()
         .setSessionId(sessionId)
-        .setAction(KeypleMessageDto.Action.READER_EVENT.name())
+        .setAction(MessageDto.Action.READER_EVENT.name())
         .setClientNodeId(clientId)
         .setNativeReaderName(nativeReaderName)
         .setVirtualReaderName(virtualReaderName)
@@ -172,10 +172,10 @@ public class RemoteServerBaseTest {
   }
 
   void validateTerminateServiceResponse(
-      KeypleMessageDto terminateServiceMsg, boolean shouldUnregister) {
+          MessageDto terminateServiceMsg, boolean shouldUnregister) {
 
     assertThat(terminateServiceMsg.getAction())
-        .isEqualTo(KeypleMessageDto.Action.TERMINATE_SERVICE.name());
+        .isEqualTo(MessageDto.Action.TERMINATE_SERVICE.name());
     JsonObject body =
         KeypleJsonParser.getParser().fromJson(terminateServiceMsg.getBody(), JsonObject.class);
     MockUserOutputData userOutputResponse =

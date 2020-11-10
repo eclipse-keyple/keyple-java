@@ -21,7 +21,7 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
-import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.RemotePoolClientPlugin;
 
 /** Implementation of the {@link RemotePoolClientPlugin} */
@@ -51,13 +51,13 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
       // Open a new session on the node, session will be closed at the end of this operation
       node.openSession(sessionId);
 
-      KeypleMessageDto request =
-          new KeypleMessageDto()
-              .setAction(KeypleMessageDto.Action.GET_READER_GROUP_REFERENCES.name())
+      MessageDto request =
+          new MessageDto()
+              .setAction(MessageDto.Action.GET_READER_GROUP_REFERENCES.name())
               .setSessionId(sessionId)
               .setBody(null);
 
-      KeypleMessageDto response = node.sendRequest(request);
+      MessageDto response = node.sendRequest(request);
 
       checkError(response);
       String readerGroupReferencesJson =
@@ -87,13 +87,13 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
 
       JsonObject body = new JsonObject();
       body.addProperty("groupReference", groupReference);
-      KeypleMessageDto request =
-          new KeypleMessageDto()
-              .setAction(KeypleMessageDto.Action.ALLOCATE_READER.name())
+      MessageDto request =
+          new MessageDto()
+              .setAction(MessageDto.Action.ALLOCATE_READER.name())
               .setSessionId(sessionId)
               .setBody(body.toString());
 
-      KeypleMessageDto response = node.sendRequest(request);
+      MessageDto response = node.sendRequest(request);
 
       checkError(response);
       VirtualReader reader =
@@ -130,9 +130,9 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
 
     try {
 
-      KeypleMessageDto request =
-          new KeypleMessageDto()
-              .setAction(KeypleMessageDto.Action.RELEASE_READER.name())
+      MessageDto request =
+          new MessageDto()
+              .setAction(MessageDto.Action.RELEASE_READER.name())
               .setVirtualReaderName(reader.getName())
               .setNativeReaderName(virtualReader.getNativeReaderName())
               .setSessionId(virtualReader.getSessionId())
@@ -142,7 +142,7 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
       readers.remove(reader.getName());
 
       // it is assumed a session is already open on the node, else an error is thrown
-      KeypleMessageDto response = node.sendRequest(request);
+      MessageDto response = node.sendRequest(request);
       checkError(response);
 
     } finally {
@@ -171,7 +171,7 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
    * Not used in this plugin
    */
   @Override
-  protected void onMessage(KeypleMessageDto msg) {
+  protected void onMessage(MessageDto msg) {
     // not used
     throw new UnsupportedOperationException("onMessage method is not supported by this plugin");
   }

@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.impl;
 
-public abstract class AbstractKeypleAsyncNodeTest extends AbstractKeypleNodeTest {
+public abstract class AbstractAsyncNodeTest extends AbstractNodeTest {
 
   static final String sessionIdUnknown = "sessionIdUnknown";
   static final Exception error = new Exception();

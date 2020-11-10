@@ -16,8 +16,9 @@ import static org.awaitility.Awaitility.await;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
+
+import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
-import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remote.exception.KeypleRemoteCommunicationException;
 import org.eclipse.keyple.plugin.remote.exception.KeypleTimeoutException;
 import org.junit.Before;
@@ -28,28 +29,28 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AsyncEndpointClientNodeTestImplTest extends AbstractKeypleAsyncNodeTest {
+public class AsyncNodeClientTest extends AbstractAsyncNodeTest {
 
   AsyncEndpointClient endpoint;
-  KeypleClientAsyncNodeImpl node;
+  AsyncNodeClientImpl node;
 
-  KeypleMessageDto pluginEvent;
-  KeypleMessageDto readerEvent;
+  MessageDto pluginEvent;
+  MessageDto readerEvent;
 
   {
-    pluginEvent = new KeypleMessageDto(msg).setAction(KeypleMessageDto.Action.PLUGIN_EVENT.name());
+    pluginEvent = new MessageDto(msg).setAction(MessageDto.Action.PLUGIN_EVENT.name());
 
-    readerEvent = new KeypleMessageDto(msg).setAction(KeypleMessageDto.Action.READER_EVENT.name());
+    readerEvent = new MessageDto(msg).setAction(MessageDto.Action.READER_EVENT.name());
   }
 
   class MessageScheduler extends Thread {
 
     Thread ownerThread;
     String sessionId;
-    KeypleMessageDto msg;
+    MessageDto msg;
     int mode;
 
-    MessageScheduler(final String sessionId, final KeypleMessageDto msg, final int mode) {
+    MessageScheduler(final String sessionId, final MessageDto msg, final int mode) {
       this.ownerThread = Thread.currentThread();
       this.sessionId = sessionId;
       this.msg = msg;
@@ -81,7 +82,7 @@ public class AsyncEndpointClientNodeTestImplTest extends AbstractKeypleAsyncNode
     t.start();
   }
 
-  void scheduleOnMessage(KeypleMessageDto message) {
+  void scheduleOnMessage(MessageDto message) {
     MessageScheduler t = new MessageScheduler(sessionId, message, 2);
     t.start();
   }
@@ -203,7 +204,7 @@ public class AsyncEndpointClientNodeTestImplTest extends AbstractKeypleAsyncNode
   public void setUp() {
     super.setUp();
     endpoint = mock(AsyncEndpointClient.class);
-    node = new KeypleClientAsyncNodeImpl(handler, endpoint, 1);
+    node = new AsyncNodeClientImpl(handler, endpoint, 1);
   }
 
   @Test
@@ -272,7 +273,7 @@ public class AsyncEndpointClientNodeTestImplTest extends AbstractKeypleAsyncNode
   public void sendRequest_whenOk_shouldCallEndpointAndReturnResponse() {
     doEndpointToReturnAnswer(true, true, false);
     openSessionInSafeMode();
-    KeypleMessageDto result = node.sendRequest(msg);
+    MessageDto result = node.sendRequest(msg);
     verify(endpoint).openSession(sessionId);
     verify(endpoint).sendMessage(msg);
     verifyNoMoreInteractions(endpoint);
@@ -322,55 +323,55 @@ public class AsyncEndpointClientNodeTestImplTest extends AbstractKeypleAsyncNode
 
   @Test(expected = IllegalArgumentException.class)
   public void onMessage_whenSessionIdIsNull_shouldThrowIAE() {
-    KeypleMessageDto message = new KeypleMessageDto(response).setSessionId(null);
+    MessageDto message = new MessageDto(response).setSessionId(null);
     node.onMessage(message);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void onMessage_whenSessionIdIsEmpty_shouldThrowIAE() {
-    KeypleMessageDto message = new KeypleMessageDto(response).setSessionId("");
+    MessageDto message = new MessageDto(response).setSessionId("");
     node.onMessage(message);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void onMessage_whenActionIsNull_shouldThrowIAE() {
-    KeypleMessageDto message = new KeypleMessageDto(response).setAction(null);
+    MessageDto message = new MessageDto(response).setAction(null);
     node.onMessage(message);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void onMessage_whenActionIsEmpty_shouldThrowIAE() {
-    KeypleMessageDto message = new KeypleMessageDto(response).setAction("");
+    MessageDto message = new MessageDto(response).setAction("");
     node.onMessage(message);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void onMessage_whenClientNodeIdIsNull_shouldThrowIAE() {
-    KeypleMessageDto message = new KeypleMessageDto(response).setClientNodeId(null);
+    MessageDto message = new MessageDto(response).setClientNodeId(null);
     node.onMessage(message);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void onMessage_whenClientNodeIdIsEmpty_shouldThrowIAE() {
-    KeypleMessageDto message = new KeypleMessageDto(response).setClientNodeId("");
+    MessageDto message = new MessageDto(response).setClientNodeId("");
     node.onMessage(message);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void onMessage_whenServerNodeIdIsNull_shouldThrowIAE() {
-    KeypleMessageDto message = new KeypleMessageDto(response).setServerNodeId(null);
+    MessageDto message = new MessageDto(response).setServerNodeId(null);
     node.onMessage(message);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void onMessage_whenServerNodeIdIsEmpty_shouldThrowIAE() {
-    KeypleMessageDto message = new KeypleMessageDto(response).setServerNodeId("");
+    MessageDto message = new MessageDto(response).setServerNodeId("");
     node.onMessage(message);
   }
 
   @Test
   public void onMessage_whenSessionIdIsUnknown_shouldDoNothing() {
-    KeypleMessageDto message = new KeypleMessageDto(response).setSessionId(sessionIdUnknown);
+    MessageDto message = new MessageDto(response).setSessionId(sessionIdUnknown);
     node.onMessage(message);
   }
 
@@ -378,7 +379,7 @@ public class AsyncEndpointClientNodeTestImplTest extends AbstractKeypleAsyncNode
   public void onMessage_whenActionIsUnknown_shouldThrowIAE() {
     doEndpointToReturnAnswer(true, false, false);
     openSessionInSafeMode();
-    KeypleMessageDto message = new KeypleMessageDto(response).setAction("UNKNOWN");
+    MessageDto message = new MessageDto(response).setAction("UNKNOWN");
     node.onMessage(message);
   }
 
@@ -427,7 +428,7 @@ public class AsyncEndpointClientNodeTestImplTest extends AbstractKeypleAsyncNode
   public void onMessage_whenOkInThread1_shouldEndSendRequest() {
     doEndpointToReturnAnswer(true, true, false);
     openSessionInSafeMode();
-    KeypleMessageDto result = node.sendRequest(msg);
+    MessageDto result = node.sendRequest(msg);
     verify(endpoint).openSession(sessionId);
     verify(endpoint).sendMessage(msg);
     verifyNoMoreInteractions(endpoint);
@@ -441,7 +442,7 @@ public class AsyncEndpointClientNodeTestImplTest extends AbstractKeypleAsyncNode
     doEndpointToReturnAnswer(true, false, false);
     openSessionInSafeMode();
     scheduleOnMessage(response);
-    KeypleMessageDto result = node.sendRequest(msg);
+    MessageDto result = node.sendRequest(msg);
     verify(endpoint).openSession(sessionId);
     verify(endpoint).sendMessage(msg);
     verifyNoMoreInteractions(endpoint);

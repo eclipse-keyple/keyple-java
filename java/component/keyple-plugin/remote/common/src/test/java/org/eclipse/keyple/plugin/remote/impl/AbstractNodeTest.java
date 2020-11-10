@@ -16,37 +16,37 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 import java.util.concurrent.Callable;
-import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.exception.KeypleRemoteCommunicationException;
 
-public abstract class AbstractKeypleNodeTest {
+public abstract class AbstractNodeTest {
 
   static final String sessionId = "sessionId";
 
-  AbstractKeypleMessageHandler handler;
+  AbstractMessageHandler handler;
 
-  KeypleMessageDto msg;
-  KeypleMessageDto response;
+  MessageDto msg;
+  MessageDto response;
 
   {
     msg =
-        new KeypleMessageDto() //
+        new MessageDto() //
             .setSessionId(sessionId) //
-            .setAction(KeypleMessageDto.Action.EXECUTE_REMOTE_SERVICE.name()) //
+            .setAction(MessageDto.Action.EXECUTE_REMOTE_SERVICE.name()) //
             .setClientNodeId("clientNodeId") //
             .setServerNodeId("serverNodeId");
 
-    response = new KeypleMessageDto(msg);
+    response = new MessageDto(msg);
   }
 
   void setUp() {
-    handler = mock(AbstractKeypleMessageHandler.class);
+    handler = mock(AbstractMessageHandler.class);
   }
 
   void setHandlerError() {
     doThrow(new KeypleRemoteCommunicationException("TEST"))
         .when(handler)
-        .onMessage(any(KeypleMessageDto.class));
+        .onMessage(any(MessageDto.class));
   }
 
   Callable<Boolean> threadHasStateTimedWaiting(final Thread thread) {

@@ -47,12 +47,12 @@ public interface AsyncNodeServer {
 
   /**
    * This method must be called by the {@link AsyncEndpointServer} endpoint following the reception
-   * and deserialization of a {@link KeypleMessageDto} from the client.
+   * and deserialization of a {@link MessageDto} from the client.
    *
    * @param msg The message to process.
    * @since 1.0
    */
-  void onMessage(KeypleMessageDto msg);
+  void onMessage(MessageDto msg);
 
   /**
    * This method should be called by the {@link AsyncEndpointServer} endpoint following the closing of

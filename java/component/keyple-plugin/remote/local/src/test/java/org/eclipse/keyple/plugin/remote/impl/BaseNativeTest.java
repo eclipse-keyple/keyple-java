@@ -23,7 +23,7 @@ import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
-import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.mockito.Mockito;
 
 public abstract class BaseNativeTest {
@@ -41,19 +41,19 @@ public abstract class BaseNativeTest {
     doReturn(readerName).when(readerMocked).getName();
   }
 
-  public static KeypleMessageDto getTransmitDto(String sessionId) {
+  public static MessageDto getTransmitDto(String sessionId) {
     JsonObject body = new JsonObject();
     body.addProperty("channelControl", ChannelControl.CLOSE_AFTER.name());
     body.addProperty("cardRequest", KeypleJsonParser.getParser().toJson(getACardRequest()));
-    return new KeypleMessageDto() //
+    return new MessageDto() //
         .setSessionId(sessionId) //
-        .setAction(KeypleMessageDto.Action.TRANSMIT.name()) //
+        .setAction(MessageDto.Action.TRANSMIT.name()) //
         .setServerNodeId("serverNodeId") //
         .setClientNodeId("clientNodeId") //
         .setBody(body.toString());
   }
 
-  public static KeypleMessageDto getSetDefaultSelectionDto(String sessionId) {
+  public static MessageDto getSetDefaultSelectionDto(String sessionId) {
     JsonObject body = new JsonObject();
     body.add(
         "defaultSelectionsRequest",
@@ -66,83 +66,83 @@ public abstract class BaseNativeTest {
     body.addProperty("notificationMode", ObservableReader.NotificationMode.MATCHED_ONLY.name());
     body.addProperty("pollingMode", ObservableReader.PollingMode.REPEATING.name());
 
-    return new KeypleMessageDto()
+    return new MessageDto()
         .setSessionId(sessionId) //
-        .setAction(KeypleMessageDto.Action.SET_DEFAULT_SELECTION.name()) //
+        .setAction(MessageDto.Action.SET_DEFAULT_SELECTION.name()) //
         .setServerNodeId("serverNodeId") //
         .setClientNodeId("clientNodeId") //
         .setBody(body.toString());
   }
 
-  public static KeypleMessageDto getTransmitCardSelectionsDto(String sessionId) {
+  public static MessageDto getTransmitCardSelectionsDto(String sessionId) {
     JsonObject body = new JsonObject();
     body.addProperty("channelControl", ChannelControl.CLOSE_AFTER.name());
     body.addProperty(
         "cardSelectionRequests",
         KeypleJsonParser.getParser().toJson(Lists.newArrayList(getACardRequest())));
     body.addProperty("multiSelectionProcessing", MultiSelectionProcessing.FIRST_MATCH.name());
-    return new KeypleMessageDto() //
+    return new MessageDto() //
         .setSessionId(sessionId) //
-        .setAction(KeypleMessageDto.Action.TRANSMIT_CARD_SELECTION.name()) //
+        .setAction(MessageDto.Action.TRANSMIT_CARD_SELECTION.name()) //
         .setServerNodeId("serverNodeId") //
         .setClientNodeId("clientNodeId") //
         .setBody(body.toString());
   }
 
-  public static KeypleMessageDto getIsCardPresentDto(String sessionId) {
-    return new KeypleMessageDto() //
+  public static MessageDto getIsCardPresentDto(String sessionId) {
+    return new MessageDto() //
         .setSessionId(sessionId) //
-        .setAction(KeypleMessageDto.Action.IS_CARD_PRESENT.name()) //
+        .setAction(MessageDto.Action.IS_CARD_PRESENT.name()) //
         .setServerNodeId("serverNodeId") //
         .setClientNodeId("clientNodeId") //
         .setBody(null);
   }
 
-  public static KeypleMessageDto getIsContactless(String sessionId) {
-    return new KeypleMessageDto() //
+  public static MessageDto getIsContactless(String sessionId) {
+    return new MessageDto() //
         .setSessionId(sessionId) //
-        .setAction(KeypleMessageDto.Action.IS_READER_CONTACTLESS.name()) //
+        .setAction(MessageDto.Action.IS_READER_CONTACTLESS.name()) //
         .setServerNodeId("serverNodeId") //
         .setClientNodeId("clientNodeId") //
         .setBody(null);
   }
 
-  public static KeypleMessageDto getStartCardDetection(String sessionId) {
+  public static MessageDto getStartCardDetection(String sessionId) {
     JsonObject body = new JsonObject();
     body.addProperty("pollingMode", ObservableReader.PollingMode.REPEATING.name());
 
-    return new KeypleMessageDto() //
+    return new MessageDto() //
         .setSessionId(sessionId) //
-        .setAction(KeypleMessageDto.Action.START_CARD_DETECTION.name()) //
+        .setAction(MessageDto.Action.START_CARD_DETECTION.name()) //
         .setServerNodeId("serverNodeId") //
         .setClientNodeId("clientNodeId") //
         .setBody(body.toString());
   }
 
-  public static KeypleMessageDto getStopCardDetection(String sessionId) {
+  public static MessageDto getStopCardDetection(String sessionId) {
     JsonObject body = new JsonObject();
-    return new KeypleMessageDto() //
+    return new MessageDto() //
         .setSessionId(sessionId) //
-        .setAction(KeypleMessageDto.Action.STOP_CARD_DETECTION.name()) //
+        .setAction(MessageDto.Action.STOP_CARD_DETECTION.name()) //
         .setServerNodeId("serverNodeId") //
         .setClientNodeId("clientNodeId") //
         .setBody(body.toString());
   }
 
-  public static KeypleMessageDto getFinalizeCardProcessing(String sessionId) {
+  public static MessageDto getFinalizeCardProcessing(String sessionId) {
     JsonObject body = new JsonObject();
-    return new KeypleMessageDto() //
+    return new MessageDto() //
         .setSessionId(sessionId) //
-        .setAction(KeypleMessageDto.Action.FINALIZE_CARD_PROCESSING.name()) //
+        .setAction(MessageDto.Action.FINALIZE_CARD_PROCESSING.name()) //
         .setServerNodeId("serverNodeId") //
         .setClientNodeId("clientNodeId") //
         .setBody(body.toString());
   }
 
-  public static KeypleMessageDto getReleaseChannelDto(String sessionId) {
-    return new KeypleMessageDto() //
+  public static MessageDto getReleaseChannelDto(String sessionId) {
+    return new MessageDto() //
         .setSessionId(sessionId) //
-        .setAction(KeypleMessageDto.Action.RELEASE_CHANNEL.name()) //
+        .setAction(MessageDto.Action.RELEASE_CHANNEL.name()) //
         .setServerNodeId("serverNodeId") //
         .setClientNodeId("clientNodeId") //
         .setBody(null);
@@ -188,7 +188,7 @@ public abstract class BaseNativeTest {
     return new CardSelectionResponse(new SelectionStatus(atr, null, true), getACardResponse());
   }
 
-  public static void assertMetadataMatches(KeypleMessageDto request, KeypleMessageDto response) {
+  public static void assertMetadataMatches(MessageDto request, MessageDto response) {
     assertThat(response).isNotNull();
     assertThat(response.getSessionId()).isEqualTo(request.getSessionId());
     assertThat(response.getNativeReaderName()).isEqualTo(request.getNativeReaderName());

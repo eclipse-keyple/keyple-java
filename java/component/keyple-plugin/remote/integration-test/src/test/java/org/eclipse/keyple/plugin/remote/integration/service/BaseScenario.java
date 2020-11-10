@@ -27,7 +27,7 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
-import org.eclipse.keyple.plugin.remote.impl.AbstractKeypleNode;
+import org.eclipse.keyple.plugin.remote.impl.AbstractNode;
 import org.eclipse.keyple.plugin.remote.integration.common.app.ReaderEventFilter;
 import org.eclipse.keyple.plugin.remote.integration.common.app.RemotePluginObserver;
 import org.eclipse.keyple.plugin.remote.integration.common.model.ConfigurationResult;
@@ -476,7 +476,7 @@ public abstract class BaseScenario {
     assertThat(output.isSuccessful()).isTrue();
   }
 
-  void setTimeoutInNode(AbstractKeypleNode node, Integer timeoutInMilliseconds) {
+  void setTimeoutInNode(AbstractNode node, Integer timeoutInMilliseconds) {
     try {
       Class classT = node.getClass();
       Field field = classT.getDeclaredField("timeout");

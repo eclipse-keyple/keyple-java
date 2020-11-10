@@ -14,7 +14,7 @@ package org.eclipse.keyple.plugin.remote.impl;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.core.util.Assert;
-import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
 import org.eclipse.keyple.plugin.remote.AsyncNodeServer;
 import org.eclipse.keyple.plugin.remote.exception.KeypleClosedSessionException;
@@ -24,16 +24,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Keyple Server Async Node implementation.
+ * Server Async Node implementation.
  *
  * <p>This is an internal class an must not be used by the user.
  *
  * @since 1.0
  */
-public final class KeypleServerAsyncNodeImpl extends AbstractKeypleNode
+public final class AsyncNodeServerImpl extends AbstractNode
     implements AsyncNodeServer {
 
-  private static final Logger logger = LoggerFactory.getLogger(KeypleServerAsyncNodeImpl.class);
+  private static final Logger logger = LoggerFactory.getLogger(AsyncNodeServerImpl.class);
 
   private final AsyncEndpointServer endpoint;
   private final Map<String, SessionManager> sessionManagers;
@@ -46,8 +46,8 @@ public final class KeypleServerAsyncNodeImpl extends AbstractKeypleNode
    * @param endpoint The user server async endpoint (must be not null).
    * @param timeoutInSecond The default timeout (in seconds) to use.
    */
-  KeypleServerAsyncNodeImpl(
-          AbstractKeypleMessageHandler handler, AsyncEndpointServer endpoint, int timeoutInSecond) {
+  AsyncNodeServerImpl(
+          AbstractMessageHandler handler, AsyncEndpointServer endpoint, int timeoutInSecond) {
     super(handler, timeoutInSecond);
     this.endpoint = endpoint;
     this.sessionManagers = new HashMap<String, SessionManager>();
@@ -61,7 +61,7 @@ public final class KeypleServerAsyncNodeImpl extends AbstractKeypleNode
 
   /** {@inheritDoc} */
   @Override
-  public KeypleMessageDto sendRequest(KeypleMessageDto msg) {
+  public MessageDto sendRequest(MessageDto msg) {
     msg.setServerNodeId(nodeId);
     SessionManager manager = getManagerForHandler(msg.getSessionId());
     return manager.sendRequest(msg);
@@ -69,7 +69,7 @@ public final class KeypleServerAsyncNodeImpl extends AbstractKeypleNode
 
   /** {@inheritDoc} */
   @Override
-  public void sendMessage(KeypleMessageDto msg) {
+  public void sendMessage(MessageDto msg) {
     msg.setServerNodeId(nodeId);
     SessionManager manager = getManagerForHandler(msg.getSessionId());
     manager.sendMessage(msg);
@@ -99,7 +99,7 @@ public final class KeypleServerAsyncNodeImpl extends AbstractKeypleNode
 
   /** {@inheritDoc} */
   @Override
-  public void onMessage(KeypleMessageDto msg) {
+  public void onMessage(MessageDto msg) {
 
     Assert.getInstance() //
         .notNull(msg, "msg") //
@@ -166,7 +166,7 @@ public final class KeypleServerAsyncNodeImpl extends AbstractKeypleNode
      * @param msg The message received from the endpoint.
      * @throws IllegalStateException in case of bad use.
      */
-    private synchronized void onMessage(KeypleMessageDto msg) {
+    private synchronized void onMessage(MessageDto msg) {
       checkState(
           SessionManagerState.INITIALIZED, //
           SessionManagerState.ON_MESSAGE, //
@@ -192,7 +192,7 @@ public final class KeypleServerAsyncNodeImpl extends AbstractKeypleNode
      * @throws KeypleTimeoutException if a timeout occurs.
      * @throws RuntimeException if an endpoint error occurs.
      */
-    private synchronized KeypleMessageDto sendRequest(KeypleMessageDto msg) {
+    private synchronized MessageDto sendRequest(MessageDto msg) {
       checkIfExternalErrorOccurred();
       state = SessionManagerState.SEND_REQUEST_BEGIN;
       response = null;
@@ -208,7 +208,7 @@ public final class KeypleServerAsyncNodeImpl extends AbstractKeypleNode
      * @param msg The message to send.
      * @throws RuntimeException if an endpoint error occurs.
      */
-    private synchronized void sendMessage(KeypleMessageDto msg) {
+    private synchronized void sendMessage(MessageDto msg) {
       checkIfExternalErrorOccurred();
       state = SessionManagerState.SEND_MESSAGE;
       endpoint.sendMessage(msg);

@@ -30,7 +30,7 @@ final class VirtualReader extends AbstractVirtualReader {
   VirtualReader(
       String pluginName,
       String nativeReaderName,
-      AbstractKeypleNode node,
+      AbstractNode node,
       String sessionId,
       String clientNodeId) {
     super(pluginName, nativeReaderName, node, sessionId, clientNodeId);

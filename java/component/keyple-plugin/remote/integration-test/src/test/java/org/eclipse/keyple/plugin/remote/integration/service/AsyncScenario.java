@@ -13,7 +13,7 @@ package org.eclipse.keyple.plugin.remote.integration.service;
 
 import java.util.UUID;
 import org.eclipse.keyple.plugin.remote.exception.KeypleTimeoutException;
-import org.eclipse.keyple.plugin.remote.impl.AbstractKeypleNode;
+import org.eclipse.keyple.plugin.remote.impl.AbstractNode;
 import org.eclipse.keyple.plugin.remote.integration.common.app.ReaderEventFilter;
 import org.eclipse.keyple.plugin.remote.integration.common.endpoint.StubNetworkConnectionException;
 import org.eclipse.keyple.plugin.remote.integration.common.endpoint.service.StubAsyncClientEndpoint;
@@ -174,7 +174,7 @@ public class AsyncScenario extends BaseScenario {
             .withoutReaderObservation()
             .getService();
 
-    setTimeoutInNode((AbstractKeypleNode) NativeClientUtils.getAsyncNode(), 2000);
+    setTimeoutInNode((AbstractNode) NativeClientUtils.getAsyncNode(), 2000);
 
     remoteselection_remoteTransaction();
   }

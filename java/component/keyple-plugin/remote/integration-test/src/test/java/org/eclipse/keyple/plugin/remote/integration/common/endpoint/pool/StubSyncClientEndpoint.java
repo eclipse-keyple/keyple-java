@@ -18,8 +18,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.service.exception.KeypleRuntimeException;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
+import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
-import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remote.RemotePoolClientPlugin;
 import org.eclipse.keyple.plugin.remote.integration.common.util.JacksonParser;
 import org.eclipse.keyple.plugin.remote.impl.NativePoolServerUtils;
@@ -40,7 +40,7 @@ public class StubSyncClientEndpoint implements SyncEndpointClient {
   public StubSyncClientEndpoint() {}
 
   @Override
-  public List<KeypleMessageDto> sendRequest(KeypleMessageDto msg) {
+  public List<MessageDto> sendRequest(MessageDto msg) {
     final String responsesJson;
     // serialize request
     final String request = JacksonParser.toJson(msg);
@@ -49,7 +49,7 @@ public class StubSyncClientEndpoint implements SyncEndpointClient {
     try {
       responsesJson = taskPool.submit(sendData(request)).get();
 
-      List<KeypleMessageDto> responses = JacksonParser.fromJsonList(responsesJson);
+      List<MessageDto> responses = JacksonParser.fromJsonList(responsesJson);
 
       return responses;
     } catch (InterruptedException e) {
@@ -68,7 +68,7 @@ public class StubSyncClientEndpoint implements SyncEndpointClient {
       @Override
       public String call() throws Exception {
         // Send the dto to the sync node
-        List<KeypleMessageDto> responses =
+        List<MessageDto> responses =
             NativePoolServerUtils.getSyncNode().onRequest(JacksonParser.fromJson(data));
 
         return JacksonParser.toJson(responses);

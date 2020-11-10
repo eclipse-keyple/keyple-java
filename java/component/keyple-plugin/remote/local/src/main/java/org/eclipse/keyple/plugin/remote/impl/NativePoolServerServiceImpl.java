@@ -21,7 +21,7 @@ import org.eclipse.keyple.core.service.exception.KeypleException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
-import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.NativePoolServerService;
 
 /**
@@ -61,12 +61,12 @@ final class NativePoolServerServiceImpl extends AbstractNativeService
   }
 
   @Override
-  protected void onMessage(KeypleMessageDto msg) {
-    KeypleMessageDto response;
+  protected void onMessage(MessageDto msg) {
+    MessageDto response;
     ProxyReader reader;
     ReaderPoolPlugin poolPlugin;
     try {
-      switch (KeypleMessageDto.Action.valueOf(msg.getAction())) {
+      switch (MessageDto.Action.valueOf(msg.getAction())) {
         case ALLOCATE_READER:
           String groupReference =
               KeypleJsonParser.getParser()
@@ -75,18 +75,18 @@ final class NativePoolServerServiceImpl extends AbstractNativeService
                   .getAsString();
           poolPlugin = getAPoolPlugin(groupReference);
           reader = (ProxyReader) poolPlugin.allocateReader(groupReference);
-          response = new KeypleMessageDto(msg).setNativeReaderName(reader.getName()).setBody(null);
+          response = new MessageDto(msg).setNativeReaderName(reader.getName()).setBody(null);
           break;
         case RELEASE_READER:
           releaseReader(msg.getNativeReaderName());
-          response = new KeypleMessageDto(msg).setBody(null);
+          response = new MessageDto(msg).setBody(null);
           break;
         case GET_READER_GROUP_REFERENCES:
           SortedSet<String> groupReferences = getAllGroupReferences();
           JsonObject body = new JsonObject();
           body.add(
               "readerGroupReferences", KeypleJsonParser.getParser().toJsonTree(groupReferences));
-          response = new KeypleMessageDto(msg).setBody(body.toString());
+          response = new MessageDto(msg).setBody(body.toString());
           break;
         default:
           reader = findReader(msg.getNativeReaderName());
@@ -95,8 +95,8 @@ final class NativePoolServerServiceImpl extends AbstractNativeService
       }
     } catch (KeypleException e) {
       response =
-          new KeypleMessageDto(msg) //
-              .setAction(KeypleMessageDto.Action.ERROR.name()) //
+          new MessageDto(msg) //
+              .setAction(MessageDto.Action.ERROR.name()) //
               .setBody(KeypleJsonParser.getParser().toJson(new BodyError(e)));
     }
     getNode().sendMessage(response);

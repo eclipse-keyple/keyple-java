@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.spi;
 
-import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.AsyncNodeServer;
 
 /**
@@ -24,7 +24,7 @@ import org.eclipse.keyple.plugin.remote.AsyncNodeServer;
  *
  * <ul>
  *   <li>Associate the session with the the accessible <b>sessionId</b> value using the method
- *       {@link KeypleMessageDto#getSessionId()} on the received message in order to be able to
+ *       {@link MessageDto#getSessionId()} on the received message in order to be able to
  *       retrieve the session later.
  *   <li>Retrieve the node {@link AsyncNodeServer} using one of the following <b>server</b>
  *       utility methods, depending on your use case :
@@ -33,7 +33,7 @@ import org.eclipse.keyple.plugin.remote.AsyncNodeServer;
  *         <li>{@code NativeSeServerUtils.getAsyncNode()}
  *         <li>{@code NativeSePoolServerUtils.getAsyncNode()}
  *       </ul>
- *   <li>Call the method {@link AsyncNodeServer#onMessage(KeypleMessageDto)} on the node.
+ *   <li>Call the method {@link AsyncNodeServer#onMessage(MessageDto)} on the node.
  *   <li>Call the method {@link AsyncNodeServer#onClose(String)} on the node after the session
  *       closing.
  * </ul>
@@ -46,18 +46,18 @@ import org.eclipse.keyple.plugin.remote.AsyncNodeServer;
 public interface AsyncEndpointServer {
 
   /**
-   * This method is called by {@link AsyncNodeServer} to send a {@link KeypleMessageDto} to
+   * This method is called by {@link AsyncNodeServer} to send a {@link MessageDto} to
    * the client.<br>
    * You have to :
    *
    * <ul>
    *   <li>Find the opened session using the accessible <b>sessionId</b> value using the method
-   *       {@link KeypleMessageDto#getSessionId()} on the provided message to send.
-   *   <li>Serialize and send the {@link KeypleMessageDto} to the client.
+   *       {@link MessageDto#getSessionId()} on the provided message to send.
+   *   <li>Serialize and send the {@link MessageDto} to the client.
    * </ul>
    *
    * @param msg The message to send.
    * @since 1.0
    */
-  void sendMessage(KeypleMessageDto msg);
+  void sendMessage(MessageDto msg);
 }
