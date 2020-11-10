@@ -29,7 +29,7 @@ import org.eclipse.keyple.example.common.calypso.stub.StubCalypsoClassic;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubPluginFactory;
 import org.eclipse.keyple.plugin.stub.StubReader;
-import org.eclipse.keyple.plugin.stub.StubSecureElement;
+import org.eclipse.keyple.plugin.stub.StubSmartCard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,10 +80,10 @@ public class ExplicitSelectionAid_Stub {
     }
 
     // Create 'virtual' Calypso PO
-    StubSecureElement calypsoStubCard = new StubCalypsoClassic();
+    StubSmartCard calypsoStubCard = new StubCalypsoClassic();
 
     logger.info("Insert stub PO.");
-    poReader.insertSe(calypsoStubCard);
+    poReader.insertCard(calypsoStubCard);
 
     logger.info(
         "=============== UseCase Calypso #1: AID based explicit selection ==================");
@@ -164,7 +164,7 @@ public class ExplicitSelectionAid_Stub {
     }
 
     logger.info("Remove stub PO.");
-    poReader.removeSe();
+    poReader.removeCard();
 
     System.exit(0);
   }

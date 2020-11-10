@@ -40,7 +40,7 @@ import org.eclipse.keyple.example.common.calypso.stub.StubSamCalypsoClassic;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubPluginFactory;
 import org.eclipse.keyple.plugin.stub.StubReader;
-import org.eclipse.keyple.plugin.stub.StubSecureElement;
+import org.eclipse.keyple.plugin.stub.StubSmartCard;
 import org.eclipse.keyple.plugin.stub.StubSupportedProtocols;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,16 +101,16 @@ public class PoAuthentication_Stub {
         StubSupportedProtocols.ISO_7816_3.name(), ContactsCardCommonProtocols.ISO_7816_3.name());
 
     // Create 'virtual' Calypso PO
-    StubSecureElement calypsoStubCard = new StubCalypsoClassic();
+    StubSmartCard calypsoStubCard = new StubCalypsoClassic();
 
     logger.info("Insert stub PO.");
-    ((StubReader) poReader).insertSe(calypsoStubCard);
+    ((StubReader) poReader).insertCard(calypsoStubCard);
 
     // Create 'virtual' Calypso SAM
-    StubSecureElement calypsoSamStubCard = new StubSamCalypsoClassic();
+    StubSmartCard calypsoSamStubCard = new StubSamCalypsoClassic();
 
     logger.info("Insert stub SAM.");
-    ((StubReader) samReader).insertSe(calypsoSamStubCard);
+    ((StubReader) samReader).insertCard(calypsoSamStubCard);
 
     // Create a SAM resource after selecting the SAM
     CardSelection samSelection = new CardSelection();

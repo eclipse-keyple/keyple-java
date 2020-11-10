@@ -18,7 +18,7 @@ import org.eclipse.keyple.example.common.generic.stub.StubSe2;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubPluginFactory;
 import org.eclipse.keyple.plugin.stub.StubReader;
-import org.eclipse.keyple.plugin.stub.StubSecureElement;
+import org.eclipse.keyple.plugin.stub.StubSmartCard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,26 +62,26 @@ public class Demo_ObservableReaderNotification_Stub {
     StubReader reader2 = (StubReader) (stubPlugin.getReader(READER2_NAME));
 
     // Create 'virtual' Hoplink and SAM card
-    StubSecureElement se1 = new StubSe1();
-    StubSecureElement se2 = new StubSe2();
+    StubSmartCard se1 = new StubSe1();
+    StubSmartCard se2 = new StubSe2();
 
     logger.info("Insert card into reader 1.");
-    reader1.insertSe(se1);
+    reader1.insertCard(se1);
 
     Thread.sleep(100);
 
     logger.info("Insert card into reader 2.");
-    reader2.insertSe(se2);
+    reader2.insertCard(se2);
 
     Thread.sleep(100);
 
     logger.info("Remove card from reader 1.");
-    reader1.removeSe();
+    reader1.removeCard();
 
     Thread.sleep(100);
 
     logger.info("Remove card from reader 2.");
-    reader2.removeSe();
+    reader2.removeCard();
 
     Thread.sleep(100);
 
