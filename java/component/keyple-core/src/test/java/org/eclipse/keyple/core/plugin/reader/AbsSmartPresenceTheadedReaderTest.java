@@ -148,8 +148,7 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
   public static BlankPresenceWaitForCardBlockingThreadedReader getSmartSpy(
       String pluginName, String readerName) {
     BlankPresenceWaitForCardBlockingThreadedReader r =
-        Mockito.spy(
-            new BlankPresenceWaitForCardBlockingThreadedReader(pluginName, readerName, 1));
+        Mockito.spy(new BlankPresenceWaitForCardBlockingThreadedReader(pluginName, readerName, 1));
     return r;
   }
 
