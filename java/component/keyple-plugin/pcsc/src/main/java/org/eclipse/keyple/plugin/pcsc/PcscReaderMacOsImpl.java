@@ -12,16 +12,26 @@
 package org.eclipse.keyple.plugin.pcsc;
 
 import javax.smartcardio.CardTerminal;
+import org.eclipse.keyple.core.plugin.reader.WaitForCardInsertionNonBlocking;
 
-final class PcscReaderMacOsImpl extends AbstractPcscReader {
+/**
+ * (package-private)<br>
+ * Implementation of {@link AbstractPcscReader} for all non-MacOS platforms.
+ *
+ * <p>Implements {@link WaitForCardInsertionNonBlocking} to enable non-blocking detection of card
+ * insertion.
+ *
+ * @since 0.9
+ */
+final class PcscReaderMacOsImpl extends AbstractPcscReader
+    implements WaitForCardInsertionNonBlocking {
 
   /**
-   * This constructor should only be called by PcscPlugin PCSC reader parameters are initialized
-   * with their default values as defined in setParameter.
+   * This constructor should only be called by a PcscPlugin on macOS platforms.
    *
    * @param pluginName the name of the plugin
    * @param terminal the PC/SC terminal
-   * @since 0.9
+   * @since 1.0
    */
   protected PcscReaderMacOsImpl(String pluginName, CardTerminal terminal) {
     super(pluginName, terminal);
