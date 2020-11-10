@@ -1,5 +1,5 @@
 /* **************************************************************************************
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information
  * regarding copyright ownership.
@@ -11,27 +11,35 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.pcsc;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.smartcardio.*;
-import org.eclipse.keyple.core.plugin.reader.AbstractObservableLocalReader;
-import org.eclipse.keyple.core.plugin.reader.SmartInsertionReader;
-import org.eclipse.keyple.core.plugin.reader.SmartRemovalReader;
-import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.plugin.reader.WaitForCardInsertionBlocking;
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Package private class implementing the {@link Reader} interface for PC/SC based readers.
+ * (package-private)<br>
+ * Implementation of {@link AbstractPcscReader} for all non-MacOS platforms.
  *
- * <p>A PC/SC reader is observable ({@link AbstractObservableLocalReader}), autonomous to detect the
- * insertion of cards ({@link SmartInsertionReader}, able to detect the removal of a card prior an
- * attempt to communicate with it ({@link SmartRemovalReader} and has specific settings ({@link
- * PcscReader}.
+ * <p>Implements {@link WaitForCardInsertionBlocking} to enable efficient blocking detection of card
+ * insertion.
  *
- * @since 0.9
+ * @since 1.0
  */
-final class PcscReaderImpl extends AbstractPcscReader {
+final class PcscReaderImpl extends AbstractPcscReader implements WaitForCardInsertionBlocking {
+
+  private static final Logger logger = LoggerFactory.getLogger(PcscReaderImpl.class);
+
+  // the latency delay value (in ms) determines the maximum time during which the
+  // waitForCardPresent blocking functions will execute.
+  // This will correspond to the capacity to react to the interrupt signal of
+  // the thread (see cancel method of the Future object)
+  private static final long INSERT_LATENCY = 500;
+  private final AtomicBoolean loopWaitCard = new AtomicBoolean();
 
   /**
-   * This constructor should only be called by PcscPlugin PCSC reader parameters are initialized
-   * with their default values as defined in setParameter.
+   * This constructor should only be called a PcscPlugin on non-macOS platforms.
    *
    * @param pluginName the name of the plugin
    * @param terminal the PC/SC terminal
@@ -39,5 +47,63 @@ final class PcscReaderImpl extends AbstractPcscReader {
    */
   protected PcscReaderImpl(String pluginName, CardTerminal terminal) {
     super(pluginName, terminal);
+  }
+
+  /**
+   * Implements from InsertionSmartDetectionReader<br>
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
+  @Override
+  public boolean waitForCardPresent() {
+
+    logger.debug(
+        "[{}] waitForCardPresent => loop with latency of {} ms.", this.getName(), INSERT_LATENCY);
+
+    // activate loop
+    loopWaitCard.set(true);
+
+    try {
+      while (loopWaitCard.get()) {
+        if (logger.isTraceEnabled()) {
+          logger.trace("[{}] waitForCardPresent => looping", this.getName());
+        }
+        if (terminal.waitForCardPresent(INSERT_LATENCY)) {
+          // card inserted
+          return true;
+        } else {
+          if (Thread.interrupted()) {
+            logger.debug("[{}] waitForCardPresent => task has been cancelled", this.getName());
+            // task has been cancelled
+            return false;
+          }
+        }
+      }
+      // if loop was stopped
+      return false;
+    } catch (CardException e) {
+      throw new KeypleReaderIOException(
+          "["
+              + this.getName()
+              + "] Exception occurred in waitForCardPresent. "
+              + "Message: "
+              + e.getMessage());
+    } catch (Throwable t) {
+      // can or can not happen depending on terminal.waitForCardPresent
+      logger.debug("[{}] waitForCardPresent => Throwable caught.", this.getName(), t);
+      return false;
+    }
+  }
+
+  /**
+   * Implements from InsertionSmartDetectionReader<br>
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
+  @Override
+  public void stopWaitForCard() {
+    loopWaitCard.set(false);
   }
 }
