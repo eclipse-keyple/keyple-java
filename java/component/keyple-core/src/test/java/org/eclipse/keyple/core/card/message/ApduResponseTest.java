@@ -72,12 +72,6 @@ public class ApduResponseTest {
     assertFalse(response.isSuccessful());
   }
 
-  @Test
-  public void testToStringNull() {
-    ApduResponse resp = new ApduResponse(null, null);
-    assertNotNull(resp.toString());
-  }
-
   /*
    * HELPERS
    */

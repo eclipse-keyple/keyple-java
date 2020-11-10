@@ -21,8 +21,8 @@ import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.service.exception.KeypleException;
 
 /**
- * The AbstractCardSelectionRequest class combines a CardSelector with additional helper methods
- * useful to the selection process done in {@link CardSelection}.
+ * The AbstractCardSelectionRequest class embeds a {@link CardSelector} with additional helper
+ * methods useful to the selection process done in {@link CardSelection}.
  *
  * <p>This class may also be extended to add particular features specific to a card family.
  */
@@ -32,7 +32,13 @@ public abstract class AbstractCardSelectionRequest<T extends AbstractApduCommand
   /** optional command builder list of command to be executed following the selection process */
   private final List<T> commandBuilders = new ArrayList<T>();
 
-  public AbstractCardSelectionRequest(CardSelector cardSelector) {
+  /**
+   * (protected)<br>
+   * Constructor.
+   *
+   * @param cardSelector A not null {@link CardSelector}.
+   */
+  protected AbstractCardSelectionRequest(CardSelector cardSelector) {
     this.cardSelector = cardSelector;
   }
 

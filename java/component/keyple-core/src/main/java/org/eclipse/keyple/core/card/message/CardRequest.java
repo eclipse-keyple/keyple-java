@@ -26,7 +26,7 @@ public final class CardRequest implements Serializable {
   private final List<ApduRequest> apduRequests;
 
   /**
-   * Builds a request made of a list of {@link ApduRequest}.
+   * Constructor.
    *
    * @param apduRequests a not empty list of {@link ApduRequest}
    * @since 0.9

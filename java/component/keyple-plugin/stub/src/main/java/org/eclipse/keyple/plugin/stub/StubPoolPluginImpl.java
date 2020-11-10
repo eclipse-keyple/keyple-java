@@ -20,10 +20,10 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 
 /**
- * Simulates a @{@link ReaderPoolPlugin} with {@link StubReaderImpl} and {@link StubSecureElement}
+ * Simulates a @{@link ReaderPoolPlugin} with {@link StubReaderImpl} and {@link StubSmartCard}
  * Manages allocation readers by group reference, Limitations : - each group can contain only one
- * StubReader thus one StubSecureElement This class uses internally @{@link StubPluginImpl} which is
- * a singleton.
+ * StubReader thus one StubSmartCard This class uses internally @{@link StubPluginImpl} which is a
+ * singleton.
  */
 final class StubPoolPluginImpl implements StubPoolPlugin {
 
@@ -51,8 +51,7 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
   }
 
   @Override
-  public Reader plugStubPoolReader(
-      String groupReference, String readerName, StubSecureElement card) {
+  public Reader plugStubPoolReader(String groupReference, String readerName, StubSmartCard card) {
     try {
       // create new reader
       stubPlugin.plugStubReader(readerName, true);
@@ -60,9 +59,7 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
       // get new reader
       StubReaderImpl newReader = (StubReaderImpl) stubPlugin.getReader(readerName);
 
-      newReader.register();
-
-      newReader.insertSe(card);
+      newReader.insertCard(card);
 
       // map reader to groupReference
       readerPool.put(groupReference, newReader);
@@ -147,9 +144,9 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
     /** Remove and Re-insert card to reset logical channel */
     StubReaderImpl stubReader = ((StubReaderImpl) reader);
     if (stubReader.checkCardPresence()) {
-      StubSecureElement card = stubReader.getSe();
-      stubReader.removeSe();
-      stubReader.insertSe(card);
+      StubSmartCard card = stubReader.getSmartcard();
+      stubReader.removeCard();
+      stubReader.insertCard(card);
     }
 
     allocatedReader.remove(reader.getName());

@@ -221,7 +221,7 @@ public class CalypsoPoTest {
   @Test(expected = IllegalStateException.class)
   public void testRev1_1() {
     AnswerToReset atr = new AnswerToReset(ByteArrayUtil.fromHex(ATR_VALUE_2));
-    ApduResponse fciData = new ApduResponse(null, null);
+    ApduResponse fciData = new ApduResponse(ByteArrayUtil.fromHex("0000"), null);
     CardSelectionResponse selectionData =
         new CardSelectionResponse(new SelectionStatus(atr, fciData, true), null);
     CalypsoPo calypsoPo = new CalypsoPo(selectionData);
@@ -230,7 +230,7 @@ public class CalypsoPoTest {
   @Test
   public void testRev1_2() {
     AnswerToReset atr = new AnswerToReset(ByteArrayUtil.fromHex(ATR_VALUE));
-    ApduResponse fciData = new ApduResponse(null, null);
+    ApduResponse fciData = new ApduResponse(ByteArrayUtil.fromHex("0000"), null);
     CardSelectionResponse selectionData =
         new CardSelectionResponse(new SelectionStatus(atr, fciData, true), null);
     CalypsoPo calypsoPo = new CalypsoPo(selectionData);

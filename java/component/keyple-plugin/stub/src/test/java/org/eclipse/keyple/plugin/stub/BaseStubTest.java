@@ -29,7 +29,7 @@ public class BaseStubTest {
 
   @Rule public TestName name = new TestName();
 
-  public void setupStub() throws Exception {
+  public void registerStub() throws Exception {
     logger.info("------------------------------");
     logger.info("Test {}", name.getMethodName());
     logger.info("------------------------------");
@@ -48,14 +48,14 @@ public class BaseStubTest {
     Thread.sleep(100);
   }
 
-  public void clearStub()
+  public void unregisterStub()
       throws InterruptedException, KeypleReaderException, KeyplePluginNotFoundException {
     logger.info("---------");
     logger.info("TearDown ");
     logger.info("---------");
 
-    stubPlugin.unplugStubReaders(stubPlugin.getReaderNames(), true);
-
     stubPlugin.clearObservers();
+    stubPlugin.unplugStubReaders(stubPlugin.getReaderNames(), true);
+    stubPlugin.unregister();
   }
 }

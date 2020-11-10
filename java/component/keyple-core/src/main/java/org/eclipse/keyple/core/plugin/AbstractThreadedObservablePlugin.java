@@ -248,13 +248,13 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
       }
       /* notify disconnections if any and update the reader list */
       if (!changedReaderNames.isEmpty()) {
-        notifyChanges(PluginEvent.EventType.READER_DISCONNECTED, changedReaderNames);
         /* list update */
         for (Reader reader : readerCollection) {
           if (!actualNativeReadersNames.contains(reader.getName())) {
             removeReader(reader);
           }
         }
+        notifyChanges(PluginEvent.EventType.READER_DISCONNECTED, changedReaderNames);
         /* clean the list for a possible connection notification */
         changedReaderNames.clear();
       }

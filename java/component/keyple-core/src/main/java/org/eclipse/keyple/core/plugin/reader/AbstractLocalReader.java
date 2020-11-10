@@ -70,7 +70,8 @@ public abstract class AbstractLocalReader extends AbstractReader {
   private boolean useDefaultProtocol;
 
   /**
-   * Reader constructor
+   * (protected)<br>
+   * Constructor.
    *
    * <p>Defines the plugin and reader names.
    *
@@ -170,13 +171,15 @@ public abstract class AbstractLocalReader extends AbstractReader {
     /*
      * The successful status codes list for this command is provided.
      */
-    fciResponse =
-        processApduRequest(
-            new ApduRequest(
-                "Internal Get Data",
-                getDataCommand,
-                false,
-                aidSelector.getSuccessfulSelectionStatusCodes()));
+    ApduRequest apduRequest =
+        new ApduRequest(getDataCommand, false)
+            .setSuccessfulStatusCodes(aidSelector.getSuccessfulSelectionStatusCodes());
+
+    if (logger.isDebugEnabled()) {
+      apduRequest.setName("Internal Get Data");
+    }
+
+    fciResponse = processApduRequest(apduRequest);
 
     if (!fciResponse.isSuccessful() && logger.isDebugEnabled()) {
       logger.debug(
@@ -228,13 +231,15 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * we use here processApduRequest to manage case 4 hack. The successful status codes list
      * for this command is provided.
      */
-    fciResponse =
-        processApduRequest(
-            new ApduRequest(
-                "Internal Select Application",
-                selectApplicationCommand,
-                true,
-                aidSelector.getSuccessfulSelectionStatusCodes()));
+    ApduRequest apduRequest =
+        new ApduRequest(selectApplicationCommand, true)
+            .setSuccessfulStatusCodes(aidSelector.getSuccessfulSelectionStatusCodes());
+
+    if (logger.isDebugEnabled()) {
+      apduRequest.setName("Internal Select Application");
+    }
+
+    fciResponse = processApduRequest(apduRequest);
 
     if (!fciResponse.isSuccessful() && logger.isDebugEnabled()) {
       logger.debug(
