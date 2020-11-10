@@ -14,7 +14,8 @@ package org.eclipse.keyple.plugin.android.nfc
 import android.app.Activity
 import android.content.Intent
 import android.nfc.NfcAdapter
-import org.eclipse.keyple.core.plugin.reader.SmartRemovalReader
+import org.eclipse.keyple.core.plugin.reader.WaitForCardInsertionAutonomous
+import org.eclipse.keyple.core.plugin.reader.WaitForCardRemovalBlocking
 import org.eclipse.keyple.core.service.Reader
 
 /**
@@ -25,7 +26,7 @@ import org.eclipse.keyple.core.service.Reader
  *
  * Optimized for android 4.4 (API 19) to  6.0 (API 23)
  */
-interface AndroidNfcReader : SmartRemovalReader {
+interface AndroidNfcReader : WaitForCardInsertionAutonomous, WaitForCardRemovalBlocking {
     /**
      * Gets a string describing the low level description of the current tag.
      *

@@ -21,7 +21,6 @@ import android.os.Bundle
 import java.io.IOException
 import java.util.HashMap
 import org.eclipse.keyple.core.plugin.reader.AbstractObservableLocalReader
-import org.eclipse.keyple.core.plugin.reader.ObservableReaderStateService
 import org.eclipse.keyple.core.service.exception.KeypleReaderException
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.util.ByteArrayUtil
@@ -96,22 +95,23 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
             return options
         }
 
-    override fun initStateService(): ObservableReaderStateService {
-
-        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            ObservableReaderStateService.builder(this)
-                    .waitForCardInsertionWithNativeDetection()
-                    .waitForCardProcessingWithNativeDetection()
-                    .waitForCardRemovalWithPollingDetection()
-                    .build()
-        } else {
-            ObservableReaderStateService.builder(this)
-                    .waitForCardInsertionWithNativeDetection()
-                    .waitForCardProcessingWithNativeDetection()
-                    .waitForCardRemovalWithSmartDetection()
-                    .build()
-        }
-    }
+// FIXME Create two implementation for both cases
+//    override fun initStateService(): ObservableReaderStateService {
+//
+//        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+//            ObservableReaderStateService.builder(this)
+//                    .waitForCardInsertionWithNativeDetection()
+//                    .waitForCardProcessingWithNativeDetection()
+//                    .waitForCardRemovalWithPollingDetection()
+//                    .build()
+//        } else {
+//            ObservableReaderStateService.builder(this)
+//                    .waitForCardInsertionWithNativeDetection()
+//                    .waitForCardProcessingWithNativeDetection()
+//                    .waitForCardRemovalWithSmartDetection()
+//                    .build()
+//        }
+//    }
 
     /**
      * Get Reader parameters
