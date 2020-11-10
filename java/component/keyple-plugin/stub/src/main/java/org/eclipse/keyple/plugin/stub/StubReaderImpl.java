@@ -13,9 +13,9 @@ package org.eclipse.keyple.plugin.stub;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.eclipse.keyple.core.plugin.reader.AbstractObservableLocalReader;
-import org.eclipse.keyple.core.plugin.reader.ObservableReaderStateService;
-import org.eclipse.keyple.core.plugin.reader.SmartInsertionReader;
-import org.eclipse.keyple.core.plugin.reader.SmartRemovalReader;
+import org.eclipse.keyple.core.plugin.reader.WaitForCardInsertionBlocking;
+import org.eclipse.keyple.core.plugin.reader.WaitForCardRemovalBlocking;
+import org.eclipse.keyple.core.plugin.reader.WaitForCardRemovalDuringProcessing;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
@@ -29,7 +29,10 @@ import org.slf4j.LoggerFactory;
  * ReaderEvent} : CARD_INSERTED, CARD_REMOVED
  */
 class StubReaderImpl extends AbstractObservableLocalReader
-    implements StubReader, SmartInsertionReader, SmartRemovalReader {
+    implements StubReader,
+        WaitForCardInsertionBlocking,
+        WaitForCardRemovalDuringProcessing,
+        WaitForCardRemovalBlocking {
 
   private static final Logger logger = LoggerFactory.getLogger(StubReaderImpl.class);
 
@@ -207,8 +210,8 @@ class StubReaderImpl extends AbstractObservableLocalReader
   }
 
   /**
-   * Defined in the {@link SmartRemovalReader} interface, this method is called by the monitoring
-   * thread to check the card absence
+   * Defined in the {@link WaitForCardRemovalBlocking} interface, this method is called by the
+   * monitoring thread to check the card absence
    *
    * @return true if the card is absent
    */
@@ -234,14 +237,5 @@ class StubReaderImpl extends AbstractObservableLocalReader
   @Override
   public void stopWaitForCardRemoval() {
     loopWaitCardRemoval.set(false);
-  }
-
-  @Override
-  protected final ObservableReaderStateService initStateService() {
-    return ObservableReaderStateService.builder(this)
-        .waitForCardInsertionWithSmartDetection()
-        .waitForCardProcessingWithSmartDetection()
-        .waitForCardRemovalWithSmartDetection()
-        .build();
   }
 }
