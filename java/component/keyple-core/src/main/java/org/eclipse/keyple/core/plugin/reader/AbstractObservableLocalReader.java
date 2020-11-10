@@ -114,32 +114,20 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
   protected final ObservableReaderStateService stateService;
 
   /**
-   * Initialize the ObservableReaderStateService with the possible states and their implementation.
-   * ObservableReaderStateService define the initial state.
-   *
-   * <p>Make sure to initialize the stateService in your reader constructor with stateService =
-   * initStateService()
-   *
-   * <p>
-   *
-   * @return initialized state stateService with possible states and the init state
-   */
-  protected abstract ObservableReaderStateService initStateService();
-
-  /**
    * (protected)<br>
    * Constructor.
    *
    * <p>Force the definition of a name through the use of super method.
    *
-   * <p>
+   * <p>Initialize the ObservableReaderStateService with the possible states and their
+   * implementation. ObservableReaderStateService define the initial state.
    *
    * @param pluginName the name of the plugin that instantiated the reader
    * @param readerName the name of the reader
    */
-  public AbstractObservableLocalReader(String pluginName, String readerName) {
+  protected AbstractObservableLocalReader(String pluginName, String readerName) {
     super(pluginName, readerName);
-    stateService = initStateService();
+    stateService = new ObservableReaderStateService(this);
   }
 
   /**
@@ -347,22 +335,6 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
     setDefaultSelectionRequest(defaultSelectionsRequest, notificationMode);
     // initiates the card detection
     startCardDetection(pollingMode);
-  }
-
-  /**
-   * (package-private)<br>
-   * This method initiates the card removal sequence.
-   *
-   * <p>The reader will remain in the WAIT_FOR_SE_REMOVAL state as long as the card is present. It
-   * will change to the WAIT_FOR_START_DETECTION or WAIT_FOR_SE_INSERTION state depending on what
-   * was set when the detection was started.
-   */
-  @Override
-  final void terminateCardCommunication() {
-    if (logger.isTraceEnabled()) {
-      logger.trace("[{}] start removal sequence of the reader", getName());
-    }
-    this.stateService.onEvent(InternalEvent.SE_PROCESSED);
   }
 
   /**
