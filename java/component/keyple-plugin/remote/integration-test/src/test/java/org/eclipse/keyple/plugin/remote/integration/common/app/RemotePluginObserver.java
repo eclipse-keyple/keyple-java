@@ -25,9 +25,9 @@ import org.eclipse.keyple.plugin.remote.integration.common.model.TransactionResu
 import org.eclipse.keyple.plugin.remote.integration.common.model.UserInput;
 import org.eclipse.keyple.plugin.remote.integration.common.util.CalypsoUtilities;
 import org.eclipse.keyple.plugin.remote.integration.service.BaseScenario;
-import org.eclipse.keyple.plugin.remote.virtual.RemoteServerObservableReader;
-import org.eclipse.keyple.plugin.remote.virtual.RemoteServerPlugin;
-import org.eclipse.keyple.plugin.remote.virtual.RemoteServerReader;
+import org.eclipse.keyple.plugin.remote.RemoteServerObservableReader;
+import org.eclipse.keyple.plugin.remote.RemoteServerPlugin;
+import org.eclipse.keyple.plugin.remote.RemoteServerReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

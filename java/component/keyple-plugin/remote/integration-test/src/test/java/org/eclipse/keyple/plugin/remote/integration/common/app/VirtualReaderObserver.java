@@ -20,8 +20,8 @@ import org.eclipse.keyple.core.service.exception.KeypleException;
 import org.eclipse.keyple.plugin.remote.integration.common.model.TransactionResult;
 import org.eclipse.keyple.plugin.remote.integration.common.model.UserInput;
 import org.eclipse.keyple.plugin.remote.integration.common.util.CalypsoUtilities;
-import org.eclipse.keyple.plugin.remote.virtual.RemoteServerObservableReader;
-import org.eclipse.keyple.plugin.remote.virtual.RemoteServerPlugin;
+import org.eclipse.keyple.plugin.remote.RemoteServerObservableReader;
+import org.eclipse.keyple.plugin.remote.RemoteServerPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

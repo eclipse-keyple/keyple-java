@@ -14,16 +14,17 @@ package org.eclipse.keyple.plugin.remote.integration.common.endpoint.pool;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
-import org.eclipse.keyple.plugin.remote.core.KeypleClientAsync;
-import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.KeypleClientAsync;
+import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.RemotePoolClientPlugin;
 import org.eclipse.keyple.plugin.remote.integration.common.util.JacksonParser;
-import org.eclipse.keyple.plugin.remote.virtual.impl.RemotePoolClientUtils;
+import org.eclipse.keyple.plugin.remote.impl.RemotePoolClientUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Async client endpoint to test {@link
- * org.eclipse.keyple.plugin.remote.virtual.RemotePoolClientPlugin}. Send and receive asynchronously
+ * RemotePoolClientPlugin}. Send and receive asynchronously
  * json serialized {@link KeypleMessageDto} with {@link StubAsyncServerEndpoint}.
  */
 public class StubAsyncClientEndpoint implements KeypleClientAsync {

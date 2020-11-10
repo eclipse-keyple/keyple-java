@@ -16,8 +16,8 @@ import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.plugin.remote.integration.common.se.StubCalypsoClassic;
-import org.eclipse.keyple.plugin.remote.nativ.NativePoolServerService;
-import org.eclipse.keyple.plugin.remote.virtual.RemotePoolClientPlugin;
+import org.eclipse.keyple.plugin.remote.NativePoolServerService;
+import org.eclipse.keyple.plugin.remote.RemotePoolClientPlugin;
 import org.eclipse.keyple.plugin.stub.*;
 
 public abstract class BaseScenario {

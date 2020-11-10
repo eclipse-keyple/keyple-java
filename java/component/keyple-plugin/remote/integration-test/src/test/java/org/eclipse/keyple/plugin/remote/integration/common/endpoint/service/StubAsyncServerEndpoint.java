@@ -16,17 +16,18 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
-import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
-import org.eclipse.keyple.plugin.remote.core.KeypleServerAsync;
+import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.KeypleServerAsync;
+import org.eclipse.keyple.plugin.remote.RemoteServerPlugin;
 import org.eclipse.keyple.plugin.remote.integration.common.endpoint.StubNetworkConnectionException;
 import org.eclipse.keyple.plugin.remote.integration.common.util.JacksonParser;
-import org.eclipse.keyple.plugin.remote.virtual.impl.RemoteServerUtils;
+import org.eclipse.keyple.plugin.remote.impl.RemoteServerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Simulate a async server to test {@link
- * org.eclipse.keyple.plugin.remote.virtual.RemoteServerPlugin}. Send and receive asynchronously
+ * RemoteServerPlugin}. Send and receive asynchronously
  * serialized {@link KeypleMessageDto} with connected {@link StubAsyncClientEndpoint}
  */
 public class StubAsyncServerEndpoint implements KeypleServerAsync {

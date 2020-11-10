@@ -18,16 +18,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.service.exception.KeypleRuntimeException;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
-import org.eclipse.keyple.plugin.remote.core.KeypleClientSync;
-import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.KeypleClientSync;
+import org.eclipse.keyple.plugin.remote.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.RemotePoolClientPlugin;
 import org.eclipse.keyple.plugin.remote.integration.common.util.JacksonParser;
-import org.eclipse.keyple.plugin.remote.nativ.impl.NativePoolServerUtils;
+import org.eclipse.keyple.plugin.remote.impl.NativePoolServerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Stub implementation of a {@link KeypleClientSync} for a {@link
- * org.eclipse.keyple.plugin.remote.virtual.RemotePoolClientPlugin}. It simulates synchronous
+ * RemotePoolClientPlugin}. It simulates synchronous
  * invocation to a remote server.
  */
 public class StubSyncClientEndpoint implements KeypleClientSync {

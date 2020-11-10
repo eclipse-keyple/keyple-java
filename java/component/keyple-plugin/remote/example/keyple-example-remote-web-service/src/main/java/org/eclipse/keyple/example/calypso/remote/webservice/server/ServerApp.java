@@ -15,7 +15,7 @@ import java.util.concurrent.Executors;
 import javax.enterprise.context.ApplicationScoped;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
-import org.eclipse.keyple.plugin.remote.virtual.impl.RemoteServerPluginFactory;
+import org.eclipse.keyple.plugin.remote.impl.RemoteServerPluginFactory;
 import org.eclipse.keyple.remote.example.app.RemotePluginObserver;
 
 /** Example of a server side app */

@@ -14,7 +14,7 @@ package org.eclipse.keyple.example.calypso.remote.websocket.server;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.plugin.remote.virtual.impl.RemoteServerPluginFactory;
+import org.eclipse.keyple.plugin.remote.impl.RemoteServerPluginFactory;
 import org.eclipse.keyple.remote.example.app.RemotePluginObserver;
 
 /** Example of a server side app */

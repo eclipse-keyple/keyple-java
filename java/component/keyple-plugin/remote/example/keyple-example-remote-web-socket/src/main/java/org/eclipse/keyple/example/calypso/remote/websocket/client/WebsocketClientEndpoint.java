@@ -20,7 +20,7 @@ import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.example.calypso.remote.websocket.server.WebsocketServerEndpoint;
 import org.eclipse.keyple.plugin.remote.core.KeypleClientAsync;
 import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
-import org.eclipse.keyple.plugin.remote.nativ.impl.NativeClientUtils;
+import org.eclipse.keyple.plugin.remote.impl.NativeClientUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
