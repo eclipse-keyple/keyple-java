@@ -13,7 +13,8 @@ package org.eclipse.keyple.core.plugin.reader;
 
 import org.eclipse.keyple.core.service.event.ReaderEvent;
 
-public class BlankObservableLocalReader extends AbstractObservableLocalReader {
+public class BlankObservableLocalReader extends AbstractObservableLocalReader
+    implements WaitForCardInsertionAutonomous, WaitForCardRemovalAutonomous {
 
   /**
    * Reader constructor
@@ -23,16 +24,6 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
    */
   public BlankObservableLocalReader(String pluginName, String readerName) {
     super(pluginName, readerName);
-  }
-
-  @Override
-  public final ObservableReaderStateService initStateService() {
-
-    return ObservableReaderStateService.builder(this)
-        .waitForCardInsertionWithNativeDetection()
-        .waitForCardProcessingWithNativeDetection()
-        .waitForCardRemovalWithNativeDetection()
-        .build();
   }
 
   @Override

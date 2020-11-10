@@ -33,7 +33,7 @@ public class WaitForCardInsertionStateJobExecutorTest extends CoreBaseTest {
   final String READER_NAME = "WaitForCardInsertionStateJobExecutorTest";
 
   AbstractObservableState waitForInsert;
-  BlankSmartInsertionTheadedReader r;
+  BlankWaitForCardInsertionBlockingThreadedReader r;
   long timeout;
   ExecutorService executorService = Executors.newSingleThreadExecutor();;
 
