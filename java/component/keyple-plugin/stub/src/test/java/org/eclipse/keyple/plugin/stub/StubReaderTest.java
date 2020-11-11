@@ -657,10 +657,10 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
 
-    // activate CALYPSO_OLD_CARD_PRIME
+    // activate INNOVATRON_B_PRIME_CARD
     reader.activateProtocol(
-        StubSupportedProtocols.CALYPSO_OLD_CARD_PRIME.name(),
-        ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name());
+        StubSupportedProtocols.INNOVATRON_B_PRIME_CARD.name(),
+        ContactlessCardCommonProtocols.INNOVATRON_B_PRIME_CARD.name());
 
     // CountDown lock
     final CountDownLatch lock = new CountDownLatch(1);
@@ -675,7 +675,7 @@ public class StubReaderTest extends BaseStubTest {
             PoSelectionRequest poSelectionRequest =
                 new PoSelectionRequest(
                     PoSelector.builder()
-                        .cardProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name())
+                        .cardProtocol(ContactlessCardCommonProtocols.INNOVATRON_B_PRIME_CARD.name())
                         .atrFilter(new PoSelector.AtrFilter("3B.*"))
                         .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                         .build());
@@ -1377,7 +1377,7 @@ public class StubReaderTest extends BaseStubTest {
 
       @Override
       public String getCardProtocol() {
-        return "CALYPSO_OLD_CARD_PRIME";
+        return "INNOVATRON_B_PRIME_CARD";
       }
     };
   }

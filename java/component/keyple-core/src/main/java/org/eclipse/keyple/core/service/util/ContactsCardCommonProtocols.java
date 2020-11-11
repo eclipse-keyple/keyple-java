@@ -17,11 +17,11 @@ package org.eclipse.keyple.core.service.util;
  * @since 1.0
  */
 public enum ContactsCardCommonProtocols {
-  /* ---- contacts ISO standard ---------------------------- */
+  // contacts ISO standard
   ISO_7816_3,
   ISO_7816_3_TO,
   ISO_7816_3_T1,
 
-  /* ---- contacts proprietary old Calypso SAM ---------------- */
-  CALYPSO_OLD_SAM_HSP; // High Speed Protocol
+  // contacts proprietary old Calypso SAM
+  INNOVATRON_HIGH_SPEED_PROTOCOL_SAM;
 }

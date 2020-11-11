@@ -303,7 +303,7 @@ public class CardSelectionTest extends CoreBaseTest {
 
     CardSelector cardSelector2 =
         CardSelector.builder()
-            .cardProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name())
+            .cardProtocol(ContactlessCardCommonProtocols.INNOVATRON_B_PRIME_CARD.name())
             .atrFilter(new CardSelector.AtrFilter(".*"))
             .aidSelector(aidSelector)
             .build();
