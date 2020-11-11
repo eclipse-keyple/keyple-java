@@ -514,8 +514,8 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                             addResultEvent("Tag detected - card CARD_REMOVED")
                         }
 
-                        ReaderEvent.EventType.TIMEOUT_ERROR -> {
-                            addResultEvent("Tag detected - card TIMEOUT_ERROR")
+                        ReaderEvent.EventType.UNREGISTERED -> {
+                            addResultEvent("Unexpected error - reader is UNREGISTERED")
                         }
                     }
                 }
