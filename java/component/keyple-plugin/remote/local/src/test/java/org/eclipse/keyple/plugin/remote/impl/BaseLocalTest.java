@@ -26,18 +26,18 @@ import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.mockito.Mockito;
 
-public abstract class BaseNativeTest {
+public abstract class BaseLocalTest {
 
   protected static final String readerName = "readerName";
   final String readerNameUnknown = "readerNameUnknown";
   final String observableReaderName = "observableReaderName";
 
   ProxyReader readerMocked;
-  NativeClientServiceTest.ObservableProxyReader observableReaderMocked;
+  LocalServiceClientTest.ObservableProxyReader observableReaderMocked;
 
   public void init() {
     readerMocked = Mockito.mock(ProxyReader.class);
-    observableReaderMocked = Mockito.mock(NativeClientServiceTest.ObservableProxyReader.class);
+    observableReaderMocked = Mockito.mock(LocalServiceClientTest.ObservableProxyReader.class);
     doReturn(readerName).when(readerMocked).getName();
   }
 
@@ -191,7 +191,7 @@ public abstract class BaseNativeTest {
   public static void assertMetadataMatches(MessageDto request, MessageDto response) {
     assertThat(response).isNotNull();
     assertThat(response.getSessionId()).isEqualTo(request.getSessionId());
-    assertThat(response.getNativeReaderName()).isEqualTo(request.getNativeReaderName());
+    assertThat(response.getLocalReaderName()).isEqualTo(request.getLocalReaderName());
     assertThat(response.getVirtualReaderName()).isEqualTo(request.getVirtualReaderName());
     assertThat(response.getClientNodeId()).isEqualTo(request.getClientNodeId());
     assertThat(response.getServerNodeId()).isEqualTo(request.getServerNodeId());

@@ -36,9 +36,9 @@ import org.mockito.stubbing.Answer;
 public class RemoteServerBaseTest {
 
   static String clientId = "client1";
-  static String nativeReaderName = "nativeReaderName1";
+  static String localReaderName = "localReaderName1";
   static String remotePluginName = RemoteServerPluginFactory.DEFAULT_PLUGIN_NAME;
-  static String nativePluginName = "nativePluginName1";
+  static String localPluginName = "localPluginName1";
   static String serviceId = "1";
   static RemoteServerPluginImplTest.MockUserOutputData userOutputData =
       new RemoteServerPluginImplTest.MockUserOutputData();
@@ -105,7 +105,7 @@ public class RemoteServerBaseTest {
         .setSessionId(sessionId)
         .setAction(MessageDto.Action.EXECUTE_REMOTE_SERVICE.name())
         .setClientNodeId(clientId)
-        .setNativeReaderName(nativeReaderName)
+        .setLocalReaderName(localReaderName)
         .setBody(body.toString());
   }
 
@@ -130,8 +130,8 @@ public class RemoteServerBaseTest {
         KeypleJsonParser.getParser()
             .toJsonTree(
                 new ReaderEvent(
-                    nativePluginName,
-                    nativeReaderName,
+                    localPluginName,
+                    localReaderName,
                     ReaderEvent.EventType.CARD_INSERTED,
                     getDefaultSelectionsResponse())));
 
@@ -139,7 +139,7 @@ public class RemoteServerBaseTest {
         .setSessionId(sessionId)
         .setAction(MessageDto.Action.READER_EVENT.name())
         .setClientNodeId(clientId)
-        .setNativeReaderName(nativeReaderName)
+        .setLocalReaderName(localReaderName)
         .setVirtualReaderName(virtualReaderName)
         .setBody(body.toString());
   }

@@ -277,7 +277,7 @@ public class RemotePoolClientPluginTest {
         return new MessageDto(msg).setBody(null).setServerNodeId(serverNodeId);
       case ALLOCATE_READER:
         return new MessageDto(msg)
-            .setNativeReaderName("nativeReaderName")
+            .setLocalReaderName("localReaderName")
             .setBody(null)
             .setServerNodeId(serverNodeId);
       case GET_READER_GROUP_REFERENCES:

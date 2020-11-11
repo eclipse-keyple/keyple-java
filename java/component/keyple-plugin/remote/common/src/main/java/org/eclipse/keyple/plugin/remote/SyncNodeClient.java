@@ -26,7 +26,7 @@ import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
  * This kind of node can be bind to a all <b>client</b> Remote plugins and services :
  *
  * <ul>
- *   <li>{@code NativeSeClientService}
+ *   <li>{@code LocalServiceClient}
  *   <li>{@code RemoteClientPlugin}
  *   <li>{@code RemotePoolClientPlugin}
  * </ul>

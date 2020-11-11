@@ -12,7 +12,7 @@
 package org.eclipse.keyple.plugin.remote;
 
 /**
- * This POJO object contains data exchanged between **Native** and **Virtual** components.
+ * This POJO object contains data exchanged between **Local** and **Remote** components.
  *
  * <p>It is built and processed by the plugin and you don't need to modified it.
  *
@@ -29,7 +29,7 @@ public class MessageDto {
   private String action;
   private String clientNodeId;
   private String serverNodeId;
-  private String nativeReaderName;
+  private String localReaderName;
   private String virtualReaderName;
   private String body;
 
@@ -78,7 +78,7 @@ public class MessageDto {
     action = from.getAction();
     clientNodeId = from.getClientNodeId();
     serverNodeId = from.getServerNodeId();
-    nativeReaderName = from.getNativeReaderName();
+    localReaderName = from.getLocalReaderName();
     virtualReaderName = from.getVirtualReaderName();
     body = from.getBody();
   }
@@ -178,24 +178,24 @@ public class MessageDto {
   }
 
   /**
-   * Gets the name of the native reader name associated to the transaction.
+   * Gets the name of the local reader name associated to the transaction.
    *
    * @return a null string in case of a discovering readers call.
    * @since 1.0
    */
-  public final String getNativeReaderName() {
-    return nativeReaderName;
+  public final String getLocalReaderName() {
+    return localReaderName;
   }
 
   /**
    * This setter method must only be used during the deserialization process.
    *
-   * @param nativeReaderName The native reader name to set.
+   * @param localReaderName The local reader name to set.
    * @return the object instance.
    * @since 1.0
    */
-  public final MessageDto setNativeReaderName(String nativeReaderName) {
-    this.nativeReaderName = nativeReaderName;
+  public final MessageDto setLocalReaderName(String localReaderName) {
+    this.localReaderName = localReaderName;
     return this;
   }
 

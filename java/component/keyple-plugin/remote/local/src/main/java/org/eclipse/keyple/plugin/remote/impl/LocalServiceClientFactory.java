@@ -12,21 +12,21 @@
 package org.eclipse.keyple.plugin.remote.impl;
 
 import org.eclipse.keyple.core.util.Assert;
+import org.eclipse.keyple.plugin.remote.LocalServiceClient;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.ObservableReaderEventFilter;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
-import org.eclipse.keyple.plugin.remote.NativeClientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This factory must be used to initialize a {@link NativeClientService}
+ * This factory must be used to initialize a {@link LocalServiceClient}
  *
  * @since 1.0
  */
-public class NativeClientServiceFactory {
+public class LocalServiceClientFactory {
 
-  private static final Logger logger = LoggerFactory.getLogger(NativeClientServiceFactory.class);
+  private static final Logger logger = LoggerFactory.getLogger(LocalServiceClientFactory.class);
   private static final int DEFAULT_TIMEOUT = 5;
 
   /**
@@ -46,7 +46,7 @@ public class NativeClientServiceFactory {
      * @return singleton instance of the service
      * @since 1.0
      */
-    NativeClientService getService();
+    LocalServiceClient getService();
   }
 
   public interface TimeoutStep {
@@ -148,21 +148,21 @@ public class NativeClientServiceFactory {
     }
 
     @Override
-    public NativeClientService getService() {
+    public LocalServiceClient getService() {
 
       // create the service
-      NativeClientServiceImpl service =
-          NativeClientServiceImpl.createInstance(withReaderObservation, eventFilter);
+      LocalServiceClientImpl service =
+          LocalServiceClientImpl.createInstance(withReaderObservation, eventFilter);
 
       // bind the service to the node
       if (asyncEndpoint != null) {
         logger.info(
-            "Create a new NativeClientServiceImpl with a async client and params withReaderObservation:{}",
+            "Create a new LocalServiceClientImpl with a async client and params withReaderObservation:{}",
             withReaderObservation);
         service.bindClientAsyncNode(asyncEndpoint, timeoutInSec);
       } else {
         logger.info(
-            "Create a new NativeClientServiceImpl with a sync client and params withReaderObservation:{}",
+            "Create a new LocalServiceClientImpl with a sync client and params withReaderObservation:{}",
             withReaderObservation);
         service.bindClientSyncNode(syncEndpoint, null, null);
       }

@@ -24,8 +24,8 @@ import java.util.List;
  *
  * <ul>
  *   <li>{@code RemoteServerPlugin}
- *   <li>{@code NativeSeServerService}
- *   <li>{@code NativeSePoolServerService}
+ *   <li>{@code LocalServiceServer}
+ *   <li>{@code PoolLocalServiceServer}
  * </ul>
  *
  * To create it, you must only bind a <b>sync</b> node during the initialization process.<br>
@@ -34,8 +34,8 @@ import java.util.List;
  *
  * <ul>
  *   <li>{@code RemoteServerUtils.getSyncNode()}
- *   <li>{@code NativeSeServerUtils.getSyncNode()}
- *   <li>{@code NativeSePoolServerUtils.getSyncNode()}
+ *   <li>{@code LocalServiceServerUtils.getSyncNode()}
+ *   <li>{@code PoolLocalServiceServerUtils.getSyncNode()}
  * </ul>
  *
  * @since 1.0
@@ -52,8 +52,8 @@ public interface SyncNodeServer {
    *       methods, depending on your use case :
    *       <ul>
    *         <li>{@code RemoteServerUtils.getSyncNode()}
-   *         <li>{@code NativeSeServerUtils.getSyncNode()}
-   *         <li>{@code NativeSePoolServerUtils.getSyncNode()}
+   *         <li>{@code LocalServiceServerUtils.getSyncNode()}
+   *         <li>{@code PoolLocalServiceServerUtils.getSyncNode()}
    *       </ul>
    *   <li>Call this method on the node.
    *   <li>Serialize the result en return it to the client.

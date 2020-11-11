@@ -11,18 +11,16 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote;
 
-import org.eclipse.keyple.plugin.remote.impl.NativePoolServerServiceFactory;
-
 /**
- * <b>Native Pool Server Service</b> API.
+ * <b>Local Service Server</b> API.
  *
- * <p>This service must be used in the use case of the <b>Remote Pool Client Plugin</b>.
+ * <p>This service must be used in the use case of the <b>Remote Client Plugin</b>.
  *
- * <p>It must be started by a <b>server</b> application that is installed on a terminal with native
+ * <p>It must be started by a <b>server</b> application that is installed on a terminal with local
  * access to the pool cards reader :
  *
  * <ul>
- *   <li>To start the service, use the factory {@link NativePoolServerServiceFactory}.
+ *   <li>To start the service, use the factory {link LocalServiceServerFactory}.
  *   <li>To access the service, there is no method because this service is only used internally by
  *       Keyple.
  *   <li>To stop the service, there is nothing special to do because the service is a standard java
@@ -31,4 +29,4 @@ import org.eclipse.keyple.plugin.remote.impl.NativePoolServerServiceFactory;
  *
  * @since 1.0
  */
-public interface NativePoolServerService {}
+public interface LocalServiceServer {}

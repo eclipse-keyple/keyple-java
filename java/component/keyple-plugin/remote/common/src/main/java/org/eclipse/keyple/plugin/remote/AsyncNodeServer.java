@@ -27,8 +27,8 @@ import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
  *
  * <ul>
  *   <li>{@code RemoteServerPlugin}
- *   <li>{@code NativeServerService}
- *   <li>{@code NativePoolServerService}
+ *   <li>{@code LocalServiceServer}
+ *   <li>{@code PoolLocalServiceServer}
  * </ul>
  *
  * To create it, you must only bind an <b>async</b> node during the initialization process.<br>
@@ -37,8 +37,8 @@ import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
  *
  * <ul>
  *   <li>{@code RemoteServerUtils.getAsyncNode()}
- *   <li>{@code NativeServerUtils.getAsyncNode()}
- *   <li>{@code NativePoolServerUtils.getAsyncNode()}
+ *   <li>{@code LocalServiceServerUtils.getAsyncNode()}
+ *   <li>{@code PoolLocalServiceServerUtils.getAsyncNode()}
  * </ul>
  *
  * @since 1.0

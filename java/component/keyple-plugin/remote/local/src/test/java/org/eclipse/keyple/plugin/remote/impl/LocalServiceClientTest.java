@@ -28,12 +28,12 @@ import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
+import org.eclipse.keyple.plugin.remote.LocalServiceClient;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.ObservableReaderEventFilter;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.exception.KeypleDoNotPropagateEventException;
-import org.eclipse.keyple.plugin.remote.NativeClientService;
 import org.eclipse.keyple.plugin.remote.RemoteServiceParameters;
 import org.junit.After;
 import org.junit.Before;
@@ -45,9 +45,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RunWith(MockitoJUnitRunner.class)
-public class NativeClientServiceTest extends BaseNativeTest {
+public class LocalServiceClientTest extends BaseLocalTest {
 
-  private static final Logger logger = LoggerFactory.getLogger(AbstractNativeServiceTest.class);
+  private static final Logger logger = LoggerFactory.getLogger(AbstractLocalServiceTest.class);
   SyncEndpointClient syncClientEndpoint;
   AsyncEndpointClient asyncClient;
   ObservableReaderEventFilter eventFilter;
@@ -102,22 +102,22 @@ public class NativeClientServiceTest extends BaseNativeTest {
   @Test
   public void buildService_withSyncNode_withoutObservation() {
     // test
-    NativeClientService service =
-        new NativeClientServiceFactory()
+    LocalServiceClient service =
+        new LocalServiceClientFactory()
             .builder()
             .withSyncNode(syncClientEndpoint)
             .withoutReaderObservation()
             .getService();
 
     assertThat(service).isNotNull();
-    assertThat(service).isEqualTo(NativeClientUtils.getService());
+    assertThat(service).isEqualTo(LocalServiceClientUtils.getService());
   }
 
   @Test
   public void buildService_withAsyncNode_withoutReaderObservation() {
     // test
-    NativeClientService service =
-        new NativeClientServiceFactory()
+    LocalServiceClient service =
+        new LocalServiceClientFactory()
             .builder()
             .withAsyncNode(asyncClient)
             .usingDefaultTimeout()
@@ -126,27 +126,27 @@ public class NativeClientServiceTest extends BaseNativeTest {
 
     // assert
     assertThat(service).isNotNull();
-    assertThat(service).isEqualTo(NativeClientUtils.getService());
+    assertThat(service).isEqualTo(LocalServiceClientUtils.getService());
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void executeService_withNullParam_throwException() {
     syncClientEndpoint = new SyncEndpointClientMock(1);
-    final NativeClientService nativeClientService =
-        new NativeClientServiceFactory()
+    final LocalServiceClient localServiceClient =
+        new LocalServiceClientFactory()
             .builder()
             .withSyncNode(syncClientEndpoint)
             .withoutReaderObservation()
             .getService();
     // test
-    nativeClientService.executeRemoteService(null, null);
+    localServiceClient.executeRemoteService(null, null);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void executeService_withNullOutputData_throwException() {
     syncClientEndpoint = new SyncEndpointClientMock(1);
-    NativeClientService nativeClientService =
-        new NativeClientServiceFactory()
+    LocalServiceClient localServiceClient =
+        new LocalServiceClientFactory()
             .builder()
             .withSyncNode(syncClientEndpoint)
             .withoutReaderObservation()
@@ -156,14 +156,14 @@ public class NativeClientServiceTest extends BaseNativeTest {
             .withUserInputData(inputData)
             .build();
     // test
-    nativeClientService.executeRemoteService(params, null);
+    localServiceClient.executeRemoteService(params, null);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void executeService_activateObservation_withoutFilter_throwException() {
     // init
     syncClientEndpoint = new SyncEndpointClientMock(1);
-    new NativeClientServiceFactory()
+    new LocalServiceClientFactory()
         .builder()
         .withSyncNode(syncClientEndpoint)
         .withReaderObservation(null)
@@ -174,8 +174,8 @@ public class NativeClientServiceTest extends BaseNativeTest {
   public void executeService_activateObservation_withFilter_addObserver() {
     // init
     syncClientEndpoint = new SyncEndpointClientMock(1);
-    NativeClientService nativeClientService =
-        new NativeClientServiceFactory()
+    LocalServiceClient localServiceClient =
+        new LocalServiceClientFactory()
             .builder()
             .withSyncNode(syncClientEndpoint)
             .withReaderObservation(eventFilter)
@@ -186,18 +186,18 @@ public class NativeClientServiceTest extends BaseNativeTest {
             .build();
 
     // test
-    nativeClientService.executeRemoteService(params, MyKeypleUserData.class);
+    localServiceClient.executeRemoteService(params, MyKeypleUserData.class);
 
     // verify service is added as observer
-    verify(observableReaderMocked).addObserver((NativeClientServiceImpl) nativeClientService);
+    verify(observableReaderMocked).addObserver((LocalServiceClientImpl) localServiceClient);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void executeService_activateObservation_onNotObservableReader_throwException() {
     // init
     syncClientEndpoint = new SyncEndpointClientMock(1);
-    NativeClientService nativeClientService =
-        new NativeClientServiceFactory()
+    LocalServiceClient localServiceClient =
+        new LocalServiceClientFactory()
             .builder()
             .withSyncNode(syncClientEndpoint)
             .withReaderObservation(eventFilter)
@@ -206,18 +206,18 @@ public class NativeClientServiceTest extends BaseNativeTest {
         RemoteServiceParameters.builder(serviceId, readerMocked).build();
 
     // test
-    nativeClientService.executeRemoteService(params, MyKeypleUserData.class);
+    localServiceClient.executeRemoteService(params, MyKeypleUserData.class);
 
     verify(observableReaderMocked, times(1))
-        .addObserver((NativeClientServiceImpl) nativeClientService);
+        .addObserver((LocalServiceClientImpl) localServiceClient);
   }
 
   @Test
   public void executeService_withSyncNode() {
     // init
     syncClientEndpoint = new SyncEndpointClientMock(2);
-    NativeClientService nativeClientService =
-        new NativeClientServiceFactory()
+    LocalServiceClient localServiceClient =
+        new LocalServiceClientFactory()
             .builder() //
             .withSyncNode(syncClientEndpoint) //
             .withoutReaderObservation() //
@@ -231,7 +231,7 @@ public class NativeClientServiceTest extends BaseNativeTest {
 
     // test
     MyKeypleUserData output =
-        nativeClientService.executeRemoteService(params, MyKeypleUserData.class);
+        localServiceClient.executeRemoteService(params, MyKeypleUserData.class);
 
     // verify EXECUTE_REMOTE_SERVICE request
     assertThat(((SyncEndpointClientMock) syncClientEndpoint).getRequests().size()).isEqualTo(2);
@@ -239,7 +239,7 @@ public class NativeClientServiceTest extends BaseNativeTest {
     assertThat(dtoRequest.getAction())
         .isEqualTo(MessageDto.Action.EXECUTE_REMOTE_SERVICE.name());
     assertThat(dtoRequest.getSessionId()).isNotEmpty();
-    assertThat(dtoRequest.getNativeReaderName()).isEqualTo(readerName);
+    assertThat(dtoRequest.getLocalReaderName()).isEqualTo(readerName);
     JsonObject body = parser.fromJson(dtoRequest.getBody(), JsonObject.class);
     assertThat(body.get("serviceId").getAsString()).isEqualTo(serviceId);
     assertThat(parser.fromJson(body.get("userInputData"), MyKeypleUserData.class))
@@ -256,16 +256,16 @@ public class NativeClientServiceTest extends BaseNativeTest {
   public void onUpdate_doNotPropagateEvent() {
     // init
     syncClientEndpoint = new SyncEndpointClientMock(2);
-    NativeClientServiceImpl nativeClientService =
-        (NativeClientServiceImpl)
-            new NativeClientServiceFactory()
+    LocalServiceClientImpl localClientService =
+        (LocalServiceClientImpl)
+            new LocalServiceClientFactory()
                 .builder() //
                 .withSyncNode(syncClientEndpoint) //
                 .withReaderObservation(new MyEventFilter(false)) //
                 .getService();
 
     // test
-    nativeClientService.update(readerEvent);
+    localClientService.update(readerEvent);
 
     assertThat(((SyncEndpointClientMock) syncClientEndpoint).getRequests().size()).isEqualTo(0);
   }
@@ -275,23 +275,23 @@ public class NativeClientServiceTest extends BaseNativeTest {
       throws NoSuchFieldException, IllegalAccessException {
     // init
     syncClientEndpoint = new SyncEndpointClientMock(2);
-    NativeClientServiceImpl nativeClientService =
-        (NativeClientServiceImpl)
-            new NativeClientServiceFactory()
+    LocalServiceClientImpl localClientService =
+        (LocalServiceClientImpl)
+            new LocalServiceClientFactory()
                 .builder() //
                 .withSyncNode(syncClientEndpoint) //
                 .withReaderObservation(new MyEventFilter(true)) //
                 .getService();
 
     // send a readerEvent
-    nativeClientService.update(readerEvent);
+    localClientService.update(readerEvent);
 
     // verify READER_EVENT dto
     assertThat(((SyncEndpointClientMock) syncClientEndpoint).getRequests().size()).isEqualTo(2);
     MessageDto dtoRequest = ((SyncEndpointClientMock) syncClientEndpoint).getRequests().get(0);
     assertThat(dtoRequest.getAction()).isEqualTo(MessageDto.Action.READER_EVENT.name());
     assertThat(dtoRequest.getSessionId()).isNotEmpty();
-    assertThat(dtoRequest.getNativeReaderName()).isEqualTo(observableReaderName);
+    assertThat(dtoRequest.getLocalReaderName()).isEqualTo(observableReaderName);
     JsonObject body = KeypleJsonParser.getParser().fromJson(dtoRequest.getBody(), JsonObject.class);
     assertThat(
             KeypleJsonParser.getParser()
@@ -303,7 +303,7 @@ public class NativeClientServiceTest extends BaseNativeTest {
     // output is verified in eventFilter
 
     // assert that virtual reader is unregister as required by the terminate service
-    assertThat(getVirtualReaders(nativeClientService)).hasSize(0);
+    assertThat(getVirtualReaders(localClientService)).hasSize(0);
   }
 
   /*
@@ -312,9 +312,9 @@ public class NativeClientServiceTest extends BaseNativeTest {
    *
    * */
 
-  public static Map<String, String> getVirtualReaders(NativeClientService service) {
+  public static Map<String, String> getVirtualReaders(LocalServiceClient service) {
     try {
-      Field privateStringField = NativeClientServiceImpl.class.getDeclaredField("virtualReaders");
+      Field privateStringField = LocalServiceClientImpl.class.getDeclaredField("virtualReaders");
       privateStringField.setAccessible(true);
       return (Map<String, String>) privateStringField.get(service);
     } catch (IllegalAccessException e) {
@@ -417,7 +417,7 @@ public class NativeClientServiceTest extends BaseNativeTest {
         .setAction(MessageDto.Action.TERMINATE_SERVICE.name()) //
         .setServerNodeId("serverNodeId") //
         .setClientNodeId("clientNodeId") //
-        .setNativeReaderName(readerName)
+        .setLocalReaderName(readerName)
         .setVirtualReaderName(virtualReaderName)
         .setBody(body.toString());
   }

@@ -11,31 +11,31 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote;
 
-import org.eclipse.keyple.plugin.remote.impl.NativeClientServiceFactory;
-import org.eclipse.keyple.plugin.remote.impl.NativeClientUtils;
+import org.eclipse.keyple.plugin.remote.impl.LocalServiceClientFactory;
+import org.eclipse.keyple.plugin.remote.impl.LocalServiceClientUtils;
 
 /**
- * <b>Native Client Service</b> API.
+ * <b>Local Client Service</b> API.
  *
  * <p>This service must be used in the use case of the <b>Remote Server Plugin</b>.
  *
- * <p>It must be started by a <b>client</b> application that is installed on a terminal with native
+ * <p>It must be started by a <b>client</b> application that is installed on a terminal with local
  * access to the card reader :
  *
  * <ul>
- *   <li>To <b>start</b> the service, use the factory {@link NativeClientServiceFactory}.
+ *   <li>To <b>start</b> the service, use the factory {@link LocalServiceClientFactory}.
  *   <li>To <b>access</b> the service, use the utility method {@link
- *       NativeClientUtils#getService()}.
+ *       LocalServiceClientUtils#getService()}.
  *   <li>To <b>stop</b> the service, there is nothing special to do because the service is a
  *       standard java singleton instance.
  * </ul>
  *
  * @since 1.0
  */
-public interface NativeClientService {
+public interface LocalServiceClient {
 
   /**
-   * This method allows you to connect a native card reader to a remote server and execute a
+   * This method allows you to connect a local card reader to a remote server and execute a
    * specific ticketing service from the server.<br>
    * The service is identify by the <b>serviceId</b> parameter.
    *

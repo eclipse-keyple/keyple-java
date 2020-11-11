@@ -38,7 +38,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class VirtualObservableReaderTest {
 
   static final String pluginName = "pluginName";
-  static final String nativeReaderName = "nativeReaderName";
+  static final String localReaderName = "localReaderName";
 
   VirtualObservableReader reader;
   AbstractNode node;
@@ -50,7 +50,7 @@ public class VirtualObservableReaderTest {
       SampleFactory.getNotificationMode();;
   static final ObservableReader.PollingMode pollingMode = ObservableReader.PollingMode.REPEATING;;
   static final ReaderEvent event =
-      new ReaderEvent(pluginName, nativeReaderName, ReaderEvent.EventType.CARD_INSERTED, null);;
+      new ReaderEvent(pluginName, localReaderName, ReaderEvent.EventType.CARD_INSERTED, null);;
   static final MessageDto response =
       new MessageDto().setAction(MessageDto.Action.SET_DEFAULT_SELECTION.name());;
 
@@ -66,7 +66,7 @@ public class VirtualObservableReaderTest {
     observer = new MockObserver();
     reader =
         new VirtualObservableReader(
-            pluginName, nativeReaderName, node, "sessionId", null, notificationPool);
+            pluginName, localReaderName, node, "sessionId", null, notificationPool);
   }
 
   @Test

@@ -20,7 +20,7 @@ import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.RemoteServerPlugin;
 import org.eclipse.keyple.plugin.remote.integration.common.endpoint.StubNetworkConnectionException;
 import org.eclipse.keyple.plugin.remote.integration.common.util.JacksonParser;
-import org.eclipse.keyple.plugin.remote.impl.NativeClientUtils;
+import org.eclipse.keyple.plugin.remote.impl.LocalServiceClientUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,14 +57,14 @@ public class StubAsyncClientEndpoint implements AsyncEndpointClient {
             // creer task
             logger.trace("Data received from server : {}", data);
             MessageDto message = JacksonParser.fromJson(data);
-            NativeClientUtils.getAsyncNode().onMessage(message);
+            LocalServiceClientUtils.getAsyncNode().onMessage(message);
           }
         });
   }
 
   @Override
   public void openSession(String sessionId) {
-    NativeClientUtils.getAsyncNode().onOpen(sessionId);
+    LocalServiceClientUtils.getAsyncNode().onOpen(sessionId);
   }
 
   @Override
@@ -90,6 +90,6 @@ public class StubAsyncClientEndpoint implements AsyncEndpointClient {
     logger.trace("Close session {} to server", sessionId);
     server.close(sessionId);
     // currentSessionIds.remove(sessionId);
-    NativeClientUtils.getAsyncNode().onClose(sessionId);
+    LocalServiceClientUtils.getAsyncNode().onClose(sessionId);
   }
 }

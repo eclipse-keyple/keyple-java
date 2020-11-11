@@ -171,11 +171,11 @@ uploadArchives {
 
 task installPlugin{
     group 'keyple'
-    description 'Builds and installs the Keyple Plugin Remote (Native) into maven local repository'
-    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-native:uploadArchives'
+    description 'Builds and installs the Keyple Plugin Remote (Local) into maven local repository'
+    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-local:uploadArchives'
 
     doLast {
-        println 'Keyple Plugin Remote (Native) has been installed into maven local repo at path : ' + project.getRepositories().get(0).getAt("url")
+        println 'Keyple Plugin Remote (Local) has been installed into maven local repo at path : ' + project.getRepositories().get(0).getAt("url")
     }
 }
 

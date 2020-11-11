@@ -39,7 +39,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class NativePoolServerServiceTest extends BaseNativeTest {
+public class PoolLocalServiceServerTest extends BaseLocalTest {
 
   ReaderPoolPlugin poolPluginMock;
   AsyncEndpointServer asyncServer;
@@ -52,7 +52,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
   final String poolPluginName = "poolPluginMock";
   MessageDto response;
 
-  NativePoolServerServiceImpl service;
+  PoolLocalServiceServerImpl service;
 
   @Captor ArgumentCaptor<MessageDto> responseCaptor;
 
@@ -75,38 +75,38 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
   public void buildService_withAsyncNode() {
     // test
     service =
-        (NativePoolServerServiceImpl)
-            new NativePoolServerServiceFactory()
+        (PoolLocalServiceServerImpl)
+            new PoolLocalServiceServerFactory()
                 .builder()
                 .withAsyncNode(asyncServer)
                 .withPoolPlugins(poolPluginMock.getName())
                 .getService();
 
     assertThat(service).isNotNull();
-    assertThat(service).isEqualTo(NativePoolServerServiceImpl.getInstance());
+    assertThat(service).isEqualTo(PoolLocalServiceServerImpl.getInstance());
   }
 
   @Test
   public void buildService_withSyncNode() {
     // test
     service =
-        (NativePoolServerServiceImpl)
-            new NativePoolServerServiceFactory()
+        (PoolLocalServiceServerImpl)
+            new PoolLocalServiceServerFactory()
                 .builder()
                 .withSyncNode()
                 .withPoolPlugins(poolPluginMock.getName())
                 .getService();
 
     assertThat(service).isNotNull();
-    assertThat(service).isEqualTo(NativePoolServerServiceImpl.getInstance());
+    assertThat(service).isEqualTo(PoolLocalServiceServerImpl.getInstance());
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void buildService_withNull_AsyncNode_throwIAE() {
     // test
     service =
-        (NativePoolServerServiceImpl)
-            new NativePoolServerServiceFactory()
+        (PoolLocalServiceServerImpl)
+            new PoolLocalServiceServerFactory()
                 .builder()
                 .withAsyncNode(null)
                 .withPoolPlugins(poolPluginMock.getName())
@@ -117,8 +117,8 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
   public void buildService_withNoPluginName_throwIAE() {
     // test
     service =
-        (NativePoolServerServiceImpl)
-            new NativePoolServerServiceFactory()
+        (PoolLocalServiceServerImpl)
+            new PoolLocalServiceServerFactory()
                 .builder()
                 .withAsyncNode(null)
                 .withPoolPlugins()
@@ -145,8 +145,8 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
 
     // test
     service =
-        (NativePoolServerServiceImpl)
-            new NativePoolServerServiceFactory()
+        (PoolLocalServiceServerImpl)
+            new PoolLocalServiceServerFactory()
                 .builder()
                 .withAsyncNode(null)
                 .withPoolPlugins(poolPluginMock.getName(), readerMockName)
@@ -156,10 +156,10 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
   @Test
   public void onAllocateReader_shouldPropagate_toLocalPoolPlugin() {
     MessageDto request = getAllocateReaderDto();
-    NativePoolServerUtils.getAsyncNode().onMessage(getAllocateReaderDto());
+    PoolLocalServiceServerUtils.getAsyncNode().onMessage(getAllocateReaderDto());
     response = captureResponse();
     assertMetadataMatches(request, response);
-    assertThat(readerMocked.getName()).isEqualTo(response.getNativeReaderName());
+    assertThat(readerMocked.getName()).isEqualTo(response.getLocalReaderName());
   }
 
   @Test
@@ -167,7 +167,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
     KeypleAllocationReaderException e = new KeypleAllocationReaderException("");
     doThrow(e).when(poolPluginMock).allocateReader(groupReference);
     MessageDto request = getAllocateReaderDto();
-    NativePoolServerUtils.getAsyncNode().onMessage(getAllocateReaderDto());
+    PoolLocalServiceServerUtils.getAsyncNode().onMessage(getAllocateReaderDto());
     response = captureResponse();
     assertMetadataMatches(request, response);
     assertThat(e).isEqualToComparingFieldByFieldRecursively(getExceptionFromDto(response));
@@ -177,7 +177,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
   public void onAllocateReader_withNoPlugin_shouldThrow_KPNFE() {
     SmartCardService.getInstance().unregisterPlugin(poolPluginName);
     MessageDto request = getAllocateReaderDto();
-    NativePoolServerUtils.getAsyncNode().onMessage(getAllocateReaderDto());
+    PoolLocalServiceServerUtils.getAsyncNode().onMessage(getAllocateReaderDto());
 
     response = captureResponse();
     assertMetadataMatches(request, response);
@@ -187,7 +187,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
   @Test
   public void onReleaseReader_shouldPropagate_toLocalPoolPlugin() {
     MessageDto request = getReleaseReaderDto();
-    NativePoolServerUtils.getAsyncNode().onMessage(request);
+    PoolLocalServiceServerUtils.getAsyncNode().onMessage(request);
     verify(poolPluginMock, times(1)).releaseReader(readerMocked);
   }
 
@@ -195,7 +195,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
   public void onReleaseReader_withNoPlugin_shouldThrow_KPNFE() {
     doReturn(Sets.newTreeSet()).when(poolPluginMock).getReaderNames();
     MessageDto request = getReleaseReaderDto();
-    NativePoolServerUtils.getAsyncNode().onMessage(request);
+    PoolLocalServiceServerUtils.getAsyncNode().onMessage(request);
 
     response = captureResponse();
     assertMetadataMatches(request, response);
@@ -205,7 +205,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
   @Test
   public void onGroupReferences_shouldPropagate_toLocalPoolPlugin() {
     MessageDto request = getGroupReferencesDto();
-    NativePoolServerUtils.getAsyncNode().onMessage(request);
+    PoolLocalServiceServerUtils.getAsyncNode().onMessage(request);
 
     response = captureResponse();
     assertMetadataMatches(request, response);
@@ -215,7 +215,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
   @Test
   public void onGroupReferences_shouldPropagate_AllocationError() {
     MessageDto request = getGroupReferencesDto();
-    NativePoolServerUtils.getAsyncNode().onMessage(request);
+    PoolLocalServiceServerUtils.getAsyncNode().onMessage(request);
 
     response = captureResponse();
     assertMetadataMatches(request, response);
@@ -225,7 +225,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
   @Test
   public void onIsPresent_shouldPropagate_toLocalPoolPlugin() {
     MessageDto request = getIsCardPresentDto(sessionId);
-    NativePoolServerUtils.getAsyncNode().onMessage(request);
+    PoolLocalServiceServerUtils.getAsyncNode().onMessage(request);
 
     response = captureResponse();
     MessageDto response = responseCaptor.getValue();
@@ -260,8 +260,8 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
             });
 
     service =
-        (NativePoolServerServiceImpl)
-            new NativePoolServerServiceFactory()
+        (PoolLocalServiceServerImpl)
+            new PoolLocalServiceServerFactory()
                 .builder()
                 .withAsyncNode(asyncServer)
                 .withPoolPlugins(poolPluginMock.getName())
@@ -283,7 +283,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
         .setAction(MessageDto.Action.RELEASE_READER.name())
         .setClientNodeId(clientNodeId)
         .setSessionId(sessionId)
-        .setNativeReaderName(readerName)
+        .setLocalReaderName(readerName)
         .setVirtualReaderName(virtualReaderName)
         .setBody(null);
   }
@@ -308,7 +308,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
         .setAction(MessageDto.Action.IS_CARD_PRESENT.name()) //
         .setServerNodeId("serverNodeId") //
         .setClientNodeId("clientNodeId") //
-        .setNativeReaderName(readerName)
+        .setLocalReaderName(readerName)
         .setBody(null);
   }
 

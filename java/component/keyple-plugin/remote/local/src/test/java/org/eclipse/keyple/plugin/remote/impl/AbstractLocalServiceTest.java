@@ -37,9 +37,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AbstractNativeServiceTest extends BaseNativeTest {
+public class AbstractLocalServiceTest extends BaseLocalTest {
 
-  private static final Logger logger = LoggerFactory.getLogger(AbstractNativeServiceTest.class);
+  private static final Logger logger = LoggerFactory.getLogger(AbstractLocalServiceTest.class);
 
   final String pluginName = "pluginName";
 
@@ -49,7 +49,7 @@ public class AbstractNativeServiceTest extends BaseNativeTest {
   final KeypleReaderIOException keypleReaderIOExceptionWithCardResponse;
   final KeypleReaderIOException keypleReaderIOExceptionWithCardResponses;
 
-  AbstractNativeService service;
+  AbstractLocalService service;
 
   {
     cardResponse = getACardResponse();
@@ -74,7 +74,7 @@ public class AbstractNativeServiceTest extends BaseNativeTest {
     init();
 
     // Service
-    service = Mockito.spy(AbstractNativeService.class);
+    service = Mockito.spy(AbstractLocalService.class);
 
     // Plugin factory
     PluginFactory pluginFactoryMocked = Mockito.mock(PluginFactory.class);

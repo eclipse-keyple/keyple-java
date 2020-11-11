@@ -152,7 +152,7 @@ public class SyncNodeClientTest extends AbstractSyncNodeTest {
     assertThat(msg1.getAction()).isEqualTo(action.name());
     assertThat(msg1.getClientNodeId()).isNotEmpty();
     assertThat(msg1.getServerNodeId()).isNull();
-    assertThat(msg1.getNativeReaderName()).isNull();
+    assertThat(msg1.getLocalReaderName()).isNull();
     assertThat(msg1.getVirtualReaderName()).isNull();
     assertThat(msg1.getBody()).isEqualTo(body);
     assertThat(msg1.getSessionId()).isNotEqualTo(msg1.getClientNodeId());

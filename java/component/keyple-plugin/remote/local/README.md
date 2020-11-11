@@ -1,33 +1,33 @@
-# Keyple Remote Plugin (Native library)
+# Keyple Remote Plugin (Local library)
 
 Read first main principles describe in the [Core](../core/README.md) library.
 
 ## Table of Contents
 
-* [About Native library](#about-native-library)
-* [Native Services](#native-services)
-    * [NativeClientService](#nativeclientservice)
-    * [NativeServerService](#nativeserverservice)
-    * [NativePoolServerService](#nativepoolserverservice)
+* [About Local library](#about-local-library)
+* [Local Services](#local-services)
+    * [LocalClientService](#localclientservice)
+    * [LocalServerService](#localserverservice)
+    * [LocalPoolServerService](#localpoolserverservice)
 
-## About Native library
+## About Local library
 
-The **Native** library must be used by the application installed on the terminal having local access to the reader.
+The **Local** library must be used by the application installed on the terminal having local access to the reader.
 
-## Native Services
+## Local Services
 
-### NativeClientService
+### LocalClientService
 
 * [Use cases](../core/README.md#remote-server-plugin)
 * [API](../core/README.md#remote-server-plugin-api-class-diagram)
 * [Sequence diagram](../core/README.md#remote-server-plugin-sequence-diagram)
 
-### NativeServerService
+### LocalServerService
 
 * [Use cases](../core/README.md#remote-client-plugin)
 * [API](../core/README.md#remote-client-plugin-api-class-diagram)
 
-### NativePoolServerService
+### LocalPoolServerService
 
 * [Use cases](../core/README.md#remote-pool-client-plugin)
 * [API](../core/README.md#remote-pool-client-plugin-api-class-diagram)

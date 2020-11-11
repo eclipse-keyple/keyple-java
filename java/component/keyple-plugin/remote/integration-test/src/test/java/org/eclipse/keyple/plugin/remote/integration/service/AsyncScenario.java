@@ -20,8 +20,8 @@ import org.eclipse.keyple.plugin.remote.integration.common.endpoint.service.Stub
 import org.eclipse.keyple.plugin.remote.integration.common.endpoint.service.StubAsyncServerEndpoint;
 import org.eclipse.keyple.plugin.remote.integration.common.model.DeviceInput;
 import org.eclipse.keyple.plugin.remote.integration.common.model.UserInput;
-import org.eclipse.keyple.plugin.remote.impl.NativeClientServiceFactory;
-import org.eclipse.keyple.plugin.remote.impl.NativeClientUtils;
+import org.eclipse.keyple.plugin.remote.impl.LocalServiceClientFactory;
+import org.eclipse.keyple.plugin.remote.impl.LocalServiceClientUtils;
 import org.junit.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +60,7 @@ public class AsyncScenario extends BaseScenario {
      * Client side :
      * <ul>
      *   <li>register stub plugin</li>
-     *   <li>create native stub reader</li>
+     *   <li>create local stub reader</li>
      *   <li>create an async client endpoint</li>
      * <li>generate userId</li>
      * </ul>
@@ -73,7 +73,7 @@ public class AsyncScenario extends BaseScenario {
 
   @After
   public void tearDown() {
-    /** Unplug the native reader */
+    /** Unplug the local reader */
     clearNativeReader();
   }
 
@@ -87,8 +87,8 @@ public class AsyncScenario extends BaseScenario {
   @Test
   public void execute_localselection_remoteTransaction_successful() {
 
-    nativeService =
-        new NativeClientServiceFactory()
+    localService =
+        new LocalServiceClientFactory()
             .builder()
             .withAsyncNode(clientEndpoint)
             .usingDefaultTimeout()
@@ -103,8 +103,8 @@ public class AsyncScenario extends BaseScenario {
   @Test
   public void execute_remoteselection_remoteTransaction_successful() {
 
-    nativeService =
-        new NativeClientServiceFactory()
+    localService =
+        new LocalServiceClientFactory()
             .builder()
             .withAsyncNode(clientEndpoint)
             .usingDefaultTimeout()
@@ -119,8 +119,8 @@ public class AsyncScenario extends BaseScenario {
   @Override
   public void execute_multiclient_remoteselection_remoteTransaction_successful() {
 
-    nativeService =
-        new NativeClientServiceFactory()
+    localService =
+        new LocalServiceClientFactory()
             .builder()
             .withAsyncNode(clientEndpoint)
             .usingDefaultTimeout()
@@ -134,8 +134,8 @@ public class AsyncScenario extends BaseScenario {
   @Test
   @Override
   public void execute_transaction_closeSession_card_error() {
-    nativeService =
-        new NativeClientServiceFactory()
+    localService =
+        new LocalServiceClientFactory()
             .builder()
             .withAsyncNode(clientEndpoint)
             .usingDefaultTimeout()
@@ -151,8 +151,8 @@ public class AsyncScenario extends BaseScenario {
   public void execute_transaction_host_network_error() {
     clientEndpoint = new StubAsyncClientEndpoint(serverEndpoint, true);
 
-    nativeService =
-        new NativeClientServiceFactory()
+    localService =
+        new LocalServiceClientFactory()
             .builder()
             .withAsyncNode(clientEndpoint)
             .usingDefaultTimeout()
@@ -166,15 +166,15 @@ public class AsyncScenario extends BaseScenario {
   @Override
   public void execute_transaction_client_network_error() {
     serverEndpoint.setSimulateConnectionError(true);
-    nativeService =
-        new NativeClientServiceFactory()
+    localService =
+        new LocalServiceClientFactory()
             .builder()
             .withAsyncNode(clientEndpoint)
             .usingCustomTimeout(2)
             .withoutReaderObservation()
             .getService();
 
-    setTimeoutInNode((AbstractNode) NativeClientUtils.getAsyncNode(), 2000);
+    setTimeoutInNode((AbstractNode) LocalServiceClientUtils.getAsyncNode(), 2000);
 
     remoteselection_remoteTransaction();
   }
@@ -183,8 +183,8 @@ public class AsyncScenario extends BaseScenario {
   @Test
   @Override
   public void execute_transaction_slowSe_success() {
-    nativeService =
-        new NativeClientServiceFactory()
+    localService =
+        new LocalServiceClientFactory()
             .builder()
             .withAsyncNode(clientEndpoint)
             .usingDefaultTimeout()
@@ -199,8 +199,8 @@ public class AsyncScenario extends BaseScenario {
   public void execute_all_methods() {
     final ReaderEventFilter eventFilter = new ReaderEventFilter();
 
-    nativeService =
-        new NativeClientServiceFactory()
+    localService =
+        new LocalServiceClientFactory()
             .builder()
             .withAsyncNode(clientEndpoint)
             .usingDefaultTimeout()
@@ -217,8 +217,8 @@ public class AsyncScenario extends BaseScenario {
 
     final ReaderEventFilter eventFilter = new ReaderEventFilter();
 
-    nativeService =
-        new NativeClientServiceFactory()
+    localService =
+        new LocalServiceClientFactory()
             .builder()
             .withAsyncNode(clientEndpoint)
             .usingDefaultTimeout()

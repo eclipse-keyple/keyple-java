@@ -21,24 +21,24 @@ import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
+import org.eclipse.keyple.plugin.remote.LocalServiceClient;
 import org.eclipse.keyple.plugin.remote.ObservableReaderEventFilter;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.exception.KeypleDoNotPropagateEventException;
-import org.eclipse.keyple.plugin.remote.NativeClientService;
 import org.eclipse.keyple.plugin.remote.RemoteServiceParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * (package-private)<br>
- * Singleton instance of the {@link NativeClientService} implementation
+ * Singleton instance of the {@link LocalServiceClient} implementation
  */
-final class NativeClientServiceImpl extends AbstractNativeService
-    implements ObservableReader.ReaderObserver, NativeClientService {
+final class LocalServiceClientImpl extends AbstractLocalService
+    implements ObservableReader.ReaderObserver, LocalServiceClient {
 
-  private static final Logger logger = LoggerFactory.getLogger(NativeClientServiceImpl.class);
+  private static final Logger logger = LoggerFactory.getLogger(LocalServiceClientImpl.class);
 
-  private static NativeClientServiceImpl uniqueInstance;
+  private static LocalServiceClientImpl uniqueInstance;
 
   private final boolean withReaderObservation;
   private final ObservableReaderEventFilter eventFilter;
@@ -51,7 +51,7 @@ final class NativeClientServiceImpl extends AbstractNativeService
    * @param withReaderObservation Indicates if reader observation should be activated.
    * @param eventFilter The event filter to use if reader observation should is activated.
    */
-  private NativeClientServiceImpl(
+  private LocalServiceClientImpl(
       boolean withReaderObservation, ObservableReaderEventFilter eventFilter) {
     super();
     this.withReaderObservation = withReaderObservation;
@@ -66,9 +66,9 @@ final class NativeClientServiceImpl extends AbstractNativeService
    * @param withReaderObservation true if reader observation should be activated
    * @return a not null instance of the singleton
    */
-  static NativeClientServiceImpl createInstance(
+  static LocalServiceClientImpl createInstance(
       boolean withReaderObservation, ObservableReaderEventFilter eventFilter) {
-    uniqueInstance = new NativeClientServiceImpl(withReaderObservation, eventFilter);
+    uniqueInstance = new LocalServiceClientImpl(withReaderObservation, eventFilter);
     return uniqueInstance;
   }
 
@@ -78,7 +78,7 @@ final class NativeClientServiceImpl extends AbstractNativeService
    *
    * @return a not null instance
    */
-  static NativeClientServiceImpl getInstance() {
+  static LocalServiceClientImpl getInstance() {
     return uniqueInstance;
   }
 
@@ -91,14 +91,14 @@ final class NativeClientServiceImpl extends AbstractNativeService
         .notNull(parameters, "parameters") //
         .notNull(classOfT, "classOfT");
 
-    // get nativeReader
-    ProxyReader nativeReader = (ProxyReader) parameters.getNativeReader();
+    // get localReader
+    ProxyReader localReader = (ProxyReader) parameters.getLocalReader();
 
     if (logger.isTraceEnabled()) {
       logger.trace(
-          "Execute remoteService {} for native reader {}",
+          "Execute remoteService {} for local reader {}",
           parameters.getServiceId(),
-          nativeReader.getName());
+          localReader.getName());
     }
 
     // Generate a new session id
@@ -118,41 +118,41 @@ final class NativeClientServiceImpl extends AbstractNativeService
 
       // start observation if needed
       if (withReaderObservation) {
-        if (nativeReader instanceof ObservableReader) {
+        if (localReader instanceof ObservableReader) {
 
-          // Register the virtual reader associated to the native reader.
-          virtualReaders.put(nativeReader.getName(), receivedDto.getVirtualReaderName());
+          // Register the virtual reader associated to the local reader.
+          virtualReaders.put(localReader.getName(), receivedDto.getVirtualReaderName());
 
           try {
             // Start the observation.
             if (logger.isTraceEnabled()) {
               logger.trace(
-                  "Add NativeClientService as an observer for reader {}", nativeReader.getName());
+                  "Add LocalServiceClient as an observer for reader {}", localReader.getName());
             }
-            ((ObservableReader) nativeReader).addObserver(this);
+            ((ObservableReader) localReader).addObserver(this);
 
             // Process the entire transaction
-            receivedDto = processTransaction(nativeReader, receivedDto);
+            receivedDto = processTransaction(localReader, receivedDto);
 
             // Extract user output data
             userOutputData = extractUserOutputData(receivedDto, classOfT);
 
             // Verify if the virtual reader can be unregistered.
             if (canUnregisterVirtualReader(receivedDto)) {
-              virtualReaders.remove(nativeReader.getName());
+              virtualReaders.remove(localReader.getName());
             }
           } catch (RuntimeException e) {
             // Unregister the associated virtual reader.
-            virtualReaders.remove(nativeReader.getName());
+            virtualReaders.remove(localReader.getName());
             throw e;
           }
         } else {
           throw new IllegalArgumentException(
-              "Observation can not be activated because native reader is not observable");
+              "Observation can not be activated because local reader is not observable");
         }
       } else {
         // Process the entire transaction
-        receivedDto = processTransaction(nativeReader, receivedDto);
+        receivedDto = processTransaction(localReader, receivedDto);
 
         // Extract user output data
         userOutputData = extractUserOutputData(receivedDto, classOfT);
@@ -196,8 +196,8 @@ final class NativeClientServiceImpl extends AbstractNativeService
     }
 
     try {
-      // Get the native reader instance
-      ProxyReader nativeReader = findLocalReader(event.getReaderName());
+      // Get the local reader instance
+      ProxyReader localReader = findLocalReader(event.getReaderName());
 
       // Generate a new session id
       String sessionId = generateSessionId();
@@ -213,7 +213,7 @@ final class NativeClientServiceImpl extends AbstractNativeService
         MessageDto receivedDto = node.sendRequest(eventMessageDto);
 
         // Process all the transaction
-        receivedDto = processTransaction(nativeReader, receivedDto);
+        receivedDto = processTransaction(localReader, receivedDto);
 
         // extract userOutputData
         Object userOutputData =
@@ -221,7 +221,7 @@ final class NativeClientServiceImpl extends AbstractNativeService
 
         // Verify if the virtual reader can be unregistered.
         if (canUnregisterVirtualReader(receivedDto)) {
-          virtualReaders.remove(nativeReader.getName());
+          virtualReaders.remove(localReader.getName());
         }
 
         // invoke callback
@@ -243,13 +243,13 @@ final class NativeClientServiceImpl extends AbstractNativeService
    * (private)<br>
    * Process the entire transaction.
    *
-   * @param nativeReader The native reader.
+   * @param localReader The local reader.
    * @param receivedDto The first received dto from the server.
    * @return a not null reference.
    * @throws RuntimeException if an error occurs.
    */
   private MessageDto processTransaction(
-      ProxyReader nativeReader, MessageDto receivedDto) {
+      ProxyReader localReader, MessageDto receivedDto) {
 
     // check server response : while dto is not a terminate service, execute dto locally and send
     // back response.
@@ -257,7 +257,7 @@ final class NativeClientServiceImpl extends AbstractNativeService
         && !receivedDto.getAction().equals(MessageDto.Action.ERROR.name())) {
 
       // execute dto request locally
-      MessageDto responseDto = executeLocally(nativeReader, receivedDto);
+      MessageDto responseDto = executeLocally(localReader, receivedDto);
 
       // get response dto - send dto response to server
       receivedDto = node.sendRequest(responseDto);
@@ -327,12 +327,12 @@ final class NativeClientServiceImpl extends AbstractNativeService
 
     body.addProperty(
         "isObservable",
-        withReaderObservation && (parameters.getNativeReader() instanceof ObservableReader));
+        withReaderObservation && (parameters.getLocalReader() instanceof ObservableReader));
 
     return new MessageDto()
         .setSessionId(sessionId)
         .setAction(MessageDto.Action.EXECUTE_REMOTE_SERVICE.name())
-        .setNativeReaderName(parameters.getNativeReader().getName())
+        .setLocalReaderName(parameters.getLocalReader().getName())
         .setBody(body.toString());
   }
 
@@ -356,7 +356,7 @@ final class NativeClientServiceImpl extends AbstractNativeService
     return new MessageDto()
         .setSessionId(sessionId)
         .setAction(MessageDto.Action.READER_EVENT.name())
-        .setNativeReaderName(readerEvent.getReaderName())
+        .setLocalReaderName(readerEvent.getReaderName())
         .setVirtualReaderName(virtualReaders.get(readerEvent.getReaderName()))
         .setBody(body.toString());
   }

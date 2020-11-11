@@ -22,19 +22,19 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.MessageDto;
-import org.eclipse.keyple.plugin.remote.NativePoolServerService;
+import org.eclipse.keyple.plugin.remote.PoolLocalServiceServer;
 
 /**
- * Implementation of the {@link NativePoolServerService}. This object is a singleton created by the
- * {@link NativePoolServerServiceFactory}
+ * Implementation of the {@link PoolLocalServiceServer}. This object is a singleton created by the
+ * {@link PoolLocalServiceServerFactory}
  */
-final class NativePoolServerServiceImpl extends AbstractNativeService
-    implements NativePoolServerService {
+final class PoolLocalServiceServerImpl extends AbstractLocalService
+    implements PoolLocalServiceServer {
 
-  private static NativePoolServerServiceImpl uniqueInstance;
+  private static PoolLocalServiceServerImpl uniqueInstance;
   private final String[] poolPluginNames;
 
-  private NativePoolServerServiceImpl(String[] poolPluginNames) {
+  private PoolLocalServiceServerImpl(String[] poolPluginNames) {
     this.poolPluginNames = poolPluginNames;
   }
 
@@ -45,8 +45,8 @@ final class NativePoolServerServiceImpl extends AbstractNativeService
    * @param poolPluginNames name(s) of the pool plugin(s) associated with this service
    * @return a not null instance of the singleton
    */
-  static NativePoolServerServiceImpl createInstance(String[] poolPluginNames) {
-    uniqueInstance = new NativePoolServerServiceImpl(poolPluginNames);
+  static PoolLocalServiceServerImpl createInstance(String[] poolPluginNames) {
+    uniqueInstance = new PoolLocalServiceServerImpl(poolPluginNames);
     return uniqueInstance;
   }
 
@@ -56,7 +56,7 @@ final class NativePoolServerServiceImpl extends AbstractNativeService
    *
    * @return a not null instance
    */
-  static NativePoolServerServiceImpl getInstance() {
+  static PoolLocalServiceServerImpl getInstance() {
     return uniqueInstance;
   }
 
@@ -75,10 +75,10 @@ final class NativePoolServerServiceImpl extends AbstractNativeService
                   .getAsString();
           poolPlugin = getAPoolPlugin(groupReference);
           reader = (ProxyReader) poolPlugin.allocateReader(groupReference);
-          response = new MessageDto(msg).setNativeReaderName(reader.getName()).setBody(null);
+          response = new MessageDto(msg).setLocalReaderName(reader.getName()).setBody(null);
           break;
         case RELEASE_READER:
-          releaseReader(msg.getNativeReaderName());
+          releaseReader(msg.getLocalReaderName());
           response = new MessageDto(msg).setBody(null);
           break;
         case GET_READER_GROUP_REFERENCES:
@@ -89,7 +89,7 @@ final class NativePoolServerServiceImpl extends AbstractNativeService
           response = new MessageDto(msg).setBody(body.toString());
           break;
         default:
-          reader = findReader(msg.getNativeReaderName());
+          reader = findReader(msg.getLocalReaderName());
           response = executeLocally(reader, msg);
           break;
       }
@@ -159,21 +159,21 @@ final class NativePoolServerServiceImpl extends AbstractNativeService
   /**
    * Find a reader among all pool plugins associated to this service
    *
-   * @param nativeReaderName name of the reader to be found
+   * @param localReaderName name of the reader to be found
    * @return a not null instance of a reader
    * @throws KeypleReaderNotFoundException if no reader is found with this name
    * @since 1.0
    */
-  private ProxyReader findReader(String nativeReaderName) {
+  private ProxyReader findReader(String localReaderName) {
     for (String poolPluginName : poolPluginNames) {
       ReaderPoolPlugin plugin =
           (ReaderPoolPlugin) SmartCardService.getInstance().getPlugin(poolPluginName);
       try {
-        return (ProxyReader) plugin.getReader(nativeReaderName);
+        return (ProxyReader) plugin.getReader(localReaderName);
       } catch (KeypleReaderNotFoundException e) {
         // reader has not been found in this plugin, continue
       }
     }
-    throw new KeypleReaderNotFoundException(nativeReaderName);
+    throw new KeypleReaderNotFoundException(localReaderName);
   }
 }

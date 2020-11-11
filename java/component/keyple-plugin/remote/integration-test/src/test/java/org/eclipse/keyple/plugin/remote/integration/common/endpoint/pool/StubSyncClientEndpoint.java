@@ -22,7 +22,7 @@ import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.RemotePoolClientPlugin;
 import org.eclipse.keyple.plugin.remote.integration.common.util.JacksonParser;
-import org.eclipse.keyple.plugin.remote.impl.NativePoolServerUtils;
+import org.eclipse.keyple.plugin.remote.impl.PoolLocalServiceServerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +69,7 @@ public class StubSyncClientEndpoint implements SyncEndpointClient {
       public String call() throws Exception {
         // Send the dto to the sync node
         List<MessageDto> responses =
-            NativePoolServerUtils.getSyncNode().onRequest(JacksonParser.fromJson(data));
+            PoolLocalServiceServerUtils.getSyncNode().onRequest(JacksonParser.fromJson(data));
 
         return JacksonParser.toJson(responses);
       }

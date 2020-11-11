@@ -15,20 +15,20 @@ import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.ReaderPoolPlugin;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.util.Assert;
+import org.eclipse.keyple.plugin.remote.PoolLocalServiceServer;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
-import org.eclipse.keyple.plugin.remote.NativePoolServerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This factory must be used to initialize a {@link NativePoolServerService}
+ * This factory must be used to initialize a {@link PoolLocalServiceServer}
  *
  * @since 1.0
  */
-public final class NativePoolServerServiceFactory {
+public final class PoolLocalServiceServerFactory {
 
   private static final Logger logger =
-      LoggerFactory.getLogger(NativePoolServerServiceFactory.class);
+      LoggerFactory.getLogger(PoolLocalServiceServerFactory.class);
 
   /**
    * Init the builder
@@ -36,8 +36,8 @@ public final class NativePoolServerServiceFactory {
    * @return next configuration step
    * @since 1.0
    */
-  public NativePoolServerServiceFactory.NodeStep builder() {
-    return new NativePoolServerServiceFactory.Step();
+  public PoolLocalServiceServerFactory.NodeStep builder() {
+    return new PoolLocalServiceServerFactory.Step();
   }
 
   public interface BuilderStep {
@@ -47,7 +47,7 @@ public final class NativePoolServerServiceFactory {
      * @return singleton instance of the service
      * @since 1.0
      */
-    NativePoolServerService getService();
+    PoolLocalServiceServer getService();
   }
 
   public interface NodeStep {
@@ -117,18 +117,18 @@ public final class NativePoolServerServiceFactory {
     }
 
     @Override
-    public NativePoolServerService getService() {
-      NativePoolServerServiceImpl nativePoolServerServiceImpl =
-          NativePoolServerServiceImpl.createInstance(poolPluginNames);
+    public PoolLocalServiceServer getService() {
+      PoolLocalServiceServerImpl poolLocalServiceServerImpl =
+          PoolLocalServiceServerImpl.createInstance(poolPluginNames);
       if (asyncEndpoint != null) {
-        nativePoolServerServiceImpl.bindServerAsyncNode(asyncEndpoint);
-        logger.info("Create a new NativePoolServerService with a async server");
+        poolLocalServiceServerImpl.bindServerAsyncNode(asyncEndpoint);
+        logger.info("Create a new PoolLocalServiceServer with a async server");
       } else {
-        nativePoolServerServiceImpl.bindServerSyncNode();
-        logger.info("Create a new NativePoolServerService with a sync server");
+        poolLocalServiceServerImpl.bindServerSyncNode();
+        logger.info("Create a new PoolLocalServiceServer with a sync server");
       }
 
-      return nativePoolServerServiceImpl;
+      return poolLocalServiceServerImpl;
     }
   }
 }

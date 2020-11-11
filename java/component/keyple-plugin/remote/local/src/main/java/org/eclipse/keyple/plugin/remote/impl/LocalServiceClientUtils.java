@@ -12,28 +12,28 @@
 package org.eclipse.keyple.plugin.remote.impl;
 
 import org.eclipse.keyple.plugin.remote.AsyncNodeClient;
-import org.eclipse.keyple.plugin.remote.NativeClientService;
+import org.eclipse.keyple.plugin.remote.LocalServiceClient;
 
 /**
- * Utility class associated to a {@link NativeClientService}
+ * Utility class associated to a {@link LocalServiceClient}
  *
  * @since 1.0
  */
-public class NativeClientUtils {
+public class LocalServiceClientUtils {
 
   /**
-   * Get the Native Client Service
+   * Get the Local Service Client
    *
    * @return a not null reference
    * @throws IllegalStateException if the service is not initialized.
    * @since 1.0
    */
-  public static NativeClientService getService() {
-    return getNativeClientService();
+  public static LocalServiceClient getService() {
+    return getLocalClientService();
   }
 
   /**
-   * Get the async node associated to the Native Client Service.
+   * Get the async node associated to the Local Service Client.
    *
    * @return a not null reference
    * @throws IllegalStateException if the service is not initialized or is not bounded to an async
@@ -41,24 +41,24 @@ public class NativeClientUtils {
    * @since 1.0
    */
   public static AsyncNodeClient getAsyncNode() {
-    NativeClientServiceImpl service = getNativeClientService();
+    LocalServiceClientImpl service = getLocalClientService();
     if (service.getNode() instanceof AsyncNodeClient) {
       return (AsyncNodeClient) service.getNode();
     }
-    throw new IllegalStateException("The Native Service is not bounded to an async node");
+    throw new IllegalStateException("The Local Service is not bounded to an async node");
   }
 
   /**
    * (private)<br>
-   * Get the Native Client Service implementation
+   * Get the Local Service Client implementation
    *
    * @return a not null reference
    * @throws IllegalStateException if the service is not initialized.
    */
-  private static NativeClientServiceImpl getNativeClientService() {
-    NativeClientServiceImpl service = NativeClientServiceImpl.getInstance();
+  private static LocalServiceClientImpl getLocalClientService() {
+    LocalServiceClientImpl service = LocalServiceClientImpl.getInstance();
     if (service == null) {
-      throw new IllegalStateException("The Native Client Service is not initialized");
+      throw new IllegalStateException("The Local Client Service is not initialized");
     }
     return service;
   }

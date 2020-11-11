@@ -1,6 +1,6 @@
 # Keyple Remote Plugin (Core library)
 
-The **Keyple Remote Plugin** allows a terminal to communicate with a "native" reader plugged into another terminal.
+The **Keyple Remote Plugin** allows a terminal to communicate with a "local" reader plugged into another terminal.
 
 In a Calypso context, it is useful when your SAM reader and/or your PO reader aren't connected to the same terminal. With the **Keyple Remote Plugin**, you can open Calypso transaction within a distributed architecture.
 
@@ -28,13 +28,13 @@ In a Calypso context, it is useful when your SAM reader and/or your PO reader ar
 ## Overview
 
 The **Keyple Remote Plugin** is divided into two main libraries, and one common library :
-* The **[Native](../native/README.md)** library (`keyple-plugin-remote-nativese`) : This library must be used by the application installed on the terminal having local access to the reader.
+* The **[Local](../local/README.md)** library (`keyple-plugin-remote-local`) : This library must be used by the application installed on the terminal having local access to the reader.
 * The **[Virtual](../virtual/README.md)** library (`keyple-plugin-remote-virtualse`) : This library must be used by the application installed on the terminal not having local access to the reader and that wishes to control the reader remotely.
 * The **Core** library (`keyple-plugin-remote-core`) : The common library.
 
 ## About Core library
 
-The **Core** library contains all the common components used by **Native** and **Virtual** libraries such as nodes used for communication management.
+The **Core** library contains all the common components used by **Local** and **Virtual** libraries such as nodes used for communication management.
 
 > Therefore, you do not have to import it explicitly because it's imported by transitivity.
 
@@ -42,7 +42,7 @@ The **Core** library contains all the common components used by **Native** and *
 
 1. Read first [Overview](#overview) & [About Core library](#about-core-library) chapters.
 2. Find your use case with the help of chapter [Use cases](#use-cases). This will help you determine exactly which interfaces to use.
-3. Import [Native](../native/README.md) and/or [Virtual](../virtual/README.md) libraries depending on your use case.
+3. Import [Local](../local/README.md) and/or [Virtual](../virtual/README.md) libraries depending on your use case.
 4. Using chapter [Network configuration](#network-configuration), you must implement the transport layer using the sequence diagram adapted to your network configuration.
 5. Implement your ticketing services using the interfaces detailed in chapter [Public API](#annexes).
 
@@ -94,7 +94,7 @@ If you want to implement a Client-Server communication protocol, such as standar
 
 ## Exchanged data
 
-The POJO object `KeypleMessageDto` contains data exchanged between **Native** and **Virtual** components. It is built and processed by the plugin, and you don't need to modified it.
+The POJO object `KeypleMessageDto` contains data exchanged between **Local** and **Virtual** components. It is built and processed by the plugin, and you don't need to modified it.
 
 ## Annexes
 

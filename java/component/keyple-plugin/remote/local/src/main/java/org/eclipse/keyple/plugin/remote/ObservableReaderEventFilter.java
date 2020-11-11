@@ -15,7 +15,7 @@ import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.plugin.remote.exception.KeypleDoNotPropagateEventException;
 
 /**
- * Keyple Client Reader Event Filter<br>
+ * Observable Reader Reader Event Filter<br>
  * This interface should be implemented by the user in the use case of the Remote Server Plugin when
  * the reader observation is activated.
  *

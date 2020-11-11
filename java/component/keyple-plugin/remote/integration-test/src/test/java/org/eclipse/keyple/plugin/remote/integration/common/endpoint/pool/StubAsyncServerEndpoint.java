@@ -20,7 +20,7 @@ import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
 import org.eclipse.keyple.plugin.remote.RemotePoolClientPlugin;
 import org.eclipse.keyple.plugin.remote.integration.common.util.JacksonParser;
-import org.eclipse.keyple.plugin.remote.impl.NativePoolServerUtils;
+import org.eclipse.keyple.plugin.remote.impl.PoolLocalServiceServerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +46,7 @@ public class StubAsyncServerEndpoint implements AsyncEndpointServer {
   public void close(String sessionId) {
     messageCounts.remove(sessionId);
     clients.remove(sessionId);
-    NativePoolServerUtils.getAsyncNode().onClose(sessionId);
+    PoolLocalServiceServerUtils.getAsyncNode().onClose(sessionId);
   }
 
   /**
@@ -61,7 +61,7 @@ public class StubAsyncServerEndpoint implements AsyncEndpointServer {
         new Runnable() {
           @Override
           public void run() {
-            NativePoolServerUtils.getAsyncNode().onMessage(message);
+            PoolLocalServiceServerUtils.getAsyncNode().onMessage(message);
           }
         });
   }
@@ -78,7 +78,7 @@ public class StubAsyncServerEndpoint implements AsyncEndpointServer {
             try {
               client.onMessage(data);
             } catch (Throwable t) {
-              NativePoolServerUtils.getAsyncNode().onError(msg.getSessionId(), t);
+              PoolLocalServiceServerUtils.getAsyncNode().onError(msg.getSessionId(), t);
             }
           }
         });

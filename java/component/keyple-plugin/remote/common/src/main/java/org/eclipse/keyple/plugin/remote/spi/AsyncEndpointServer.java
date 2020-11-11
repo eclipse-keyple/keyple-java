@@ -30,8 +30,8 @@ import org.eclipse.keyple.plugin.remote.AsyncNodeServer;
  *       utility methods, depending on your use case :
  *       <ul>
  *         <li>{@code RemoteServerUtils.getAsyncNode()}
- *         <li>{@code NativeSeServerUtils.getAsyncNode()}
- *         <li>{@code NativeSePoolServerUtils.getAsyncNode()}
+ *         <li>{@code LocalServiceServerUtils.getAsyncNode()}
+ *         <li>{@code PoolLocalServiceServerUtils.getAsyncNode()}
  *       </ul>
  *   <li>Call the method {@link AsyncNodeServer#onMessage(MessageDto)} on the node.
  *   <li>Call the method {@link AsyncNodeServer#onClose(String)} on the node after the session

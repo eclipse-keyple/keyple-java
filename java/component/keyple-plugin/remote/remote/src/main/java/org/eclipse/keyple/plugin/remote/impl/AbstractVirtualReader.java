@@ -34,7 +34,7 @@ abstract class AbstractVirtualReader extends AbstractReader {
   private static final Logger logger = LoggerFactory.getLogger(AbstractVirtualReader.class);
 
   protected final AbstractNode node;
-  protected final String nativeReaderName;
+  protected final String localReaderName;
 
   private String sessionId;
   private String clientNodeId;
@@ -44,19 +44,19 @@ abstract class AbstractVirtualReader extends AbstractReader {
    * Constructor
    *
    * @param pluginName The name of the plugin (must be not null).
-   * @param nativeReaderName The name of the native reader (must be not null).
+   * @param localReaderName The name of the local reader (must be not null).
    * @param node The associated node (must be not null).
    * @param sessionId Session Id (can be null)
    * @param clientNodeId Client node Id (can be null)
    */
   AbstractVirtualReader(
       String pluginName,
-      String nativeReaderName,
+      String localReaderName,
       AbstractNode node,
       String sessionId,
       String clientNodeId) {
     super(pluginName, UUID.randomUUID().toString());
-    this.nativeReaderName = nativeReaderName;
+    this.localReaderName = localReaderName;
     this.node = node;
     this.sessionId = sessionId;
     this.clientNodeId = clientNodeId;
@@ -194,7 +194,7 @@ abstract class AbstractVirtualReader extends AbstractReader {
             .setSessionId(sessionId != null ? sessionId : UUID.randomUUID().toString()) //
             .setAction(action.name()) //
             .setVirtualReaderName(getName()) //
-            .setNativeReaderName(nativeReaderName) //
+            .setLocalReaderName(localReaderName) //
             .setClientNodeId(clientNodeId) //
             .setBody(body != null ? body.toString() : null);
 

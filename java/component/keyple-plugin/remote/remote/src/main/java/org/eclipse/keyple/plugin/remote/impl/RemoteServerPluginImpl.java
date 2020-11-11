@@ -51,7 +51,7 @@ final class RemoteServerPluginImpl extends AbstractRemotePlugin implements Remot
    * <ul>
    *   <li>Instantiates a new ReaderPlugin.
    *   <li>Retrieve the current readers list.
-   *   <li>Initialize the list of readers calling the abstract method initNativeReaders.
+   *   <li>Initialize the list of readers calling TODO.
    *   <li>When readers initialisation failed, a KeypleReaderException is thrown.
    * </ul>
    *

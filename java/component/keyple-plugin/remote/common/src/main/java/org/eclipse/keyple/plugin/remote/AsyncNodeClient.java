@@ -26,7 +26,7 @@ import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
  * This kind of node can be bind to a all <b>client</b> Remote plugins and services :
  *
  * <ul>
- *   <li>{@code NativeSeClientService}
+ *   <li>{@see LocalServiceClient}
  *   <li>{@code RemoteClientPlugin}
  *   <li>{@code RemotePoolClientPlugin}
  * </ul>
@@ -36,7 +36,7 @@ import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
  * methods, depending on your use case :
  *
  * <ul>
- *   <li>{@code NativeSeClientUtils.getAsyncNode()}
+ *   <li>{@code LocalServiceClientUtils.getAsyncNode()}
  *   <li>{@code RemoteClientUtils.getAsyncNode()}
  *   <li>{@code RemotePoolClientUtils.getAsyncNode()}
  * </ul>

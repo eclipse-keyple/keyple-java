@@ -30,27 +30,27 @@ import org.slf4j.LoggerFactory;
 
 /**
  * (package-private)<br>
- * Abstract class for all Native Services.
+ * Abstract class for all Local Services.
  */
-abstract class AbstractNativeService extends AbstractMessageHandler {
+abstract class AbstractLocalService extends AbstractMessageHandler {
 
-  private static final Logger logger = LoggerFactory.getLogger(AbstractNativeService.class);
+  private static final Logger logger = LoggerFactory.getLogger(AbstractLocalService.class);
 
   /**
    * (protected)<br>
    * Find a local reader among all plugins
    *
-   * @param nativeReaderName name of the reader to be found
+   * @param localReaderName name of the reader to be found
    * @return a not null instance
    * @throws KeypleReaderNotFoundException if no reader is found with this name
    * @since 1.0
    */
-  protected ProxyReader findLocalReader(String nativeReaderName) {
+  protected ProxyReader findLocalReader(String localReaderName) {
 
     if (logger.isTraceEnabled()) {
       logger.trace(
           "Try to find local reader by name '{}' in {} plugin(s)",
-          nativeReaderName,
+          localReaderName,
           SmartCardService.getInstance().getPlugins().size());
     }
 
@@ -58,39 +58,39 @@ abstract class AbstractNativeService extends AbstractMessageHandler {
       try {
         if (logger.isTraceEnabled()) {
           logger.trace(
-              "Try to find local reader '{}' in plugin '{}'", nativeReaderName, plugin.getName());
+              "Try to find local reader '{}' in plugin '{}'", localReaderName, plugin.getName());
         }
-        return (ProxyReader) plugin.getReader(nativeReaderName);
+        return (ProxyReader) plugin.getReader(localReaderName);
       } catch (KeypleReaderNotFoundException e) {
         // reader has not been found in this plugin, continue
       }
     }
-    throw new KeypleReaderNotFoundException(nativeReaderName);
+    throw new KeypleReaderNotFoundException(localReaderName);
   }
 
   /**
    * (protected)<br>
-   * Execute a keypleMessageDto on the local nativeReader, returns the response embedded on a
+   * Execute a keypleMessageDto on the local localReader, returns the response embedded on a
    * keypleMessageDto ready to be sent back.
    *
    * @param msg The message to process (must be not null).
    * @return a not null reference
    */
-  protected MessageDto executeLocally(ProxyReader nativeReader, MessageDto msg) {
-    return new NativeReaderExecutor(nativeReader, msg).execute();
+  protected MessageDto executeLocally(ProxyReader localReader, MessageDto msg) {
+    return new LocalReaderExecutor(localReader, msg).execute();
   }
 
   /**
    * (private)<br>
-   * Nested class used to execute the action on the native reader.
+   * Nested class used to execute the action on the local reader.
    */
-  private static final class NativeReaderExecutor {
+  private static final class LocalReaderExecutor {
 
     private final ProxyReader reader;
     private final MessageDto msg;
     private final MessageDto.Action action;
 
-    private NativeReaderExecutor(ProxyReader reader, MessageDto msg) {
+    private LocalReaderExecutor(ProxyReader reader, MessageDto msg) {
       this.reader = reader;
       this.msg = msg;
       this.action = MessageDto.Action.valueOf(msg.getAction());

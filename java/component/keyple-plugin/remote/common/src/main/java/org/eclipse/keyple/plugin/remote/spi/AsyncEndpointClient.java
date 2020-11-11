@@ -38,7 +38,7 @@ public interface AsyncEndpointClient {
    *   <li>Retrieve the node {@link AsyncNodeClient} using one of the following <b>client</b>
    *       utility methods, depending on your use case :
    *       <ul>
-   *         <li>{@code NativeSeClientUtils.getAsyncNode()}
+   *         <li>{@code LocalServiceClientUtils.getAsyncNode()}
    *         <li>{@code RemoteClientUtils.getAsyncNode()}
    *         <li>{@code RemotePoolClientUtils.getAsyncNode()}
    *       </ul>
@@ -76,7 +76,7 @@ public interface AsyncEndpointClient {
    *   <li>Retrieve the node {@link AsyncNodeClient} using the right <b>client</b> utility
    *       methods, depending on your use case :
    *       <ul>
-   *         <li>{@code NativeSeClientUtils.getAsyncNode()}
+   *         <li>{@code LocalServiceClientUtils.getAsyncNode()}
    *         <li>{@code RemoteClientUtils.getAsyncNode()}
    *         <li>{@code RemotePoolClientUtils.getAsyncNode()}
    *       </ul>

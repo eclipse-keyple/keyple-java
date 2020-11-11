@@ -33,7 +33,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class VirtualReaderTest {
 
   static final String pluginName = "pluginName";
-  static final String nativeReaderName = "nativeReaderName";
+  static final String localReaderName = "localReaderName";
 
   VirtualReader reader;
   AbstractNode node;
@@ -41,7 +41,7 @@ public class VirtualReaderTest {
   @Before
   public void setUp() {
     node = mock(AbstractNode.class);
-    reader = new VirtualReader(pluginName, nativeReaderName, node, "val1", null);
+    reader = new VirtualReader(pluginName, localReaderName, node, "val1", null);
   }
 
   @Test
@@ -63,7 +63,7 @@ public class VirtualReaderTest {
         new MessageDto() //
             .setAction(MessageDto.Action.TRANSMIT.name()) //
             .setVirtualReaderName(reader.getName()) //
-            .setNativeReaderName(reader.nativeReaderName) //
+            .setLocalReaderName(reader.localReaderName) //
             .setBody(KeypleJsonParser.getParser().toJson(cardResponse, CardResponse.class));
 
     doReturn(responseDto).when(node).sendRequest(any(MessageDto.class));
@@ -119,7 +119,7 @@ public class VirtualReaderTest {
         new MessageDto() //
             .setAction(MessageDto.Action.TRANSMIT_CARD_SELECTION.name()) //
             .setVirtualReaderName(reader.getName()) //
-            .setNativeReaderName(reader.nativeReaderName) //
+            .setLocalReaderName(reader.localReaderName) //
             .setBody(
                 KeypleJsonParser.getParser()
                     .toJson(cardResponses, new TypeToken<ArrayList<CardResponse>>() {}.getType()));
@@ -177,7 +177,7 @@ public class VirtualReaderTest {
         new MessageDto() //
             .setAction(MessageDto.Action.IS_CARD_PRESENT.name()) //
             .setVirtualReaderName(reader.getName()) //
-            .setNativeReaderName(reader.nativeReaderName) //
+            .setLocalReaderName(reader.localReaderName) //
             .setBody(KeypleJsonParser.getParser().toJson(true, Boolean.class));
 
     doReturn(responseDto).when(node).sendRequest(any(MessageDto.class));
@@ -213,7 +213,7 @@ public class VirtualReaderTest {
         new MessageDto() //
             .setAction(MessageDto.Action.IS_READER_CONTACTLESS.name()) //
             .setVirtualReaderName(reader.getName()) //
-            .setNativeReaderName(reader.nativeReaderName) //
+            .setLocalReaderName(reader.localReaderName) //
             .setBody(KeypleJsonParser.getParser().toJson(true, Boolean.class));
 
     doReturn(responseDto).when(node).sendRequest(any(MessageDto.class));
@@ -249,7 +249,7 @@ public class VirtualReaderTest {
         new MessageDto() //
             .setAction(MessageDto.Action.RELEASE_CHANNEL.name()) //
             .setVirtualReaderName(reader.getName()) //
-            .setNativeReaderName(reader.nativeReaderName);
+            .setLocalReaderName(reader.localReaderName);
 
     doReturn(responseDto).when(node).sendRequest(any(MessageDto.class));
 
@@ -301,7 +301,7 @@ public class VirtualReaderTest {
         new MessageDto() //
             .setAction(MessageDto.Action.ERROR.name()) //
             .setVirtualReaderName(reader.getName()) //
-            .setNativeReaderName(reader.nativeReaderName) //
+            .setLocalReaderName(reader.localReaderName) //
             .setBody(KeypleJsonParser.getParser().toJson(new BodyError(error)));
 
     doReturn(responseDto).when(node).sendRequest(any(MessageDto.class));

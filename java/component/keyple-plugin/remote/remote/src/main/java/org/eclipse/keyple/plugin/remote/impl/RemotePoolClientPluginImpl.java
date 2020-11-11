@@ -99,7 +99,7 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
       VirtualReader reader =
           new VirtualReader(
               getName(),
-              response.getNativeReaderName(),
+              response.getLocalReaderName(),
               getNode(),
               sessionId,
               response.getClientNodeId());
@@ -134,7 +134,7 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
           new MessageDto()
               .setAction(MessageDto.Action.RELEASE_READER.name())
               .setVirtualReaderName(reader.getName())
-              .setNativeReaderName(virtualReader.getNativeReaderName())
+              .setLocalReaderName(virtualReader.getLocalReaderName())
               .setSessionId(virtualReader.getSessionId())
               .setBody(null);
 

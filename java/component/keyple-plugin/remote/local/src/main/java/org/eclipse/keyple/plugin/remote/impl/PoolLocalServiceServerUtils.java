@@ -13,17 +13,17 @@ package org.eclipse.keyple.plugin.remote.impl;
 
 import org.eclipse.keyple.plugin.remote.AsyncNodeServer;
 import org.eclipse.keyple.plugin.remote.SyncNodeServer;
-import org.eclipse.keyple.plugin.remote.NativePoolServerService;
+import org.eclipse.keyple.plugin.remote.PoolLocalServiceServer;
 
 /**
- * Utility class associated to a {@link NativePoolServerService}
+ * Utility class associated to a {@link PoolLocalServiceServer}
  *
  * @since 1.0
  */
-public final class NativePoolServerUtils {
+public final class PoolLocalServiceServerUtils {
 
   /**
-   * Get the async node associated to the Native Pool Server Service.
+   * Get the async node associated to the Local Pool Server Service.
    *
    * @return a not null reference
    * @throws IllegalStateException if the service is not initialized or is not bounded to an async
@@ -31,16 +31,16 @@ public final class NativePoolServerUtils {
    * @since 1.0
    */
   public static AsyncNodeServer getAsyncNode() {
-    NativePoolServerServiceImpl service = getNativePoolServerService();
+    PoolLocalServiceServerImpl service = getPoolLocalServiceServer();
     if (service.getNode() instanceof AsyncNodeServer) {
       return (AsyncNodeServer) service.getNode();
     }
     throw new IllegalStateException(
-        "The Native Pool Server Service is not bounded to an async node");
+        "The Local Pool Server Service is not bounded to an async node");
   }
 
   /**
-   * Get the sync node associated to the Native Pool Server Service.
+   * Get the sync node associated to the Local Pool Server Service.
    *
    * @return a not null reference
    * @throws IllegalStateException if the service is not initialized or is not bounded to a sync
@@ -48,25 +48,25 @@ public final class NativePoolServerUtils {
    * @since 1.0
    */
   public static SyncNodeServer getSyncNode() {
-    NativePoolServerServiceImpl service = getNativePoolServerService();
+    PoolLocalServiceServerImpl service = getPoolLocalServiceServer();
     if (service.getNode() instanceof SyncNodeServer) {
       return (SyncNodeServer) service.getNode();
     }
     throw new IllegalStateException(
-        "The Native Pool Server Service is not bounded to an sync node");
+        "The Local Pool Server Service is not bounded to an sync node");
   }
 
   /**
    * (private)<br>
-   * Get the Native Pool Server Service implementation
+   * Get the Local Pool Server Service implementation
    *
    * @return a not null reference
    * @throws IllegalStateException if the service is not initialized.
    */
-  private static NativePoolServerServiceImpl getNativePoolServerService() {
-    NativePoolServerServiceImpl service = NativePoolServerServiceImpl.getInstance();
+  private static PoolLocalServiceServerImpl getPoolLocalServiceServer() {
+    PoolLocalServiceServerImpl service = PoolLocalServiceServerImpl.getInstance();
     if (service == null) {
-      throw new IllegalStateException("The Native Pool Server Service is not initialized");
+      throw new IllegalStateException("The Local Pool Server Service is not initialized");
     }
     return service;
   }

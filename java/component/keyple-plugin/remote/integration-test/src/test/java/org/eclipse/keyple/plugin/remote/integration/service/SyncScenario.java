@@ -18,7 +18,7 @@ import org.eclipse.keyple.plugin.remote.integration.common.endpoint.StubNetworkC
 import org.eclipse.keyple.plugin.remote.integration.common.endpoint.service.StubSyncClientEndpoint;
 import org.eclipse.keyple.plugin.remote.integration.common.model.DeviceInput;
 import org.eclipse.keyple.plugin.remote.integration.common.model.UserInput;
-import org.eclipse.keyple.plugin.remote.impl.NativeClientServiceFactory;
+import org.eclipse.keyple.plugin.remote.impl.LocalServiceClientFactory;
 import org.junit.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +45,7 @@ public class SyncScenario extends BaseScenario {
      * Client side :
      * <ul>
      *   <li>register stub plugin</li>
-     *   <li>create native stub reader</li>
+     *   <li>create local stub reader</li>
      *   <li>create a sync client endpoint</li>
      *  <li>generate userId</li>
      * </ul>
@@ -60,7 +60,7 @@ public class SyncScenario extends BaseScenario {
 
   @After
   public void tearDown() {
-    /* Unplug the native reader */
+    /* Unplug the local reader */
     clearNativeReader();
   }
 
@@ -74,8 +74,8 @@ public class SyncScenario extends BaseScenario {
   @Test
   public void execute_localselection_remoteTransaction_successful() {
 
-    nativeService =
-        new NativeClientServiceFactory()
+    localService =
+        new LocalServiceClientFactory()
             .builder()
             .withSyncNode(clientSyncEndpoint)
             .withoutReaderObservation()
@@ -89,8 +89,8 @@ public class SyncScenario extends BaseScenario {
   @Test
   public void execute_remoteselection_remoteTransaction_successful() {
 
-    nativeService =
-        new NativeClientServiceFactory()
+    localService =
+        new LocalServiceClientFactory()
             .builder()
             .withSyncNode(clientSyncEndpoint)
             .withoutReaderObservation()
@@ -104,8 +104,8 @@ public class SyncScenario extends BaseScenario {
   @Test
   public void execute_multiclient_remoteselection_remoteTransaction_successful() {
 
-    nativeService =
-        new NativeClientServiceFactory()
+    localService =
+        new LocalServiceClientFactory()
             .builder()
             .withSyncNode(clientSyncEndpoint)
             .withoutReaderObservation()
@@ -118,8 +118,8 @@ public class SyncScenario extends BaseScenario {
   @Override
   @Test
   public void execute_transaction_closeSession_card_error() {
-    nativeService =
-        new NativeClientServiceFactory()
+    localService =
+        new LocalServiceClientFactory()
             .builder()
             .withSyncNode(clientSyncEndpoint)
             .withoutReaderObservation()
@@ -134,8 +134,8 @@ public class SyncScenario extends BaseScenario {
   public void execute_transaction_host_network_error() {
     clientSyncEndpoint = new StubSyncClientEndpoint(true);
 
-    nativeService =
-        new NativeClientServiceFactory()
+    localService =
+        new LocalServiceClientFactory()
             .builder()
             .withSyncNode(clientSyncEndpoint)
             .withoutReaderObservation()
@@ -155,8 +155,8 @@ public class SyncScenario extends BaseScenario {
   @Override
   @Test
   public void execute_transaction_slowSe_success() {
-    nativeService =
-        new NativeClientServiceFactory()
+    localService =
+        new LocalServiceClientFactory()
             .builder()
             .withSyncNode(clientSyncEndpoint)
             .withoutReaderObservation()
@@ -170,8 +170,8 @@ public class SyncScenario extends BaseScenario {
   public void execute_all_methods() {
     final ReaderEventFilter eventFilter = new ReaderEventFilter();
 
-    nativeService =
-        new NativeClientServiceFactory()
+    localService =
+        new LocalServiceClientFactory()
             .builder()
             .withSyncNode(clientSyncEndpoint)
             .withReaderObservation(eventFilter)
@@ -186,8 +186,8 @@ public class SyncScenario extends BaseScenario {
 
     final ReaderEventFilter eventFilter = new ReaderEventFilter();
 
-    nativeService =
-        new NativeClientServiceFactory()
+    localService =
+        new LocalServiceClientFactory()
             .builder()
             .withSyncNode(clientSyncEndpoint)
             .withReaderObservation(eventFilter)

@@ -17,13 +17,13 @@ import org.eclipse.keyple.core.util.Assert;
 
 /**
  * This POJO class contains parameters of the method {@link
- * NativeClientService#executeRemoteService(RemoteServiceParameters, Class)} :
+ * LocalServiceClient#executeRemoteService(RemoteServiceParameters, Class)} :
  *
  * <ul>
  *   <li><b>serviceId</b> : The ticketing service id. It will permit to indicate to the server which
  *       ticketing service to execute (Materialization, Validation, Control, ...). This field is
  *       free and is for the user's use only.
- *   <li><b>nativeReader</b> : The native reader to manage by the server.
+ *   <li><b>localReader</b> : The local reader to manage by the server.
  *   <li><b>userInputData</b> (optional) : An object with the user input data if you want to
  *       transmit data during the call to the remote ticketing service.
  *   <li><b>initialCardContent</b> (optional) : An initial Card content inside an {@link
@@ -37,7 +37,7 @@ import org.eclipse.keyple.core.util.Assert;
 public class RemoteServiceParameters {
 
   private final String serviceId;
-  private final Reader nativeReader;
+  private final Reader localReader;
   private final Object userInputData;
   private final AbstractSmartCard initialCardContent;
 
@@ -45,10 +45,10 @@ public class RemoteServiceParameters {
 
     Assert.getInstance() //
         .notEmpty(builder.serviceId, "serviceId") //
-        .notNull(builder.nativeReader, "nativeReader");
+        .notNull(builder.localReader, "localReader");
 
     serviceId = builder.serviceId;
-    nativeReader = builder.nativeReader;
+    localReader = builder.localReader;
     userInputData = builder.userInputData;
     initialCardContent = builder.initialCardContent;
   }
@@ -59,25 +59,25 @@ public class RemoteServiceParameters {
    * @param serviceId The ticketing service id. It will permit to indicate to the server which
    *     ticketing service to execute (Materialization, Validation, Control,...). This field is free
    *     and is for the user's use only.
-   * @param nativeReader The native reader to manage by the server.
+   * @param localReader The local reader to manage by the server.
    * @return a new builder instance.
    * @since 1.0
    */
-  public static Builder builder(String serviceId, Reader nativeReader) {
-    return new Builder(serviceId, nativeReader);
+  public static Builder builder(String serviceId, Reader localReader) {
+    return new Builder(serviceId, localReader);
   }
 
   /** The builder pattern */
   public static class Builder {
 
     private final String serviceId;
-    private final Reader nativeReader;
+    private final Reader localReader;
     private Object userInputData;
     private AbstractSmartCard initialCardContent;
 
-    private Builder(String serviceId, Reader nativeReader) {
+    private Builder(String serviceId, Reader localReader) {
       this.serviceId = serviceId;
-      this.nativeReader = nativeReader;
+      this.localReader = localReader;
     }
 
     /**
@@ -129,13 +129,13 @@ public class RemoteServiceParameters {
   }
 
   /**
-   * Gets the native reader.
+   * Gets the local reader.
    *
    * @return a not null reference.
    * @since 1.0
    */
-  public Reader getNativeReader() {
-    return nativeReader;
+  public Reader getLocalReader() {
+    return localReader;
   }
 
   /**
