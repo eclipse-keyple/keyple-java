@@ -81,7 +81,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * @param pluginName the name of the plugin that instantiated the reader
    * @param readerName the name of the reader
    */
-  public AbstractLocalReader(String pluginName, String readerName) {
+  protected AbstractLocalReader(String pluginName, String readerName) {
 
     super(pluginName, readerName);
     if (logger.isDebugEnabled()) {

@@ -17,7 +17,7 @@ import org.eclipse.keyple.plugin.stub.StubSmartCard;
 /** Simple contact card Stub (no command) */
 public class StubCalypsoBPrime extends StubSmartCard {
 
-  static final String cardProtocol = "CALYPSO_OLD_CARD_PRIME";
+  static final String cardProtocol = "INNOVATRON_B_PRIME_CARD";
   final String ATR_HEX = "3B8F8001805A0A01032003111122334482900082";
 
   public StubCalypsoBPrime() {

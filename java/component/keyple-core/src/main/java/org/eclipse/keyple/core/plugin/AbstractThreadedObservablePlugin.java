@@ -120,7 +120,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
   }
 
   /**
-   * Check weither the background job is monitoring for new readers
+   * Check whether the background job is monitoring for new readers
    *
    * @return true, if the background job is monitoring, false in all other cases.
    * @deprecated will change in a later version

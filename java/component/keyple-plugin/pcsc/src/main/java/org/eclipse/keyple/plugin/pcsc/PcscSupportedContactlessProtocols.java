@@ -12,18 +12,15 @@
 package org.eclipse.keyple.plugin.pcsc;
 
 /**
- * List of protocols supported by PC/SC readers.
+ * List of contactless protocols supported by PC/SC readers.
  *
  * @since 1.0
  */
-public enum PcscSupportedProtocols {
+public enum PcscSupportedContactlessProtocols {
   ISO_14443_4,
-  CALYPSO_OLD_CARD_PRIME,
+  INNOVATRON_B_PRIME_CARD,
   MIFARE_ULTRA_LIGHT,
   MIFARE_CLASSIC,
   MIFARE_DESFIRE,
-  MEMORY_ST25,
-  ISO_7816_3,
-  ISO_7816_3_T0,
-  ISO_7816_3_T1
+  MEMORY_ST25
 }

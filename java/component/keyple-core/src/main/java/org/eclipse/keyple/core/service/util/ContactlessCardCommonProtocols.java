@@ -18,15 +18,15 @@ package org.eclipse.keyple.core.service.util;
  */
 public enum ContactlessCardCommonProtocols {
 
-  /* ---- contactless standard ------------- */
+  // contactless standard
   ISO_14443_4,
 
-  /* ---- contactless  NFC compliant ------------- */
+  // contactless NFC compliant
   NFC_A_ISO_14443_3A,
   NFC_B_ISO_14443_3B,
   NFC_F_JIS_6319_4,
   NFC_V_ISO_15693,
 
-  /* ---- other contactless proprietary protocols -------- */
-  CALYPSO_OLD_CARD_PRIME,
+  // other contactless proprietary protocols
+  INNOVATRON_B_PRIME_CARD
 }
