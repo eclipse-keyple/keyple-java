@@ -16,7 +16,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
-import java.util.concurrent.CountDownLatch;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
@@ -306,17 +305,6 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
     return new ObservableReader.ReaderObserver() {
       @Override
       public void update(ReaderEvent event) {}
-    };
-  }
-
-  public static ObservableReader.ReaderObserver countDownOnTimeout(final CountDownLatch lock) {
-    return new ObservableReader.ReaderObserver() {
-      @Override
-      public void update(ReaderEvent event) {
-        if (ReaderEvent.EventType.TIMEOUT_ERROR.equals(event.getEventType())) {
-          lock.countDown();
-        }
-      }
     };
   }
 }
