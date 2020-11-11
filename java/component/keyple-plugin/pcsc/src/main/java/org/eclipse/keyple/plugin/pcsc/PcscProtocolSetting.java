@@ -35,24 +35,26 @@ final class PcscProtocolSetting {
   static {
     // contactless protocols
     settings.put(
-        PcscSupportedProtocols.ISO_14443_4.name(),
+        PcscSupportedContactlessProtocols.ISO_14443_4.name(),
         "3B8880....................|3B8B80.*|3B8C800150.*|.*4F4D4141544C4153.*");
     settings.put(
-        PcscSupportedProtocols.CALYPSO_OLD_CARD_PRIME.name(),
+        PcscSupportedContactlessProtocols.INNOVATRON_B_PRIME_CARD.name(),
         "3B8F8001805A0...................829000..");
     settings.put(
-        PcscSupportedProtocols.MIFARE_ULTRA_LIGHT.name(),
+        PcscSupportedContactlessProtocols.MIFARE_ULTRA_LIGHT.name(),
         "3B8F8001804F0CA0000003060300030000000068");
     settings.put(
-        PcscSupportedProtocols.MIFARE_CLASSIC.name(), "3B8F8001804F0CA000000306030001000000006A");
-    settings.put(PcscSupportedProtocols.MIFARE_DESFIRE.name(), "3B8180018080");
+        PcscSupportedContactlessProtocols.MIFARE_CLASSIC.name(),
+        "3B8F8001804F0CA000000306030001000000006A");
+    settings.put(PcscSupportedContactlessProtocols.MIFARE_DESFIRE.name(), "3B8180018080");
     settings.put(
-        PcscSupportedProtocols.MEMORY_ST25.name(), "3B8F8001804F0CA000000306070007D0020C00B6");
+        PcscSupportedContactlessProtocols.MEMORY_ST25.name(),
+        "3B8F8001804F0CA000000306070007D0020C00B6");
 
     // contacts protocols
-    settings.put(PcscSupportedProtocols.ISO_7816_3.name(), "3.*");
-    settings.put(PcscSupportedProtocols.ISO_7816_3_T0.name(), "3.*");
-    settings.put(PcscSupportedProtocols.ISO_7816_3_T1.name(), "3.*");
+    settings.put(PcscSupportedContactProtocols.ISO_7816_3.name(), "3.*");
+    settings.put(PcscSupportedContactProtocols.ISO_7816_3_T0.name(), "3.*");
+    settings.put(PcscSupportedContactProtocols.ISO_7816_3_T1.name(), "3.*");
   }
 
   private PcscProtocolSetting() {}

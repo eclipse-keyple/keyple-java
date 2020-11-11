@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandBuilder {
 
-  private static final Logger logger = LoggerFactory.getLogger(AbstractApduCommandBuilder.class);
+  private static final Logger logger = LoggerFactory.getLogger(AbstractIso7816CommandBuilder.class);
 
   /**
    * (protected)<br>

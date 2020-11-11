@@ -32,7 +32,6 @@ class CardAbsentPingMonitoringJob extends AbstractMonitoringJob {
   private static final Logger logger = LoggerFactory.getLogger(CardAbsentPingMonitoringJob.class);
 
   private final AbstractObservableLocalReader reader;
-  private Runnable job;
   private final AtomicBoolean loop = new AtomicBoolean();
   private long removalWait = 200;
 
@@ -65,47 +64,45 @@ class CardAbsentPingMonitoringJob extends AbstractMonitoringJob {
      * AbstractObservableLocalReader#isCardPresentPing returns false, meaning that the card ping has
      * failed - InterruptedException is caught
      */
-    job =
-        new Runnable() {
-          long retries = 0;
+    return new Runnable() {
+      long retries = 0;
 
-          @Override
-          public void run() {
+      @Override
+      public void run() {
+        if (logger.isDebugEnabled()) {
+          logger.debug("[{}] Polling from isCardPresentPing", reader.getName());
+        }
+        // re-init loop value to true
+        loop.set(true);
+        while (loop.get()) {
+          if (!reader.isCardPresentPing()) {
             if (logger.isDebugEnabled()) {
-              logger.debug("[{}] Polling from isCardPresentPing", reader.getName());
+              logger.debug("[{}] the card stopped responding", reader.getName());
             }
-            // re-init loop value to true
-            loop.set(true);
-            while (loop.get()) {
-              if (!reader.isCardPresentPing()) {
-                if (logger.isDebugEnabled()) {
-                  logger.debug("[{}] the card stopped responding", reader.getName());
-                }
-                loop.set(false);
-                state.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_REMOVED);
-                return;
-              }
-              retries++;
-
-              if (logger.isTraceEnabled()) {
-                logger.trace("[{}] Polling retries : {}", reader.getName(), retries);
-              }
-              try {
-                // wait a bit
-                Thread.sleep(removalWait);
-              } catch (InterruptedException ignored) {
-                // Restore interrupted state...
-                Thread.currentThread().interrupt();
-                loop.set(false);
-              }
-            }
-
-            if (logger.isDebugEnabled()) {
-              logger.debug("[{}] Polling loop has been stopped", reader.getName());
-            }
+            loop.set(false);
+            state.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_REMOVED);
+            return;
           }
-        };
-    return job;
+          retries++;
+
+          if (logger.isTraceEnabled()) {
+            logger.trace("[{}] Polling retries : {}", reader.getName(), retries);
+          }
+          try {
+            // wait a bit
+            Thread.sleep(removalWait);
+          } catch (InterruptedException ignored) {
+            // Restore interrupted state...
+            Thread.currentThread().interrupt();
+            loop.set(false);
+          }
+        }
+
+        if (logger.isDebugEnabled()) {
+          logger.debug("[{}] Polling loop has been stopped", reader.getName());
+        }
+      }
+    };
   }
 
   /** (package-private)<br> */

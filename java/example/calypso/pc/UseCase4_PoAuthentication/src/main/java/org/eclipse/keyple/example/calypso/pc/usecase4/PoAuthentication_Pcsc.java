@@ -38,7 +38,8 @@ import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
-import org.eclipse.keyple.plugin.pcsc.PcscSupportedProtocols;
+import org.eclipse.keyple.plugin.pcsc.PcscSupportedContactProtocols;
+import org.eclipse.keyple.plugin.pcsc.PcscSupportedContactlessProtocols;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,10 +91,11 @@ public class PoAuthentication_Pcsc {
 
     // activate protocols
     poReader.activateProtocol(
-        PcscSupportedProtocols.ISO_14443_4.name(),
+        PcscSupportedContactlessProtocols.ISO_14443_4.name(),
         ContactlessCardCommonProtocols.ISO_14443_4.name());
     samReader.activateProtocol(
-        PcscSupportedProtocols.ISO_7816_3.name(), ContactsCardCommonProtocols.ISO_7816_3.name());
+        PcscSupportedContactProtocols.ISO_7816_3.name(),
+        ContactsCardCommonProtocols.ISO_7816_3.name());
 
     // Create a SAM resource after selecting the SAM
     CardSelection samSelection = new CardSelection();

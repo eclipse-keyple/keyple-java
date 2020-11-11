@@ -77,7 +77,7 @@ public class CardProtocolDetectionEngine extends AbstractReaderObserverAsynchron
         case NFC_B_ISO_14443_3B:
           // not handled in this demo code
           break;
-        case CALYPSO_OLD_CARD_PRIME:
+        case INNOVATRON_B_PRIME_CARD:
           // intentionally ignored for demo purpose
           break;
         default:
