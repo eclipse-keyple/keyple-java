@@ -159,12 +159,12 @@ public class LocalServiceClientFactory {
         logger.info(
             "Create a new LocalServiceClientImpl with a async client and params withReaderObservation:{}",
             withReaderObservation);
-        service.bindClientAsyncNode(asyncEndpoint, timeoutInSec);
+        service.bindAsyncNodeClient(asyncEndpoint, timeoutInSec);
       } else {
         logger.info(
             "Create a new LocalServiceClientImpl with a sync client and params withReaderObservation:{}",
             withReaderObservation);
-        service.bindClientSyncNode(syncEndpoint, null, null);
+        service.bindSyncNodeClient(syncEndpoint, null, null);
       }
       return service;
     }

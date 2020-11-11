@@ -205,10 +205,10 @@ public class RemotePoolClientPluginFactory implements PluginFactory {
 
       if (asyncEndpoint != null) {
         logger.info("Create a new RemotePoolClientPlugin with a async client endpoint");
-        plugin.bindClientAsyncNode(asyncEndpoint, timeoutInSec);
+        plugin.bindAsyncNodeClient(asyncEndpoint, timeoutInSec);
       } else {
         logger.info("Create a new RemotePoolClientPlugin with a sync client endpoint");
-        plugin.bindClientSyncNode(syncEndpoint, null, null);
+        plugin.bindSyncNodeClient(syncEndpoint, null, null);
       }
 
       return new RemotePoolClientPluginFactory(plugin);

@@ -235,10 +235,10 @@ public class RemoteServerPluginFactory implements PluginFactory {
 
       if (asyncEndpoint != null) {
         logger.info("Create a new RemoteServerPlugin with a async server endpoint");
-        plugin.bindServerAsyncNode(asyncEndpoint);
+        plugin.bindAsyncNodeServer(asyncEndpoint);
       } else {
         logger.info("Create a new RemoteServerPlugin with a sync server endpoint");
-        plugin.bindServerSyncNode();
+        plugin.bindSyncNodeServer();
       }
 
       plugin.addObserver(observer);

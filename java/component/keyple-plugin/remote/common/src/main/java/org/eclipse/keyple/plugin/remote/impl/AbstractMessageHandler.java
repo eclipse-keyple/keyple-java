@@ -61,7 +61,7 @@ public abstract class AbstractMessageHandler {
    * @param timeoutInSecond Time to wait for the server to transmit a request.
    * @since 1.0
    */
-  public void bindClientAsyncNode(AsyncEndpointClient endpoint, int timeoutInSecond) {
+  public void bindAsyncNodeClient(AsyncEndpointClient endpoint, int timeoutInSecond) {
     node = new AsyncNodeClientImpl(this, endpoint, timeoutInSecond);
   }
 
@@ -72,7 +72,7 @@ public abstract class AbstractMessageHandler {
    * @param endpoint The {@link AsyncEndpointServer} endpoint.
    * @since 1.0
    */
-  public void bindServerAsyncNode(AsyncEndpointServer endpoint) {
+  public void bindAsyncNodeServer(AsyncEndpointServer endpoint) {
     node = new AsyncNodeServerImpl(this, endpoint, 20);
   }
 
@@ -87,7 +87,7 @@ public abstract class AbstractMessageHandler {
    *     (null if observation is not activated).
    * @since 1.0
    */
-  public void bindClientSyncNode(
+  public void bindSyncNodeClient(
       SyncEndpointClient endpoint,
       ServerPushEventStrategy pluginObservationStrategy,
       ServerPushEventStrategy readerObservationStrategy) {
@@ -102,7 +102,7 @@ public abstract class AbstractMessageHandler {
    *
    * @since 1.0
    */
-  public void bindServerSyncNode() {
+  public void bindSyncNodeServer() {
     node = new SyncNodeServerImpl(this, 20);
   }
 

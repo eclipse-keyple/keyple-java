@@ -121,10 +121,10 @@ public final class PoolLocalServiceServerFactory {
       PoolLocalServiceServerImpl poolLocalServiceServerImpl =
           PoolLocalServiceServerImpl.createInstance(poolPluginNames);
       if (asyncEndpoint != null) {
-        poolLocalServiceServerImpl.bindServerAsyncNode(asyncEndpoint);
+        poolLocalServiceServerImpl.bindAsyncNodeServer(asyncEndpoint);
         logger.info("Create a new PoolLocalServiceServer with a async server");
       } else {
-        poolLocalServiceServerImpl.bindServerSyncNode();
+        poolLocalServiceServerImpl.bindSyncNodeServer();
         logger.info("Create a new PoolLocalServiceServer with a sync server");
       }
 
