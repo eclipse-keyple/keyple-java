@@ -46,6 +46,10 @@ public class ObservableReaderNotificationEngine {
     for (Plugin plugin : plugins) {
 
       if (plugin instanceof ObservablePlugin) {
+        /* start detection for all already present readers */
+        for (Reader reader : plugin.getReaders().values()) {
+          ((ObservableReader) reader).startCardDetection(ObservableReader.PollingMode.REPEATING);
+        }
         logger.info("Add observer PLUGINNAME = {}", plugin.getName());
         ((ObservablePlugin) plugin).addObserver(this.pluginObserver);
       } else {
