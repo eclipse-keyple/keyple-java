@@ -21,7 +21,7 @@ import org.eclipse.keyple.plugin.remote.exception.KeypleDoNotPropagateEventExcep
  *
  * @since 1.0
  */
-public interface KeypleClientReaderEventFilter {
+public interface ObservableReaderEventFilter {
 
   /**
    * Execute any process before the event is sent to the server
@@ -36,7 +36,7 @@ public interface KeypleClientReaderEventFilter {
   /**
    * Return the class of the user output data.<br>
    * This method is used internally to deserialize the user output data before to call the method
-   * {@link KeypleClientReaderEventFilter#afterPropagation(Object)}.
+   * {@link ObservableReaderEventFilter#afterPropagation(Object)}.
    *
    * @return null if there is no user output data to deserialize.
    * @since 1.0
@@ -47,7 +47,7 @@ public interface KeypleClientReaderEventFilter {
    * Retrieve the output from the event global processing
    *
    * @param userOutputData The user output data previously deserialized using the method {@link
-   *     KeypleClientReaderEventFilter#getUserOutputDataClass()}
+   *     ObservableReaderEventFilter#getUserOutputDataClass()}
    * @since 1.0
    */
   void afterPropagation(Object userOutputData);

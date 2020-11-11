@@ -21,7 +21,7 @@ import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
-import org.eclipse.keyple.plugin.remote.KeypleClientReaderEventFilter;
+import org.eclipse.keyple.plugin.remote.ObservableReaderEventFilter;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.exception.KeypleDoNotPropagateEventException;
 import org.eclipse.keyple.plugin.remote.NativeClientService;
@@ -41,7 +41,7 @@ final class NativeClientServiceImpl extends AbstractNativeService
   private static NativeClientServiceImpl uniqueInstance;
 
   private final boolean withReaderObservation;
-  private final KeypleClientReaderEventFilter eventFilter;
+  private final ObservableReaderEventFilter eventFilter;
   private final Map<String, String> virtualReaders;
 
   /**
@@ -52,7 +52,7 @@ final class NativeClientServiceImpl extends AbstractNativeService
    * @param eventFilter The event filter to use if reader observation should is activated.
    */
   private NativeClientServiceImpl(
-      boolean withReaderObservation, KeypleClientReaderEventFilter eventFilter) {
+      boolean withReaderObservation, ObservableReaderEventFilter eventFilter) {
     super();
     this.withReaderObservation = withReaderObservation;
     this.eventFilter = eventFilter;
@@ -67,7 +67,7 @@ final class NativeClientServiceImpl extends AbstractNativeService
    * @return a not null instance of the singleton
    */
   static NativeClientServiceImpl createInstance(
-      boolean withReaderObservation, KeypleClientReaderEventFilter eventFilter) {
+      boolean withReaderObservation, ObservableReaderEventFilter eventFilter) {
     uniqueInstance = new NativeClientServiceImpl(withReaderObservation, eventFilter);
     return uniqueInstance;
   }

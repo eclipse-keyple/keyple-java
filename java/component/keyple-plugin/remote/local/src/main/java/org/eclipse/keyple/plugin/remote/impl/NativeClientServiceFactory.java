@@ -13,7 +13,7 @@ package org.eclipse.keyple.plugin.remote.impl;
 
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
-import org.eclipse.keyple.plugin.remote.KeypleClientReaderEventFilter;
+import org.eclipse.keyple.plugin.remote.ObservableReaderEventFilter;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.NativeClientService;
 import org.slf4j.Logger;
@@ -98,7 +98,7 @@ public class NativeClientServiceFactory {
      * @return next configuration step
      * @since 1.0
      */
-    BuilderStep withReaderObservation(KeypleClientReaderEventFilter eventFilter);
+    BuilderStep withReaderObservation(ObservableReaderEventFilter eventFilter);
 
     /**
      * Configure the service without observation
@@ -114,7 +114,7 @@ public class NativeClientServiceFactory {
     private AsyncEndpointClient asyncEndpoint;
     private SyncEndpointClient syncEndpoint;
     private Boolean withReaderObservation;
-    private KeypleClientReaderEventFilter eventFilter;
+    private ObservableReaderEventFilter eventFilter;
     private int timeoutInSec;
 
     private Step() {}
@@ -140,7 +140,7 @@ public class NativeClientServiceFactory {
     }
 
     @Override
-    public BuilderStep withReaderObservation(KeypleClientReaderEventFilter eventFilter) {
+    public BuilderStep withReaderObservation(ObservableReaderEventFilter eventFilter) {
       Assert.getInstance().notNull(eventFilter, "eventFilter");
       this.withReaderObservation = true;
       this.eventFilter = eventFilter;

@@ -30,7 +30,7 @@ import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
-import org.eclipse.keyple.plugin.remote.KeypleClientReaderEventFilter;
+import org.eclipse.keyple.plugin.remote.ObservableReaderEventFilter;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.exception.KeypleDoNotPropagateEventException;
 import org.eclipse.keyple.plugin.remote.NativeClientService;
@@ -50,7 +50,7 @@ public class NativeClientServiceTest extends BaseNativeTest {
   private static final Logger logger = LoggerFactory.getLogger(AbstractNativeServiceTest.class);
   SyncEndpointClient syncClientEndpoint;
   AsyncEndpointClient asyncClient;
-  KeypleClientReaderEventFilter eventFilter;
+  ObservableReaderEventFilter eventFilter;
   MyKeypleUserData outputData;
   MyKeypleUserData inputData;
   MatchingSeImpl matchingCard;
@@ -73,7 +73,7 @@ public class NativeClientServiceTest extends BaseNativeTest {
     SmartCardService.getInstance().registerPlugin(mockFactory);
     syncClientEndpoint = Mockito.mock(SyncEndpointClient.class);
     asyncClient = Mockito.mock(AsyncEndpointClient.class);
-    eventFilter = Mockito.mock(KeypleClientReaderEventFilter.class);
+    eventFilter = Mockito.mock(ObservableReaderEventFilter.class);
 
     doReturn(getACardResponse())
         .when(readerMocked)
@@ -379,7 +379,7 @@ public class NativeClientServiceTest extends BaseNativeTest {
     }
   }
 
-  class MyEventFilter implements KeypleClientReaderEventFilter {
+  class MyEventFilter implements ObservableReaderEventFilter {
 
     Boolean propagateEvent;
 
