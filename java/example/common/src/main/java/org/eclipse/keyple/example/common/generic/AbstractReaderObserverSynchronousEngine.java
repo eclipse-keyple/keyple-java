@@ -56,8 +56,7 @@ public abstract class AbstractReaderObserverSynchronousEngine
    * Note: in the case of CARD_MATCHED, the received event also carries the response to the default
    * selection.
    *
-   * @param event the reader event, either CARD_MATCHED, CARD_INSERTED, CARD_REMOVED or
-   *     TIMEOUT_ERROR
+   * @param event the reader event, either CARD_MATCHED, CARD_INSERTED or CARD_REMOVED
    */
   @Override
   public final void update(final ReaderEvent event) {
@@ -108,13 +107,9 @@ public abstract class AbstractReaderObserverSynchronousEngine
           logger.info("Waiting for a card...");
         }
         break;
-      case TIMEOUT_ERROR:
-        logger.error(
-            "Timeout Error: the processing time or the time limit for removing the card"
-                + " has been exceeded.");
-        // do the appropriate processing here but do not prevent the return of this update
-        // method (e. g. by
-        // raising an exception)
+      case UNREGISTERED:
+        throw new IllegalStateException(
+            "Unexpected error: the reader is no more registered in the SmartcardService.");
     }
   }
 }
