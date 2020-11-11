@@ -170,7 +170,7 @@ public class AsyncScenario extends BaseScenario {
         new LocalServiceClientFactory()
             .builder()
             .withAsyncNode(clientEndpoint)
-            .usingCustomTimeout(2)
+            .usingTimeout(2)
             .withoutReaderObservation()
             .getService();
 

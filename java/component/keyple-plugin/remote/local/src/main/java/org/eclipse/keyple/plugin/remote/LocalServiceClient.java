@@ -25,7 +25,7 @@ import org.eclipse.keyple.plugin.remote.impl.LocalServiceClientUtils;
  * <ul>
  *   <li>To <b>start</b> the service, use the factory {@link LocalServiceClientFactory}.
  *   <li>To <b>access</b> the service, use the utility method {@link
- *       LocalServiceClientUtils#getService()}.
+ *       LocalServiceClientUtils#getLocalService()}.
  *   <li>To <b>stop</b> the service, there is nothing special to do because the service is a
  *       standard java singleton instance.
  * </ul>

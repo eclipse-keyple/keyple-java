@@ -67,7 +67,7 @@ public class LocalServiceClientFactory {
      * @return next configuration step
      * @since 1.0
      */
-    ReaderStep usingCustomTimeout(int timeoutInSeconds);
+    ReaderStep usingTimeout(int timeoutInSeconds);
   }
 
   public interface NodeStep {
@@ -176,7 +176,7 @@ public class LocalServiceClientFactory {
     }
 
     @Override
-    public ReaderStep usingCustomTimeout(int timeoutInSeconds) {
+    public ReaderStep usingTimeout(int timeoutInSeconds) {
       timeoutInSec = timeoutInSeconds;
       return this;
     }

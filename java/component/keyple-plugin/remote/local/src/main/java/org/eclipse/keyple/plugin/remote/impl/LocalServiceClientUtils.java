@@ -28,7 +28,7 @@ public class LocalServiceClientUtils {
    * @throws IllegalStateException if the service is not initialized.
    * @since 1.0
    */
-  public static LocalServiceClient getService() {
+  public static LocalServiceClient getLocalService() {
     return getLocalClientService();
   }
 

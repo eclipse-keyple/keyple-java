@@ -110,7 +110,7 @@ public class LocalServiceClientTest extends BaseLocalTest {
             .getService();
 
     assertThat(service).isNotNull();
-    assertThat(service).isEqualTo(LocalServiceClientUtils.getService());
+    assertThat(service).isEqualTo(LocalServiceClientUtils.getLocalService());
   }
 
   @Test
@@ -126,7 +126,7 @@ public class LocalServiceClientTest extends BaseLocalTest {
 
     // assert
     assertThat(service).isNotNull();
-    assertThat(service).isEqualTo(LocalServiceClientUtils.getService());
+    assertThat(service).isEqualTo(LocalServiceClientUtils.getLocalService());
   }
 
   @Test(expected = IllegalArgumentException.class)
