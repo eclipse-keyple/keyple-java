@@ -20,13 +20,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Abstract Keyple Node.
- *
- * <p>This is an internal class an must not be used by the user.
+ * (package-private)<br>
+ * Abstract Node.
  *
  * @since 1.0
  */
-public abstract class AbstractNode {
+abstract class AbstractNode {
 
   private static final Logger logger = LoggerFactory.getLogger(AbstractNode.class);
 

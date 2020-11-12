@@ -12,6 +12,7 @@
 package org.eclipse.keyple.plugin.remote.impl;
 
 /**
+ * (package-private)<br>
  * Server Push Event Strategy
  *
  * <p>This internal class indicates the strategy to adopt in a client-server communication to allow
@@ -19,7 +20,7 @@ package org.eclipse.keyple.plugin.remote.impl;
  *
  * @since 1.0
  */
-public class ServerPushEventStrategy {
+class ServerPushEventStrategy {
 
   private final Type type;
   private int duration;

@@ -22,13 +22,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Client Async Node implementation.
- *
- * <p>This is an internal class an must not be used by the user.
+ * (package-private)<br>
+ * Async Node Client implementation.
  *
  * @since 1.0
  */
-public final class AsyncNodeClientImpl extends AbstractNode
+final class AsyncNodeClientImpl extends AbstractNode
     implements AsyncNodeClient {
 
   private static final Logger logger = LoggerFactory.getLogger(AsyncNodeClientImpl.class);

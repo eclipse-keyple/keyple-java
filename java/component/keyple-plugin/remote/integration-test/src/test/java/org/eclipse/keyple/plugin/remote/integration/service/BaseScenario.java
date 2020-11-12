@@ -14,7 +14,6 @@ package org.eclipse.keyple.plugin.remote.integration.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
-import java.lang.reflect.Field;
 import java.util.UUID;
 import java.util.concurrent.*;
 import org.eclipse.keyple.calypso.transaction.*;
@@ -29,7 +28,6 @@ import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.eclipse.keyple.plugin.remote.LocalServiceClient;
 import org.eclipse.keyple.plugin.remote.RemotePluginServer;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
-import org.eclipse.keyple.plugin.remote.impl.AbstractNode;
 import org.eclipse.keyple.plugin.remote.integration.common.app.ReaderEventFilter;
 import org.eclipse.keyple.plugin.remote.integration.common.app.RemotePluginObserver;
 import org.eclipse.keyple.plugin.remote.integration.common.model.ConfigurationResult;
@@ -142,7 +140,7 @@ public abstract class BaseScenario {
     }
   }
 
-  /** Init local stub plugin that can work with {@link StubSecureElement} */
+  /** Init local stub plugin that can work with {@link StubSmartCard} */
   void initNativeStubPlugin() {
     // reuse stub plugin
     try {
@@ -476,16 +474,4 @@ public abstract class BaseScenario {
     assertThat(output.isSuccessful()).isTrue();
   }
 
-  void setTimeoutInNode(AbstractNode node, Integer timeoutInMilliseconds) {
-    try {
-      Class classT = node.getClass();
-      Field field = classT.getDeclaredField("timeout");
-      field.setAccessible(true);
-      field.set(node, timeoutInMilliseconds);
-    } catch (NoSuchFieldException e) {
-      e.printStackTrace();
-    } catch (IllegalAccessException e) {
-      e.printStackTrace();
-    }
-  }
 }

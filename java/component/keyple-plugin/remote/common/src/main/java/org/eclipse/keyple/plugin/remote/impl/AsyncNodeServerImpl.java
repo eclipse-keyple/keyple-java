@@ -24,13 +24,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Server Async Node implementation.
- *
- * <p>This is an internal class an must not be used by the user.
+ * (package-private)<br>
+ * Async Node Server implementation.
  *
  * @since 1.0
  */
-public final class AsyncNodeServerImpl extends AbstractNode
+final class AsyncNodeServerImpl extends AbstractNode
     implements AsyncNodeServer {
 
   private static final Logger logger = LoggerFactory.getLogger(AsyncNodeServerImpl.class);

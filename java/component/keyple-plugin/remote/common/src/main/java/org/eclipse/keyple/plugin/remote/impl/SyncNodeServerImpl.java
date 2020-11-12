@@ -22,14 +22,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * (package-private)<br>
  * Server Sync Node implementation.
- *
- * <p>This is an internal class an must not be used by the user.
  *
  * @since 1.0
  */
-public final class SyncNodeServerImpl extends AbstractNode
-    implements SyncNodeServer {
+final class SyncNodeServerImpl extends AbstractNode implements SyncNodeServer {
 
   private static final Logger logger = LoggerFactory.getLogger(SyncNodeServerImpl.class);
 

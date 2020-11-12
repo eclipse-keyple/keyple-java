@@ -25,6 +25,7 @@ import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.PoolLocalServiceServer;
 
 /**
+ * * (package-private)<br>
  * Implementation of the {@link PoolLocalServiceServer}. This object is a singleton created by the
  * {@link PoolLocalServiceServerFactory}
  */

@@ -22,13 +22,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Abstract Keyple Message Handler.
- *
- * <p>This is an internal class an must not be used by the user.
+ * (package-private)<br>
+ * Abstract Message Handler.
  *
  * @since 1.0
  */
-public abstract class AbstractMessageHandler {
+abstract class AbstractMessageHandler {
 
   private static final Logger logger = LoggerFactory.getLogger(AbstractMessageHandler.class);
 

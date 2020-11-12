@@ -12,8 +12,9 @@
 package org.eclipse.keyple.plugin.remote.integration.service;
 
 import java.util.UUID;
+
+
 import org.eclipse.keyple.plugin.remote.exception.KeypleTimeoutException;
-import org.eclipse.keyple.plugin.remote.impl.AbstractNode;
 import org.eclipse.keyple.plugin.remote.integration.common.app.ReaderEventFilter;
 import org.eclipse.keyple.plugin.remote.integration.common.endpoint.StubNetworkConnectionException;
 import org.eclipse.keyple.plugin.remote.integration.common.endpoint.service.StubAsyncClientEndpoint;
@@ -21,7 +22,6 @@ import org.eclipse.keyple.plugin.remote.integration.common.endpoint.service.Stub
 import org.eclipse.keyple.plugin.remote.integration.common.model.DeviceInput;
 import org.eclipse.keyple.plugin.remote.integration.common.model.UserInput;
 import org.eclipse.keyple.plugin.remote.impl.LocalServiceClientFactory;
-import org.eclipse.keyple.plugin.remote.impl.LocalServiceClientUtils;
 import org.junit.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,6 +115,7 @@ public class AsyncScenario extends BaseScenario {
   }
 
   /** {@inheritDoc} */
+  //TODO flaky
   @Test
   @Override
   public void execute_multiclient_remoteselection_remoteTransaction_successful() {
@@ -173,8 +174,6 @@ public class AsyncScenario extends BaseScenario {
             .usingTimeout(2)
             .withoutReaderObservation()
             .getService();
-
-    setTimeoutInNode((AbstractNode) LocalServiceClientUtils.getAsyncNode(), 2000);
 
     remoteselection_remoteTransaction();
   }
