@@ -301,11 +301,12 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
               clientNodeId,
               eventNotificationPool);
       return new ObservableRemoteReaderServerImpl(
-              observableRemoteReaderImpl, serviceId, userInputData, initialCardContent, null);
+          observableRemoteReaderImpl, serviceId, userInputData, initialCardContent, null);
     } else {
       RemoteReaderImpl remoteReaderImpl =
           new RemoteReaderImpl(getName(), remoteReaderName, getNode(), sessionId, clientNodeId);
-      return new RemoteReaderServerImpl(remoteReaderImpl, serviceId, userInputData, initialCardContent);
+      return new RemoteReaderServerImpl(
+          remoteReaderImpl, serviceId, userInputData, initialCardContent);
     }
   }
 

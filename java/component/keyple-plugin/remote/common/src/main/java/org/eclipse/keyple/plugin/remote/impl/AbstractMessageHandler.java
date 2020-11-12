@@ -16,8 +16,8 @@ import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.*;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
-import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
+import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -20,8 +20,8 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.plugin.remote.MessageDto;
-import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
 import org.eclipse.keyple.plugin.remote.ObservableRemoteReaderServer;
+import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -102,8 +102,7 @@ public class RemotePluginServerImplTest extends RemoteServerBaseTest {
   }
 
   @Test
-  public void
-      onMessage_executeRemoteService_createObservableRemoteReader_shouldRaisePluginEvent() {
+  public void onMessage_executeRemoteService_createObservableRemoteReader_shouldRaisePluginEvent() {
     String sessionId = UUID.randomUUID().toString();
     MessageDto message = executeRemoteServiceMessage(sessionId, true);
     remotePlugin.onMessage(message);

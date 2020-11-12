@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.UUID;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remote.MessageDto;
-import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.SyncNodeClient;
+import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,8 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  * @since 1.0
  */
-final class SyncNodeClientImpl extends AbstractNode
-    implements SyncNodeClient {
+final class SyncNodeClientImpl extends AbstractNode implements SyncNodeClient {
 
   private static final Logger logger = LoggerFactory.getLogger(SyncNodeClientImpl.class);
 

@@ -30,11 +30,11 @@ import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.LocalServiceClient;
 import org.eclipse.keyple.plugin.remote.MessageDto;
-import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.ObservableReaderEventFilter;
-import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
-import org.eclipse.keyple.plugin.remote.exception.KeypleDoNotPropagateEventException;
 import org.eclipse.keyple.plugin.remote.RemoteServiceParameters;
+import org.eclipse.keyple.plugin.remote.exception.KeypleDoNotPropagateEventException;
+import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
+import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -236,8 +236,7 @@ public class LocalServiceClientTest extends BaseLocalTest {
     // verify EXECUTE_REMOTE_SERVICE request
     assertThat(((SyncEndpointClientMock) syncClientEndpoint).getRequests().size()).isEqualTo(2);
     MessageDto dtoRequest = ((SyncEndpointClientMock) syncClientEndpoint).getRequests().get(0);
-    assertThat(dtoRequest.getAction())
-        .isEqualTo(MessageDto.Action.EXECUTE_REMOTE_SERVICE.name());
+    assertThat(dtoRequest.getAction()).isEqualTo(MessageDto.Action.EXECUTE_REMOTE_SERVICE.name());
     assertThat(dtoRequest.getSessionId()).isNotEmpty();
     assertThat(dtoRequest.getLocalReaderName()).isEqualTo(readerName);
     JsonObject body = parser.fromJson(dtoRequest.getBody(), JsonObject.class);

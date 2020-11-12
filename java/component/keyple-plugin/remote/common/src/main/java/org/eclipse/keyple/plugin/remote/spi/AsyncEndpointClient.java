@@ -51,8 +51,8 @@ public interface AsyncEndpointClient {
   void openSession(String sessionId);
 
   /**
-   * This method is called by {@link AsyncNodeClient} to send a {@link MessageDto} to
-   * the server.<br>
+   * This method is called by {@link AsyncNodeClient} to send a {@link MessageDto} to the server.
+   * <br>
    * You have to :
    *
    * <ul>
@@ -67,14 +67,14 @@ public interface AsyncEndpointClient {
   void sendMessage(MessageDto msg);
 
   /**
-   * This method is called by {@link AsyncNodeClient} to close a communication session with
-   * the server identified by the provided <b>sessionId</b>.<br>
+   * This method is called by {@link AsyncNodeClient} to close a communication session with the
+   * server identified by the provided <b>sessionId</b>.<br>
    * Following the closing of the session you must :
    *
    * <ul>
    *   <li>Unregister the session associated to the provided <b>sessionId</b>.
-   *   <li>Retrieve the node {@link AsyncNodeClient} using the right <b>client</b> utility
-   *       methods, depending on your use case :
+   *   <li>Retrieve the node {@link AsyncNodeClient} using the right <b>client</b> utility methods,
+   *       depending on your use case :
    *       <ul>
    *         <li>{@code LocalServiceClientUtils.getAsyncNode()}
    *         <li>{@code RemoteClientUtils.getAsyncNode()}

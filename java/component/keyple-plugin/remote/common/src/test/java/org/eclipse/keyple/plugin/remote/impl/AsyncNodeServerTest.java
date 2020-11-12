@@ -17,10 +17,10 @@ import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.plugin.remote.MessageDto;
-import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
 import org.eclipse.keyple.plugin.remote.exception.KeypleClosedSessionException;
 import org.eclipse.keyple.plugin.remote.exception.KeypleRemoteCommunicationException;
 import org.eclipse.keyple.plugin.remote.exception.KeypleTimeoutException;
+import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

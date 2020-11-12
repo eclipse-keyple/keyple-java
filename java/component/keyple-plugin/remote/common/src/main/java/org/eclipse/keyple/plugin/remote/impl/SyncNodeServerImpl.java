@@ -92,7 +92,7 @@ final class SyncNodeServerImpl extends AbstractNode implements SyncNodeServer {
    * @return a null list or a not empty list
    */
   private List<MessageDto> checkEvents(
-          MessageDto msg, Map<String, ServerPushEventManager> eventManagers) {
+      MessageDto msg, Map<String, ServerPushEventManager> eventManagers) {
     ServerPushEventManager manager = getEventManager(msg, eventManagers);
     return manager.checkEvents(msg);
   }
@@ -174,7 +174,7 @@ final class SyncNodeServerImpl extends AbstractNode implements SyncNodeServer {
    * @return a not null reference.
    */
   private ServerPushEventManager getEventManager(
-          MessageDto msg, Map<String, ServerPushEventManager> eventManagers) {
+      MessageDto msg, Map<String, ServerPushEventManager> eventManagers) {
     ServerPushEventManager manager = eventManagers.get(msg.getClientNodeId());
     if (manager == null) {
       manager = new ServerPushEventManager(msg.getClientNodeId());

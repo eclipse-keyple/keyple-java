@@ -154,8 +154,7 @@ public class AbstractLocalServiceTest extends BaseLocalTest {
     MessageDto responseDto = service.executeLocally(readerMocked, requestDto);
     // results
     assertMetadataMatches(requestDto, responseDto);
-    assertThat(responseDto.getAction())
-        .isEqualTo(MessageDto.Action.TRANSMIT_CARD_SELECTION.name());
+    assertThat(responseDto.getAction()).isEqualTo(MessageDto.Action.TRANSMIT_CARD_SELECTION.name());
     assertThat(
             KeypleJsonParser.getParser()
                 .fromJson(
@@ -241,8 +240,7 @@ public class AbstractLocalServiceTest extends BaseLocalTest {
     MessageDto responseDto = service.executeLocally(observableReaderMocked, requestDto);
     // results
     assertMetadataMatches(requestDto, responseDto);
-    assertThat(responseDto.getAction())
-        .isEqualTo(MessageDto.Action.SET_DEFAULT_SELECTION.name());
+    assertThat(responseDto.getAction()).isEqualTo(MessageDto.Action.SET_DEFAULT_SELECTION.name());
     assertThat(responseDto.getBody()).isNull();
   }
 
@@ -269,8 +267,7 @@ public class AbstractLocalServiceTest extends BaseLocalTest {
     MessageDto responseDto = service.executeLocally(readerMocked, requestDto);
     // results
     assertMetadataMatches(requestDto, responseDto);
-    assertThat(responseDto.getAction())
-        .isEqualTo(MessageDto.Action.IS_READER_CONTACTLESS.name());
+    assertThat(responseDto.getAction()).isEqualTo(MessageDto.Action.IS_READER_CONTACTLESS.name());
     boolean bodyValue = KeypleJsonParser.getParser().fromJson(responseDto.getBody(), Boolean.class);
     assertThat(bodyValue).isTrue();
   }
@@ -295,8 +292,7 @@ public class AbstractLocalServiceTest extends BaseLocalTest {
     MessageDto responseDto = service.executeLocally(observableReaderMocked, requestDto);
     // results
     assertMetadataMatches(requestDto, responseDto);
-    assertThat(responseDto.getAction())
-        .isEqualTo(MessageDto.Action.START_CARD_DETECTION.name());
+    assertThat(responseDto.getAction()).isEqualTo(MessageDto.Action.START_CARD_DETECTION.name());
     assertThat(responseDto.getBody()).isNull();
   }
 
@@ -308,8 +304,7 @@ public class AbstractLocalServiceTest extends BaseLocalTest {
     MessageDto responseDto = service.executeLocally(observableReaderMocked, requestDto);
     // results
     assertMetadataMatches(requestDto, responseDto);
-    assertThat(responseDto.getAction())
-        .isEqualTo(MessageDto.Action.STOP_CARD_DETECTION.name());
+    assertThat(responseDto.getAction()).isEqualTo(MessageDto.Action.STOP_CARD_DETECTION.name());
     assertThat(responseDto.getBody()).isNull();
   }
 

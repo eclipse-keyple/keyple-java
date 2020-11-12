@@ -227,8 +227,7 @@ public class SyncNodeServerTest extends AbstractSyncNodeTest {
   @Test(expected = IllegalArgumentException.class)
   public void
       onRequest_whenActionIsCheckPluginEventAndBodyIsNull_shouldThrowIllegalArgumentException() {
-    MessageDto msg =
-        buildMinimalMessage().setAction(MessageDto.Action.CHECK_PLUGIN_EVENT.name());
+    MessageDto msg = buildMinimalMessage().setAction(MessageDto.Action.CHECK_PLUGIN_EVENT.name());
     node.onRequest(msg);
   }
 
@@ -304,8 +303,7 @@ public class SyncNodeServerTest extends AbstractSyncNodeTest {
   @Test(expected = IllegalArgumentException.class)
   public void
       onRequest_whenActionIsCheckReaderEventAndBodyIsNull_shouldThrowIllegalArgumentException() {
-    MessageDto msg =
-        buildMinimalMessage().setAction(MessageDto.Action.CHECK_READER_EVENT.name());
+    MessageDto msg = buildMinimalMessage().setAction(MessageDto.Action.CHECK_READER_EVENT.name());
     node.onRequest(msg);
   }
 

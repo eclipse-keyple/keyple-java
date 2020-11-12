@@ -19,15 +19,15 @@ import org.eclipse.keyple.core.service.event.ObservablePlugin;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.PluginEvent;
 import org.eclipse.keyple.core.service.exception.KeypleException;
+import org.eclipse.keyple.plugin.remote.ObservableRemoteReaderServer;
 import org.eclipse.keyple.plugin.remote.RemotePluginServer;
+import org.eclipse.keyple.plugin.remote.RemoteReaderServer;
 import org.eclipse.keyple.plugin.remote.integration.common.model.ConfigurationResult;
 import org.eclipse.keyple.plugin.remote.integration.common.model.DeviceInput;
 import org.eclipse.keyple.plugin.remote.integration.common.model.TransactionResult;
 import org.eclipse.keyple.plugin.remote.integration.common.model.UserInput;
 import org.eclipse.keyple.plugin.remote.integration.common.util.CalypsoUtilities;
 import org.eclipse.keyple.plugin.remote.integration.service.BaseScenario;
-import org.eclipse.keyple.plugin.remote.ObservableRemoteReaderServer;
-import org.eclipse.keyple.plugin.remote.RemoteReaderServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

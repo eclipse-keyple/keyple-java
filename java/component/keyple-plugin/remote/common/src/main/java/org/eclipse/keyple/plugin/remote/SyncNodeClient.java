@@ -19,8 +19,8 @@ import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
  * <p>This kind of node must be bind on the client's side if you want to use a Client-Server
  * communication protocol, such as standard HTTP for example.
  *
- * <p>Then, you must provide an implementation of the {@link SyncEndpointClient} interface in order to
- * be able to send requests to the server.
+ * <p>Then, you must provide an implementation of the {@link SyncEndpointClient} interface in order
+ * to be able to send requests to the server.
  *
  * <p>Keyple provides its own implementations of this interface and manages their lifecycle.<br>
  * This kind of node can be bind to a all <b>client</b> Remote plugins and services :

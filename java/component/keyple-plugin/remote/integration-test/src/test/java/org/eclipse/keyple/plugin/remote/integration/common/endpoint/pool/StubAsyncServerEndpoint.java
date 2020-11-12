@@ -18,15 +18,14 @@ import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.PoolRemotePluginClient;
-import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
-import org.eclipse.keyple.plugin.remote.integration.common.util.JacksonParser;
 import org.eclipse.keyple.plugin.remote.impl.PoolLocalServiceServerUtils;
+import org.eclipse.keyple.plugin.remote.integration.common.util.JacksonParser;
+import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Simulate a async server to test {@link
- * PoolRemotePluginClient}. Send and receive asynchronously
+ * Simulate a async server to test {@link PoolRemotePluginClient}. Send and receive asynchronously
  * serialized {@link MessageDto} with connected {@link StubAsyncClientEndpoint}
  */
 public class StubAsyncServerEndpoint implements AsyncEndpointServer {

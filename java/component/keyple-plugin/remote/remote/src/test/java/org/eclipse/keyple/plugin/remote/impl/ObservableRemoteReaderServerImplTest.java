@@ -53,7 +53,7 @@ public class ObservableRemoteReaderServerImplTest extends RemoteServerBaseTest {
     registerSyncPlugin();
     reader =
         new ObservableRemoteReaderServerImpl(
-                observableRemoteReaderImplMocked,
+            observableRemoteReaderImplMocked,
             serviceId,
             userInputDataJson,
             initialCardContentJson,
@@ -220,7 +220,7 @@ public class ObservableRemoteReaderServerImplTest extends RemoteServerBaseTest {
     // init
     reader =
         new ObservableRemoteReaderServerImpl(
-                observableRemoteReaderImplMocked, serviceId, null, initialCardContentJson, null);
+            observableRemoteReaderImplMocked, serviceId, null, initialCardContentJson, null);
 
     // execute
     String result = reader.getUserInputData(String.class);
@@ -259,7 +259,7 @@ public class ObservableRemoteReaderServerImplTest extends RemoteServerBaseTest {
     // init
     reader =
         new ObservableRemoteReaderServerImpl(
-                observableRemoteReaderImplMocked, serviceId, userInputDataJson, null, null);
+            observableRemoteReaderImplMocked, serviceId, userInputDataJson, null, null);
 
     // execute
     AbstractSmartCard result = reader.getInitialCardContent(AbstractSmartCard.class);
@@ -279,7 +279,7 @@ public class ObservableRemoteReaderServerImplTest extends RemoteServerBaseTest {
 
     reader =
         new ObservableRemoteReaderServerImpl(
-                observableRemoteReaderImplMocked,
+            observableRemoteReaderImplMocked,
             serviceId,
             userInputDataJson,
             initialCardContentJson,

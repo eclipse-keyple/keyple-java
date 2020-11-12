@@ -171,8 +171,7 @@ public class RemoteServerBaseTest {
     };
   }
 
-  void validateTerminateServiceResponse(
-          MessageDto terminateServiceMsg, boolean shouldUnregister) {
+  void validateTerminateServiceResponse(MessageDto terminateServiceMsg, boolean shouldUnregister) {
 
     assertThat(terminateServiceMsg.getAction())
         .isEqualTo(MessageDto.Action.TERMINATE_SERVICE.name());

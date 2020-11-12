@@ -35,13 +35,4 @@ final class RemoteReaderImpl extends AbstractRemoteReader {
       String clientNodeId) {
     super(pluginName, localReaderName, node, sessionId, clientNodeId);
   }
-
-  /**
-   * (package-private)
-   *
-   * @return non null instance of a localReaderName
-   */
-  String getLocalReaderName() {
-    return localReaderName;
-  }
 }

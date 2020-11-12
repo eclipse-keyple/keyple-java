@@ -20,16 +20,15 @@ import org.eclipse.keyple.core.service.exception.KeypleRuntimeException;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.PoolRemotePluginClient;
-import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
-import org.eclipse.keyple.plugin.remote.integration.common.util.JacksonParser;
 import org.eclipse.keyple.plugin.remote.impl.PoolLocalServiceServerUtils;
+import org.eclipse.keyple.plugin.remote.integration.common.util.JacksonParser;
+import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Stub implementation of a {@link SyncEndpointClient} for a {@link
- * PoolRemotePluginClient}. It simulates synchronous
- * invocation to a remote server.
+ * Stub implementation of a {@link SyncEndpointClient} for a {@link PoolRemotePluginClient}. It
+ * simulates synchronous invocation to a remote server.
  */
 public class StubSyncClientEndpoint implements SyncEndpointClient {
 

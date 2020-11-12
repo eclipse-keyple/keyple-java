@@ -11,8 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.spi;
 
-import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.AsyncNodeServer;
+import org.eclipse.keyple.plugin.remote.MessageDto;
 
 /**
  * <b>Server Async Endpoint</b> endpoint API to be implemented by the user.
@@ -24,10 +24,10 @@ import org.eclipse.keyple.plugin.remote.AsyncNodeServer;
  *
  * <ul>
  *   <li>Associate the session with the the accessible <b>sessionId</b> value using the method
- *       {@link MessageDto#getSessionId()} on the received message in order to be able to
- *       retrieve the session later.
- *   <li>Retrieve the node {@link AsyncNodeServer} using one of the following <b>server</b>
- *       utility methods, depending on your use case :
+ *       {@link MessageDto#getSessionId()} on the received message in order to be able to retrieve
+ *       the session later.
+ *   <li>Retrieve the node {@link AsyncNodeServer} using one of the following <b>server</b> utility
+ *       methods, depending on your use case :
  *       <ul>
  *         <li>{@code RemoteServerUtils.getAsyncNode()}
  *         <li>{@code LocalServiceServerUtils.getAsyncNode()}
@@ -46,8 +46,8 @@ import org.eclipse.keyple.plugin.remote.AsyncNodeServer;
 public interface AsyncEndpointServer {
 
   /**
-   * This method is called by {@link AsyncNodeServer} to send a {@link MessageDto} to
-   * the client.<br>
+   * This method is called by {@link AsyncNodeServer} to send a {@link MessageDto} to the client.
+   * <br>
    * You have to :
    *
    * <ul>

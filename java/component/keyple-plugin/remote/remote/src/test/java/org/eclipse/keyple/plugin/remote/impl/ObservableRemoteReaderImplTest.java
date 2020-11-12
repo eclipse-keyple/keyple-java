@@ -160,8 +160,7 @@ public class ObservableRemoteReaderImplTest {
     reader.finalizeCardProcessing();
     verify(node).sendRequest(messageArgumentCaptor.capture());
     MessageDto request = messageArgumentCaptor.getValue();
-    assertThat(request.getAction())
-        .isEqualTo(MessageDto.Action.FINALIZE_CARD_PROCESSING.name());
+    assertThat(request.getAction()).isEqualTo(MessageDto.Action.FINALIZE_CARD_PROCESSING.name());
     JsonObject body = KeypleJsonParser.getParser().fromJson(request.getBody(), JsonObject.class);
     assertThat(body).isNull();
   }

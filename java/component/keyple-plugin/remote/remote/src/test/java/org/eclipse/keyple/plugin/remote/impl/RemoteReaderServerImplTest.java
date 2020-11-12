@@ -47,7 +47,7 @@ public class RemoteReaderServerImplTest {
     remoteReaderImplMocked = mock(RemoteReaderImpl.class);
     reader =
         new RemoteReaderServerImpl(
-                remoteReaderImplMocked, serviceId, userInputDataJson, initialCardContentJson);
+            remoteReaderImplMocked, serviceId, userInputDataJson, initialCardContentJson);
   }
 
   @Test
@@ -236,7 +236,8 @@ public class RemoteReaderServerImplTest {
   public void getUserInputData_whenDataIsNull_shouldReturnNull() {
 
     // init
-    reader = new RemoteReaderServerImpl(remoteReaderImplMocked, serviceId, null, initialCardContentJson);
+    reader =
+        new RemoteReaderServerImpl(remoteReaderImplMocked, serviceId, null, initialCardContentJson);
 
     // execute
     String result = reader.getUserInputData(String.class);
@@ -292,7 +293,7 @@ public class RemoteReaderServerImplTest {
 
     reader =
         new RemoteReaderServerImpl(
-                remoteReaderImplMocked, serviceId, userInputDataJson, initialCardContentJson);
+            remoteReaderImplMocked, serviceId, userInputDataJson, initialCardContentJson);
 
     // execute
     MyMatchingCard result = reader.getInitialCardContent(MyMatchingCard.class);

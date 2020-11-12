@@ -27,7 +27,10 @@ import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.eclipse.keyple.plugin.remote.LocalServiceClient;
 import org.eclipse.keyple.plugin.remote.RemotePluginServer;
-import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
+import org.eclipse.keyple.plugin.remote.RemoteServiceParameters;
+import org.eclipse.keyple.plugin.remote.impl.LocalServiceClientTest;
+import org.eclipse.keyple.plugin.remote.impl.RemotePluginServerFactory;
+import org.eclipse.keyple.plugin.remote.impl.RemotePluginServerUtils;
 import org.eclipse.keyple.plugin.remote.integration.common.app.ReaderEventFilter;
 import org.eclipse.keyple.plugin.remote.integration.common.app.RemotePluginObserver;
 import org.eclipse.keyple.plugin.remote.integration.common.model.ConfigurationResult;
@@ -36,10 +39,7 @@ import org.eclipse.keyple.plugin.remote.integration.common.model.TransactionResu
 import org.eclipse.keyple.plugin.remote.integration.common.model.UserInput;
 import org.eclipse.keyple.plugin.remote.integration.common.se.StubCalypsoClassic;
 import org.eclipse.keyple.plugin.remote.integration.common.util.CalypsoUtilities;
-import org.eclipse.keyple.plugin.remote.RemoteServiceParameters;
-import org.eclipse.keyple.plugin.remote.impl.LocalServiceClientTest;
-import org.eclipse.keyple.plugin.remote.impl.RemotePluginServerFactory;
-import org.eclipse.keyple.plugin.remote.impl.RemotePluginServerUtils;
+import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
 import org.eclipse.keyple.plugin.stub.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,14 +61,14 @@ public abstract class BaseScenario {
 
   /**
    * The client application invokes the remoteService with enabling observability capabilities. As a
-   * result the server creates a Observable Remote Reader that receives local reader events such
-   * as Card insertions and removals.
+   * result the server creates a Observable Remote Reader that receives local reader events such as
+   * Card insertions and removals.
    *
    * <p>A Card Insertion is simulated locally followed by a card removal 1 second later.
    *
-   * <p>The Card Insertion event is sent to the Remote Reader whose observer starts a remote
-   * Calypso session. At the end of a successful calypso session, custom data is sent back to the
-   * client as a final result.
+   * <p>The Card Insertion event is sent to the Remote Reader whose observer starts a remote Calypso
+   * session. At the end of a successful calypso session, custom data is sent back to the client as
+   * a final result.
    *
    * <p>The operation is executed twice with two different users.
    *
@@ -265,9 +265,7 @@ public abstract class BaseScenario {
   }
 
   Callable<Boolean> executeTransaction(
-      final LocalServiceClient localService,
-      final StubReader localReader,
-      final UserInput user) {
+      final LocalServiceClient localService, final StubReader localReader, final UserInput user) {
     return new Callable<Boolean>() {
       @Override
       public Boolean call() throws Exception {
@@ -473,5 +471,4 @@ public abstract class BaseScenario {
     // validate result
     assertThat(output.isSuccessful()).isTrue();
   }
-
 }

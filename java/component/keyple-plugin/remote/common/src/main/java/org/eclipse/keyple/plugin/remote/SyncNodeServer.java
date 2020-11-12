@@ -44,12 +44,12 @@ public interface SyncNodeServer {
 
   /**
    * This method must be called by the server controller endpoint following the reception and
-   * deserialization of a {@link MessageDto} from the client. Following the receive of a
-   * request, the controller must :
+   * deserialization of a {@link MessageDto} from the client. Following the receive of a request,
+   * the controller must :
    *
    * <ul>
-   *   <li>Retrieve the node {@link SyncNodeServer} using one of the following utility
-   *       methods, depending on your use case :
+   *   <li>Retrieve the node {@link SyncNodeServer} using one of the following utility methods,
+   *       depending on your use case :
    *       <ul>
    *         <li>{@code RemoteServerUtils.getSyncNode()}
    *         <li>{@code LocalServiceServerUtils.getSyncNode()}

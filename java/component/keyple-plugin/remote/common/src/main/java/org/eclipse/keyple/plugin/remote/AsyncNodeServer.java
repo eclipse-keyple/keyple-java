@@ -55,8 +55,8 @@ public interface AsyncNodeServer {
   void onMessage(MessageDto msg);
 
   /**
-   * This method should be called by the {@link AsyncEndpointServer} endpoint following the closing of
-   * a communication session with the client.
+   * This method should be called by the {@link AsyncEndpointServer} endpoint following the closing
+   * of a communication session with the client.
    *
    * @param sessionId The session id registered during the session opening process.
    * @since 1.0

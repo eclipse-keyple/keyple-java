@@ -25,8 +25,7 @@ public class AbstractMessageHandlerTest {
   AbstractMessageHandler handler;
   Gson parser = KeypleJsonParser.getParser();
 
-  MessageDto response =
-      new MessageDto().setAction(MessageDto.Action.SET_DEFAULT_SELECTION.name());
+  MessageDto response = new MessageDto().setAction(MessageDto.Action.SET_DEFAULT_SELECTION.name());
 
   MessageDto responseWithKRIoExceptionException =
       new MessageDto()

@@ -27,8 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class PoolLocalServiceServerFactory {
 
-  private static final Logger logger =
-      LoggerFactory.getLogger(PoolLocalServiceServerFactory.class);
+  private static final Logger logger = LoggerFactory.getLogger(PoolLocalServiceServerFactory.class);
 
   /**
    * Init the builder

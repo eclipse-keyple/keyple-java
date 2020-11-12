@@ -33,11 +33,11 @@ abstract class AbstractRemoteReader extends AbstractReader {
 
   private static final Logger logger = LoggerFactory.getLogger(AbstractRemoteReader.class);
 
-  protected final AbstractNode node;
+  private final AbstractNode node;
   protected final String localReaderName;
 
   private String sessionId;
-  private String clientNodeId;
+  private final String clientNodeId;
 
   /**
    * (package-private)<br>
@@ -237,5 +237,14 @@ abstract class AbstractRemoteReader extends AbstractReader {
    */
   String getClientNodeId() {
     return clientNodeId;
+  }
+
+  /**
+   * (package-private) Gets the local reader name
+   *
+   * @return non null instance of a localReaderName
+   */
+  String getLocalReaderName() {
+    return localReaderName;
   }
 }

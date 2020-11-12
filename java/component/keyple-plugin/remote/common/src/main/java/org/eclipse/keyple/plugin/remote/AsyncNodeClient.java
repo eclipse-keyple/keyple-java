@@ -19,8 +19,8 @@ import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
  * <p>This kind of node should be bind on the client's side if you want to use a full duplex
  * communication protocol, such as Web Sockets for example.
  *
- * <p>Then, you should provide an implementation of the {@link AsyncEndpointClient} interface in order
- * to interact with this node.
+ * <p>Then, you should provide an implementation of the {@link AsyncEndpointClient} interface in
+ * order to interact with this node.
  *
  * <p>Keyple provides its own implementations of this interface and manages their lifecycle.<br>
  * This kind of node can be bind to a all <b>client</b> Remote plugins and services :
@@ -46,8 +46,8 @@ import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
 public interface AsyncNodeClient {
 
   /**
-   * This method should be called by the {@link AsyncEndpointClient} endpoint following the opening of
-   * a new communication session with the server.
+   * This method should be called by the {@link AsyncEndpointClient} endpoint following the opening
+   * of a new communication session with the server.
    *
    * @param sessionId The session id previously transmitted to the {@link AsyncEndpointClient}
    *     endpoint to open a session.
@@ -56,8 +56,8 @@ public interface AsyncNodeClient {
   void onOpen(String sessionId);
 
   /**
-   * This method should be called by the {@link AsyncEndpointClient} endpoint following the reception
-   * and deserialization of a {@link MessageDto} from the server.
+   * This method should be called by the {@link AsyncEndpointClient} endpoint following the
+   * reception and deserialization of a {@link MessageDto} from the server.
    *
    * @param msg The message to process.
    * @since 1.0
@@ -65,8 +65,8 @@ public interface AsyncNodeClient {
   void onMessage(MessageDto msg);
 
   /**
-   * This method should be called by the {@link AsyncEndpointClient} endpoint following the closing of
-   * a communication session with the server.
+   * This method should be called by the {@link AsyncEndpointClient} endpoint following the closing
+   * of a communication session with the server.
    *
    * @param sessionId The session id registered during the session opening process.
    * @since 1.0

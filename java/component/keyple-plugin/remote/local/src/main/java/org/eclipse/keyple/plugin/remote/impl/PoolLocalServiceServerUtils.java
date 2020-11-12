@@ -12,8 +12,8 @@
 package org.eclipse.keyple.plugin.remote.impl;
 
 import org.eclipse.keyple.plugin.remote.AsyncNodeServer;
-import org.eclipse.keyple.plugin.remote.SyncNodeServer;
 import org.eclipse.keyple.plugin.remote.PoolLocalServiceServer;
+import org.eclipse.keyple.plugin.remote.SyncNodeServer;
 
 /**
  * Utility class associated to a {@link PoolLocalServiceServer}
@@ -52,8 +52,7 @@ public final class PoolLocalServiceServerUtils {
     if (service.getNode() instanceof SyncNodeServer) {
       return (SyncNodeServer) service.getNode();
     }
-    throw new IllegalStateException(
-        "The Local Pool Server Service is not bounded to an sync node");
+    throw new IllegalStateException("The Local Pool Server Service is not bounded to an sync node");
   }
 
   /**

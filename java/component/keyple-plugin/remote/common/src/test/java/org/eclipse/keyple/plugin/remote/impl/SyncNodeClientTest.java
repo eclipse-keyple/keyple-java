@@ -19,10 +19,9 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
-
 import org.eclipse.keyple.plugin.remote.MessageDto;
-import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.exception.KeypleRemoteCommunicationException;
+import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

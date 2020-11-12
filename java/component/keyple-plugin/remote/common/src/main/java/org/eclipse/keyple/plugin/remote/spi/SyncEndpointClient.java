@@ -11,10 +11,9 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.spi;
 
+import java.util.List;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.SyncNodeClient;
-
-import java.util.List;
 
 /**
  * <b>Client Sync Endpoint</b> endpoint API to be implemented by the user.
@@ -29,10 +28,9 @@ import java.util.List;
 public interface SyncEndpointClient {
 
   /**
-   * This method is called by {@link SyncNodeClient} to send a {@link MessageDto} to the
-   * server.<br>
-   * You have to serialize and send the provided {@link MessageDto} to the server, then retry
-   * the response which is a list of {@link MessageDto}.
+   * This method is called by {@link SyncNodeClient} to send a {@link MessageDto} to the server.<br>
+   * You have to serialize and send the provided {@link MessageDto} to the server, then retry the
+   * response which is a list of {@link MessageDto}.
    *
    * @param msg The message to send.
    * @return a null or empty list if there is no result.
