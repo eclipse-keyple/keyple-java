@@ -2,4 +2,4 @@ plugins {
     id 'java'
 }
 
-project.ext.setProperty("remotese_subproject_name", ":calypso:remotese")
+//project.ext.setProperty("remotese_subproject_name", ":calypso:remotese")
