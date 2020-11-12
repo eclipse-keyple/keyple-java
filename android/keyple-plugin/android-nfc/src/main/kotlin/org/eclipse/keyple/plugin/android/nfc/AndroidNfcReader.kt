@@ -14,19 +14,17 @@ package org.eclipse.keyple.plugin.android.nfc
 import android.app.Activity
 import android.content.Intent
 import android.nfc.NfcAdapter
-import org.eclipse.keyple.core.plugin.reader.WaitForCardInsertionAutonomous
-import org.eclipse.keyple.core.plugin.reader.WaitForCardRemovalBlocking
 import org.eclipse.keyple.core.service.Reader
 
 /**
  * [Reader] to communicate with NFC Tag though
  * Android [NfcAdapter]
  *
- * Configure NFCAdapter Protocols with [AndroidNfcReaderImpl.setParameter]
+ * Configure NFCAdapter Protocols with [AbstractAndroidNfcReader.setParameter]
  *
  * Optimized for android 4.4 (API 19) to  6.0 (API 23)
  */
-interface AndroidNfcReader : WaitForCardInsertionAutonomous, WaitForCardRemovalBlocking {
+interface AndroidNfcReader {
     /**
      * Gets a string describing the low level description of the current tag.
      *
@@ -67,7 +65,7 @@ interface AndroidNfcReader : WaitForCardInsertionAutonomous, WaitForCardRemovalB
 
     companion object {
 
-        val READER_NAME = "AndroidNfcReaderImpl"
+        val READER_NAME = "AndroidNfcReader"
         val PLUGIN_NAME = AndroidNfcPlugin.PLUGIN_NAME
 
         // FLAG_READER_SKIP_NDEF_CHECK Prevent the platform from performing any NDEF checks in reader mode. Must be 0 or 1.

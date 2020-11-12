@@ -11,16 +11,15 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
-import android.annotation.TargetApi
 import android.app.Activity
 import android.content.Intent
 import android.nfc.NfcAdapter
 import android.nfc.Tag
-import android.os.Build
 import android.os.Bundle
 import java.io.IOException
 import java.util.HashMap
 import org.eclipse.keyple.core.plugin.reader.AbstractObservableLocalReader
+import org.eclipse.keyple.core.plugin.reader.WaitForCardInsertionAutonomous
 import org.eclipse.keyple.core.service.exception.KeypleReaderException
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.util.ByteArrayUtil
@@ -30,22 +29,20 @@ import timber.log.Timber
  * Implementation of [AndroidNfcReader] based on keyple core abstract classes [AbstractObservableLocalReader]
  * and
  */
-internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcReader.PLUGIN_NAME, AndroidNfcReader.READER_NAME), AndroidNfcReader, NfcAdapter.ReaderCallback {
+internal abstract class AbstractAndroidNfcReader : AbstractObservableLocalReader(AndroidNfcReader.PLUGIN_NAME, AndroidNfcReader.READER_NAME),
+        AndroidNfcReader, NfcAdapter.ReaderCallback, WaitForCardInsertionAutonomous {
 
     // Android NFC Adapter
-    private var nfcAdapter: NfcAdapter? = null
+    protected var nfcAdapter: NfcAdapter? = null
 
     // keep state between session if required
-    private var tagProxy: TagProxy? = null
+    protected var tagProxy: TagProxy? = null
 
     private val parameters = HashMap<String, String?>()
 
     private val protocolsMap = HashMap<String, String?>()
 
-    private const val NO_TAG = "no-tag"
-
-    private var isWatingForRemoval = false
-    private val syncWaitRemoval = Object()
+    private val NO_TAG = "no-tag"
 
     /**
      * Build Reader Mode flags Integer from parameters
@@ -351,33 +348,5 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
 
     override fun disableNFCReaderMode(activity: Activity) {
         nfcAdapter?.disableReaderMode(activity)
-    }
-
-    override fun stopWaitForCardRemoval() {
-        Timber.d("stopWaitForCardRemoval")
-        isWatingForRemoval = false
-        synchronized(syncWaitRemoval) {
-            syncWaitRemoval.notify()
-        }
-    }
-
-    @TargetApi(Build.VERSION_CODES.N)
-    override fun waitForCardAbsentNative(): Boolean {
-        Timber.d("waitForCardAbsentNative")
-        var isRemoved = false
-        if (!isWatingForRemoval) {
-            isWatingForRemoval = true
-            nfcAdapter?.ignore(tagProxy?.tag, 1000, {
-                isRemoved = true
-                synchronized(syncWaitRemoval) {
-                    syncWaitRemoval.notify()
-                }
-            }, null)
-
-            synchronized(syncWaitRemoval) {
-                syncWaitRemoval.wait(10000)
-            }
-        }
-        return isRemoved
     }
 }

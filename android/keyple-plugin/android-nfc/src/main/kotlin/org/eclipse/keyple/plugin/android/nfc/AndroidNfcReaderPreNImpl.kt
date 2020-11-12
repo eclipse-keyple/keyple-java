@@ -11,21 +11,11 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
+import org.eclipse.keyple.core.plugin.reader.WaitForCardRemovalNonBlocking
 
-class AndroidNfcPluginFactoryTest {
-
-    lateinit var factory: AndroidNfcPluginFactory
-
-    @Before
-    fun setUp() {
-        factory = AndroidNfcPluginFactory()
-    }
-
-    @Test
-    fun getPluginName() {
-        Assert.assertEquals(AndroidNfcPlugin.PLUGIN_NAME, factory.pluginName)
-    }
-}
+/**
+ * Singleton used by the plugin to run native NFC reader on Android version < 24 (Android N).
+ *
+ * It uses a Ping monitoring job to detect card removal
+ */
+internal object AndroidNfcReaderPreNImpl : AbstractAndroidNfcReader(), WaitForCardRemovalNonBlocking
