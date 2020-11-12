@@ -6,7 +6,7 @@ Read first main principles describe in the [Core](../core/README.md) library.
 
 * [About Remote library](#about-remote-library)
 * [Remote Plugins](#remote-plugins)
-    * [RemoteServerPlugin](#remoteserverplugin)
+    * [RemotePluginServer](#remoteserverplugin)
     * [RemoteClientPlugin](#remoteclientplugin)
     * [RemotePoolClientPlugin](#remotepoolclientplugin)
 
@@ -16,7 +16,7 @@ The "**Remote**" library must be used by the application installed on the termin
 
 ## Remote Plugins
 
-### RemoteServerPlugin
+### RemotePluginServer
 
 * [Use cases](../core/README.md#remoterver-plugin)
 * [API](../core/README.md#remoterver-plugin-api-class-diagram)

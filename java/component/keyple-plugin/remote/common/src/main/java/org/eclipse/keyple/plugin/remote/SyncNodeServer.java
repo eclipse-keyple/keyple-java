@@ -14,7 +14,7 @@ package org.eclipse.keyple.plugin.remote;
 import java.util.List;
 
 /**
- * <b>Server Sync Node</b> API.
+ * <b>Sync Node Server</b> API.
  *
  * <p>This kind of node must be bind on the server's side if you want to use a Client-Server
  * communication protocol, such as standard HTTP for example.
@@ -23,7 +23,7 @@ import java.util.List;
  * This kind of node can be bind to a all <b>server</b> Remote plugins and services :
  *
  * <ul>
- *   <li>{@code RemoteServerPlugin}
+ *   <li>{@code RemotePluginServer}
  *   <li>{@code LocalServiceServer}
  *   <li>{@code PoolLocalServiceServer}
  * </ul>
@@ -33,7 +33,7 @@ import java.util.List;
  * methods, depending on your use case :
  *
  * <ul>
- *   <li>{@code RemoteServerUtils.getSyncNode()}
+ *   <li>{@code RemotePluginServerUtils.getSyncNode()}
  *   <li>{@code LocalServiceServerUtils.getSyncNode()}
  *   <li>{@code PoolLocalServiceServerUtils.getSyncNode()}
  * </ul>
@@ -51,7 +51,7 @@ public interface SyncNodeServer {
    *   <li>Retrieve the node {@link SyncNodeServer} using one of the following utility methods,
    *       depending on your use case :
    *       <ul>
-   *         <li>{@code RemoteServerUtils.getSyncNode()}
+   *         <li>{@code RemotePluginServerUtils.getSyncNode()}
    *         <li>{@code LocalServiceServerUtils.getSyncNode()}
    *         <li>{@code PoolLocalServiceServerUtils.getSyncNode()}
    *       </ul>

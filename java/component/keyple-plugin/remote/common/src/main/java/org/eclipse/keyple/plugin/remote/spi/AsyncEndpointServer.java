@@ -29,7 +29,7 @@ import org.eclipse.keyple.plugin.remote.MessageDto;
  *   <li>Retrieve the node {@link AsyncNodeServer} using one of the following <b>server</b> utility
  *       methods, depending on your use case :
  *       <ul>
- *         <li>{@code RemoteServerUtils.getAsyncNode()}
+ *         <li>{@code RemotePluginServerUtils.getAsyncNode()}
  *         <li>{@code LocalServiceServerUtils.getAsyncNode()}
  *         <li>{@code PoolLocalServiceServerUtils.getAsyncNode()}
  *       </ul>
