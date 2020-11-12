@@ -11,30 +11,30 @@ task ('printJavaHome') {
     println "Java HOME : " + System.getProperty("java.home")
 }
 
-mainClassName = 'org.eclipse.keyple.example.remote.application.Demo_Webservice_MasterClient'
-
-task('runWS_MasterClient', dependsOn: 'classes', type: JavaExec, group:'keyple') {
-    main = 'org.eclipse.keyple.example.remote.application.Demo_Webservice_MasterClient'
-    classpath = sourceSets.main.runtimeClasspath
-    dependsOn printJavaHome
-}
-
-task('runWS_MasterServer', dependsOn: 'classes', type: JavaExec, group:'keyple') {
-    main = 'org.eclipse.keyple.example.remote.application.Demo_Webservice_MasterServer'
-    classpath = sourceSets.main.runtimeClasspath
-    dependsOn printJavaHome
-}
-
-task('runWsK_MasterClient', dependsOn: 'classes', type: JavaExec, group:'keyple') {
-    main = 'org.eclipse.keyple.example.remote.application.Demo_Websocket_MasterClient'
-    classpath = sourceSets.main.runtimeClasspath
-    dependsOn printJavaHome
-}
-task('runWsK_MasterServer', dependsOn: 'classes', type: JavaExec, group:'keyple') {
-    main = 'org.eclipse.keyple.example.remote.application.Demo_Websocket_MasterServer'
-    classpath = sourceSets.main.runtimeClasspath
-    dependsOn printJavaHome
-}
+//mainClassName = 'org.eclipse.keyple.example.remote.application.Demo_Webservice_MasterClient'
+//
+//task('runWS_MasterClient', dependsOn: 'classes', type: JavaExec, group:'keyple') {
+//    main = 'org.eclipse.keyple.example.remote.application.Demo_Webservice_MasterClient'
+//    classpath = sourceSets.main.runtimeClasspath
+//    dependsOn printJavaHome
+//}
+//
+//task('runWS_MasterServer', dependsOn: 'classes', type: JavaExec, group:'keyple') {
+//    main = 'org.eclipse.keyple.example.remote.application.Demo_Webservice_MasterServer'
+//    classpath = sourceSets.main.runtimeClasspath
+//    dependsOn printJavaHome
+//}
+//
+//task('runWsK_MasterClient', dependsOn: 'classes', type: JavaExec, group:'keyple') {
+//    main = 'org.eclipse.keyple.example.remote.application.Demo_Websocket_MasterClient'
+//    classpath = sourceSets.main.runtimeClasspath
+//    dependsOn printJavaHome
+//}
+//task('runWsK_MasterServer', dependsOn: 'classes', type: JavaExec, group:'keyple') {
+//    main = 'org.eclipse.keyple.example.remote.application.Demo_Websocket_MasterServer'
+//    classpath = sourceSets.main.runtimeClasspath
+//    dependsOn printJavaHome
+//}
 
 compileJava.doFirst {
     println "Using keyple_v parameter with value " + keyple_version
@@ -60,7 +60,7 @@ dependencies {
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: keyple_version
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: keyple_version
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-stub', version: keyple_version
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remotese', version: keyple_version
+//    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remotese', version: keyple_version
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-pcsc', version: keyple_version
 
     implementation "org.slf4j:slf4j-simple:1.7.25"
