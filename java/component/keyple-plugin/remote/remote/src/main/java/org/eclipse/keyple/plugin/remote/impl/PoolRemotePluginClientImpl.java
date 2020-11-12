@@ -22,11 +22,11 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.MessageDto;
-import org.eclipse.keyple.plugin.remote.RemotePoolClientPlugin;
+import org.eclipse.keyple.plugin.remote.PoolRemotePluginClient;
 
-/** Implementation of the {@link RemotePoolClientPlugin} */
-final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
-    implements RemotePoolClientPlugin {
+/** Implementation of the {@link PoolRemotePluginClient} */
+final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
+    implements PoolRemotePluginClient {
 
   /**
    * (package-private)<br>
@@ -35,7 +35,7 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
    * @param name The name of the plugin.
    * @throws KeypleReaderException when an issue is raised with reader
    */
-  RemotePoolClientPluginImpl(String name) {
+  PoolRemotePluginClientImpl(String name) {
     super(name);
   }
 
@@ -96,8 +96,8 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
       MessageDto response = node.sendRequest(request);
 
       checkError(response);
-      VirtualReader reader =
-          new VirtualReader(
+      RemoteReaderImpl reader =
+          new RemoteReaderImpl(
               getName(),
               response.getLocalReaderName(),
               getNode(),
@@ -123,19 +123,19 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
   public void releaseReader(Reader reader) {
     Assert.getInstance().notNull(reader, "reader");
     if (!readers.containsKey(reader.getName())) {
-      throw new IllegalArgumentException("reader is not a virtual reader of this pool plugin");
+      throw new IllegalArgumentException("reader is not a remote reader of this pool plugin");
     }
 
-    VirtualReader virtualReader = (VirtualReader) reader;
+    RemoteReaderImpl remoteReaderImpl = (RemoteReaderImpl) reader;
 
     try {
 
       MessageDto request =
           new MessageDto()
               .setAction(MessageDto.Action.RELEASE_READER.name())
-              .setVirtualReaderName(reader.getName())
-              .setLocalReaderName(virtualReader.getLocalReaderName())
-              .setSessionId(virtualReader.getSessionId())
+              .setRemoteReaderName(reader.getName())
+              .setLocalReaderName(remoteReaderImpl.getLocalReaderName())
+              .setSessionId(remoteReaderImpl.getSessionId())
               .setBody(null);
 
       // unregister reader
@@ -147,7 +147,7 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
 
     } finally {
       // close the session on the node
-      node.closeSessionSilently(virtualReader.getSessionId());
+      node.closeSessionSilently(remoteReaderImpl.getSessionId());
     }
   }
 

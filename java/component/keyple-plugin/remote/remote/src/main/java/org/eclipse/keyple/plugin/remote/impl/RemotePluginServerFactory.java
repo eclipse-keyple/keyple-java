@@ -23,29 +23,29 @@ import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
 import org.eclipse.keyple.plugin.remote.AsyncNodeServer;
 import org.eclipse.keyple.plugin.remote.SyncNodeServer;
-import org.eclipse.keyple.plugin.remote.RemoteServerPlugin;
+import org.eclipse.keyple.plugin.remote.RemotePluginServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <b>Remote Server Plugin</b> Factory
+ * <b>Remote Plugin Server</b> Factory
  *
- * <p>This factory must be used in the use case of the <b>Remote Server Plugin</b>.
+ * <p>This factory must be used in the use case of the <b>Remote Plugin Server</b>.
  *
- * <p>To register a Remote Server Plugin, use the method {@link
+ * <p>To register a Remote Plugin Server, use the method {@link
  * SmartCardService#registerPlugin(PluginFactory)} fed in with an instance of this factory. Invoke
  * the {@link #builder()} method to create and configure a factory instance.
  *
- * <p>Plugin name is defined by default in the factory. Access the Remote Server Plugin with the
- * {@link RemoteServerUtils#getRemotePlugin()} ()}.
+ * <p>Plugin name is defined by default in the factory. Access the Remote Plugin Server with the
+ * {@link RemotePluginServerUtils#getRemotePlugin()} ()}.
  */
-public class RemoteServerPluginFactory implements PluginFactory {
+public class RemotePluginServerFactory implements PluginFactory {
 
-  private static final Logger logger = LoggerFactory.getLogger(RemoteServerPluginFactory.class);
-  /** default name of the RemoteServerPlugin : {@value} */
-  static final String DEFAULT_PLUGIN_NAME = "DefaultRemoteServerPlugin";
+  private static final Logger logger = LoggerFactory.getLogger(RemotePluginServerFactory.class);
+  /** default name of the RemotePluginServer : {@value} */
+  static final String DEFAULT_PLUGIN_NAME = "DefaultRemotePluginServer";
 
-  private RemoteServerPlugin plugin;
+  private RemotePluginServer plugin;
 
   /**
    * Create a builder process for this factory
@@ -63,7 +63,7 @@ public class RemoteServerPluginFactory implements PluginFactory {
    *
    * @param plugin instance created from the builder process
    */
-  private RemoteServerPluginFactory(RemoteServerPlugin plugin) {
+  private RemotePluginServerFactory(RemotePluginServer plugin) {
     this.plugin = plugin;
   }
 
@@ -91,7 +91,7 @@ public class RemoteServerPluginFactory implements PluginFactory {
     /**
      * Configure the plugin with an async server endpoint. Retrieve the created {@link
      * AsyncNodeServer} with the method {@code
-     * RemoteServerUtils.getAsyncNode()}
+     * RemotePluginServerUtils.getAsyncNode()}
      *
      * @param asyncEndpoint non nullable instance of an async server endpoint
      * @return next configuration step
@@ -101,7 +101,7 @@ public class RemoteServerPluginFactory implements PluginFactory {
 
     /**
      * Configure the plugin to be used with a sync node. Retrieve the created {@link
-     * SyncNodeServer} with the method {@link RemoteServerUtils#getSyncNode()}
+     * SyncNodeServer} with the method {@link RemotePluginServerUtils#getSyncNode()}
      *
      * @return next configuration step
      * @since 1.0
@@ -112,7 +112,7 @@ public class RemoteServerPluginFactory implements PluginFactory {
   public interface PluginObserverStep {
     /**
      * Configure the observer of the plugin. More observers can be added later with the method
-     * {@link RemoteServerPlugin#addObserver(ObservablePlugin.PluginObserver)}
+     * {@link RemotePluginServer#addObserver(ObservablePlugin.PluginObserver)}
      *
      * @param observer non nullable instance of a plugin observer
      * @return next configuration step
@@ -154,7 +154,7 @@ public class RemoteServerPluginFactory implements PluginFactory {
      * @return instance of the plugin factory
      * @since 1.0
      */
-    RemoteServerPluginFactory build();
+    RemotePluginServerFactory build();
   }
 
   /** The builder pattern to create the factory instance. */
@@ -228,22 +228,22 @@ public class RemoteServerPluginFactory implements PluginFactory {
      * @since 1.0
      */
     @Override
-    public RemoteServerPluginFactory build() {
+    public RemotePluginServerFactory build() {
 
-      RemoteServerPluginImpl plugin =
-          new RemoteServerPluginImpl(DEFAULT_PLUGIN_NAME, eventNotificationPool);
+      RemotePluginServerImpl plugin =
+          new RemotePluginServerImpl(DEFAULT_PLUGIN_NAME, eventNotificationPool);
 
       if (asyncEndpoint != null) {
-        logger.info("Create a new RemoteServerPlugin with a async server endpoint");
+        logger.info("Create a new RemotePluginServer with a async server endpoint");
         plugin.bindAsyncNodeServer(asyncEndpoint);
       } else {
-        logger.info("Create a new RemoteServerPlugin with a sync server endpoint");
+        logger.info("Create a new RemotePluginServer with a sync server endpoint");
         plugin.bindSyncNodeServer();
       }
 
       plugin.addObserver(observer);
 
-      return new RemoteServerPluginFactory(plugin);
+      return new RemotePluginServerFactory(plugin);
     }
   }
 }

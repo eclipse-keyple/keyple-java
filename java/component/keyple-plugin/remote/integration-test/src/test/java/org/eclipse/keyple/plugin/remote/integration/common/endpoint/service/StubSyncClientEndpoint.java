@@ -19,18 +19,18 @@ import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.service.exception.KeypleRuntimeException;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.eclipse.keyple.plugin.remote.MessageDto;
+import org.eclipse.keyple.plugin.remote.RemotePluginServer;
 import org.eclipse.keyple.plugin.remote.SyncNodeServer;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
-import org.eclipse.keyple.plugin.remote.RemoteServerPlugin;
 import org.eclipse.keyple.plugin.remote.integration.common.endpoint.StubNetworkConnectionException;
 import org.eclipse.keyple.plugin.remote.integration.common.util.JacksonParser;
-import org.eclipse.keyple.plugin.remote.impl.RemoteServerUtils;
+import org.eclipse.keyple.plugin.remote.impl.RemotePluginServerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Stub implementation of a {@link SyncEndpointClient} to test {@link
- * RemoteServerPlugin}. It simulates synchronous invocation
+ * RemotePluginServer}. It simulates synchronous invocation
  * to a remote server.
  */
 public class StubSyncClientEndpoint implements SyncEndpointClient {
@@ -81,7 +81,7 @@ public class StubSyncClientEndpoint implements SyncEndpointClient {
 
         // Send the dto to the sync node
         List<MessageDto> responses =
-            RemoteServerUtils.getSyncNode().onRequest(JacksonParser.fromJson(data));
+            RemotePluginServerUtils.getSyncNode().onRequest(JacksonParser.fromJson(data));
 
         return JacksonParser.toJson(responses);
       }

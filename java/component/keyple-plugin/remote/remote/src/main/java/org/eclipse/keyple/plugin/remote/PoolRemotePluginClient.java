@@ -12,35 +12,31 @@
 package org.eclipse.keyple.plugin.remote;
 
 import org.eclipse.keyple.core.service.PluginFactory;
+import org.eclipse.keyple.core.service.ReaderPoolPlugin;
 import org.eclipse.keyple.core.service.SmartCardService;
-import org.eclipse.keyple.core.service.event.ObservablePlugin;
+import org.eclipse.keyple.plugin.remote.impl.PoolRemotePluginClientFactory;
+import org.eclipse.keyple.plugin.remote.impl.PoolRemotePluginClientUtils;
 
 /**
- * <b>Remote Client Observable Plugin</b> API.
+ * <b>Pool Remote Plugin Client</b> API.
  *
- * <p>This plugin must be used in the use case of the <b>Remote Client Plugin</b> configured <b>with
- * plugin observation</b>.
+ * <p>This plugin must be used in the use case of the <b> Pool Remote Plugin Client</b>.
  *
  * <p>It must be register by a <b>client</b> application installed on the terminal not having local
- * access to the card reader and that wishes to control the remotely :
+ * access to the pool cards reader and that wishes to control the card remotely :
  *
  * <ul>
  *   <li>To <b>register</b> the plugin, use the Keyple service method {@link
- *       SmartCardService#registerPlugin(PluginFactory)} using the factory {link
- *       RemoteClientPluginFactory} and <b>activate the plugin observation</b>.
- *   <li>To access the plugin, use one of the following utility methods :
- *       <ul>
- *         <li>For <b>Async</b> node configuration : {link
- *             RemoteClientUtils#getAsyncObservablePlugin()}
- *         <li>For <b>Sync</b> node configuration : {link
- *             RemoteClientUtils#getSyncObservablePlugin()}
- *       </ul>
+ *       SmartCardService#registerPlugin(PluginFactory)} using the factory {@link
+ *       PoolRemotePluginClientFactory}.
+ *   <li>To access the plugin, use the following utility method {@link
+ *       PoolRemotePluginClientUtils#getRemotePlugin()}
  *   <li>To <b>unregister</b> the plugin, use the Keyple service method {@link
  *       SmartCardService#unregisterPlugin(String)} using the plugin name.
  * </ul>
  *
- * <p>This plugin behaves like an {@link ObservablePlugin}.
+ * <p>This plugin behaves like a {@link ReaderPoolPlugin}.
  *
  * @since 1.0
  */
-public interface RemoteClientObservablePlugin extends RemoteClientPlugin, ObservablePlugin {}
+public interface PoolRemotePluginClient extends ReaderPoolPlugin {}

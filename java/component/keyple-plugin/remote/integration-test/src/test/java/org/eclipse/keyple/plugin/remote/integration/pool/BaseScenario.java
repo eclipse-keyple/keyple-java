@@ -17,7 +17,7 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.plugin.remote.PoolLocalServiceServer;
 import org.eclipse.keyple.plugin.remote.integration.common.se.StubCalypsoClassic;
-import org.eclipse.keyple.plugin.remote.RemotePoolClientPlugin;
+import org.eclipse.keyple.plugin.remote.PoolRemotePluginClient;
 import org.eclipse.keyple.plugin.stub.*;
 
 public abstract class BaseScenario {
@@ -31,7 +31,7 @@ public abstract class BaseScenario {
   protected String groupReference = "groupReference";
 
   protected PoolLocalServiceServer poolLocalServiceServer;
-  protected RemotePoolClientPlugin remotePoolClientPlugin;
+  protected PoolRemotePluginClient poolRemotePluginClient;
 
   abstract void execute_transaction_on_pool_reader();
 

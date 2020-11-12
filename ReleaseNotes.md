@@ -245,7 +245,7 @@ Release train components:
 * Plugin to communicate remotely with a Secure Element; definition of MasterAPI and SlaveAPI to enable Remote Procedure Call (RPC) between Keyple virtual reader terminals and Keyple native reader terminals. MasterAPI manages virtual reader that acts as a proxy to the remote reader.
 * Known limits in 0.7.0 
   * RemoteSePlugin has a public visibility.
-  * virtualReader#SePresent() API is not implemented
+  * remoteReaderImpl#SePresent() API is not implemented
   * Functions to be renamed in accordance with the RPC standard
 
 ### keyple-android-plugin-nfc 0.7

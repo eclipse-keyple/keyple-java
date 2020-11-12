@@ -22,8 +22,8 @@ import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.integration.common.endpoint.pool.StubSyncClientEndpoint;
 import org.eclipse.keyple.plugin.remote.integration.common.util.CalypsoUtilities;
 import org.eclipse.keyple.plugin.remote.impl.PoolLocalServiceServerFactory;
-import org.eclipse.keyple.plugin.remote.RemotePoolClientPlugin;
-import org.eclipse.keyple.plugin.remote.impl.RemotePoolClientPluginFactory;
+import org.eclipse.keyple.plugin.remote.PoolRemotePluginClient;
+import org.eclipse.keyple.plugin.remote.impl.PoolRemotePluginClientFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -46,11 +46,11 @@ public class SyncScenario extends BaseScenario {
             .withPoolPlugins(localPoolPlugin.getName())
             .getService();
 
-    remotePoolClientPlugin =
-        (RemotePoolClientPlugin)
+    poolRemotePluginClient =
+        (PoolRemotePluginClient)
             SmartCardService.getInstance()
                 .registerPlugin(
-                    RemotePoolClientPluginFactory.builder()
+                    PoolRemotePluginClientFactory.builder()
                         .withSyncNode(clientEndpoint)
                         .usingDefaultTimeout()
                         .build());
@@ -59,16 +59,16 @@ public class SyncScenario extends BaseScenario {
   @Test
   @Override
   public void execute_transaction_on_pool_reader() {
-    SortedSet<String> groupReferences = remotePoolClientPlugin.getReaderGroupReferences();
+    SortedSet<String> groupReferences = poolRemotePluginClient.getReaderGroupReferences();
     assertThat(groupReferences).containsExactly(groupReference);
 
-    Reader virtualReader = remotePoolClientPlugin.allocateReader(groupReference);
+    Reader remoteReader = poolRemotePluginClient.allocateReader(groupReference);
     CardSelection seSelection = CalypsoUtilities.getSeSelection();
     CalypsoPo calypsoPo =
-        (CalypsoPo) seSelection.processExplicitSelection(virtualReader).getActiveSmartCard();
+        (CalypsoPo) seSelection.processExplicitSelection(remoteReader).getActiveSmartCard();
 
-    String eventLog = CalypsoUtilities.readEventLog(calypsoPo, virtualReader, logger);
+    String eventLog = CalypsoUtilities.readEventLog(calypsoPo, remoteReader, logger);
     assertThat(eventLog).isNotNull();
-    remotePoolClientPlugin.releaseReader(virtualReader);
+    poolRemotePluginClient.releaseReader(remoteReader);
   }
 }

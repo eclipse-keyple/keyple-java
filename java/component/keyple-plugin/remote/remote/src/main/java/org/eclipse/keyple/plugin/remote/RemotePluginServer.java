@@ -18,11 +18,11 @@ import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservablePlugin;
 import org.eclipse.keyple.core.service.event.PluginEvent;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.plugin.remote.impl.RemoteServerPluginFactory;
-import org.eclipse.keyple.plugin.remote.impl.RemoteServerUtils;
+import org.eclipse.keyple.plugin.remote.impl.RemotePluginServerFactory;
+import org.eclipse.keyple.plugin.remote.impl.RemotePluginServerUtils;
 
 /**
- * <b>Remote Server Plugin</b> API.
+ * <b>Remote Plugin Server</b> API.
  *
  * <p>This plugin must be used in the use case of the <b>Remote Server Plugin</b>.
  *
@@ -32,15 +32,15 @@ import org.eclipse.keyple.plugin.remote.impl.RemoteServerUtils;
  * <ul>
  *   <li>To <b>register</b> the plugin, use the Keyple service method {@link
  *       SmartCardService#registerPlugin(PluginFactory)} using the factory {@link
- *       RemoteServerPluginFactory} for the plugin creation.
+ *       RemotePluginServerFactory} for the plugin creation.
  *   <li>To access the plugin, use the following utility method {@link
- *       RemoteServerUtils#getRemotePlugin()}
+ *       RemotePluginServerUtils#getRemotePlugin()}
  *   <li>To <b>unregister</b> the plugin, use the Keyple service method {@link
  *       SmartCardService#unregisterPlugin(String)} using the plugin name.
  * </ul>
  *
  * <p>This plugin behaves like an {@link ObservablePlugin} but exposes additional services and
- * contains only {@link RemoteServerReader} and {@link RemoteServerObservableReader} readers.
+ * contains only {@link RemoteReaderServer} and {@link ObservableRemoteReaderServer} readers.
  *
  * <p><u>How to use it ?</u><br>
  *
@@ -53,27 +53,27 @@ import org.eclipse.keyple.plugin.remote.impl.RemoteServerUtils;
  *       PluginEvent.EventType#READER_CONNECTED}.
  *   <li>Retrieve the name of the first reader contained in the event readers list using the method
  *       {@link PluginEvent#getReaderNames()}.
- *   <li>Retrieve the virtual reader from the plugin using the method {@link
- *       RemoteServerPlugin#getReader(String)}.
+ *   <li>Retrieve the remote reader from the plugin using the method {@link
+ *       RemotePluginServer#getReader(String)}.
  *   <li>Retrieve the service id from the reader using the method {@link
- *       RemoteServerReader#getServiceId()}.
+ *       RemoteReaderServer#getServiceId()}.
  *   <li>Execute the ticketing service identified by the service id.
  *   <li>During the ticketing service execution, you can retrieve from the reader the user input
  *       data and/or the initial Card content transmitted by the client.
  *   <li>To terminate the remote ticketing service, call on the plugin the method {@link
- *       RemoteServerPlugin#terminateService(String, Object)} by providing the associated reader
+ *       RemotePluginServer#terminateService(String, Object)} by providing the associated reader
  *       name and optionally a user output data.
  * </ol>
  *
  * @since 1.0
  */
-public interface RemoteServerPlugin extends ObservablePlugin {
+public interface RemotePluginServer extends ObservablePlugin {
 
   /**
    * {@inheritDoc}
    *
    * @return a not null sorted set of {@link Reader} but you can cast them to {@link
-   *     RemoteServerReader}.
+   *     RemoteReaderServer}.
    * @since 1.0
    */
   @Override
@@ -86,15 +86,15 @@ public interface RemoteServerPlugin extends ObservablePlugin {
    * @since 1.0
    */
   @Override
-  RemoteServerReader getReader(String name) throws KeypleReaderNotFoundException;
+  RemoteReaderServer getReader(String name) throws KeypleReaderNotFoundException;
 
   /**
-   * This method terminates the remote ticketing service associated to the provided virtual reader
+   * This method terminates the remote ticketing service associated to the provided remote reader
    * name and returns to the client the user output data provided.
    *
-   * @param virtualReaderName The virtual reader name.
+   * @param remoteReaderName The remote reader name.
    * @param userOutputData The object containing user output data.
    * @since 1.0
    */
-  void terminateService(String virtualReaderName, Object userOutputData);
+  void terminateService(String remoteReaderName, Object userOutputData);
 }

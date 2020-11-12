@@ -15,34 +15,34 @@ import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.PluginFactory;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.util.Assert;
+import org.eclipse.keyple.plugin.remote.PoolRemotePluginClient;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.AsyncNodeServer;
-import org.eclipse.keyple.plugin.remote.RemotePoolClientPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <b>Remote Pool Client Plugin</b> Factory
+ * <b>Pool Remote Plugin Client</b> Factory
  *
- * <p>This factory must be used in the use case of the <b>Remote Pool Client Plugin</b>.
+ * <p>This factory must be used in the use case of the <b>Pool Remote Plugin Client</b>.
  *
- * <p>To register a Remote Pool Client Plugin, use the method {@link
+ * <p>To register a Pool Remote Plugin Client, use the method {@link
  * SmartCardService#registerPlugin(PluginFactory)} fed in with an instance of this factory. Invoke
  * the {@link #builder()} method to create and configure a factory instance.
  *
  * <p>Plugin name is defined by default in the factory. Access the Remote Pool Client Plugin with
- * the {@link RemotePoolClientUtils#getRemotePlugin()} ()}.
+ * the {@link PoolRemotePluginClientUtils#getRemotePlugin()} ()}.
  */
-public class RemotePoolClientPluginFactory implements PluginFactory {
+public class PoolRemotePluginClientFactory implements PluginFactory {
 
-  private static final Logger logger = LoggerFactory.getLogger(RemotePoolClientPluginFactory.class);
-  /** default name of the RemotePoolClientPlugin : {@value} */
-  static final String DEFAULT_PLUGIN_NAME = "DefaultRemotePoolServerPlugin";
+  private static final Logger logger = LoggerFactory.getLogger(PoolRemotePluginClientFactory.class);
+  /** default name of the PoolRemotePluginClient : {@value} */
+  static final String DEFAULT_PLUGIN_NAME = "DefaultPoolRemotePluginClient";
 
   private static final int DEFAULT_TIMEOUT = 5;
 
-  private final RemotePoolClientPlugin plugin;
+  private final PoolRemotePluginClient plugin;
 
   /**
    * Create a builder process for this factory
@@ -60,7 +60,7 @@ public class RemotePoolClientPluginFactory implements PluginFactory {
    *
    * @param plugin instance created from the builder process
    */
-  private RemotePoolClientPluginFactory(RemotePoolClientPlugin plugin) {
+  private PoolRemotePluginClientFactory(PoolRemotePluginClient plugin) {
     this.plugin = plugin;
   }
 
@@ -88,7 +88,7 @@ public class RemotePoolClientPluginFactory implements PluginFactory {
     /**
      * Configure the plugin with an async server endpoint. Retrieve the created {@link
      * AsyncNodeServer} with the method {@code
-     * RemotePoolClientUtils.getAsyncNode()}
+     * PoolRemotePluginClientUtils.getAsyncNode()}
      *
      * @param asyncEndpoint non nullable instance of an async server endpoint
      * @return next configuration step
@@ -124,7 +124,7 @@ public class RemotePoolClientPluginFactory implements PluginFactory {
      * @return next configuration step
      * @since 1.0
      */
-    BuilderStep usingCustomTimeout(int timeoutInSeconds);
+    BuilderStep usingTimeout(int timeoutInSeconds);
   }
 
   public interface BuilderStep {
@@ -137,7 +137,7 @@ public class RemotePoolClientPluginFactory implements PluginFactory {
      * @return instance of the plugin factory
      * @since 1.0
      */
-    RemotePoolClientPluginFactory build();
+    PoolRemotePluginClientFactory build();
   }
 
   /** The builder pattern to create the factory instance. */
@@ -188,7 +188,7 @@ public class RemotePoolClientPluginFactory implements PluginFactory {
      * @since 1.0
      */
     @Override
-    public BuilderStep usingCustomTimeout(int timeoutInSeconds) {
+    public BuilderStep usingTimeout(int timeoutInSeconds) {
       timeoutInSec = timeoutInSeconds;
       return this;
     }
@@ -199,19 +199,19 @@ public class RemotePoolClientPluginFactory implements PluginFactory {
      * @since 1.0
      */
     @Override
-    public RemotePoolClientPluginFactory build() {
+    public PoolRemotePluginClientFactory build() {
 
-      RemotePoolClientPluginImpl plugin = new RemotePoolClientPluginImpl(DEFAULT_PLUGIN_NAME);
+      PoolRemotePluginClientImpl plugin = new PoolRemotePluginClientImpl(DEFAULT_PLUGIN_NAME);
 
       if (asyncEndpoint != null) {
-        logger.info("Create a new RemotePoolClientPlugin with a async client endpoint");
+        logger.info("Create a new PoolRemotePluginClient with a async client endpoint");
         plugin.bindAsyncNodeClient(asyncEndpoint, timeoutInSec);
       } else {
-        logger.info("Create a new RemotePoolClientPlugin with a sync client endpoint");
+        logger.info("Create a new PoolRemotePluginClient with a sync client endpoint");
         plugin.bindSyncNodeClient(syncEndpoint, null, null);
       }
 
-      return new RemotePoolClientPluginFactory(plugin);
+      return new PoolRemotePluginClientFactory(plugin);
     }
   }
 }

@@ -26,14 +26,14 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ServerVirtualReaderTest {
+public class RemoteReaderServerImplTest {
 
   static final String serviceId = "serviceId";
   static final String userInputDataJson = "userInputDataJson";
   static final String initialCardContentJson = "initialCardContentJson";
 
-  VirtualReader virtualReaderMocked;
-  ServerVirtualReader reader;
+  RemoteReaderImpl remoteReaderImplMocked;
+  RemoteReaderServerImpl reader;
 
   private static class MyMatchingCard extends AbstractSmartCard {
 
@@ -44,14 +44,14 @@ public class ServerVirtualReaderTest {
 
   @Before
   public void setUp() {
-    virtualReaderMocked = mock(VirtualReader.class);
+    remoteReaderImplMocked = mock(RemoteReaderImpl.class);
     reader =
-        new ServerVirtualReader(
-            virtualReaderMocked, serviceId, userInputDataJson, initialCardContentJson);
+        new RemoteReaderServerImpl(
+                remoteReaderImplMocked, serviceId, userInputDataJson, initialCardContentJson);
   }
 
   @Test
-  public void transmitCardRequest_shouldDelegateMethodToVirtualReader() {
+  public void transmitCardRequest_shouldDelegateMethodToRemoteReader() {
 
     // init request
     CardRequest cardRequest = SampleFactory.getACardRequest();
@@ -60,15 +60,15 @@ public class ServerVirtualReaderTest {
     // init response
     CardResponse cardResponse = SampleFactory.getACardResponse();
     doReturn(cardResponse)
-        .when(virtualReaderMocked)
+        .when(remoteReaderImplMocked)
         .transmitCardRequest(cardRequest, channelControl);
 
     // execute
     CardResponse cardResponseReturned = reader.transmitCardRequest(cardRequest, channelControl);
 
     // verify
-    verify(virtualReaderMocked).transmitCardRequest(cardRequest, channelControl);
-    verifyNoMoreInteractions(virtualReaderMocked);
+    verify(remoteReaderImplMocked).transmitCardRequest(cardRequest, channelControl);
+    verifyNoMoreInteractions(remoteReaderImplMocked);
     assertThat(cardResponseReturned).isEqualToComparingFieldByField(cardResponse);
   }
 
@@ -81,7 +81,7 @@ public class ServerVirtualReaderTest {
 
     // init response
     doThrow(new KeypleReaderIOException("test"))
-        .when(virtualReaderMocked)
+        .when(remoteReaderImplMocked)
         .transmitCardRequest(cardRequest, channelControl);
 
     // execute
@@ -89,7 +89,7 @@ public class ServerVirtualReaderTest {
   }
 
   @Test
-  public void transmitCardRequests_shouldDelegateMethodToVirtualReader() {
+  public void transmitCardRequests_shouldDelegateMethodToRemoteReader() {
 
     // init request
     List<CardSelectionRequest> cardSelectionRequests =
@@ -100,7 +100,7 @@ public class ServerVirtualReaderTest {
     // init response
     List<CardSelectionResponse> cardResponses = SampleFactory.getCompleteResponseList();
     doReturn(cardResponses)
-        .when(virtualReaderMocked)
+        .when(remoteReaderImplMocked)
         .transmitCardSelectionRequests(
             cardSelectionRequests, multiCardRequestProcessing, channelControl);
 
@@ -110,10 +110,10 @@ public class ServerVirtualReaderTest {
             cardSelectionRequests, multiCardRequestProcessing, channelControl);
 
     // verify
-    verify(virtualReaderMocked)
+    verify(remoteReaderImplMocked)
         .transmitCardSelectionRequests(
             cardSelectionRequests, multiCardRequestProcessing, channelControl);
-    verifyNoMoreInteractions(virtualReaderMocked);
+    verifyNoMoreInteractions(remoteReaderImplMocked);
     assertThat(cardResponsesReturned).hasSameElementsAs(cardResponses);
   }
 
@@ -128,7 +128,7 @@ public class ServerVirtualReaderTest {
 
     // init response
     doThrow(new KeypleReaderIOException("test"))
-        .when(virtualReaderMocked)
+        .when(remoteReaderImplMocked)
         .transmitCardSelectionRequests(
             cardSelectionRequests, multiCardRequestProcessing, channelControl);
 
@@ -138,17 +138,17 @@ public class ServerVirtualReaderTest {
   }
 
   @Test
-  public void isCardPresent_shouldDelegateMethodToVirtualReader() {
+  public void isCardPresent_shouldDelegateMethodToRemoteReader() {
 
     // init
-    doReturn(true).when(virtualReaderMocked).isCardPresent();
+    doReturn(true).when(remoteReaderImplMocked).isCardPresent();
 
     // execute
     boolean result = reader.isCardPresent();
 
     // verify
-    verify(virtualReaderMocked).isCardPresent();
-    verifyNoMoreInteractions(virtualReaderMocked);
+    verify(remoteReaderImplMocked).isCardPresent();
+    verifyNoMoreInteractions(remoteReaderImplMocked);
     assertThat(result).isTrue();
   }
 
@@ -156,7 +156,7 @@ public class ServerVirtualReaderTest {
   public void isCardPresent_whenError_shouldThrowOriginalException() {
 
     // init
-    doThrow(new KeypleReaderIOException("test")).when(virtualReaderMocked).isCardPresent();
+    doThrow(new KeypleReaderIOException("test")).when(remoteReaderImplMocked).isCardPresent();
 
     // execute
     reader.isCardPresent();
@@ -164,33 +164,33 @@ public class ServerVirtualReaderTest {
 
   @SuppressWarnings("ResultOfMethodCallIgnored")
   @Test
-  public void getName_shouldDelegateMethodToVirtualReader() {
+  public void getName_shouldDelegateMethodToRemoteReader() {
 
     // init response
     String name = "name1";
-    doReturn(name).when(virtualReaderMocked).getName();
+    doReturn(name).when(remoteReaderImplMocked).getName();
 
     // execute
     String result = reader.getName();
 
     // verify
-    verify(virtualReaderMocked).getName();
-    verifyNoMoreInteractions(virtualReaderMocked);
+    verify(remoteReaderImplMocked).getName();
+    verifyNoMoreInteractions(remoteReaderImplMocked);
     assertThat(result).isSameAs(name);
   }
 
   @Test
-  public void isContactless_shouldDelegateMethodToVirtualReader() {
+  public void isContactless_shouldDelegateMethodToRemoteReader() {
 
     // init
-    doReturn(true).when(virtualReaderMocked).isContactless();
+    doReturn(true).when(remoteReaderImplMocked).isContactless();
 
     // execute
     boolean result = reader.isContactless();
 
     // verify
-    verify(virtualReaderMocked).isContactless();
-    verifyNoMoreInteractions(virtualReaderMocked);
+    verify(remoteReaderImplMocked).isContactless();
+    verifyNoMoreInteractions(remoteReaderImplMocked);
     assertThat(result).isTrue();
   }
 
@@ -198,7 +198,7 @@ public class ServerVirtualReaderTest {
   public void isContactless_whenError_shouldThrowOriginalException() {
 
     // init
-    doThrow(new KeypleReaderIOException("test")).when(virtualReaderMocked).isContactless();
+    doThrow(new KeypleReaderIOException("test")).when(remoteReaderImplMocked).isContactless();
 
     // execute
     reader.isContactless();
@@ -221,7 +221,7 @@ public class ServerVirtualReaderTest {
     String result = reader.getServiceId();
 
     // verify
-    verifyZeroInteractions(virtualReaderMocked);
+    verifyZeroInteractions(remoteReaderImplMocked);
     assertThat(result).isSameAs(serviceId);
   }
 
@@ -236,7 +236,7 @@ public class ServerVirtualReaderTest {
   public void getUserInputData_whenDataIsNull_shouldReturnNull() {
 
     // init
-    reader = new ServerVirtualReader(virtualReaderMocked, serviceId, null, initialCardContentJson);
+    reader = new RemoteReaderServerImpl(remoteReaderImplMocked, serviceId, null, initialCardContentJson);
 
     // execute
     String result = reader.getUserInputData(String.class);
@@ -259,7 +259,7 @@ public class ServerVirtualReaderTest {
   public void getUserInputData_whenClassIsNotConform_shouldThrowRuntimeException() {
 
     // execute
-    reader.getUserInputData(VirtualReader.class);
+    reader.getUserInputData(RemoteReaderImpl.class);
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -273,7 +273,7 @@ public class ServerVirtualReaderTest {
   public void getInitialSeContent_whenDataIsNull_shouldReturnNull() {
 
     // init
-    reader = new ServerVirtualReader(virtualReaderMocked, serviceId, userInputDataJson, null);
+    reader = new RemoteReaderServerImpl(remoteReaderImplMocked, serviceId, userInputDataJson, null);
 
     // execute
     AbstractSmartCard result = reader.getInitialCardContent(AbstractSmartCard.class);
@@ -291,8 +291,8 @@ public class ServerVirtualReaderTest {
     String initialCardContentJson = KeypleJsonParser.getParser().toJson(matchingSe);
 
     reader =
-        new ServerVirtualReader(
-            virtualReaderMocked, serviceId, userInputDataJson, initialCardContentJson);
+        new RemoteReaderServerImpl(
+                remoteReaderImplMocked, serviceId, userInputDataJson, initialCardContentJson);
 
     // execute
     MyMatchingCard result = reader.getInitialCardContent(MyMatchingCard.class);

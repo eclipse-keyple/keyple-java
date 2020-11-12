@@ -25,19 +25,19 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.MessageDto;
-import org.eclipse.keyple.plugin.remote.RemoteServerObservableReader;
-import org.eclipse.keyple.plugin.remote.RemoteServerPlugin;
-import org.eclipse.keyple.plugin.remote.RemoteServerReader;
+import org.eclipse.keyple.plugin.remote.ObservableRemoteReaderServer;
+import org.eclipse.keyple.plugin.remote.RemotePluginServer;
+import org.eclipse.keyple.plugin.remote.RemoteReaderServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * (package-private)<br>
- * Implementation of RemoteServerPlugin
+ * Implementation of RemotePluginServer
  */
-final class RemoteServerPluginImpl extends AbstractRemotePlugin implements RemoteServerPlugin {
+final class RemotePluginServerImpl extends AbstractRemotePlugin implements RemotePluginServer {
 
-  private static final Logger logger = LoggerFactory.getLogger(RemoteServerPluginImpl.class);
+  private static final Logger logger = LoggerFactory.getLogger(RemotePluginServerImpl.class);
 
   private final ExecutorService eventNotificationPool;
 
@@ -49,7 +49,7 @@ final class RemoteServerPluginImpl extends AbstractRemotePlugin implements Remot
    * Constructor.
    *
    * <ul>
-   *   <li>Instantiates a new ReaderPlugin.
+   *   <li>Instantiates a new RemotePluginServer.
    *   <li>Retrieve the current readers list.
    *   <li>Initialize the list of readers calling TODO.
    *   <li>When readers initialisation failed, a KeypleReaderException is thrown.
@@ -58,7 +58,7 @@ final class RemoteServerPluginImpl extends AbstractRemotePlugin implements Remot
    * @param name The name of the plugin.
    * @throws KeypleReaderException when an issue is raised with reader
    */
-  RemoteServerPluginImpl(String name, ExecutorService eventNotificationPool) {
+  RemotePluginServerImpl(String name, ExecutorService eventNotificationPool) {
     super(name);
     this.eventNotificationPool = eventNotificationPool;
     this.observers = new ArrayList<PluginObserver>();
@@ -84,20 +84,20 @@ final class RemoteServerPluginImpl extends AbstractRemotePlugin implements Remot
     switch (MessageDto.Action.valueOf(message.getAction())) {
       case EXECUTE_REMOTE_SERVICE:
 
-        // create a virtual reader from message parameters
-        final AbstractServerVirtualReader virtualReader = createMasterReader(message);
-        virtualReader.register();
-        readers.put(virtualReader.getName(), virtualReader);
+        // create a remote reader from message parameters
+        final AbstractRemoteReaderServer remoteReader = createMasterReader(message);
+        remoteReader.register();
+        readers.put(remoteReader.getName(), remoteReader);
         notifyObservers(
             new PluginEvent(
-                getName(), virtualReader.getName(), PluginEvent.EventType.READER_CONNECTED));
+                getName(), remoteReader.getName(), PluginEvent.EventType.READER_CONNECTED));
         break;
       case READER_EVENT:
-        Assert.getInstance().notNull(message.getVirtualReaderName(), "virtualReaderName");
+        Assert.getInstance().notNull(message.getRemoteReaderName(), "remoteReaderName");
 
-        ServerVirtualObservableReader delegateVirtualReader = createSlaveReader(message);
-        delegateVirtualReader.register();
-        readers.put(delegateVirtualReader.getName(), delegateVirtualReader);
+        ObservableRemoteReaderServerImpl delegateRemoteReader = createSlaveReader(message);
+        delegateRemoteReader.register();
+        readers.put(delegateRemoteReader.getName(), delegateRemoteReader);
 
         // notify observers of this event
         ReaderEvent readerEvent =
@@ -108,10 +108,10 @@ final class RemoteServerPluginImpl extends AbstractRemotePlugin implements Remot
                         .get("readerEvent"),
                     ReaderEvent.class);
 
-        delegateVirtualReader.notifyObservers(
+        delegateRemoteReader.notifyObservers(
             new ReaderEvent(
                 getName(), // plugin name is overwritten
-                delegateVirtualReader.getName(), // reader name is overwritten
+                delegateRemoteReader.getName(), // reader name is overwritten
                 readerEvent.getEventType(),
                 readerEvent.getDefaultSelectionsResponse()));
 
@@ -127,50 +127,50 @@ final class RemoteServerPluginImpl extends AbstractRemotePlugin implements Remot
    * @since 1.0
    */
   @Override
-  public void terminateService(String virtualReaderName, Object userOutputData) {
+  public void terminateService(String remoteReaderName, Object userOutputData) {
 
-    AbstractServerVirtualReader virtualReader =
-        (AbstractServerVirtualReader) getReader(virtualReaderName);
+    AbstractRemoteReaderServer remoteReader =
+        (AbstractRemoteReaderServer) getReader(remoteReaderName);
 
-    // keep virtual reader if observable and has observers
-    Boolean unregisterVirtualReader = false;
+    // keep remote reader if observable and has observers
+    Boolean unregisterRemoteReader = false;
 
-    if (!(virtualReader instanceof RemoteServerObservableReader)) {
+    if (!(remoteReader instanceof ObservableRemoteReaderServer)) {
       // not a observable, remove it and unregister
-      unregisterVirtualReader = true;
-      readers.remove(virtualReader.getName());
+      unregisterRemoteReader = true;
+      readers.remove(remoteReader.getName());
     } else {
-      ServerVirtualObservableReader observableReader =
-          (ServerVirtualObservableReader) virtualReader;
+      ObservableRemoteReaderServerImpl observableReader =
+          (ObservableRemoteReaderServerImpl) remoteReader;
       if (observableReader.getMasterReader() != null) {
         // is observer and slave, remove it
-        readers.remove(virtualReader.getName());
+        readers.remove(remoteReader.getName());
         if (observableReader.countObservers() == 0) {
           // and master has no observer, remove and unregister master
           readers.remove(observableReader.getMasterReader().getName());
-          unregisterVirtualReader = true;
+          unregisterRemoteReader = true;
         }
       } else {
         // is master
         if (observableReader.countObservers() == 0) {
           // has no observer, remove it, unregister
-          readers.remove(virtualReader.getName());
-          unregisterVirtualReader = true;
+          readers.remove(remoteReader.getName());
+          unregisterRemoteReader = true;
         }
       }
     }
 
     JsonObject body = new JsonObject();
     body.addProperty("userOutputData", KeypleJsonParser.getParser().toJson(userOutputData));
-    body.addProperty("unregisterVirtualReader", unregisterVirtualReader);
+    body.addProperty("unregisterRemoteReader", unregisterRemoteReader);
 
     // Build the message
     MessageDto message =
         new MessageDto() //
             .setAction(MessageDto.Action.TERMINATE_SERVICE.name()) //
-            .setVirtualReaderName(virtualReaderName) //
-            .setSessionId(virtualReader.getSessionId()) //
-            .setClientNodeId(virtualReader.getClientNodeId()) //
+            .setRemoteReaderName(remoteReaderName) //
+            .setSessionId(remoteReader.getSessionId()) //
+            .setClientNodeId(remoteReader.getClientNodeId()) //
             .setBody(body.toString());
 
     // Send the message
@@ -183,9 +183,9 @@ final class RemoteServerPluginImpl extends AbstractRemotePlugin implements Remot
    * @since 1.0
    */
   @Override
-  public RemoteServerReader getReader(String name) throws KeypleReaderNotFoundException {
+  public RemoteReaderServer getReader(String name) throws KeypleReaderNotFoundException {
     Assert.getInstance().notNull(name, "reader name");
-    RemoteServerReader seReader = (RemoteServerReader) readers.get(name);
+    RemoteReaderServer seReader = (RemoteReaderServer) readers.get(name);
     if (seReader == null) {
       throw new KeypleReaderNotFoundException(name);
     }
@@ -263,12 +263,12 @@ final class RemoteServerPluginImpl extends AbstractRemotePlugin implements Remot
 
   /**
    * (private)<br>
-   * Create a server virtual reader based on incoming message. Can be an observable or not.
+   * Create a server remote reader based on incoming message. Can be an observable or not.
    *
    * @param message incoming message
-   * @return non null instance of AbstractServerVirtualReader
+   * @return non null instance of AbstractRemoteReaderServer
    */
-  private AbstractServerVirtualReader createMasterReader(MessageDto message) {
+  private AbstractRemoteReaderServer createMasterReader(MessageDto message) {
     final JsonObject body =
         KeypleJsonParser.getParser().fromJson(message.getBody(), JsonObject.class);
     final String serviceId = body.get("serviceId").getAsString();
@@ -277,35 +277,35 @@ final class RemoteServerPluginImpl extends AbstractRemotePlugin implements Remot
     final String initialCardContent =
         body.has("initialCardContent") ? body.get("initialCardContent").toString() : null;
     boolean isObservable = body.has("isObservable") && body.get("isObservable").getAsBoolean();
-    final String virtualReaderName = UUID.randomUUID().toString();
+    final String remoteReaderName = UUID.randomUUID().toString();
     final String sessionId = message.getSessionId();
     final String clientNodeId = message.getClientNodeId();
 
     if (logger.isTraceEnabled()) {
       logger.trace(
-          "[{}] Create a virtual reader {} with serviceId:{} and isObservable:{} for sessionId:{} for clientNodeId:{}",
+          "[{}] Create a remote reader {} with serviceId:{} and isObservable:{} for sessionId:{} for clientNodeId:{}",
           this.getName(),
-          virtualReaderName,
+          remoteReaderName,
           serviceId,
           isObservable,
           sessionId,
           clientNodeId);
     }
     if (isObservable) {
-      VirtualObservableReader virtualObservableReader =
-          new VirtualObservableReader(
+      ObservableRemoteReaderImpl observableRemoteReaderImpl =
+          new ObservableRemoteReaderImpl(
               getName(),
-              virtualReaderName,
+              remoteReaderName,
               getNode(),
               sessionId,
               clientNodeId,
               eventNotificationPool);
-      return new ServerVirtualObservableReader(
-          virtualObservableReader, serviceId, userInputData, initialCardContent, null);
+      return new ObservableRemoteReaderServerImpl(
+              observableRemoteReaderImpl, serviceId, userInputData, initialCardContent, null);
     } else {
-      VirtualReader virtualReader =
-          new VirtualReader(getName(), virtualReaderName, getNode(), sessionId, clientNodeId);
-      return new ServerVirtualReader(virtualReader, serviceId, userInputData, initialCardContent);
+      RemoteReaderImpl remoteReaderImpl =
+          new RemoteReaderImpl(getName(), remoteReaderName, getNode(), sessionId, clientNodeId);
+      return new RemoteReaderServerImpl(remoteReaderImpl, serviceId, userInputData, initialCardContent);
     }
   }
 
@@ -314,26 +314,26 @@ final class RemoteServerPluginImpl extends AbstractRemotePlugin implements Remot
    * Create a reader to handle the communication in the session of the event notification
    *
    * @param message incoming reader event message
-   * @return non null instance of a ServerVirtualObservableReader
+   * @return non null instance of a ObservableRemoteReaderServerImpl
    */
-  private ServerVirtualObservableReader createSlaveReader(MessageDto message) {
-    final ServerVirtualObservableReader virtualObservableReader =
-        (ServerVirtualObservableReader) getReader(message.getVirtualReaderName());
+  private ObservableRemoteReaderServerImpl createSlaveReader(MessageDto message) {
+    final ObservableRemoteReaderServerImpl remoteObservableReader =
+        (ObservableRemoteReaderServerImpl) getReader(message.getRemoteReaderName());
     final JsonObject body =
         KeypleJsonParser.getParser().fromJson(message.getBody(), JsonObject.class);
 
     String userInputData = body.has("userInputData") ? body.get("userInputData").toString() : null;
 
-    VirtualObservableReader virtualReader =
-        new VirtualObservableReader(
+    ObservableRemoteReaderImpl remoteReader =
+        new ObservableRemoteReaderImpl(
             getName(),
             UUID.randomUUID().toString(),
             getNode(),
             message.getSessionId(),
             message.getClientNodeId(),
             eventNotificationPool);
-    // create a temporary virtual reader for this event
-    return new ServerVirtualObservableReader(
-        virtualReader, null, userInputData, null, virtualObservableReader);
+    // create a temporary remote reader for this event
+    return new ObservableRemoteReaderServerImpl(
+        remoteReader, null, userInputData, null, remoteObservableReader);
   }
 }

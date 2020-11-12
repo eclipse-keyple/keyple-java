@@ -25,13 +25,13 @@ import org.slf4j.LoggerFactory;
 
 /**
  * (package-private)<br>
- * Abstract Virtual Reader
+ * Abstract Remote Reader
  *
  * <p>This object is a {@link AbstractReader} with additional features.
  */
-abstract class AbstractVirtualReader extends AbstractReader {
+abstract class AbstractRemoteReader extends AbstractReader {
 
-  private static final Logger logger = LoggerFactory.getLogger(AbstractVirtualReader.class);
+  private static final Logger logger = LoggerFactory.getLogger(AbstractRemoteReader.class);
 
   protected final AbstractNode node;
   protected final String localReaderName;
@@ -49,7 +49,7 @@ abstract class AbstractVirtualReader extends AbstractReader {
    * @param sessionId Session Id (can be null)
    * @param clientNodeId Client node Id (can be null)
    */
-  AbstractVirtualReader(
+  AbstractRemoteReader(
       String pluginName,
       String localReaderName,
       AbstractNode node,
@@ -193,7 +193,7 @@ abstract class AbstractVirtualReader extends AbstractReader {
         new MessageDto() //
             .setSessionId(sessionId != null ? sessionId : UUID.randomUUID().toString()) //
             .setAction(action.name()) //
-            .setVirtualReaderName(getName()) //
+            .setRemoteReaderName(getName()) //
             .setLocalReaderName(localReaderName) //
             .setClientNodeId(clientNodeId) //
             .setBody(body != null ? body.toString() : null);

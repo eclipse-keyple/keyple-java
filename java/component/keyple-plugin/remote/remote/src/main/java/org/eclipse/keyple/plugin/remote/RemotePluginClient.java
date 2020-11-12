@@ -16,9 +16,9 @@ import org.eclipse.keyple.core.service.PluginFactory;
 import org.eclipse.keyple.core.service.SmartCardService;
 
 /**
- * <b>Remote Client Plugin</b> API.
+ * <b>Remote Plugin Client</b> API.
  *
- * <p>This plugin must be used in the use case of the <b>Remote Client Plugin</b> configured
+ * <p>This plugin must be used in the use case of the <b>Remote Plugin Client</b> configured
  * <b>without plugin observation</b>.
  *
  * <p>It must be register by a <b>client</b> application installed on the terminal not having local
@@ -30,8 +30,8 @@ import org.eclipse.keyple.core.service.SmartCardService;
  *       RemoteClientPluginFactory} and <b>do not activate the plugin observation</b>.
  *   <li>To access the plugin, use one of the following utility methods :
  *       <ul>
- *         <li>For <b>Async</b> node configuration : {link RemoteClientUtils#getAsyncPlugin()}
- *         <li>For <b>Sync</b> node configuration : {link RemoteClientUtils#getSyncPlugin()}
+ *         <li>For <b>Async</b> node configuration : {link RemotePluginClientUtils#getAsyncPlugin()}
+ *         <li>For <b>Sync</b> node configuration : {link RemotePluginClientUtils#getSyncPlugin()}
  *       </ul>
  *   <li>To <b>unregister</b> the plugin, use the Keyple service method {@link
  *       SmartCardService#unregisterPlugin(String)} using the plugin name.
@@ -41,4 +41,4 @@ import org.eclipse.keyple.core.service.SmartCardService;
  *
  * @since 1.0
  */
-public interface RemoteClientPlugin extends Plugin {}
+public interface RemotePluginClient extends Plugin {}

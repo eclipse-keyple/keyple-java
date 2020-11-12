@@ -58,7 +58,7 @@ public class LocalServiceClientTest extends BaseLocalTest {
   ReaderEvent readerEvent;
   String pluginName = "mockPlugin";
   String serviceId = "serviceId";
-  String virtualReaderName = "virtualReaderName";
+  String remoteReaderName = "remoteReaderName";
   Gson parser;
 
   @Before
@@ -302,8 +302,8 @@ public class LocalServiceClientTest extends BaseLocalTest {
 
     // output is verified in eventFilter
 
-    // assert that virtual reader is unregister as required by the terminate service
-    assertThat(getVirtualReaders(localClientService)).hasSize(0);
+    // assert that remote reader is unregister as required by the terminate service
+    assertThat(getRemoteReaders(localClientService)).hasSize(0);
   }
 
   /*
@@ -312,9 +312,9 @@ public class LocalServiceClientTest extends BaseLocalTest {
    *
    * */
 
-  public static Map<String, String> getVirtualReaders(LocalServiceClient service) {
+  public static Map<String, String> getRemoteReaders(LocalServiceClient service) {
     try {
-      Field privateStringField = LocalServiceClientImpl.class.getDeclaredField("virtualReaders");
+      Field privateStringField = LocalServiceClientImpl.class.getDeclaredField("remoteReaders");
       privateStringField.setAccessible(true);
       return (Map<String, String>) privateStringField.get(service);
     } catch (IllegalAccessException e) {
@@ -411,14 +411,14 @@ public class LocalServiceClientTest extends BaseLocalTest {
   public MessageDto getTerminateDto(String sessionId, boolean unregister) {
     JsonObject body = new JsonObject();
     body.addProperty("userOutputData", parser.toJson(outputData, MyKeypleUserData.class));
-    body.addProperty("unregisterVirtualReader", parser.toJson(unregister, Boolean.class));
+    body.addProperty("unregisterRemoteReader", parser.toJson(unregister, Boolean.class));
     return new MessageDto()
         .setSessionId(sessionId) //
         .setAction(MessageDto.Action.TERMINATE_SERVICE.name()) //
         .setServerNodeId("serverNodeId") //
         .setClientNodeId("clientNodeId") //
         .setLocalReaderName(readerName)
-        .setVirtualReaderName(virtualReaderName)
+        .setRemoteReaderName(remoteReaderName)
         .setBody(body.toString());
   }
 }

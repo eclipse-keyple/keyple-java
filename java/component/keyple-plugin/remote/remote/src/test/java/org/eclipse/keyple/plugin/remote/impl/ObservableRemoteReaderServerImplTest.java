@@ -30,14 +30,14 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
+public class ObservableRemoteReaderServerImplTest extends RemoteServerBaseTest {
 
   static final String serviceId = "serviceId";
   static final String userInputDataJson = "userInputDataJson";
   static final String initialCardContentJson = "initialCardContentJson";
 
-  VirtualObservableReader virtualObservableReaderMocked;
-  ServerVirtualObservableReader reader;
+  ObservableRemoteReaderImpl observableRemoteReaderImplMocked;
+  ObservableRemoteReaderServerImpl reader;
 
   private static class MyMatchingCard extends AbstractSmartCard {
 
@@ -48,12 +48,12 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
 
   @Before
   public void setUp() {
-    virtualObservableReaderMocked = mock(VirtualObservableReader.class);
+    observableRemoteReaderImplMocked = mock(ObservableRemoteReaderImpl.class);
     pluginObserver = new MockPluginObserver(true);
     registerSyncPlugin();
     reader =
-        new ServerVirtualObservableReader(
-            virtualObservableReaderMocked,
+        new ObservableRemoteReaderServerImpl(
+                observableRemoteReaderImplMocked,
             serviceId,
             userInputDataJson,
             initialCardContentJson,
@@ -66,7 +66,7 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
   }
 
   @Test
-  public void transmitCardRequest_shouldDelegateMethodToVirtualReader() {
+  public void transmitCardRequest_shouldDelegateMethodToRemoteReader() {
 
     // init request
     CardRequest cardRequest = SampleFactory.getACardRequest();
@@ -75,15 +75,15 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
     // init response
     CardResponse cardResponse = SampleFactory.getACardResponse();
     doReturn(cardResponse)
-        .when(virtualObservableReaderMocked)
+        .when(observableRemoteReaderImplMocked)
         .transmitCardRequest(cardRequest, channelControl);
 
     // execute
     CardResponse cardResponseReturned = reader.transmitCardRequest(cardRequest, channelControl);
 
     // verify
-    verify(virtualObservableReaderMocked).transmitCardRequest(cardRequest, channelControl);
-    verifyNoMoreInteractions(virtualObservableReaderMocked);
+    verify(observableRemoteReaderImplMocked).transmitCardRequest(cardRequest, channelControl);
+    verifyNoMoreInteractions(observableRemoteReaderImplMocked);
     assertThat(cardResponseReturned).isEqualToComparingFieldByField(cardResponse);
   }
 
@@ -96,7 +96,7 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
 
     // init response
     doThrow(new KeypleReaderIOException("test"))
-        .when(virtualObservableReaderMocked)
+        .when(observableRemoteReaderImplMocked)
         .transmitCardRequest(cardRequest, channelControl);
 
     // execute
@@ -104,7 +104,7 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
   }
 
   @Test
-  public void transmitCardSelectionRequests_shouldDelegateMethodToVirtualReader() {
+  public void transmitCardSelectionRequests_shouldDelegateMethodToRemoteReader() {
 
     // init request
     List<CardSelectionRequest> cardSelectionRequests =
@@ -115,7 +115,7 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
     // init response
     List<CardSelectionResponse> cardResponses = SampleFactory.getCompleteResponseList();
     doReturn(cardResponses)
-        .when(virtualObservableReaderMocked)
+        .when(observableRemoteReaderImplMocked)
         .transmitCardSelectionRequests(
             cardSelectionRequests, multiCardRequestProcessing, channelControl);
 
@@ -125,10 +125,10 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
             cardSelectionRequests, multiCardRequestProcessing, channelControl);
 
     // verify
-    verify(virtualObservableReaderMocked)
+    verify(observableRemoteReaderImplMocked)
         .transmitCardSelectionRequests(
             cardSelectionRequests, multiCardRequestProcessing, channelControl);
-    verifyNoMoreInteractions(virtualObservableReaderMocked);
+    verifyNoMoreInteractions(observableRemoteReaderImplMocked);
     assertThat(cardResponsesReturned).hasSameElementsAs(cardResponses);
   }
 
@@ -143,7 +143,7 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
 
     // init response
     doThrow(new KeypleReaderIOException("test"))
-        .when(virtualObservableReaderMocked)
+        .when(observableRemoteReaderImplMocked)
         .transmitCardSelectionRequests(
             cardSelectionRequests, multiCardRequestProcessing, channelControl);
 
@@ -153,17 +153,17 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
   }
 
   @Test
-  public void isCardPresent_shouldDelegateMethodToVirtualReader() {
+  public void isCardPresent_shouldDelegateMethodToRemoteReader() {
 
     // init
-    doReturn(true).when(virtualObservableReaderMocked).isCardPresent();
+    doReturn(true).when(observableRemoteReaderImplMocked).isCardPresent();
 
     // execute
     boolean result = reader.isCardPresent();
 
     // verify
-    verify(virtualObservableReaderMocked).isCardPresent();
-    verifyNoMoreInteractions(virtualObservableReaderMocked);
+    verify(observableRemoteReaderImplMocked).isCardPresent();
+    verifyNoMoreInteractions(observableRemoteReaderImplMocked);
     assertThat(result).isTrue();
   }
 
@@ -172,7 +172,7 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
 
     // init
     doThrow(new KeypleReaderIOException("test"))
-        .when(virtualObservableReaderMocked)
+        .when(observableRemoteReaderImplMocked)
         .isCardPresent();
 
     // execute
@@ -181,18 +181,18 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
 
   @SuppressWarnings("ResultOfMethodCallIgnored")
   @Test
-  public void getName_shouldDelegateMethodToVirtualReader() {
+  public void getName_shouldDelegateMethodToRemoteReader() {
 
     // init response
     String name = "name1";
-    doReturn(name).when(virtualObservableReaderMocked).getName();
+    doReturn(name).when(observableRemoteReaderImplMocked).getName();
 
     // execute
     String result = reader.getName();
 
     // verify
-    verify(virtualObservableReaderMocked).getName();
-    verifyNoMoreInteractions(virtualObservableReaderMocked);
+    verify(observableRemoteReaderImplMocked).getName();
+    verifyNoMoreInteractions(observableRemoteReaderImplMocked);
     assertThat(result).isSameAs(name);
   }
 
@@ -203,7 +203,7 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
     String result = reader.getServiceId();
 
     // verify
-    verifyZeroInteractions(virtualObservableReaderMocked);
+    verifyZeroInteractions(observableRemoteReaderImplMocked);
     assertThat(result).isSameAs(serviceId);
   }
 
@@ -219,8 +219,8 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
 
     // init
     reader =
-        new ServerVirtualObservableReader(
-            virtualObservableReaderMocked, serviceId, null, initialCardContentJson, null);
+        new ObservableRemoteReaderServerImpl(
+                observableRemoteReaderImplMocked, serviceId, null, initialCardContentJson, null);
 
     // execute
     String result = reader.getUserInputData(String.class);
@@ -243,7 +243,7 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
   public void getUserInputData_whenClassIsNotConform_shouldThrowRuntimeException() {
 
     // execute
-    reader.getUserInputData(VirtualReader.class);
+    reader.getUserInputData(RemoteReaderImpl.class);
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -258,8 +258,8 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
 
     // init
     reader =
-        new ServerVirtualObservableReader(
-            virtualObservableReaderMocked, serviceId, userInputDataJson, null, null);
+        new ObservableRemoteReaderServerImpl(
+                observableRemoteReaderImplMocked, serviceId, userInputDataJson, null, null);
 
     // execute
     AbstractSmartCard result = reader.getInitialCardContent(AbstractSmartCard.class);
@@ -278,8 +278,8 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
     String initialCardContentJson = KeypleJsonParser.getParser().toJson(matchingCard);
 
     reader =
-        new ServerVirtualObservableReader(
-            virtualObservableReaderMocked,
+        new ObservableRemoteReaderServerImpl(
+                observableRemoteReaderImplMocked,
             serviceId,
             userInputDataJson,
             initialCardContentJson,
@@ -293,20 +293,20 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
   }
 
   @Test
-  public void notifyObservers_shouldDelegateMethodToVirtualReader() {
+  public void notifyObservers_shouldDelegateMethodToRemoteReader() {
 
     // init request
     ReaderEvent event = mock(ReaderEvent.class);
 
     // init response
-    doNothing().when(virtualObservableReaderMocked).notifyObservers(event);
+    doNothing().when(observableRemoteReaderImplMocked).notifyObservers(event);
 
     // execute
     reader.notifyObservers(event);
 
     // verify
-    verify(virtualObservableReaderMocked).notifyObservers(event);
-    verifyNoMoreInteractions(virtualObservableReaderMocked);
+    verify(observableRemoteReaderImplMocked).notifyObservers(event);
+    verifyNoMoreInteractions(observableRemoteReaderImplMocked);
   }
 
   @Test(expected = KeypleReaderIOException.class)
@@ -317,7 +317,7 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
 
     // init response
     doThrow(new KeypleReaderIOException("test"))
-        .when(virtualObservableReaderMocked)
+        .when(observableRemoteReaderImplMocked)
         .notifyObservers(event);
 
     // execute
@@ -325,20 +325,20 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
   }
 
   @Test
-  public void addObserver_shouldDelegateMethodToVirtualReader() {
+  public void addObserver_shouldDelegateMethodToRemoteReader() {
 
     // init request
     ObservableReader.ReaderObserver observer = mock(ObservableReader.ReaderObserver.class);
 
     // init response
-    doNothing().when(virtualObservableReaderMocked).addObserver(observer);
+    doNothing().when(observableRemoteReaderImplMocked).addObserver(observer);
 
     // execute
     reader.addObserver(observer);
 
     // verify
-    verify(virtualObservableReaderMocked).addObserver(observer);
-    verifyNoMoreInteractions(virtualObservableReaderMocked);
+    verify(observableRemoteReaderImplMocked).addObserver(observer);
+    verifyNoMoreInteractions(observableRemoteReaderImplMocked);
   }
 
   @Test(expected = KeypleReaderIOException.class)
@@ -349,7 +349,7 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
 
     // init response
     doThrow(new KeypleReaderIOException("test"))
-        .when(virtualObservableReaderMocked)
+        .when(observableRemoteReaderImplMocked)
         .addObserver(observer);
 
     // execute
@@ -357,20 +357,20 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
   }
 
   @Test
-  public void removeObserver_shouldDelegateMethodToVirtualReader() {
+  public void removeObserver_shouldDelegateMethodToRemoteReader() {
 
     // init request
     ObservableReader.ReaderObserver observer = mock(ObservableReader.ReaderObserver.class);
 
     // init response
-    doNothing().when(virtualObservableReaderMocked).removeObserver(observer);
+    doNothing().when(observableRemoteReaderImplMocked).removeObserver(observer);
 
     // execute
     reader.removeObserver(observer);
 
     // verify
-    verify(virtualObservableReaderMocked).removeObserver(observer);
-    verifyNoMoreInteractions(virtualObservableReaderMocked);
+    verify(observableRemoteReaderImplMocked).removeObserver(observer);
+    verifyNoMoreInteractions(observableRemoteReaderImplMocked);
   }
 
   @Test(expected = KeypleReaderIOException.class)
@@ -380,7 +380,7 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
 
     // init response
     doThrow(new KeypleReaderIOException("test"))
-        .when(virtualObservableReaderMocked)
+        .when(observableRemoteReaderImplMocked)
         .removeObserver(observer);
 
     // execute
@@ -388,17 +388,17 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
   }
 
   @Test
-  public void clearObservers_shouldDelegateMethodToVirtualReader() {
+  public void clearObservers_shouldDelegateMethodToRemoteReader() {
 
     // init response
-    doNothing().when(virtualObservableReaderMocked).clearObservers();
+    doNothing().when(observableRemoteReaderImplMocked).clearObservers();
 
     // execute
     reader.clearObservers();
 
     // verify
-    verify(virtualObservableReaderMocked).clearObservers();
-    verifyNoMoreInteractions(virtualObservableReaderMocked);
+    verify(observableRemoteReaderImplMocked).clearObservers();
+    verifyNoMoreInteractions(observableRemoteReaderImplMocked);
   }
 
   @Test(expected = KeypleReaderIOException.class)
@@ -406,7 +406,7 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
 
     // init response
     doThrow(new KeypleReaderIOException("test"))
-        .when(virtualObservableReaderMocked)
+        .when(observableRemoteReaderImplMocked)
         .clearObservers();
 
     // execute
@@ -414,18 +414,18 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
   }
 
   @Test
-  public void countObservers_shouldDelegateMethodToVirtualReader() {
+  public void countObservers_shouldDelegateMethodToRemoteReader() {
 
     // init response
     int nbObservers = 2;
-    doReturn(nbObservers).when(virtualObservableReaderMocked).countObservers();
+    doReturn(nbObservers).when(observableRemoteReaderImplMocked).countObservers();
 
     // execute
     int result = reader.countObservers();
 
     // verify
-    verify(virtualObservableReaderMocked).countObservers();
-    verifyNoMoreInteractions(virtualObservableReaderMocked);
+    verify(observableRemoteReaderImplMocked).countObservers();
+    verifyNoMoreInteractions(observableRemoteReaderImplMocked);
     assertThat(result).isEqualTo(nbObservers);
   }
 
@@ -434,7 +434,7 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
 
     // init response
     doThrow(new KeypleReaderIOException("test"))
-        .when(virtualObservableReaderMocked)
+        .when(observableRemoteReaderImplMocked)
         .countObservers();
 
     // execute
@@ -442,20 +442,20 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
   }
 
   @Test
-  public void startCardDetection_shouldDelegateMethodToVirtualReader() {
+  public void startCardDetection_shouldDelegateMethodToRemoteReader() {
 
     // init request
     ObservableReader.PollingMode pollingMode = ObservableReader.PollingMode.REPEATING;
 
     // init response
-    doNothing().when(virtualObservableReaderMocked).startCardDetection(pollingMode);
+    doNothing().when(observableRemoteReaderImplMocked).startCardDetection(pollingMode);
 
     // execute
     reader.startCardDetection(pollingMode);
 
     // verify
-    verify(virtualObservableReaderMocked).startCardDetection(pollingMode);
-    verifyNoMoreInteractions(virtualObservableReaderMocked);
+    verify(observableRemoteReaderImplMocked).startCardDetection(pollingMode);
+    verifyNoMoreInteractions(observableRemoteReaderImplMocked);
   }
 
   @Test(expected = KeypleReaderIOException.class)
@@ -466,7 +466,7 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
 
     // init response
     doThrow(new KeypleReaderIOException("test"))
-        .when(virtualObservableReaderMocked)
+        .when(observableRemoteReaderImplMocked)
         .startCardDetection(pollingMode);
 
     // execute
@@ -474,17 +474,17 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
   }
 
   @Test
-  public void stopCardDetection_shouldDelegateMethodToVirtualReader() {
+  public void stopCardDetection_shouldDelegateMethodToRemoteReader() {
 
     // init response
-    doNothing().when(virtualObservableReaderMocked).stopCardDetection();
+    doNothing().when(observableRemoteReaderImplMocked).stopCardDetection();
 
     // execute
     reader.stopCardDetection();
 
     // verify
-    verify(virtualObservableReaderMocked).stopCardDetection();
-    verifyNoMoreInteractions(virtualObservableReaderMocked);
+    verify(observableRemoteReaderImplMocked).stopCardDetection();
+    verifyNoMoreInteractions(observableRemoteReaderImplMocked);
   }
 
   @Test(expected = KeypleReaderIOException.class)
@@ -492,7 +492,7 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
 
     // init response
     doThrow(new KeypleReaderIOException("test"))
-        .when(virtualObservableReaderMocked)
+        .when(observableRemoteReaderImplMocked)
         .stopCardDetection();
 
     // execute
@@ -500,7 +500,7 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
   }
 
   @Test
-  public void setDefaultSelectionRequest2P_shouldDelegateMethodToVirtualReader() {
+  public void setDefaultSelectionRequest2P_shouldDelegateMethodToRemoteReader() {
 
     // init request
     AbstractDefaultSelectionsRequest defaultSelectionsRequest =
@@ -509,16 +509,16 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
 
     // init response
     doNothing()
-        .when(virtualObservableReaderMocked)
+        .when(observableRemoteReaderImplMocked)
         .setDefaultSelectionRequest(defaultSelectionsRequest, notificationMode);
 
     // execute
     reader.setDefaultSelectionRequest(defaultSelectionsRequest, notificationMode);
 
     // verify
-    verify(virtualObservableReaderMocked)
+    verify(observableRemoteReaderImplMocked)
         .setDefaultSelectionRequest(defaultSelectionsRequest, notificationMode);
-    verifyNoMoreInteractions(virtualObservableReaderMocked);
+    verifyNoMoreInteractions(observableRemoteReaderImplMocked);
   }
 
   @Test(expected = KeypleReaderIOException.class)
@@ -531,7 +531,7 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
 
     // init response
     doThrow(new KeypleReaderIOException("test"))
-        .when(virtualObservableReaderMocked)
+        .when(observableRemoteReaderImplMocked)
         .setDefaultSelectionRequest(defaultSelectionsRequest, notificationMode);
 
     // execute
@@ -539,7 +539,7 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
   }
 
   @Test
-  public void setDefaultSelectionRequest3P_shouldDelegateMethodToVirtualReader() {
+  public void setDefaultSelectionRequest3P_shouldDelegateMethodToRemoteReader() {
 
     // init request
     AbstractDefaultSelectionsRequest defaultSelectionsRequest =
@@ -549,16 +549,16 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
 
     // init response
     doNothing()
-        .when(virtualObservableReaderMocked)
+        .when(observableRemoteReaderImplMocked)
         .setDefaultSelectionRequest(defaultSelectionsRequest, notificationMode, pollingMode);
 
     // execute
     reader.setDefaultSelectionRequest(defaultSelectionsRequest, notificationMode, pollingMode);
 
     // verify
-    verify(virtualObservableReaderMocked)
+    verify(observableRemoteReaderImplMocked)
         .setDefaultSelectionRequest(defaultSelectionsRequest, notificationMode, pollingMode);
-    verifyNoMoreInteractions(virtualObservableReaderMocked);
+    verifyNoMoreInteractions(observableRemoteReaderImplMocked);
   }
 
   @Test(expected = KeypleReaderIOException.class)
@@ -572,7 +572,7 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
 
     // init response
     doThrow(new KeypleReaderIOException("test"))
-        .when(virtualObservableReaderMocked)
+        .when(observableRemoteReaderImplMocked)
         .setDefaultSelectionRequest(defaultSelectionsRequest, notificationMode, pollingMode);
 
     // execute
@@ -580,17 +580,17 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
   }
 
   @Test
-  public void finalizeCardProcessing_shouldDelegateMethodToVirtualReader() {
+  public void finalizeCardProcessing_shouldDelegateMethodToRemoteReader() {
 
     // init response
-    doNothing().when(virtualObservableReaderMocked).finalizeCardProcessing();
+    doNothing().when(observableRemoteReaderImplMocked).finalizeCardProcessing();
 
     // execute
     reader.finalizeCardProcessing();
 
     // verify
-    verify(virtualObservableReaderMocked).finalizeCardProcessing();
-    verifyNoMoreInteractions(virtualObservableReaderMocked);
+    verify(observableRemoteReaderImplMocked).finalizeCardProcessing();
+    verifyNoMoreInteractions(observableRemoteReaderImplMocked);
   }
 
   @Test(expected = KeypleReaderIOException.class)
@@ -598,7 +598,7 @@ public class ServerVirtualObservableReaderTest extends RemoteServerBaseTest {
 
     // init response
     doThrow(new KeypleReaderIOException("test"))
-        .when(virtualObservableReaderMocked)
+        .when(observableRemoteReaderImplMocked)
         .finalizeCardProcessing();
 
     // execute

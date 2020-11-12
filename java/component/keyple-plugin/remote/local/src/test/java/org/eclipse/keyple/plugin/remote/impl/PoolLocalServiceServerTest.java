@@ -46,7 +46,7 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
   Gson parser;
   String groupReference = "1";
   final String clientNodeId = "clientNodeId1";
-  final String virtualReaderName = "virtualReaderName1";
+  final String remoteReaderName = "remoteReaderName1";
   final String sessionId = "session1";
   final SortedSet<String> groupReferences = Sets.newTreeSet(groupReference);
   final String poolPluginName = "poolPluginMock";
@@ -284,7 +284,7 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
         .setClientNodeId(clientNodeId)
         .setSessionId(sessionId)
         .setLocalReaderName(readerName)
-        .setVirtualReaderName(virtualReaderName)
+        .setRemoteReaderName(remoteReaderName)
         .setBody(null);
   }
 

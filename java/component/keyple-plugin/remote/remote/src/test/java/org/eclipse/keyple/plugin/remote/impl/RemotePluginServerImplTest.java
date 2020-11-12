@@ -21,20 +21,20 @@ import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
-import org.eclipse.keyple.plugin.remote.RemoteServerObservableReader;
+import org.eclipse.keyple.plugin.remote.ObservableRemoteReaderServer;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
-public class RemoteServerPluginImplTest extends RemoteServerBaseTest {
+public class RemotePluginServerImplTest extends RemoteServerBaseTest {
 
   @Before
   public void setUp() {
     pluginObserver = new MockPluginObserver(true);
     readerObserver = new MockReaderObserver();
     messageArgumentCaptor = ArgumentCaptor.forClass(MessageDto.class);
-    remotePlugin = Mockito.spy(new RemoteServerPluginImpl(remotePluginName, eventNotificationPool));
+    remotePlugin = Mockito.spy(new RemotePluginServerImpl(remotePluginName, eventNotificationPool));
     remotePlugin.addObserver(pluginObserver);
     node = Mockito.mock(AbstractNode.class);
     doReturn(node).when(remotePlugin).getNode();
@@ -50,30 +50,30 @@ public class RemoteServerPluginImplTest extends RemoteServerBaseTest {
   public void registerSyncPlugin() {
     SmartCardService.getInstance()
         .registerPlugin(
-            RemoteServerPluginFactory.builder()
+            RemotePluginServerFactory.builder()
                 .withSyncNode()
                 .withPluginObserver(pluginObserver)
                 .usingDefaultEventNotificationPool()
                 .build());
-    assertThat(RemoteServerUtils.getRemotePlugin()).isNotNull();
-    assertThat(RemoteServerUtils.getSyncNode()).isNotNull();
+    assertThat(RemotePluginServerUtils.getRemotePlugin()).isNotNull();
+    assertThat(RemotePluginServerUtils.getSyncNode()).isNotNull();
 
-    SmartCardService.getInstance().unregisterPlugin(RemoteServerPluginFactory.DEFAULT_PLUGIN_NAME);
+    SmartCardService.getInstance().unregisterPlugin(RemotePluginServerFactory.DEFAULT_PLUGIN_NAME);
   }
 
   @Test
   public void registerAsyncPlugin() {
     SmartCardService.getInstance()
         .registerPlugin(
-            RemoteServerPluginFactory.builder()
+            RemotePluginServerFactory.builder()
                 .withAsyncNode(Mockito.mock(AsyncEndpointServer.class))
                 .withPluginObserver(pluginObserver)
                 .usingDefaultEventNotificationPool()
                 .build());
-    assertThat(RemoteServerUtils.getRemotePlugin()).isNotNull();
-    assertThat(RemoteServerUtils.getAsyncNode()).isNotNull();
+    assertThat(RemotePluginServerUtils.getRemotePlugin()).isNotNull();
+    assertThat(RemotePluginServerUtils.getAsyncNode()).isNotNull();
 
-    SmartCardService.getInstance().unregisterPlugin(RemoteServerPluginFactory.DEFAULT_PLUGIN_NAME);
+    SmartCardService.getInstance().unregisterPlugin(RemotePluginServerFactory.DEFAULT_PLUGIN_NAME);
   }
 
   @Test
@@ -88,37 +88,37 @@ public class RemoteServerPluginImplTest extends RemoteServerBaseTest {
   }
 
   @Test
-  public void onMessage_executeRemoteService_createVirtualReader_shouldRaisePluginEvent() {
+  public void onMessage_executeRemoteService_createRemoteReader_shouldRaisePluginEvent() {
     String sessionId = UUID.randomUUID().toString();
     MessageDto message = executeRemoteServiceMessage(sessionId, false);
     remotePlugin.onMessage(message);
-    AbstractServerVirtualReader virtualReader =
-        (AbstractServerVirtualReader) remotePlugin.getReaders().values().iterator().next();
-    assertThat(virtualReader).isOfAnyClassIn(ServerVirtualReader.class);
-    assertThat(virtualReader).isNotExactlyInstanceOf(ObservableReader.class);
-    assertThat(virtualReader.getServiceId()).isEqualTo(serviceId);
-    assertThat(virtualReader.getName()).isNotEmpty();
+    AbstractRemoteReaderServer remoteReader =
+        (AbstractRemoteReaderServer) remotePlugin.getReaders().values().iterator().next();
+    assertThat(remoteReader).isOfAnyClassIn(RemoteReaderServerImpl.class);
+    assertThat(remoteReader).isNotExactlyInstanceOf(ObservableReader.class);
+    assertThat(remoteReader.getServiceId()).isEqualTo(serviceId);
+    assertThat(remoteReader.getName()).isNotEmpty();
     await().atMost(1, TimeUnit.SECONDS).until(validReaderConnectEvent());
   }
 
   @Test
   public void
-      onMessage_executeRemoteService_createObservableVirtualReader_shouldRaisePluginEvent() {
+      onMessage_executeRemoteService_createObservableRemoteReader_shouldRaisePluginEvent() {
     String sessionId = UUID.randomUUID().toString();
     MessageDto message = executeRemoteServiceMessage(sessionId, true);
     remotePlugin.onMessage(message);
-    ServerVirtualObservableReader virtualReader =
-        (ServerVirtualObservableReader) remotePlugin.getReaders().values().iterator().next();
-    assertThat(virtualReader).isOfAnyClassIn(ServerVirtualObservableReader.class);
-    assertThat(virtualReader.getServiceId()).isEqualTo(serviceId);
-    assertThat(virtualReader.getName()).isNotEmpty();
+    ObservableRemoteReaderServerImpl remoteReader =
+        (ObservableRemoteReaderServerImpl) remotePlugin.getReaders().values().iterator().next();
+    assertThat(remoteReader).isOfAnyClassIn(ObservableRemoteReaderServerImpl.class);
+    assertThat(remoteReader.getServiceId()).isEqualTo(serviceId);
+    assertThat(remoteReader.getName()).isNotEmpty();
     await().atMost(1, TimeUnit.SECONDS).until(validReaderConnectEvent());
   }
 
   @Test
-  public void terminateService_onVirtualReader_withObserver_doNotdeleteVirtualReader() {
+  public void terminateService_onRemoteReader_withObserver_doNotdeleteRemoteReader() {
 
-    // executing remote service creates a virtual reader
+    // executing remote service creates a remote reader
     String sessionId0 = UUID.randomUUID().toString();
     remotePlugin.onMessage(executeRemoteServiceMessage(sessionId0, true));
     await().atMost(1, TimeUnit.SECONDS).until(validReaderConnectEvent());
@@ -132,13 +132,13 @@ public class RemoteServerPluginImplTest extends RemoteServerBaseTest {
   }
 
   @Test
-  public void terminateService_onVirtualReader_withoutObserver_shouldDeleteVirtualReader() {
+  public void terminateService_onRemoteReader_withoutObserver_shouldDeleteRemoteReader() {
     // do not attach a readerObserver
     remotePlugin.clearObservers();
     pluginObserver = new MockPluginObserver(false);
     remotePlugin.addObserver(pluginObserver);
 
-    // executing a remote service creates a virtual reader
+    // executing a remote service creates a remote reader
     String sessionId0 = UUID.randomUUID().toString();
     remotePlugin.onMessage(executeRemoteServiceMessage(sessionId0, true));
     await().atMost(1, TimeUnit.SECONDS).until(validReaderConnectEvent());
@@ -161,34 +161,34 @@ public class RemoteServerPluginImplTest extends RemoteServerBaseTest {
     remotePlugin.onMessage(executeRemoteServiceMessage(sessionId0, true));
     await().atMost(1, TimeUnit.SECONDS).until(validReaderConnectEvent());
 
-    assertThat(remotePlugin.getReaders()).hasSize(1); // one master virtual reader
+    assertThat(remotePlugin.getReaders()).hasSize(1); // one master remote reader
 
-    // get the virtualReader name
-    String virtualReaderName = remotePlugin.getReaders().values().iterator().next().getName();
+    // get the remoteReader name
+    String remoteReaderName = remotePlugin.getReaders().values().iterator().next().getName();
 
     // send a SE_INSERTED event (1)
-    MessageDto readerEventMessage = readerEventMessage(sessionId1, virtualReaderName);
+    MessageDto readerEventMessage = readerEventMessage(sessionId1, remoteReaderName);
     remotePlugin.onMessage(readerEventMessage);
 
     // validate the SE_INSERTED event (1)
-    await().atMost(1, TimeUnit.SECONDS).until(validSeInsertedEvent(virtualReaderName, 1));
+    await().atMost(1, TimeUnit.SECONDS).until(validSeInsertedEvent(remoteReaderName, 1));
 
     assertThat(remotePlugin.getReaders())
-        .hasSize(2); // one master virtual reader, one slave virtual reader
+        .hasSize(2); // one master remote reader, one slave remote reader
 
     // send another SE_INSERTED event (2)
-    MessageDto readerEventMessage2 = readerEventMessage(sessionId2, virtualReaderName);
+    MessageDto readerEventMessage2 = readerEventMessage(sessionId2, remoteReaderName);
     remotePlugin.onMessage(readerEventMessage2);
 
     // validate the SE_INSERTED event (2)
-    await().atMost(1, TimeUnit.SECONDS).until(validSeInsertedEvent(virtualReaderName, 2));
+    await().atMost(1, TimeUnit.SECONDS).until(validSeInsertedEvent(remoteReaderName, 2));
 
     assertThat(remotePlugin.getReaders())
-        .hasSize(3); // one master virtual reader, two slave virtual readers
+        .hasSize(3); // one master remote reader, two slave remote readers
   }
 
   @Test
-  public void terminateService_onSlaveReader_shouldSendOutput_keepVirtualReader() {
+  public void terminateService_onSlaveReader_shouldSendOutput_keepRemoteReader() {
     String sessionId0 = UUID.randomUUID().toString();
     String sessionId1 = UUID.randomUUID().toString();
 
@@ -196,21 +196,21 @@ public class RemoteServerPluginImplTest extends RemoteServerBaseTest {
     remotePlugin.onMessage(executeRemoteServiceMessage(sessionId0, true));
     await().atMost(1, TimeUnit.SECONDS).until(validReaderConnectEvent());
 
-    // get the virtualReader name
-    String virtualReaderName = remotePlugin.getReaders().values().iterator().next().getName();
+    // get the remoteReader name
+    String remoteReaderName = remotePlugin.getReaders().values().iterator().next().getName();
 
     // send a SE_INSERTED event (1)
-    MessageDto readerEventMessage = readerEventMessage(sessionId1, virtualReaderName);
+    MessageDto readerEventMessage = readerEventMessage(sessionId1, remoteReaderName);
     remotePlugin.onMessage(readerEventMessage);
 
     // validate the SE_INSERTED event (1)
-    await().atMost(1, TimeUnit.SECONDS).until(validSeInsertedEvent(virtualReaderName, 1));
-    assertThat(remotePlugin.getReaders()).hasSize(2); // one virtual reader, one session reader
+    await().atMost(1, TimeUnit.SECONDS).until(validSeInsertedEvent(remoteReaderName, 1));
+    assertThat(remotePlugin.getReaders()).hasSize(2); // one remote reader, one session reader
 
     // terminate service on slave reader
     readerObserver.terminateService(userOutputData);
     MessageDto terminateServiceMsg = messageArgumentCaptor.getValue();
-    assertThat(terminateServiceMsg.getVirtualReaderName()).isNotEqualTo(virtualReaderName);
+    assertThat(terminateServiceMsg.getRemoteReaderName()).isNotEqualTo(remoteReaderName);
     assertThat(terminateServiceMsg.getSessionId()).isEqualTo(sessionId1);
     validateTerminateServiceResponse(terminateServiceMsg, false);
 
@@ -218,7 +218,7 @@ public class RemoteServerPluginImplTest extends RemoteServerBaseTest {
   }
 
   @Test
-  public void terminateService_onSlaveReader_shouldSendOutput_unregisterVirtualReader() {
+  public void terminateService_onSlaveReader_shouldSendOutput_unregisterRemoteReader() {
     String sessionId0 = UUID.randomUUID().toString();
     String sessionId1 = UUID.randomUUID().toString();
 
@@ -226,26 +226,26 @@ public class RemoteServerPluginImplTest extends RemoteServerBaseTest {
     remotePlugin.onMessage(executeRemoteServiceMessage(sessionId0, true));
     await().atMost(1, TimeUnit.SECONDS).until(validReaderConnectEvent());
 
-    // get the virtualReader name
-    String virtualReaderName = remotePlugin.getReaders().values().iterator().next().getName();
+    // get the remoteReader name
+    String remoteReaderName = remotePlugin.getReaders().values().iterator().next().getName();
 
     // send a SE_INSERTED event (1)
-    MessageDto readerEventMessage = readerEventMessage(sessionId1, virtualReaderName);
+    MessageDto readerEventMessage = readerEventMessage(sessionId1, remoteReaderName);
     remotePlugin.onMessage(readerEventMessage);
 
     // validate the SE_INSERTED event (1)
-    await().atMost(1, TimeUnit.SECONDS).until(validSeInsertedEvent(virtualReaderName, 1));
-    assertThat(remotePlugin.getReaders()).hasSize(2); // one virtual reader, one session reader
+    await().atMost(1, TimeUnit.SECONDS).until(validSeInsertedEvent(remoteReaderName, 1));
+    assertThat(remotePlugin.getReaders()).hasSize(2); // one remote reader, one session reader
 
-    // remove observers in virtual reader
-    RemoteServerObservableReader virtualReader =
-        (RemoteServerObservableReader) remotePlugin.getReader(virtualReaderName);
-    virtualReader.clearObservers();
+    // remove observers in remote reader
+    ObservableRemoteReaderServer remoteReader =
+        (ObservableRemoteReaderServer) remotePlugin.getReader(remoteReaderName);
+    remoteReader.clearObservers();
 
     // terminate service on slave reader
     readerObserver.terminateService(userOutputData);
     MessageDto terminateServiceMsg = messageArgumentCaptor.getValue();
-    assertThat(terminateServiceMsg.getVirtualReaderName()).isNotEqualTo(virtualReaderName);
+    assertThat(terminateServiceMsg.getRemoteReaderName()).isNotEqualTo(remoteReaderName);
     assertThat(terminateServiceMsg.getSessionId()).isEqualTo(sessionId1);
     validateTerminateServiceResponse(terminateServiceMsg, true);
 

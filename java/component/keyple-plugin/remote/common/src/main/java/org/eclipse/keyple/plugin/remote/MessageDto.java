@@ -30,7 +30,7 @@ public class MessageDto {
   private String clientNodeId;
   private String serverNodeId;
   private String localReaderName;
-  private String virtualReaderName;
+  private String remoteReaderName;
   private String body;
 
   /**
@@ -79,7 +79,7 @@ public class MessageDto {
     clientNodeId = from.getClientNodeId();
     serverNodeId = from.getServerNodeId();
     localReaderName = from.getLocalReaderName();
-    virtualReaderName = from.getVirtualReaderName();
+    remoteReaderName = from.getRemoteReaderName();
     body = from.getBody();
   }
 
@@ -200,24 +200,24 @@ public class MessageDto {
   }
 
   /**
-   * Gets the name of the virtual reader associated to the transaction.
+   * Gets the name of the remote reader associated to the transaction.
    *
    * @return a null string in case of a discovering readers call.
    * @since 1.0
    */
-  public final String getVirtualReaderName() {
-    return virtualReaderName;
+  public final String getRemoteReaderName() {
+    return remoteReaderName;
   }
 
   /**
    * This setter method must only be used during the deserialization process.
    *
-   * @param virtualReaderName The virtual reader name to set.
+   * @param remoteReaderName The remote reader name to set.
    * @return the object instance.
    * @since 1.0
    */
-  public final MessageDto setVirtualReaderName(String virtualReaderName) {
-    this.virtualReaderName = virtualReaderName;
+  public final MessageDto setRemoteReaderName(String remoteReaderName) {
+    this.remoteReaderName = remoteReaderName;
     return this;
   }
 

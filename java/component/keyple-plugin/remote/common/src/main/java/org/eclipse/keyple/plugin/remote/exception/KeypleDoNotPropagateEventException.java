@@ -14,7 +14,7 @@ package org.eclipse.keyple.plugin.remote.exception;
 import org.eclipse.keyple.core.service.exception.KeypleException;
 
 /**
- * Used in KeypleClientReaderEventFilter to prevent the event from being sent to the VirtualSePlugin
+ * Used in KeypleClientReaderEventFilter to prevent the event from being sent to the RemotePlugin
  */
 public class KeypleDoNotPropagateEventException extends KeypleException {
 

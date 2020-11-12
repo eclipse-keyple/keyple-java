@@ -35,12 +35,12 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class VirtualObservableReaderTest {
+public class ObservableRemoteReaderImplTest {
 
   static final String pluginName = "pluginName";
   static final String localReaderName = "localReaderName";
 
-  VirtualObservableReader reader;
+  ObservableRemoteReaderImpl reader;
   AbstractNode node;
   ObservableReader.ReaderObserver observer;
 
@@ -65,7 +65,7 @@ public class VirtualObservableReaderTest {
     doReturn(response).when(node).sendRequest(any(MessageDto.class));
     observer = new MockObserver();
     reader =
-        new VirtualObservableReader(
+        new ObservableRemoteReaderImpl(
             pluginName, localReaderName, node, "sessionId", null, notificationPool);
   }
 

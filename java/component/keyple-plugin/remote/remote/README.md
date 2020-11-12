@@ -1,18 +1,18 @@
-# Keyple Remote Plugin (Virtual library)
+# Keyple Remote Plugin (Remote library)
 
 Read first main principles describe in the [Core](../core/README.md) library.
 
 ## Table of Contents
 
-* [About Virtual library](#about-virtual-library)
+* [About Remote library](#about-remote-library)
 * [Remote Plugins](#remote-plugins)
     * [RemoteServerPlugin](#remoteserverplugin)
     * [RemoteClientPlugin](#remoteclientplugin)
     * [RemotePoolClientPlugin](#remotepoolclientplugin)
 
-## About Virtual library
+## About Remote library
 
-The "**Virtual**" library must be used by the application installed on the terminal not having local access to the reader and that wishes to control the reader remotely.
+The "**Remote**" library must be used by the application installed on the terminal not having local access to the reader and that wishes to control the reader remotely.
 
 ## Remote Plugins
 

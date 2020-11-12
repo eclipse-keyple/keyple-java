@@ -15,15 +15,15 @@ import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.service.Reader;
 
 /**
- * <b>Remote Server Reader</b> API.
+ * <b>Remote Reader Server</b> API.
  *
- * <p>This reader must be used in the use case of the <b>Remote Server Plugin</b>.
+ * <p>This reader must be used in the use case of the <b>Remote Plugin Server</b>.
  *
  * <p>This reader behaves like an {@link Reader} but exposes additional services.
  *
  * @since 1.0
  */
-public interface RemoteServerReader extends Reader {
+public interface RemoteReaderServer extends Reader {
 
   /**
    * Gets the id of the remote service to execute on the server's side.
@@ -37,18 +37,18 @@ public interface RemoteServerReader extends Reader {
    * Gets the user input data if they are set.
    *
    * @param classOfT The type expected of user input data.
-   * @param <T> The type expected of initial Card content
+   * @param <T> The type expected of initial card content
    * @return a nullable reference if there is no user input data.
    * @since 1.0
    */
   <T> T getUserInputData(Class<T> classOfT);
 
   /**
-   * Gets the initial Card content if is set.
+   * Gets the initial card content if is set.
    *
-   * @param classOfT The type expected of initial Card content
-   * @param <T> The type expected of initial Card content
-   * @return a nullable reference if there is no initial Card content.
+   * @param classOfT The type expected of initial card content
+   * @param <T> The type expected of initial card content
+   * @return a nullable reference if there is no initial card content.
    * @since 1.0
    */
   <T extends AbstractSmartCard> T getInitialCardContent(Class<T> classOfT);

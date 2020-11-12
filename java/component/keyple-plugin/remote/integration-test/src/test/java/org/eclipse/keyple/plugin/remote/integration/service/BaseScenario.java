@@ -27,6 +27,7 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.eclipse.keyple.plugin.remote.LocalServiceClient;
+import org.eclipse.keyple.plugin.remote.RemotePluginServer;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
 import org.eclipse.keyple.plugin.remote.impl.AbstractNode;
 import org.eclipse.keyple.plugin.remote.integration.common.app.ReaderEventFilter;
@@ -39,9 +40,8 @@ import org.eclipse.keyple.plugin.remote.integration.common.se.StubCalypsoClassic
 import org.eclipse.keyple.plugin.remote.integration.common.util.CalypsoUtilities;
 import org.eclipse.keyple.plugin.remote.RemoteServiceParameters;
 import org.eclipse.keyple.plugin.remote.impl.LocalServiceClientTest;
-import org.eclipse.keyple.plugin.remote.RemoteServerPlugin;
-import org.eclipse.keyple.plugin.remote.impl.RemoteServerPluginFactory;
-import org.eclipse.keyple.plugin.remote.impl.RemoteServerUtils;
+import org.eclipse.keyple.plugin.remote.impl.RemotePluginServerFactory;
+import org.eclipse.keyple.plugin.remote.impl.RemotePluginServerUtils;
 import org.eclipse.keyple.plugin.stub.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,19 +63,19 @@ public abstract class BaseScenario {
 
   /**
    * The client application invokes the remoteService with enabling observability capabilities. As a
-   * result the server creates a Observable Virtual Reader that receives local reader events such
+   * result the server creates a Observable Remote Reader that receives local reader events such
    * as Card insertions and removals.
    *
    * <p>A Card Insertion is simulated locally followed by a card removal 1 second later.
    *
-   * <p>The Card Insertion event is sent to the Virtual Reader whose observer starts a remote
+   * <p>The Card Insertion event is sent to the Remote Reader whose observer starts a remote
    * Calypso session. At the end of a successful calypso session, custom data is sent back to the
    * client as a final result.
    *
    * <p>The operation is executed twice with two different users.
    *
-   * <p>After the second Card insertion, Virtual Reader observers are cleared to purge the server
-   * virtual reader.
+   * <p>After the second Card insertion, Remote Reader observers are cleared to purge the server
+   * remote reader.
    */
   abstract void observable_defaultSelection_onMatched_transaction_successful();
 
@@ -125,7 +125,7 @@ public abstract class BaseScenario {
   StubReader localReader;
   StubReader localReader2;
 
-  RemoteServerPlugin remotePlugin;
+  RemotePluginServer remotePlugin;
   UserInput user1;
   UserInput user2;
   DeviceInput device1;
@@ -135,7 +135,7 @@ public abstract class BaseScenario {
 
   public static void unRegisterRemotePlugin() {
     try {
-      RemoteServerPlugin oldPlugin = RemoteServerUtils.getRemotePlugin();
+      RemotePluginServer oldPlugin = RemotePluginServerUtils.getRemotePlugin();
       SmartCardService.getInstance().unregisterPlugin(oldPlugin.getName());
     } catch (KeyplePluginNotFoundException e) {
       // no plugin to unregister
@@ -186,13 +186,13 @@ public abstract class BaseScenario {
   /** Init a Sync Remote Server Plugin (ie. http server) */
   void initRemotePluginWithSyncNode() {
     try {
-      remotePlugin = RemoteServerUtils.getRemotePlugin();
+      remotePlugin = RemotePluginServerUtils.getRemotePlugin();
     } catch (KeyplePluginNotFoundException e) {
       remotePlugin =
-          (RemoteServerPlugin)
+          (RemotePluginServer)
               SmartCardService.getInstance()
                   .registerPlugin(
-                      RemoteServerPluginFactory.builder()
+                      RemotePluginServerFactory.builder()
                           .withSyncNode()
                           .withPluginObserver(new RemotePluginObserver())
                           // .usingDefaultEventNotificationPool()
@@ -204,14 +204,14 @@ public abstract class BaseScenario {
   /** Init a Async Remote Server Plugin with an async server endpoint */
   void initRemotePluginWithAsyncNode(AsyncEndpointServer serverEndpoint) {
     try {
-      remotePlugin = RemoteServerUtils.getRemotePlugin();
+      remotePlugin = RemotePluginServerUtils.getRemotePlugin();
       logger.info("RemotePluginServer already registered, reusing it");
     } catch (KeyplePluginNotFoundException e) {
       remotePlugin =
-          (RemoteServerPlugin)
+          (RemotePluginServer)
               SmartCardService.getInstance()
                   .registerPlugin(
-                      RemoteServerPluginFactory.builder()
+                      RemotePluginServerFactory.builder()
                           .withAsyncNode(serverEndpoint)
                           .withPluginObserver(new RemotePluginObserver())
                           .usingEventNotificationPool(serverPool)
@@ -397,7 +397,7 @@ public abstract class BaseScenario {
   }
 
   void defaultSelection_onMatched_transaction_successful(ReaderEventFilter eventFilter) {
-    // execute remote service to create observable virtual reader
+    // execute remote service to create observable remote reader
     ConfigurationResult configurationResult =
         localService.executeRemoteService(
             RemoteServiceParameters.builder(SERVICE_ID_2, localReader)
@@ -441,10 +441,10 @@ public abstract class BaseScenario {
     await().atMost(1, TimeUnit.SECONDS).until(seRemoved(localReader));
 
     /*
-     * on the 2nd event, the virtual reader should be cleaned on local and virtual environment
+     * on the 2nd event, the remote reader should be cleaned on local and remote environment
      */
     assertThat(remotePlugin.getReaders()).isEmpty();
-    assertThat(LocalServiceClientTest.getVirtualReaders(localService)).isEmpty();
+    assertThat(LocalServiceClientTest.getRemoteReaders(localService)).isEmpty();
   }
 
   void remoteselection_remoteTransaction() {

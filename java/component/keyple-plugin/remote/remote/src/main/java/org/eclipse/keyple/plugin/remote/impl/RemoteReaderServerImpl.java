@@ -13,10 +13,10 @@ package org.eclipse.keyple.plugin.remote.impl;
 
 /**
  * (package-private)<br>
- * Server Virtual Reader class.<br>
- * This object is a decorator of a {@link VirtualReader}.
+ * Server Remote Reader class.<br>
+ * This object is a decorator of a {@link RemoteReaderImpl}.
  */
-final class ServerVirtualReader extends AbstractServerVirtualReader {
+final class RemoteReaderServerImpl extends AbstractRemoteReaderServer {
 
   /**
    * (package-private)<br>
@@ -27,8 +27,8 @@ final class ServerVirtualReader extends AbstractServerVirtualReader {
    * @param userInputDataJson The user input data as a JSON string (optional).
    * @param initialCardContentJson The initial Card content as a JSON string (optional).
    */
-  ServerVirtualReader(
-      VirtualReader reader,
+  RemoteReaderServerImpl(
+      RemoteReaderImpl reader,
       String serviceId,
       String userInputDataJson,
       String initialCardContentJson) {

@@ -27,14 +27,14 @@ import org.slf4j.LoggerFactory;
 
 /**
  * (package-private)<br>
- * Observable Virtual Reader
+ * Observable Remote Reader Implementation
  *
- * <p>This object is a {@link AbstractVirtualReader} with additional ObservableReader features.
+ * <p>This object is a {@link AbstractRemoteReader} with additional ObservableReader features.
  */
-final class VirtualObservableReader extends AbstractVirtualReader
+final class ObservableRemoteReaderImpl extends AbstractRemoteReader
     implements ObservableReaderNotifier {
 
-  private static final Logger logger = LoggerFactory.getLogger(VirtualObservableReader.class);
+  private static final Logger logger = LoggerFactory.getLogger(ObservableRemoteReaderImpl.class);
 
   private final List<ReaderObserver> observers;
   private final ExecutorService eventNotificationPool;
@@ -50,7 +50,7 @@ final class VirtualObservableReader extends AbstractVirtualReader
    * @param clientNodeId Associated client node Id (can be null)
    * @param eventNotificationPool The thread pool used to notify ReaderEvent (must be not null).
    */
-  VirtualObservableReader(
+  ObservableRemoteReaderImpl(
       String pluginName,
       String localReaderName,
       AbstractNode node,

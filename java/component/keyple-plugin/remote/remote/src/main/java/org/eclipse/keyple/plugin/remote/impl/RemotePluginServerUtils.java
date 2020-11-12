@@ -14,41 +14,41 @@ package org.eclipse.keyple.plugin.remote.impl;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.plugin.remote.AsyncNodeServer;
+import org.eclipse.keyple.plugin.remote.RemotePluginServer;
 import org.eclipse.keyple.plugin.remote.SyncNodeServer;
-import org.eclipse.keyple.plugin.remote.RemoteServerPlugin;
 
-/** Use this class to access the registered {@link RemoteServerPlugin} */
-public class RemoteServerUtils {
+/** Use this class to access the registered {@link RemotePluginServer} */
+public class RemotePluginServerUtils {
 
   /**
-   * Access the registered RemoteServerPlugin
+   * Access the registered RemotePluginServer
    *
-   * @return a registered instance of the RemoteServerPlugin
-   * @throws KeyplePluginNotFoundException if no RemoteServerPlugin is registered
+   * @return a registered instance of the RemotePluginServer
+   * @throws KeyplePluginNotFoundException if no RemotePluginServer is registered
    * @since 1.0
    */
-  public static RemoteServerPlugin getRemotePlugin() {
-    return (RemoteServerPlugin)
-        SmartCardService.getInstance().getPlugin(RemoteServerPluginFactory.DEFAULT_PLUGIN_NAME);
+  public static RemotePluginServer getRemotePlugin() {
+    return (RemotePluginServer)
+        SmartCardService.getInstance().getPlugin(RemotePluginServerFactory.DEFAULT_PLUGIN_NAME);
   }
 
   /**
-   * Retrieve the async node used in the RemoteServerPlugin
+   * Retrieve the async node used in the RemotePluginServer
    *
-   * @return non nullable instance of SyncNodeServer
+   * @return non nullable instance of AsyncNodeServer
    * @since 1.0
    */
   public static AsyncNodeServer getAsyncNode() {
-    return (AsyncNodeServer) ((RemoteServerPluginImpl) getRemotePlugin()).getNode();
+    return (AsyncNodeServer) ((RemotePluginServerImpl) getRemotePlugin()).getNode();
   }
 
   /**
-   * Retrieve the sync node used in the RemoteServerPlugin
+   * Retrieve the sync node used in the RemotePluginServer
    *
    * @return non nullable instance of SyncNodeServer
    * @since 1.0
    */
   public static SyncNodeServer getSyncNode() {
-    return (SyncNodeServer) ((RemoteServerPluginImpl) getRemotePlugin()).getNode();
+    return (SyncNodeServer) ((RemotePluginServerImpl) getRemotePlugin()).getNode();
   }
 }

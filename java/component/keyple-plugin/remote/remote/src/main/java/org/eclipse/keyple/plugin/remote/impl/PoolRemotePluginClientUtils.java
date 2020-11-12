@@ -14,30 +14,30 @@ package org.eclipse.keyple.plugin.remote.impl;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.plugin.remote.AsyncNodeClient;
-import org.eclipse.keyple.plugin.remote.RemotePoolClientPlugin;
+import org.eclipse.keyple.plugin.remote.PoolRemotePluginClient;
 
-/** Use this class to access the registered {@link RemotePoolClientPlugin} */
-public class RemotePoolClientUtils {
+/** Use this class to access the registered {@link PoolRemotePluginClient} */
+public class PoolRemotePluginClientUtils {
 
   /**
-   * Retrieve the async node used in the RemotePoolClientPlugin
+   * Retrieve the async node used in the PoolRemotePluginClient
    *
    * @return non nullable instance of AsyncNodeClient
    * @since 1.0
    */
   public static AsyncNodeClient getAsyncNode() {
-    return (AsyncNodeClient) ((RemotePoolClientPluginImpl) getRemotePlugin()).getNode();
+    return (AsyncNodeClient) ((PoolRemotePluginClientImpl) getRemotePlugin()).getNode();
   }
 
   /**
-   * Access the registered RemotePoolClientPlugin
+   * Access the registered PoolRemotePluginClient
    *
-   * @return a registered instance of the RemotePoolClientPlugin
-   * @throws KeyplePluginNotFoundException if no RemotePoolClientPlugin is registered
+   * @return a registered instance of the PoolRemotePluginClient
+   * @throws KeyplePluginNotFoundException if no PoolRemotePluginClient is registered
    * @since 1.0
    */
-  public static RemotePoolClientPlugin getRemotePlugin() {
-    return (RemotePoolClientPlugin)
-        SmartCardService.getInstance().getPlugin(RemotePoolClientPluginFactory.DEFAULT_PLUGIN_NAME);
+  public static PoolRemotePluginClient getRemotePlugin() {
+    return (PoolRemotePluginClient)
+        SmartCardService.getInstance().getPlugin(PoolRemotePluginClientFactory.DEFAULT_PLUGIN_NAME);
   }
 }

@@ -16,8 +16,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.eclipse.keyple.plugin.remote.MessageDto;
+import org.eclipse.keyple.plugin.remote.RemotePluginServer;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
-import org.eclipse.keyple.plugin.remote.RemoteServerPlugin;
 import org.eclipse.keyple.plugin.remote.integration.common.endpoint.StubNetworkConnectionException;
 import org.eclipse.keyple.plugin.remote.integration.common.util.JacksonParser;
 import org.eclipse.keyple.plugin.remote.impl.LocalServiceClientUtils;
@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Async client endpoint to test {@link
- * RemoteServerPlugin}. Send and receive asynchronously
+ * RemotePluginServer}. Send and receive asynchronously
  * json serialized {@link MessageDto} with {@link StubAsyncServerEndpoint}.
  */
 public class StubAsyncClientEndpoint implements AsyncEndpointClient {

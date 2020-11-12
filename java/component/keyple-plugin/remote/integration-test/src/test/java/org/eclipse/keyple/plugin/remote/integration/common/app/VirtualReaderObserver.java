@@ -20,35 +20,35 @@ import org.eclipse.keyple.core.service.exception.KeypleException;
 import org.eclipse.keyple.plugin.remote.integration.common.model.TransactionResult;
 import org.eclipse.keyple.plugin.remote.integration.common.model.UserInput;
 import org.eclipse.keyple.plugin.remote.integration.common.util.CalypsoUtilities;
-import org.eclipse.keyple.plugin.remote.RemoteServerObservableReader;
-import org.eclipse.keyple.plugin.remote.RemoteServerPlugin;
+import org.eclipse.keyple.plugin.remote.ObservableRemoteReaderServer;
+import org.eclipse.keyple.plugin.remote.RemotePluginServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class VirtualReaderObserver implements ObservableReader.ReaderObserver {
+public class RemoteReaderObserver implements ObservableReader.ReaderObserver {
 
-  private static final Logger logger = LoggerFactory.getLogger(VirtualReaderObserver.class);
+  private static final Logger logger = LoggerFactory.getLogger(RemoteReaderObserver.class);
   private Integer eventCounter = 0;
 
   @Override
   public void update(ReaderEvent event) {
-    String virtualReaderName = event.getReaderName();
-    RemoteServerPlugin plugin =
-        (RemoteServerPlugin) SmartCardService.getInstance().getPlugin(event.getPluginName());
-    RemoteServerObservableReader observableVirtualReader =
-        (RemoteServerObservableReader) plugin.getReader(virtualReaderName);
+    String remoteReaderName = event.getReaderName();
+    RemotePluginServer plugin =
+        (RemotePluginServer) SmartCardService.getInstance().getPlugin(event.getPluginName());
+    ObservableRemoteReaderServer observableRemoteReader =
+        (ObservableRemoteReaderServer) plugin.getReader(remoteReaderName);
     logger.info(
         "Event received {} {} {} with default selection {}",
         event.getEventType(),
         event.getPluginName(),
-        virtualReaderName,
+        remoteReaderName,
         event.getDefaultSelectionsResponse());
 
     switch (event.getEventType()) {
       case CARD_MATCHED:
         eventCounter++;
 
-        UserInput userInput = observableVirtualReader.getUserInputData(UserInput.class);
+        UserInput userInput = observableRemoteReader.getUserInputData(UserInput.class);
 
         // retrieve selection
         CardSelection cardSelection = CalypsoUtilities.getSeSelection();
@@ -61,29 +61,29 @@ public class VirtualReaderObserver implements ObservableReader.ReaderObserver {
         // execute a transaction
         try {
           String eventLog =
-              CalypsoUtilities.readEventLog(calypsoPo, observableVirtualReader, logger);
+              CalypsoUtilities.readEventLog(calypsoPo, observableRemoteReader, logger);
           // on the 2nd Card MATCHED
           if (eventCounter == 2) {
             // clear observers in the reader
-            observableVirtualReader.clearObservers();
+            observableRemoteReader.clearObservers();
           }
           // send result
           plugin.terminateService(
-              virtualReaderName,
+              remoteReaderName,
               new TransactionResult()
                   .setSuccessful(!eventLog.isEmpty())
                   .setUserId(userInput.getUserId()));
         } catch (KeypleException e) {
           // send result
           plugin.terminateService(
-              virtualReaderName,
+              remoteReaderName,
               new TransactionResult().setSuccessful(false).setUserId(userInput.getUserId()));
         }
 
         break;
       case CARD_REMOVED:
         // do nothing
-        plugin.terminateService(virtualReaderName, null);
+        plugin.terminateService(remoteReaderName, null);
         break;
     }
   }

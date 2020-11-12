@@ -17,16 +17,16 @@ import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
-import org.eclipse.keyple.plugin.remote.RemoteServerReader;
+import org.eclipse.keyple.plugin.remote.RemoteReaderServer;
 
 /**
  * (package-private)<br>
- * Abstract Server Virtual Reader class.<br>
- * This class is a decorator of a {@link AbstractVirtualReader}.
+ * Abstract Remote Reader Server class.<br>
+ * This class is a decorator of a {@link AbstractRemoteReader}.
  */
-abstract class AbstractServerVirtualReader implements RemoteServerReader, ProxyReader {
+abstract class AbstractRemoteReaderServer implements RemoteReaderServer, ProxyReader {
 
-  private final AbstractVirtualReader reader;
+  private final AbstractRemoteReader reader;
   private final String serviceId;
   private final String initialCardContentJson;
   private final String userInputDataJson;
@@ -40,8 +40,8 @@ abstract class AbstractServerVirtualReader implements RemoteServerReader, ProxyR
    * @param userInputDataJson The user input data as a JSON string (optional).
    * @param initialCardContentJson The initial card content as a JSON string (optional).
    */
-  AbstractServerVirtualReader(
-      AbstractVirtualReader reader,
+  AbstractRemoteReaderServer(
+      AbstractRemoteReader reader,
       String serviceId,
       String userInputDataJson,
       String initialCardContentJson) {

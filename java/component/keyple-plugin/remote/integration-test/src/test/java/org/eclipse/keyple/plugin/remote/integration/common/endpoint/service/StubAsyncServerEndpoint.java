@@ -17,17 +17,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.eclipse.keyple.plugin.remote.MessageDto;
+import org.eclipse.keyple.plugin.remote.RemotePluginServer;
+import org.eclipse.keyple.plugin.remote.impl.RemotePluginServerUtils;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
-import org.eclipse.keyple.plugin.remote.RemoteServerPlugin;
 import org.eclipse.keyple.plugin.remote.integration.common.endpoint.StubNetworkConnectionException;
 import org.eclipse.keyple.plugin.remote.integration.common.util.JacksonParser;
-import org.eclipse.keyple.plugin.remote.impl.RemoteServerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Simulate a async server to test {@link
- * RemoteServerPlugin}. Send and receive asynchronously
+ * RemotePluginServer}. Send and receive asynchronously
  * serialized {@link MessageDto} with connected {@link StubAsyncClientEndpoint}
  */
 public class StubAsyncServerEndpoint implements AsyncEndpointServer {
@@ -50,7 +50,7 @@ public class StubAsyncServerEndpoint implements AsyncEndpointServer {
   public void close(String sessionId) {
     messageCounts.remove(sessionId);
     clients.remove(sessionId);
-    RemoteServerUtils.getAsyncNode().onClose(sessionId);
+    RemotePluginServerUtils.getAsyncNode().onClose(sessionId);
   }
 
   /**
@@ -65,7 +65,7 @@ public class StubAsyncServerEndpoint implements AsyncEndpointServer {
         new Runnable() {
           @Override
           public void run() {
-            RemoteServerUtils.getAsyncNode().onMessage(message);
+            RemotePluginServerUtils.getAsyncNode().onMessage(message);
           }
         });
   }
@@ -86,7 +86,7 @@ public class StubAsyncServerEndpoint implements AsyncEndpointServer {
             try {
               client.onMessage(data);
             } catch (Throwable t) {
-              RemoteServerUtils.getAsyncNode().onError(msg.getSessionId(), t);
+              RemotePluginServerUtils.getAsyncNode().onError(msg.getSessionId(), t);
             }
           }
         });

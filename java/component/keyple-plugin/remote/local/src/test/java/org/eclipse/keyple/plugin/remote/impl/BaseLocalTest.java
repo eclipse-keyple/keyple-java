@@ -192,7 +192,7 @@ public abstract class BaseLocalTest {
     assertThat(response).isNotNull();
     assertThat(response.getSessionId()).isEqualTo(request.getSessionId());
     assertThat(response.getLocalReaderName()).isEqualTo(request.getLocalReaderName());
-    assertThat(response.getVirtualReaderName()).isEqualTo(request.getVirtualReaderName());
+    assertThat(response.getRemoteReaderName()).isEqualTo(request.getRemoteReaderName());
     assertThat(response.getClientNodeId()).isEqualTo(request.getClientNodeId());
     assertThat(response.getServerNodeId()).isEqualTo(request.getServerNodeId());
   }

@@ -42,7 +42,7 @@ final class LocalServiceClientImpl extends AbstractLocalService
 
   private final boolean withReaderObservation;
   private final ObservableReaderEventFilter eventFilter;
-  private final Map<String, String> virtualReaders;
+  private final Map<String, String> remoteReaders;
 
   /**
    * (private)<br>
@@ -56,7 +56,7 @@ final class LocalServiceClientImpl extends AbstractLocalService
     super();
     this.withReaderObservation = withReaderObservation;
     this.eventFilter = eventFilter;
-    this.virtualReaders = new HashMap<String, String>();
+    this.remoteReaders = new HashMap<String, String>();
   }
 
   /**
@@ -120,8 +120,8 @@ final class LocalServiceClientImpl extends AbstractLocalService
       if (withReaderObservation) {
         if (localReader instanceof ObservableReader) {
 
-          // Register the virtual reader associated to the local reader.
-          virtualReaders.put(localReader.getName(), receivedDto.getVirtualReaderName());
+          // Register the remote reader associated to the local reader.
+          remoteReaders.put(localReader.getName(), receivedDto.getRemoteReaderName());
 
           try {
             // Start the observation.
@@ -137,13 +137,13 @@ final class LocalServiceClientImpl extends AbstractLocalService
             // Extract user output data
             userOutputData = extractUserOutputData(receivedDto, classOfT);
 
-            // Verify if the virtual reader can be unregistered.
-            if (canUnregisterVirtualReader(receivedDto)) {
-              virtualReaders.remove(localReader.getName());
+            // Verify if the remote reader can be unregistered.
+            if (canUnregisterRemoteReader(receivedDto)) {
+              remoteReaders.remove(localReader.getName());
             }
           } catch (RuntimeException e) {
-            // Unregister the associated virtual reader.
-            virtualReaders.remove(localReader.getName());
+            // Unregister the associated remote reader.
+            remoteReaders.remove(localReader.getName());
             throw e;
           }
         } else {
@@ -219,9 +219,9 @@ final class LocalServiceClientImpl extends AbstractLocalService
         Object userOutputData =
             extractUserOutputData(receivedDto, eventFilter.getUserOutputDataClass());
 
-        // Verify if the virtual reader can be unregistered.
-        if (canUnregisterVirtualReader(receivedDto)) {
-          virtualReaders.remove(localReader.getName());
+        // Verify if the remote reader can be unregistered.
+        if (canUnregisterRemoteReader(receivedDto)) {
+          remoteReaders.remove(localReader.getName());
         }
 
         // invoke callback
@@ -233,8 +233,8 @@ final class LocalServiceClientImpl extends AbstractLocalService
       }
 
     } catch (RuntimeException e) {
-      // Unregister the associated virtual reader.
-      virtualReaders.remove(event.getReaderName());
+      // Unregister the associated remote reader.
+      remoteReaders.remove(event.getReaderName());
       throw e;
     }
   }
@@ -289,15 +289,15 @@ final class LocalServiceClientImpl extends AbstractLocalService
 
   /**
    * (private)<br>
-   * Verify if the virtual reader associated to the provided message can be unregistered.
+   * Verify if the remote reader associated to the provided message can be unregistered.
    *
    * @param msg The message to analyse.
-   * @return true if the virtual reader can be unregistered.
+   * @return true if the remote reader can be unregistered.
    */
-  private boolean canUnregisterVirtualReader(MessageDto msg) {
+  private boolean canUnregisterRemoteReader(MessageDto msg) {
     Gson parser = KeypleJsonParser.getParser();
     JsonObject body = parser.fromJson(msg.getBody(), JsonObject.class);
-    return parser.fromJson(body.get("unregisterVirtualReader"), Boolean.class);
+    return parser.fromJson(body.get("unregisterRemoteReader"), Boolean.class);
   }
 
   /**
@@ -357,7 +357,7 @@ final class LocalServiceClientImpl extends AbstractLocalService
         .setSessionId(sessionId)
         .setAction(MessageDto.Action.READER_EVENT.name())
         .setLocalReaderName(readerEvent.getReaderName())
-        .setVirtualReaderName(virtualReaders.get(readerEvent.getReaderName()))
+        .setRemoteReaderName(remoteReaders.get(readerEvent.getReaderName()))
         .setBody(body.toString());
   }
 }

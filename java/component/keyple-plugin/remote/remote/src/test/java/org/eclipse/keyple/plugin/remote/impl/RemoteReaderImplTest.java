@@ -30,18 +30,18 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class VirtualReaderTest {
+public class RemoteReaderImplTest {
 
   static final String pluginName = "pluginName";
   static final String localReaderName = "localReaderName";
 
-  VirtualReader reader;
+  RemoteReaderImpl reader;
   AbstractNode node;
 
   @Before
   public void setUp() {
     node = mock(AbstractNode.class);
-    reader = new VirtualReader(pluginName, localReaderName, node, "val1", null);
+    reader = new RemoteReaderImpl(pluginName, localReaderName, node, "val1", null);
   }
 
   @Test
@@ -62,7 +62,7 @@ public class VirtualReaderTest {
     MessageDto responseDto =
         new MessageDto() //
             .setAction(MessageDto.Action.TRANSMIT.name()) //
-            .setVirtualReaderName(reader.getName()) //
+            .setRemoteReaderName(reader.getName()) //
             .setLocalReaderName(reader.localReaderName) //
             .setBody(KeypleJsonParser.getParser().toJson(cardResponse, CardResponse.class));
 
@@ -118,7 +118,7 @@ public class VirtualReaderTest {
     MessageDto responseDto =
         new MessageDto() //
             .setAction(MessageDto.Action.TRANSMIT_CARD_SELECTION.name()) //
-            .setVirtualReaderName(reader.getName()) //
+            .setRemoteReaderName(reader.getName()) //
             .setLocalReaderName(reader.localReaderName) //
             .setBody(
                 KeypleJsonParser.getParser()
@@ -176,7 +176,7 @@ public class VirtualReaderTest {
     MessageDto responseDto =
         new MessageDto() //
             .setAction(MessageDto.Action.IS_CARD_PRESENT.name()) //
-            .setVirtualReaderName(reader.getName()) //
+            .setRemoteReaderName(reader.getName()) //
             .setLocalReaderName(reader.localReaderName) //
             .setBody(KeypleJsonParser.getParser().toJson(true, Boolean.class));
 
@@ -212,7 +212,7 @@ public class VirtualReaderTest {
     MessageDto responseDto =
         new MessageDto() //
             .setAction(MessageDto.Action.IS_READER_CONTACTLESS.name()) //
-            .setVirtualReaderName(reader.getName()) //
+            .setRemoteReaderName(reader.getName()) //
             .setLocalReaderName(reader.localReaderName) //
             .setBody(KeypleJsonParser.getParser().toJson(true, Boolean.class));
 
@@ -248,7 +248,7 @@ public class VirtualReaderTest {
     MessageDto responseDto =
         new MessageDto() //
             .setAction(MessageDto.Action.RELEASE_CHANNEL.name()) //
-            .setVirtualReaderName(reader.getName()) //
+            .setRemoteReaderName(reader.getName()) //
             .setLocalReaderName(reader.localReaderName);
 
     doReturn(responseDto).when(node).sendRequest(any(MessageDto.class));
@@ -300,7 +300,7 @@ public class VirtualReaderTest {
     MessageDto responseDto =
         new MessageDto() //
             .setAction(MessageDto.Action.ERROR.name()) //
-            .setVirtualReaderName(reader.getName()) //
+            .setRemoteReaderName(reader.getName()) //
             .setLocalReaderName(reader.localReaderName) //
             .setBody(KeypleJsonParser.getParser().toJson(new BodyError(error)));
 

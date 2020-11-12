@@ -27,8 +27,8 @@ import org.eclipse.keyple.core.service.event.PluginEvent;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.MessageDto;
-import org.eclipse.keyple.plugin.remote.RemoteServerObservableReader;
-import org.eclipse.keyple.plugin.remote.RemoteServerReader;
+import org.eclipse.keyple.plugin.remote.ObservableRemoteReaderServer;
+import org.eclipse.keyple.plugin.remote.RemoteReaderServer;
 import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -37,17 +37,17 @@ public class RemoteServerBaseTest {
 
   static String clientId = "client1";
   static String localReaderName = "localReaderName1";
-  static String remotePluginName = RemoteServerPluginFactory.DEFAULT_PLUGIN_NAME;
+  static String remotePluginName = RemotePluginServerFactory.DEFAULT_PLUGIN_NAME;
   static String localPluginName = "localPluginName1";
   static String serviceId = "1";
-  static RemoteServerPluginImplTest.MockUserOutputData userOutputData =
-      new RemoteServerPluginImplTest.MockUserOutputData();
+  static RemotePluginServerImplTest.MockUserOutputData userOutputData =
+      new RemotePluginServerImplTest.MockUserOutputData();
   static ExecutorService eventNotificationPool = Executors.newCachedThreadPool();
 
-  RemoteServerPluginImpl remotePlugin;
+  RemotePluginServerImpl remotePlugin;
   AbstractNode node;
-  RemoteServerPluginImplTest.MockPluginObserver pluginObserver;
-  RemoteServerPluginImplTest.MockReaderObserver readerObserver;
+  RemotePluginServerImplTest.MockPluginObserver pluginObserver;
+  RemotePluginServerImplTest.MockReaderObserver readerObserver;
   ArgumentCaptor<MessageDto> messageArgumentCaptor;
 
   /*
@@ -56,14 +56,14 @@ public class RemoteServerBaseTest {
 
   class MockReaderObserver implements ObservableReader.ReaderObserver {
     ReaderEvent event;
-    Set<String> virtualReaderNames = new HashSet<String>();
+    Set<String> remoteReaderNames = new HashSet<String>();
 
     @Override
     public void update(ReaderEvent event) {
-      if (virtualReaderNames.add(event.getReaderName())) {
+      if (remoteReaderNames.add(event.getReaderName())) {
         this.event = event;
       }
-      ; // verify that each event targets a new virtual reader
+      ; // verify that each event targets a new remote reader
     }
 
     public void terminateService(Object userOutputData) {
@@ -82,10 +82,10 @@ public class RemoteServerBaseTest {
     @Override
     public void update(PluginEvent event) {
       this.event = event;
-      // attach an observer to the VirtualReader
-      RemoteServerReader virtualReader = remotePlugin.getReader(event.getReaderNames().first());
-      if (virtualReader instanceof RemoteServerObservableReader && attachObserver) {
-        ((RemoteServerObservableReader) virtualReader).addObserver(readerObserver);
+      // attach an observer to the RemoteReaderImpl
+      RemoteReaderServer remoteReader = remotePlugin.getReader(event.getReaderNames().first());
+      if (remoteReader instanceof ObservableRemoteReaderServer && attachObserver) {
+        ((ObservableRemoteReaderServer) remoteReader).addObserver(readerObserver);
       }
     }
 
@@ -122,7 +122,7 @@ public class RemoteServerBaseTest {
     };
   }
 
-  MessageDto readerEventMessage(String sessionId, String virtualReaderName) {
+  MessageDto readerEventMessage(String sessionId, String remoteReaderName) {
     JsonObject body = new JsonObject();
     body.addProperty("userInputData", "anyObject");
     body.add(
@@ -140,19 +140,19 @@ public class RemoteServerBaseTest {
         .setAction(MessageDto.Action.READER_EVENT.name())
         .setClientNodeId(clientId)
         .setLocalReaderName(localReaderName)
-        .setVirtualReaderName(virtualReaderName)
+        .setRemoteReaderName(remoteReaderName)
         .setBody(body.toString());
   }
 
-  Callable<Boolean> validSeInsertedEvent(final String virtualReaderName, final int messageNumber) {
+  Callable<Boolean> validSeInsertedEvent(final String remoteReaderName, final int messageNumber) {
     return new Callable<Boolean>() {
       @Override
       public Boolean call() throws Exception {
         return ReaderEvent.EventType.CARD_INSERTED.compareTo(readerObserver.event.getEventType())
                 == 0
             && remotePluginName.equals(pluginObserver.event.getPluginName())
-            && !readerObserver.event.getReaderName().equals(virtualReaderName)
-            && readerObserver.virtualReaderNames.size()
+            && !readerObserver.event.getReaderName().equals(remoteReaderName)
+            && readerObserver.remoteReaderNames.size()
                 == messageNumber; // event is targeted to the sessionReader
       }
     };
@@ -181,21 +181,21 @@ public class RemoteServerBaseTest {
     MockUserOutputData userOutputResponse =
         KeypleJsonParser.getParser()
             .fromJson(body.get("userOutputData").getAsString(), MockUserOutputData.class);
-    boolean unregisterVirtualReader = body.get("unregisterVirtualReader").getAsBoolean();
+    boolean unregisterRemoteReader = body.get("unregisterRemoteReader").getAsBoolean();
     assertThat(userOutputData).isEqualToComparingFieldByFieldRecursively(userOutputResponse);
-    assertThat(unregisterVirtualReader).isEqualTo(shouldUnregister);
+    assertThat(unregisterRemoteReader).isEqualTo(shouldUnregister);
   }
 
   void registerSyncPlugin() {
     SmartCardService.getInstance()
         .registerPlugin(
-            RemoteServerPluginFactory.builder()
+            RemotePluginServerFactory.builder()
                 .withSyncNode()
                 .withPluginObserver(pluginObserver)
                 .usingDefaultEventNotificationPool()
                 .build());
     remotePlugin =
-        (RemoteServerPluginImpl) SmartCardService.getInstance().getPlugin(remotePluginName);
+        (RemotePluginServerImpl) SmartCardService.getInstance().getPlugin(remotePluginName);
   }
 
   void unregisterPlugin() {

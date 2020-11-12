@@ -15,18 +15,18 @@ import org.eclipse.keyple.core.plugin.reader.ObservableReaderNotifier;
 import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.util.Assert;
-import org.eclipse.keyple.plugin.remote.RemoteServerObservableReader;
+import org.eclipse.keyple.plugin.remote.ObservableRemoteReaderServer;
 
 /**
  * (package-private)<br>
- * Server Virtual Observable Reader class.<br>
- * This object is a decorator of a {@link VirtualObservableReader}.
+ * Observable Remote Reader Server Implementation.<br>
+ * This object is a decorator of a {@link ObservableRemoteReaderImpl}.
  */
-final class ServerVirtualObservableReader extends AbstractServerVirtualReader
-    implements RemoteServerObservableReader, ObservableReaderNotifier {
+final class ObservableRemoteReaderServerImpl extends AbstractRemoteReaderServer
+    implements ObservableRemoteReaderServer, ObservableReaderNotifier {
 
-  private final VirtualObservableReader reader;
-  private final ServerVirtualObservableReader masterReader;
+  private final ObservableRemoteReaderImpl reader;
+  private final ObservableRemoteReaderServerImpl masterReader;
 
   /**
    * (package-private)<br>
@@ -37,12 +37,12 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
    * @param userInputDataJson The user input data as a JSON string (optional).
    * @param initialCardContentJson The initial card content as a JSON string (optional).
    */
-  ServerVirtualObservableReader(
-      VirtualObservableReader reader,
+  ObservableRemoteReaderServerImpl(
+      ObservableRemoteReaderImpl reader,
       String serviceId,
       String userInputDataJson,
       String initialCardContentJson,
-      ServerVirtualObservableReader masterReader) {
+      ObservableRemoteReaderServerImpl masterReader) {
     super(reader, serviceId, userInputDataJson, initialCardContentJson);
     this.reader = reader;
     this.masterReader = masterReader;
@@ -191,7 +191,7 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
    *
    * @return nullable instance of a master reader
    */
-  ServerVirtualObservableReader getMasterReader() {
+  ObservableRemoteReaderServerImpl getMasterReader() {
     return masterReader;
   }
 }

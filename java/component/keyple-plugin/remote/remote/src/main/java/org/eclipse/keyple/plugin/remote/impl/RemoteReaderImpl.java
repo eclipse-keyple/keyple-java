@@ -13,9 +13,9 @@ package org.eclipse.keyple.plugin.remote.impl;
 
 /**
  * (package-private)<br>
- * Virtual Reader
+ * Remote Reader
  */
-final class VirtualReader extends AbstractVirtualReader {
+final class RemoteReaderImpl extends AbstractRemoteReader {
 
   /**
    * (package-private)<br>
@@ -27,7 +27,7 @@ final class VirtualReader extends AbstractVirtualReader {
    * @param sessionId Session Id (can be null)
    * @param clientNodeId Associated client node Id (can be null)
    */
-  VirtualReader(
+  RemoteReaderImpl(
       String pluginName,
       String localReaderName,
       AbstractNode node,

@@ -15,16 +15,16 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.eclipse.keyple.plugin.remote.MessageDto;
+import org.eclipse.keyple.plugin.remote.PoolRemotePluginClient;
+import org.eclipse.keyple.plugin.remote.impl.PoolRemotePluginClientUtils;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
-import org.eclipse.keyple.plugin.remote.RemotePoolClientPlugin;
 import org.eclipse.keyple.plugin.remote.integration.common.util.JacksonParser;
-import org.eclipse.keyple.plugin.remote.impl.RemotePoolClientUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Async client endpoint to test {@link
- * RemotePoolClientPlugin}. Send and receive asynchronously
+ * PoolRemotePluginClient}. Send and receive asynchronously
  * json serialized {@link MessageDto} with {@link StubAsyncServerEndpoint}.
  */
 public class StubAsyncClientEndpoint implements AsyncEndpointClient {
@@ -50,14 +50,14 @@ public class StubAsyncClientEndpoint implements AsyncEndpointClient {
           public void run() {
             logger.trace("Data received from server : {}", data);
             MessageDto message = JacksonParser.fromJson(data);
-            RemotePoolClientUtils.getAsyncNode().onMessage(message);
+            PoolRemotePluginClientUtils.getAsyncNode().onMessage(message);
           }
         });
   }
 
   @Override
   public void openSession(String sessionId) {
-    RemotePoolClientUtils.getAsyncNode().onOpen(sessionId);
+    PoolRemotePluginClientUtils.getAsyncNode().onOpen(sessionId);
   }
 
   @Override
@@ -79,6 +79,6 @@ public class StubAsyncClientEndpoint implements AsyncEndpointClient {
   public void closeSession(String sessionId) {
     logger.trace("Close session {} to server", sessionId);
     server.close(sessionId);
-    RemotePoolClientUtils.getAsyncNode().onClose(sessionId);
+    PoolRemotePluginClientUtils.getAsyncNode().onClose(sessionId);
   }
 }
