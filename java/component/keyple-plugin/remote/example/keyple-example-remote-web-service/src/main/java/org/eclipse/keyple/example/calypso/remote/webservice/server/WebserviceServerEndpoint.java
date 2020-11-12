@@ -19,7 +19,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.eclipse.keyple.example.calypso.remote.webservice.client.WebserviceClientEndpoint;
 import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
-import org.eclipse.keyple.plugin.remote.impl.RemoteServerUtils;
+import org.eclipse.keyple.plugin.remote.virtual.impl.RemoteServerUtils;
 
 /**
  * Example implementation of a RemoteServer with a {@link

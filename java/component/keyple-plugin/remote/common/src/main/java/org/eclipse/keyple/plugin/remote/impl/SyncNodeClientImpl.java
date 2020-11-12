@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * (package-private)<br>
- * Client Sync Node implementation.
+ * Sync Node Client implementation.
  *
  * @since 1.0
  */

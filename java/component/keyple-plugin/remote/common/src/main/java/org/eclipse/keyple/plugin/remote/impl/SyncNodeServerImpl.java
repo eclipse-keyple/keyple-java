@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * (package-private)<br>
- * Server Sync Node implementation.
+ * Sync Node Server implementation.
  *
  * @since 1.0
  */

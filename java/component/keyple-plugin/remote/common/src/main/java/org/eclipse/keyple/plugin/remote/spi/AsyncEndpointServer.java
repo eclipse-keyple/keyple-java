@@ -15,7 +15,7 @@ import org.eclipse.keyple.plugin.remote.AsyncNodeServer;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 
 /**
- * <b>Server Async Endpoint</b> endpoint API to be implemented by the user.
+ * <b>Async Endpoint Server</b> endpoint API to be implemented by the user.
  *
  * <p>This interface must be implemented by a user server endpoint if you want to use a full duplex
  * communication protocol, such as Web Sockets for example.

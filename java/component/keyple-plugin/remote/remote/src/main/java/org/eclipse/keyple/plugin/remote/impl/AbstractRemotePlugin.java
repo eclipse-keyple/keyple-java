@@ -41,7 +41,7 @@ abstract class AbstractRemotePlugin extends AbstractMessageHandler implements Pl
    * <ul>
    *   <li>Instantiates a new ReaderPlugin.
    *   <li>Retrieve the current readers list.
-   *   <li>Initialize the list of readers TODO
+   *   <li>Initialize the list of readers calling the abstract method initNativeReaders.
    *   <li>When readers initialisation failed, a KeypleReaderException is thrown.
    * </ul>
    *

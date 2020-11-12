@@ -16,7 +16,7 @@ import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.SyncNodeClient;
 
 /**
- * <b>Client Sync Endpoint</b> endpoint API to be implemented by the user.
+ * <b>Sync Endpoint Client</b> endpoint API to be implemented by the user.
  *
  * <p>This interface must be implemented by a user client endpoint if you want to use a
  * Client-Server communication protocol, such as standard HTTP for example.
