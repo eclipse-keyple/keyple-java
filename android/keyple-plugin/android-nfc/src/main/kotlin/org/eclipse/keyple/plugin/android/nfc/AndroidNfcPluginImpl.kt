@@ -28,15 +28,15 @@ import timber.log.Timber
 internal object AndroidNfcPluginImpl : AbstractPlugin(AndroidNfcPlugin.PLUGIN_NAME), AndroidNfcPlugin {
 
     /**
-     * For an Android NFC device, the Android NFC Plugin manages only one @[AbstractAndroidNfcReader].
+     * For an Android NFC device, the Android NFC Plugin manages only one @[AndroidNfcReader].
      *
      * @return SortedSet<ProxyReader> : contains only one element, the
-     * singleton @[AbstractAndroidNfcReader]
+     * singleton @[AndroidNfcReader]
     </ProxyReader> */
     override fun initNativeReaders(): ConcurrentMap<String, Reader>? {
         Timber.d("InitNativeReader() add the unique instance of AndroidNfcReaderImpl")
         val readers = ConcurrentHashMap<String, Reader>()
-        readers[AndroidNfcReader.READER_NAME] = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+        readers[InterfaceAndroidNfcReader.READER_NAME] = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             AndroidNfcReaderPreNImpl
         } else {
             AndroidNfcReaderPostNImpl

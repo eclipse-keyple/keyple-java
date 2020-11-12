@@ -21,7 +21,7 @@ import timber.log.Timber
  *
  * It will used native features of Android NFC API to detect card removal.
  */
-internal object AndroidNfcReaderPostNImpl : AbstractAndroidNfcReader(), WaitForCardRemovalBlocking {
+internal object AndroidNfcReaderPostNImpl : AndroidNfcReader(), WaitForCardRemovalBlocking {
 
     private var isWatingForRemoval = false
     private val syncWaitRemoval = Object()
@@ -40,7 +40,7 @@ internal object AndroidNfcReaderPostNImpl : AbstractAndroidNfcReader(), WaitForC
         var isRemoved = false
         if (!isWatingForRemoval) {
             isWatingForRemoval = true
-            nfcAdapter?.ignore(tagProxy?.tag, 1000, {
+            nfcAdapter?.ignore(getTagProxyTag(), 1000, {
                 isRemoved = true
                 synchronized(syncWaitRemoval) {
                     syncWaitRemoval.notify()
