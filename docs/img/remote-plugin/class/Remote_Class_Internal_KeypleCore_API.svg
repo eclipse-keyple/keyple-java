@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="1140px" preserveAspectRatio="none" style="width:2437px;height:1140px;" version="1.1" viewBox="0 0 2437 1140" width="2437.5px" zoomAndPan="magnify"><defs/><g><text fill="#000000" font-family="sans-serif" font-size="45" lengthAdjust="spacingAndGlyphs" textLength="1217.5" x="625" y="46.7139">Keyple Remote Plugin - Keyple Core API - 1.0.0 (06/11/2020)</text><!--MD5=[c9b12d7b2c4b1fc61915ee9f9b21580e]
+cluster packService--><polygon fill="#F8F9F9" points="55,116.6016,625,116.6016,642.5,175.625,2382.5,175.625,2382.5,1111.6016,55,1111.6016,55,116.6016" style="stroke: #000000; stroke-width: 3.75;"/><line style="stroke: #000000; stroke-width: 3.75;" x1="55" x2="642.5" y1="175.625" y2="175.625"/><text fill="#000000" font-family="sans-serif" font-size="35" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="555" x="65" y="157.9346">org.eclipse.keyple.core.service</text><!--MD5=[2e31800f208179cab94650aeb782e4d8]
+cluster event--><polygon fill="#F2F3F4" points="1137.5,421.6016,1255,421.6016,1272.5,480.625,2037.5,480.625,2037.5,1051.6016,1137.5,1051.6016,1137.5,421.6016" style="stroke: #000000; stroke-width: 3.75;"/><line style="stroke: #000000; stroke-width: 3.75;" x1="1137.5" x2="1272.5" y1="480.625" y2="480.625"/><text fill="#000000" font-family="sans-serif" font-size="35" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="102.5" x="1147.5" y="462.9346">event</text><!--MD5=[88851b7b27e529b39ff5d3ce6ae79142]
+cluster message--><polygon fill="#F8F9F9" points="395,421.6016,567.5,421.6016,585,480.625,765,480.625,765,706.6016,395,706.6016,395,421.6016" style="stroke: #000000; stroke-width: 3.75;"/><line style="stroke: #000000; stroke-width: 3.75;" x1="395" x2="585" y1="480.625" y2="480.625"/><text fill="#000000" font-family="sans-serif" font-size="35" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="157.5" x="405" y="462.9346">message</text><!--MD5=[bba04820e7e1c3e0b18b208880efc4b9]
+cluster plugin.reader--><polygon fill="#F8F9F9" points="115,766.6016,367.5,766.6016,385,825.625,1077.5,825.625,1077.5,1051.6016,115,1051.6016,115,766.6016" style="stroke: #000000; stroke-width: 3.75;"/><line style="stroke: #000000; stroke-width: 3.75;" x1="115" x2="385" y1="825.625" y2="825.625"/><text fill="#000000" font-family="sans-serif" font-size="35" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="237.5" x="125" y="807.9346">plugin.reader</text><!--MD5=[5c68026ea752d2e8f1e184b2d7c89ced]
+class PluginFactory--><rect fill="#E59866" height="154.5898" id="PluginFactory" style="stroke: #2C3E50; stroke-width: 3.75;" width="295" x="2035" y="206.6016"/><ellipse cx="2072.5" cy="246.6016" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M2075,239.1016 L2075,254.1016 L2080,254.1016 L2081.2109,254.1016 L2082.5,255.6641 L2082.5,256.6016 L2082.5,257.5391 L2081.2109,259.1016 L2080,259.1016 L2065,259.1016 L2063.7891,259.1016 L2062.5,257.5391 L2062.5,256.6016 L2062.5,255.6641 L2063.7891,254.1016 L2065,254.1016 L2070,254.1016 L2070,239.1016 L2065,239.1016 L2063.7891,239.1016 L2062.5,237.5391 L2062.5,236.6016 L2062.5,235.6641 L2063.7891,234.1016 L2065,234.1016 L2080,234.1016 L2081.2109,234.1016 L2082.5,235.6641 L2082.5,236.6016 L2082.5,237.5391 L2081.2109,239.1016 L2080,239.1016 L2075,239.1016 Z "/><ellipse cx="2120" cy="245.3516" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="187.5" x="2135" y="258.877">PluginFactory</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="2037.5" x2="2327.5" y1="286.6016" y2="286.6016"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="22.5" x="2050" y="325.1489">...</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="2037.5" x2="2327.5" y1="341.1914" y2="341.1914"/><!--MD5=[b628511dd50102041730ee0512f882c8]
+class Plugin--><rect fill="#E59866" height="154.5898" id="Plugin" style="stroke: #2C3E50; stroke-width: 3.75;" width="195" x="1730" y="206.6016"/><ellipse cx="1767.5" cy="246.6016" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M1770,239.1016 L1770,254.1016 L1775,254.1016 L1776.2109,254.1016 L1777.5,255.6641 L1777.5,256.6016 L1777.5,257.5391 L1776.2109,259.1016 L1775,259.1016 L1760,259.1016 L1758.7891,259.1016 L1757.5,257.5391 L1757.5,256.6016 L1757.5,255.6641 L1758.7891,254.1016 L1760,254.1016 L1765,254.1016 L1765,239.1016 L1760,239.1016 L1758.7891,239.1016 L1757.5,237.5391 L1757.5,236.6016 L1757.5,235.6641 L1758.7891,234.1016 L1760,234.1016 L1775,234.1016 L1776.2109,234.1016 L1777.5,235.6641 L1777.5,236.6016 L1777.5,237.5391 L1776.2109,239.1016 L1775,239.1016 L1770,239.1016 Z "/><ellipse cx="1815" cy="245.3516" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="87.5" x="1830" y="258.877">Plugin</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="1732.5" x2="1922.5" y1="286.6016" y2="286.6016"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="22.5" x="1745" y="325.1489">...</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="1732.5" x2="1922.5" y1="341.1914" y2="341.1914"/><!--MD5=[c8cbac6d6d9e600bce6d5400427f5af6]
+class PoolPlugin--><rect fill="#E59866" height="154.5898" id="PoolPlugin" style="stroke: #2C3E50; stroke-width: 3.75;" width="257.5" x="2083.75" y="511.6016"/><ellipse cx="2121.25" cy="551.6016" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M2123.75,544.1016 L2123.75,559.1016 L2128.75,559.1016 L2129.9609,559.1016 L2131.25,560.6641 L2131.25,561.6016 L2131.25,562.5391 L2129.9609,564.1016 L2128.75,564.1016 L2113.75,564.1016 L2112.5391,564.1016 L2111.25,562.5391 L2111.25,561.6016 L2111.25,560.6641 L2112.5391,559.1016 L2113.75,559.1016 L2118.75,559.1016 L2118.75,544.1016 L2113.75,544.1016 L2112.5391,544.1016 L2111.25,542.5391 L2111.25,541.6016 L2111.25,540.6641 L2112.5391,539.1016 L2113.75,539.1016 L2128.75,539.1016 L2129.9609,539.1016 L2131.25,540.6641 L2131.25,541.6016 L2131.25,542.5391 L2129.9609,544.1016 L2128.75,544.1016 L2123.75,544.1016 Z "/><ellipse cx="2168.75" cy="550.3516" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="150" x="2183.75" y="563.877">PoolPlugin</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="2086.25" x2="2338.75" y1="591.6016" y2="591.6016"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="22.5" x="2098.75" y="630.1489">...</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="2086.25" x2="2338.75" y1="646.1914" y2="646.1914"/><!--MD5=[e86a4777f2c0372cf9fb3cd047e1466e]
+class Reader--><rect fill="#E59866" height="154.5898" id="Reader" style="stroke: #2C3E50; stroke-width: 3.75;" width="210" x="997.5" y="206.6016"/><ellipse cx="1035" cy="246.6016" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M1037.5,239.1016 L1037.5,254.1016 L1042.5,254.1016 L1043.7109,254.1016 L1045,255.6641 L1045,256.6016 L1045,257.5391 L1043.7109,259.1016 L1042.5,259.1016 L1027.5,259.1016 L1026.2891,259.1016 L1025,257.5391 L1025,256.6016 L1025,255.6641 L1026.2891,254.1016 L1027.5,254.1016 L1032.5,254.1016 L1032.5,239.1016 L1027.5,239.1016 L1026.2891,239.1016 L1025,237.5391 L1025,236.6016 L1025,235.6641 L1026.2891,234.1016 L1027.5,234.1016 L1042.5,234.1016 L1043.7109,234.1016 L1045,235.6641 L1045,236.6016 L1045,237.5391 L1043.7109,239.1016 L1042.5,239.1016 L1037.5,239.1016 Z "/><ellipse cx="1082.5" cy="245.3516" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="102.5" x="1097.5" y="258.877">Reader</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="1000" x2="1205" y1="286.6016" y2="286.6016"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="22.5" x="1012.5" y="325.1489">...</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="1000" x2="1205" y1="341.1914" y2="341.1914"/><!--MD5=[1fa9a61019755e60a0cb03f0bc3590aa]
+class ObservablePlugin--><rect fill="#E59866" height="154.5898" id="ObservablePlugin" style="stroke: #2C3E50; stroke-width: 3.75;" width="357.5" x="1638.75" y="511.6016"/><ellipse cx="1676.25" cy="551.6016" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M1678.75,544.1016 L1678.75,559.1016 L1683.75,559.1016 L1684.9609,559.1016 L1686.25,560.6641 L1686.25,561.6016 L1686.25,562.5391 L1684.9609,564.1016 L1683.75,564.1016 L1668.75,564.1016 L1667.5391,564.1016 L1666.25,562.5391 L1666.25,561.6016 L1666.25,560.6641 L1667.5391,559.1016 L1668.75,559.1016 L1673.75,559.1016 L1673.75,544.1016 L1668.75,544.1016 L1667.5391,544.1016 L1666.25,542.5391 L1666.25,541.6016 L1666.25,540.6641 L1667.5391,539.1016 L1668.75,539.1016 L1683.75,539.1016 L1684.9609,539.1016 L1686.25,540.6641 L1686.25,541.6016 L1686.25,542.5391 L1684.9609,544.1016 L1683.75,544.1016 L1678.75,544.1016 Z "/><ellipse cx="1723.75" cy="550.3516" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="250" x="1738.75" y="563.877">ObservablePlugin</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="1641.25" x2="1993.75" y1="591.6016" y2="591.6016"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="22.5" x="1653.75" y="630.1489">...</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="1641.25" x2="1993.75" y1="646.1914" y2="646.1914"/><!--MD5=[e2341a3d5316e117132fc49473ae3219]
+class ObservableReader--><rect fill="#E59866" height="154.5898" id="ObservableReader" style="stroke: #2C3E50; stroke-width: 3.75;" width="372.5" x="1178.75" y="511.6016"/><ellipse cx="1216.25" cy="551.6016" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M1218.75,544.1016 L1218.75,559.1016 L1223.75,559.1016 L1224.9609,559.1016 L1226.25,560.6641 L1226.25,561.6016 L1226.25,562.5391 L1224.9609,564.1016 L1223.75,564.1016 L1208.75,564.1016 L1207.5391,564.1016 L1206.25,562.5391 L1206.25,561.6016 L1206.25,560.6641 L1207.5391,559.1016 L1208.75,559.1016 L1213.75,559.1016 L1213.75,544.1016 L1208.75,544.1016 L1207.5391,544.1016 L1206.25,542.5391 L1206.25,541.6016 L1206.25,540.6641 L1207.5391,539.1016 L1208.75,539.1016 L1223.75,539.1016 L1224.9609,539.1016 L1226.25,540.6641 L1226.25,541.6016 L1226.25,542.5391 L1224.9609,544.1016 L1223.75,544.1016 L1218.75,544.1016 Z "/><ellipse cx="1263.75" cy="550.3516" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="265" x="1278.75" y="563.877">ObservableReader</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="1181.25" x2="1548.75" y1="591.6016" y2="591.6016"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="22.5" x="1193.75" y="630.1489">...</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="1181.25" x2="1548.75" y1="646.1914" y2="646.1914"/><!--MD5=[35b709ead7a86e7b2780a25fdb99ded4]
+class ReaderObserver--><rect fill="#E59866" height="154.5898" id="ReaderObserver" style="stroke: #2C3E50; stroke-width: 3.75;" width="337.5" x="1196.25" y="856.6016"/><ellipse cx="1233.75" cy="896.6016" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M1236.25,889.1016 L1236.25,904.1016 L1241.25,904.1016 L1242.4609,904.1016 L1243.75,905.6641 L1243.75,906.6016 L1243.75,907.5391 L1242.4609,909.1016 L1241.25,909.1016 L1226.25,909.1016 L1225.0391,909.1016 L1223.75,907.5391 L1223.75,906.6016 L1223.75,905.6641 L1225.0391,904.1016 L1226.25,904.1016 L1231.25,904.1016 L1231.25,889.1016 L1226.25,889.1016 L1225.0391,889.1016 L1223.75,887.5391 L1223.75,886.6016 L1223.75,885.6641 L1225.0391,884.1016 L1226.25,884.1016 L1241.25,884.1016 L1242.4609,884.1016 L1243.75,885.6641 L1243.75,886.6016 L1243.75,887.5391 L1242.4609,889.1016 L1241.25,889.1016 L1236.25,889.1016 Z "/><ellipse cx="1281.25" cy="895.3516" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="230" x="1296.25" y="908.877">ReaderObserver</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="1198.75" x2="1531.25" y1="936.6016" y2="936.6016"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="22.5" x="1211.25" y="975.1489">...</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="1198.75" x2="1531.25" y1="991.1914" y2="991.1914"/><!--MD5=[96a4004012a1c08588eb87adf87ec875]
+class ProxyReader--><rect fill="#E59866" height="154.5898" id="ProxyReader" style="stroke: #2C3E50; stroke-width: 3.75;" width="287.5" x="436.25" y="511.6016"/><ellipse cx="473.75" cy="551.6016" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M476.25,544.1016 L476.25,559.1016 L481.25,559.1016 L482.4609,559.1016 L483.75,560.6641 L483.75,561.6016 L483.75,562.5391 L482.4609,564.1016 L481.25,564.1016 L466.25,564.1016 L465.0391,564.1016 L463.75,562.5391 L463.75,561.6016 L463.75,560.6641 L465.0391,559.1016 L466.25,559.1016 L471.25,559.1016 L471.25,544.1016 L466.25,544.1016 L465.0391,544.1016 L463.75,542.5391 L463.75,541.6016 L463.75,540.6641 L465.0391,539.1016 L466.25,539.1016 L481.25,539.1016 L482.4609,539.1016 L483.75,540.6641 L483.75,541.6016 L483.75,542.5391 L482.4609,544.1016 L481.25,544.1016 L476.25,544.1016 Z "/><ellipse cx="521.25" cy="550.3516" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="180" x="536.25" y="563.877">ProxyReader</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="438.75" x2="721.25" y1="591.6016" y2="591.6016"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="22.5" x="451.25" y="630.1489">...</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="438.75" x2="721.25" y1="646.1914" y2="646.1914"/><!--MD5=[c8b9470c9f0bc9bc22cc394204c1ec26]
+class AbstractReader--><rect fill="#E59866" height="154.5898" id="AbstractReader" style="stroke: #2C3E50; stroke-width: 3.75;" width="322.5" x="156.25" y="856.6016"/><ellipse cx="193.75" cy="896.6016" fill="#A9DCDF" rx="27.5" ry="27.5" style="stroke: #A9DCDF; stroke-width: 2.5;"/><path d="M198.125,900.3516 L189.8828,900.3516 L188.7891,902.8516 L188.7891,902.8516 L189.9609,902.8516 L191.25,904.4141 L191.25,905.3516 L191.25,906.2891 L189.9609,907.8516 L188.7891,907.8516 L184.0625,907.8516 L182.5391,907.8516 L181.25,906.2891 L181.25,905.3516 L181.25,904.4141 L182.5391,902.8516 L184.0625,902.8516 L189.8438,887.8516 L187.6563,887.8516 L185.0391,887.8516 L183.75,886.2891 L183.75,885.3516 L183.75,884.4141 L185.0391,882.8516 L187.6563,882.8516 L196.8359,882.8516 L203.5547,902.8516 L204.9609,902.8516 L204.9609,902.8516 L206.25,904.4141 L206.25,905.3516 L206.25,906.2891 L204.9609,907.8516 L203.5547,907.8516 L198.8281,907.8516 L197.5391,907.8516 L196.25,906.2891 L196.25,905.3516 L196.25,904.4141 L197.5391,902.8516 L198.8281,902.8516 L198.8281,902.8516 L198.125,900.3516 Z M196.7578,895.3516 L193.75,886.4063 L191.1719,895.3516 L196.7578,895.3516 Z "/><ellipse cx="241.25" cy="895.3516" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="215" x="256.25" y="908.877">AbstractReader</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="158.75" x2="476.25" y1="936.6016" y2="936.6016"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="22.5" x="171.25" y="975.1489">...</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="158.75" x2="476.25" y1="991.1914" y2="991.1914"/><!--MD5=[b940e63541cb3de023976f6bd0dc6a31]
+class ObservableReaderNotifier--><rect fill="#E59866" height="154.5898" id="ObservableReaderNotifier" style="stroke: #2C3E50; stroke-width: 3.75;" width="470" x="567.5" y="856.6016"/><ellipse cx="605" cy="896.6016" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M607.5,889.1016 L607.5,904.1016 L612.5,904.1016 L613.7109,904.1016 L615,905.6641 L615,906.6016 L615,907.5391 L613.7109,909.1016 L612.5,909.1016 L597.5,909.1016 L596.2891,909.1016 L595,907.5391 L595,906.6016 L595,905.6641 L596.2891,904.1016 L597.5,904.1016 L602.5,904.1016 L602.5,889.1016 L597.5,889.1016 L596.2891,889.1016 L595,887.5391 L595,886.6016 L595,885.6641 L596.2891,884.1016 L597.5,884.1016 L612.5,884.1016 L613.7109,884.1016 L615,885.6641 L615,886.6016 L615,887.5391 L613.7109,889.1016 L612.5,889.1016 L607.5,889.1016 Z "/><ellipse cx="652.5" cy="895.3516" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="362.5" x="667.5" y="908.877">ObservableReaderNotifier</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="570" x2="1035" y1="936.6016" y2="936.6016"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="22.5" x="582.5" y="975.1489">...</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="570" x2="1035" y1="991.1914" y2="991.1914"/><!--MD5=[2219806bdc996f946b60beec9aa5725f]
+reverse link Plugin to PoolPlugin--><path d="M1969.835,356.6166 C1993.2425,370.3391 2016.6425,385.5116 2037.5,401.6016 C2078.805,433.4666 2119.215,475.2616 2150.775,511.0641 " fill="none" id="Plugin&lt;-PoolPlugin" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="none" points="1960.815,371.6291,1925.485,332.1566,1977.72,340.9816,1960.815,371.6291" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[550a12816f88094ca7e979a72eedae9c]
+reverse link Plugin to ObservablePlugin--><path d="M1823.3025,412.5341 C1822.1875,445.9866 1821.0175,481.0816 1820.0225,510.9241 " fill="none" id="Plugin&lt;-ObservablePlugin" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="none" points="1805.82,411.6941,1824.9775,362.3041,1840.8,412.8591,1805.82,411.6941" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[495ccb80ac82bdc45a1b0288016f2c00]
+reverse link Reader to ObservableReader--><path d="M1202.3075,400.6666 C1234.5875,437.5566 1269.56,477.5291 1298.7825,510.9241 " fill="none" id="Reader&lt;-ObservableReader" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="none" points="1188.495,411.4566,1168.74,362.3041,1214.835,388.4091,1188.495,411.4566" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[064f265580e30d9d90190d8c0a6130d8]
+reverse link Reader to ProxyReader--><path d="M953.3,372.2666 C876.8375,416.1691 784.575,469.1416 710.905,511.4416 " fill="none" id="Reader&lt;-ProxyReader" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="none" points="945.3175,356.6691,997.3925,346.9491,962.745,387.0241,945.3175,356.6691" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[625475b96d083cf26f5f0b5bf24282c2]
+reverse link ProxyReader to AbstractReader--><path d="M490.7,707.2666 C452.665,756.5316 409.38,812.5966 375.595,856.3566 " fill="none" id="ProxyReader&lt;-AbstractReader" style="stroke: #A80036; stroke-width: 2.5; stroke-dasharray: 7.0,7.0;"/><polygon fill="none" points="477.335,695.9416,521.7425,667.0591,505.04,717.3291,477.335,695.9416" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[77be2c078e34aa2dfe5639fff6304c16]
+reverse link ObservableReader to ObservableReaderNotifier--><path d="M1197.35,692.9366 C1110.7075,745.3091 1006.775,808.1291 927.2925,856.1716 " fill="none" id="ObservableReader&lt;-ObservableReaderNotifier" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="none" points="1189.0175,677.5241,1240.86,666.6366,1207.1225,707.4791,1189.0175,677.5241" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[49138a1ae57008717e97dd6304bf9aa6]
+reverse link ObservableReader to ReaderObserver--><path d="M1365,705.0441 C1365,754.8366 1365,811.9366 1365,856.3566 " fill="none" id="ObservableReader&lt;-ReaderObserver" style="stroke: #3498DB; stroke-width: 2.5;"/><ellipse cx="1365" cy="687.0591" fill="#FFFFFF" rx="20" ry="20" style="stroke: #3498DB; stroke-width: 2.5;"/><line style="stroke: #3498DB; stroke-width: 2.5;" x1="1365" x2="1365" y1="707.0591" y2="667.0591"/><line style="stroke: #3498DB; stroke-width: 2.5;" x1="1345" x2="1385" y1="687.0591" y2="687.0591"/><!--MD5=[ceda0ad47d9c9dfba8d6cbbfa4526044]
+@startuml
+title
+    Keyple Remote Plugin - Keyple Core API - 1.0.0 (06/11/2020)
+end title
+
+
+
+skinparam Shadowing false
+skinparam ClassFontStyle italic
+skinparam ClassBorderColor #D4AC0D
+skinparam stereotypeABorderColor #A9DCDF
+skinparam stereotypeIBorderColor #B4A7E5
+skinparam stereotypeCBorderColor #ADD1B2
+skinparam stereotypeEBorderColor #EB93DF
+skinparam ClassBackgroundColor<<red>> #FDEDEC
+skinparam ClassBorderColor<<red>> #E74C3C
+hide <<red>> stereotype
+skinparam ClassBackgroundColor<<purple>> #F4ECF7
+skinparam ClassBorderColor<<purple>> #8E44AD
+hide <<purple>> stereotype
+skinparam ClassBackgroundColor<<blue>> #EBF5FB
+skinparam ClassBorderColor<<blue>> #3498DB
+hide <<blue>> stereotype
+skinparam ClassBackgroundColor<<green>> #E9F7EF
+skinparam ClassBorderColor<<green>> #27AE60
+hide <<green>> stereotype
+skinparam ClassBackgroundColor<<grey>> #EAECEE
+skinparam ClassBorderColor<<grey>> #2C3E50
+hide <<grey>> stereotype
+
+
+package "org.eclipse.keyple.core.service" as packService {
+
+    +interface PluginFactory {
+        ...
+    }
+    +interface Plugin {
+        ...
+    }
+    +interface PoolPlugin extends Plugin {
+        ...
+    }
+    +interface Reader {
+        ...
+    }
+
+    package event {
+        +interface ObservablePlugin extends Plugin {
+            ...
+        }
+        +interface ObservableReader extends Reader {
+            ...
+        }
+        +interface ReaderObserver {
+            ...
+        }
+    }
+
+    package message {
+        +interface ProxyReader extends Reader {
+            ...
+        }
+    }
+
+    package plugin.reader {
+        +abstract AbstractReader implements ProxyReader {
+            ...
+        }
+        +interface ObservableReaderNotifier extends ObservableReader {
+            ...
+        }
+    }
+}
+
+ObservableReader +- - ReaderObserver #3498DB
+
+
+package packService #F8F9F9 {}
+package event #F2F3F4 {}
+
+interface PluginFactory <<grey>> #E59866
+interface Plugin <<grey>> #E59866
+interface PoolPlugin <<grey>> #E59866
+interface Reader <<grey>> #E59866
+interface ProxyReader <<grey>> #E59866
+abstract AbstractReader <<grey>> #E59866
+interface ObservablePlugin <<grey>> #E59866
+interface ObservableReader <<grey>> #E59866
+interface ObservableReaderNotifier <<grey>> #E59866
+interface ReaderObserver <<grey>> #E59866
+
+@enduml
+
+PlantUML version 1.2020.09(Sun May 10 12:51:06 CEST 2020)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Java Version: 11.0.8+10-b944.34
+Operating System: Windows 10
+Default Encoding: Cp1252
+Language: fr
+Country: FR
+--></g></svg>

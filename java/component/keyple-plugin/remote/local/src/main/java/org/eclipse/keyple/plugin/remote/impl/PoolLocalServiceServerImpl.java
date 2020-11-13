@@ -100,7 +100,7 @@ final class PoolLocalServiceServerImpl extends AbstractLocalService
               .setAction(MessageDto.Action.ERROR.name()) //
               .setBody(KeypleJsonParser.getParser().toJson(new BodyError(e)));
     }
-    getNode().sendMessage(response);
+    node.sendMessage(response);
   }
 
   /**

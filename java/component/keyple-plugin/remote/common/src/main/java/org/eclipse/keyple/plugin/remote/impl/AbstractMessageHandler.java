@@ -35,7 +35,7 @@ abstract class AbstractMessageHandler {
    * (private)<br>
    * The bounded node.
    */
-  private AbstractNode node;
+  AbstractNode node;
 
   /**
    * (package-private)<br>
@@ -103,16 +103,6 @@ abstract class AbstractMessageHandler {
    */
   void bindSyncNodeServer() {
     node = new SyncNodeServerImpl(this, 20);
-  }
-
-  /**
-   * Gets the associated node.
-   *
-   * @return a not null reference.
-   * @since 1.0
-   */
-  AbstractNode getNode() {
-    return node;
   }
 
   /**
