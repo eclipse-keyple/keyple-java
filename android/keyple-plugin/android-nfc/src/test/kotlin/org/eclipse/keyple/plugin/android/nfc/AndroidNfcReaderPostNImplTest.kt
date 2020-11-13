@@ -36,9 +36,9 @@ import org.robolectric.RuntimeEnvironment
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(RobolectricTestRunner::class)
-class AndroidNfcReaderImplTest {
+class AndroidNfcReaderPostNImplTest {
 
-    private lateinit var reader: AndroidNfcReaderImpl
+    private lateinit var reader: AndroidNfcReaderPostNImpl
 
     @MockK
     internal lateinit var tag: Tag
@@ -51,7 +51,7 @@ class AndroidNfcReaderImplTest {
         MockKAnnotations.init(this, relaxUnitFun = true)
         val app = RuntimeEnvironment.application
 
-        reader = AndroidNfcReaderImpl
+        reader = AndroidNfcReaderPostNImpl
 
         // We need to mock tag.* because it's called in printTagId() called when channel is closed
         every { tagProxy?.tag } returns tag
