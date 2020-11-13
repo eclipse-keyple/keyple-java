@@ -118,4 +118,11 @@ abstract class ExamplesActivity : BasicActivity(), NavigationView.OnNavigationIt
         }
         return true
     }
+
+    override fun onDestroy() {
+        SmartCardService.getInstance().plugins.forEach {
+            SmartCardService.getInstance().unregisterPlugin(it.key)
+        }
+        super.onDestroy()
+    }
 }

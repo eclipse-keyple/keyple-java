@@ -14,7 +14,9 @@ package org.eclipse.keyple.example.util
 import android.content.Context
 import android.os.Build
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols
+import org.eclipse.keyple.plugin.android.nfc.AndroidNfcProtocolSettings
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader
+import org.eclipse.keyple.plugin.android.nfc.AndroidNfcSupportedProtocols
 
 /**
  * Extensions to improve readability of example code
@@ -23,10 +25,6 @@ fun AndroidNfcReader.configFlags(presenceCheckDelay: Int? = null, noPlateformSou
     presenceCheckDelay?.let { this.setParameter("FLAG_READER_PRESENCE_CHECK_DELAY", "$presenceCheckDelay") }
     noPlateformSound?.let { this.setParameter("FLAG_READER_NO_PLATFORM_SOUNDS", "$noPlateformSound") }
     skipNdefCheck?.let { this.setParameter("FLAG_READER_SKIP_NDEF_CHECK", "$skipNdefCheck") }
-}
-
-fun AndroidNfcReader.configProtocol(cardCommonProtocols: ContactlessCardCommonProtocols) {
-    this.activateProtocol(cardCommonProtocols.name, cardCommonProtocols.name)
 }
 
 fun Context.getColorResource(id: Int): Int {

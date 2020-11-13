@@ -11,21 +11,30 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
+import android.app.Activity
 import java.io.IOException
 import org.eclipse.keyple.core.service.exception.KeypleReaderException
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.Robolectric
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class AndroidNfcPluginImplTest {
 
-    private val plugin = AndroidNfcPluginImpl
+    private lateinit var plugin: AndroidNfcPluginImpl
+
+    lateinit var activity: Activity
 
     // init before each test
     @Before
     @Throws(IOException::class)
     fun setUp() {
+        activity = Robolectric.buildActivity(Activity::class.java).create().get()
+        plugin = AndroidNfcPluginImpl(activity)
         // get unique instance
         plugin.register()
     }
@@ -60,7 +69,7 @@ class AndroidNfcPluginImplTest {
     @Test
     @Throws(Exception::class)
     fun getName() {
-        Assert.assertEquals(AndroidNfcPluginImpl.name, plugin.name)
+        Assert.assertEquals(AndroidNfcPluginImpl(activity).name, plugin.name)
     }
 
     /*
@@ -70,7 +79,7 @@ class AndroidNfcPluginImplTest {
     @Test
     @Throws(Exception::class)
     fun getNativeReader() {
-        Assert.assertTrue(plugin.getReader(AndroidNfcReader.READER_NAME) is AbstractAndroidNfcReader)
+        Assert.assertTrue(plugin.getReader(AndroidNfcReaderPostNImpl(activity).name) is AndroidNfcReaderPostNImpl)
     }
 
     @Test

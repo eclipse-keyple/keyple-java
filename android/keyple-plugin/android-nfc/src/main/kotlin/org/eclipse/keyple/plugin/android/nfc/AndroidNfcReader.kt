@@ -11,7 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
-import android.app.Activity
 import android.content.Intent
 import android.nfc.NfcAdapter
 import org.eclipse.keyple.core.service.Reader
@@ -43,14 +42,9 @@ interface AndroidNfcReader : ObservableReader {
     fun processIntent(intent: Intent)
 
     /**
-     * Declare app to handle NFC Tags while in the foreground
+     * clear context instance
      */
-    fun enableNFCReaderMode(activity: Activity)
-
-    /**
-     * Stop app handling NFC Tags while in the foreground
-     */
-    fun disableNFCReaderMode(activity: Activity)
+    fun clearContext()
 
     /**
      * Configure NFC Reader

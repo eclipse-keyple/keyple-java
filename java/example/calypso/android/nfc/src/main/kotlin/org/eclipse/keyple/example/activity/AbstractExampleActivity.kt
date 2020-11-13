@@ -26,18 +26,20 @@ import kotlinx.android.synthetic.main.activity_calypso_examples.drawerLayout
 import kotlinx.android.synthetic.main.activity_calypso_examples.eventRecyclerView
 import kotlinx.android.synthetic.main.activity_calypso_examples.navigationView
 import kotlinx.android.synthetic.main.activity_calypso_examples.toolbar
+import org.eclipse.keyple.core.card.selection.AbstractSmartCard
 import org.eclipse.keyple.core.card.selection.CardSelection
 import org.eclipse.keyple.core.service.SmartCardService
 import org.eclipse.keyple.core.service.event.ObservableReader
 import org.eclipse.keyple.core.service.event.ReaderEvent
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols
+import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.example.adapter.EventAdapter
 import org.eclipse.keyple.example.calypso.android.nfc.R
 import org.eclipse.keyple.example.model.ChoiceEventModel
 import org.eclipse.keyple.example.model.EventModel
 import org.eclipse.keyple.example.util.configFlags
-import org.eclipse.keyple.example.util.configProtocol
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPluginFactory
+import org.eclipse.keyple.plugin.android.nfc.AndroidNfcProtocolSettings
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader
 import timber.log.Timber
 
@@ -85,7 +87,7 @@ abstract class AbstractExampleActivity : AppCompatActivity(), NavigationView.OnN
         /**
          * Register AndroidNfc plugin Factory
          */
-        val plugin = SmartCardService.getInstance().registerPlugin(AndroidNfcPluginFactory())
+        val plugin = SmartCardService.getInstance().registerPlugin(AndroidNfcPluginFactory(this))
 
         /**
          *  remove the observer if it already exist
@@ -96,7 +98,8 @@ abstract class AbstractExampleActivity : AppCompatActivity(), NavigationView.OnN
         (reader as ObservableReader).addObserver(this)
 
         // with this protocol settings we activate the nfc for ISO1443_4 protocol
-        reader.configProtocol(ContactlessCardCommonProtocols.ISO_14443_4)
+        reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name,
+                AndroidNfcProtocolSettings.getSetting(ContactlessCardCommonProtocols.ISO_14443_4.name))
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
@@ -163,4 +166,31 @@ abstract class AbstractExampleActivity : AppCompatActivity(), NavigationView.OnN
     }
 
     abstract fun initContentView()
+
+    override fun onDestroy() {
+        SmartCardService.getInstance().plugins.forEach {
+            SmartCardService.getInstance().unregisterPlugin(it.key)
+        }
+        super.onDestroy()
+    }
+
+    protected fun getSmardCardInfos(smartCard: AbstractSmartCard, index: Int): String{
+        val atr = try {
+            ByteArrayUtil.toHex(smartCard.atrBytes)
+        } catch (e: IllegalStateException) {
+            Timber.w(e)
+            e.message
+        }
+        val fci = try {
+            ByteArrayUtil.toHex(smartCard.fciBytes)
+        } catch (e: IllegalStateException) {
+            Timber.w(e)
+            e.message
+        }
+
+        return "Selection status for selection " +
+                "(indexed $index): \n\t\t" +
+                "ATR: ${atr}\n\t\t" +
+                "FCI: $fci"
+    }
 }

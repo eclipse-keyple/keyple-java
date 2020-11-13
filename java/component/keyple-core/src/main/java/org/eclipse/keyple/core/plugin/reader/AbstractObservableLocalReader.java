@@ -11,8 +11,6 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.plugin.reader;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.card.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.card.message.DefaultSelectionsResponse;
@@ -23,6 +21,9 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This abstract class is used to manage the matter of observing card events in the case of a local
@@ -112,6 +113,18 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
 
   /* Service that handles Internal Events and their impact on the current state of the reader */
   protected final ObservableReaderStateService stateService;
+
+	/**
+	 * Method called when the NFC detection is started by the Keyple Plugin
+	 *
+	 */
+	protected abstract void onStartDetection();
+
+	/**
+	 * Method called when the NFC detection is stopped by the Keyple Plugin
+	 *
+	 */
+	protected abstract void onStopDetection();
 
   /**
    * (protected)<br>
