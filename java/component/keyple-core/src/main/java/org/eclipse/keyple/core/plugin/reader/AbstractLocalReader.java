@@ -390,7 +390,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * @since 1.0
    */
   @Override
-  public void releaseChannel() {
+  public final void releaseChannel() {
 
     // close logical channel unconditionally
     closeLogicalChannel();
@@ -399,7 +399,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
         /*
          * request the removal sequence
          */
-        this.finalizeCardProcessing();
+        ((ObservableReader) this).finalizeCardProcessing();
       } else {
         /* Not observed: close immediately the physical channel if requested */
         resetProtocolAndClosePhysicalChannel();
@@ -818,19 +818,6 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * @since 0.9
    */
   protected abstract byte[] transmitApdu(byte[] apduIn);
-
-  /**
-   * Method to be implemented by child classes in order to handle the needed actions when
-   * terminating the communication with a card (closing of the physical channel, initiating a
-   * removal sequence, etc.)
-   *
-   * <p>The reader will remain in the WAIT_FOR_SE_REMOVAL state as long as the card is present. It
-   * will change to the WAIT_FOR_START_DETECTION or WAIT_FOR_SE_INSERTION state depending on what
-   * was set when the detection was started.
-   *
-   * @since 0.9
-   */
-  abstract void finalizeCardProcessing();
 
   /**
    * Activates the protocol provided from the reader's implementation point of view.

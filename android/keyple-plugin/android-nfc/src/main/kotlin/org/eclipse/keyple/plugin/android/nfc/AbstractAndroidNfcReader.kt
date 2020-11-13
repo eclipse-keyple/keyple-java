@@ -18,6 +18,7 @@ import android.nfc.Tag
 import android.os.Bundle
 import java.io.IOException
 import java.util.HashMap
+import org.eclipse.keyple.core.plugin.reader.AbstractObservableLocalAutonomousReader
 import org.eclipse.keyple.core.plugin.reader.AbstractObservableLocalReader
 import org.eclipse.keyple.core.plugin.reader.WaitForCardInsertionAutonomous
 import org.eclipse.keyple.core.service.exception.KeypleReaderException
@@ -29,7 +30,7 @@ import timber.log.Timber
  * Implementation of [AndroidNfcReader] based on keyple core abstract classes [AbstractObservableLocalReader]
  * and
  */
-internal abstract class AbstractAndroidNfcReader : AbstractObservableLocalReader(AndroidNfcReader.PLUGIN_NAME, AndroidNfcReader.READER_NAME),
+internal abstract class AbstractAndroidNfcReader : AbstractObservableLocalAutonomousReader(AndroidNfcReader.PLUGIN_NAME, AndroidNfcReader.READER_NAME),
         AndroidNfcReader, NfcAdapter.ReaderCallback, WaitForCardInsertionAutonomous {
 
     // Android NFC Adapter
@@ -91,24 +92,6 @@ internal abstract class AbstractAndroidNfcReader : AbstractObservableLocalReader
             }
             return options
         }
-
-// FIXME Create two implementation for both cases
-//    override fun initStateService(): ObservableReaderStateService {
-//
-//        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-//            ObservableReaderStateService.builder(this)
-//                    .waitForCardInsertionWithNativeDetection()
-//                    .waitForCardProcessingWithNativeDetection()
-//                    .waitForCardRemovalWithPollingDetection()
-//                    .build()
-//        } else {
-//            ObservableReaderStateService.builder(this)
-//                    .waitForCardInsertionWithNativeDetection()
-//                    .waitForCardProcessingWithNativeDetection()
-//                    .waitForCardRemovalWithSmartDetection()
-//                    .build()
-//        }
-//    }
 
     /**
      * Get Reader parameters
@@ -173,7 +156,7 @@ internal abstract class AbstractAndroidNfcReader : AbstractObservableLocalReader
             try {
                 Timber.i("Getting tag proxy")
                 tagProxy = TagProxy.getTagProxy(tag)
-                onEvent(InternalEvent.CARD_INSERTED)
+                onCardInserted()
             } catch (e: KeypleReaderException) {
                 Timber.e(e)
             }

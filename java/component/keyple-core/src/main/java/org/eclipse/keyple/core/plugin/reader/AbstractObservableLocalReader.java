@@ -543,7 +543,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
    *
    * @param event internal event
    */
-  protected void onEvent(InternalEvent event) {
+  void onEvent(InternalEvent event) {
     this.stateService.onEvent(event);
   }
 
