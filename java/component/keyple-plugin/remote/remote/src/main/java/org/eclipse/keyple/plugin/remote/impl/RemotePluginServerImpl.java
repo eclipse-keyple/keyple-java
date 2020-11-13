@@ -174,7 +174,7 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
             .setBody(body.toString());
 
     // Send the message
-    getNode().sendMessage(message);
+    node.sendMessage(message);
   }
 
   /**
@@ -294,17 +294,12 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
     if (isObservable) {
       ObservableRemoteReaderImpl observableRemoteReaderImpl =
           new ObservableRemoteReaderImpl(
-              getName(),
-              remoteReaderName,
-              getNode(),
-              sessionId,
-              clientNodeId,
-              eventNotificationPool);
+              getName(), remoteReaderName, node, sessionId, clientNodeId, eventNotificationPool);
       return new ObservableRemoteReaderServerImpl(
           observableRemoteReaderImpl, serviceId, userInputData, initialCardContent, null);
     } else {
       RemoteReaderImpl remoteReaderImpl =
-          new RemoteReaderImpl(getName(), remoteReaderName, getNode(), sessionId, clientNodeId);
+          new RemoteReaderImpl(getName(), remoteReaderName, node, sessionId, clientNodeId);
       return new RemoteReaderServerImpl(
           remoteReaderImpl, serviceId, userInputData, initialCardContent);
     }
@@ -329,7 +324,7 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
         new ObservableRemoteReaderImpl(
             getName(),
             UUID.randomUUID().toString(),
-            getNode(),
+            node,
             message.getSessionId(),
             message.getClientNodeId(),
             eventNotificationPool);

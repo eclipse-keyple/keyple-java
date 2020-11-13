@@ -32,8 +32,8 @@ public final class PoolLocalServiceServerUtils {
    */
   public static AsyncNodeServer getAsyncNode() {
     PoolLocalServiceServerImpl service = getPoolLocalServiceServer();
-    if (service.getNode() instanceof AsyncNodeServer) {
-      return (AsyncNodeServer) service.getNode();
+    if (service.node instanceof AsyncNodeServer) {
+      return (AsyncNodeServer) service.node;
     }
     throw new IllegalStateException(
         "The Local Pool Server Service is not bounded to an async node");
@@ -49,8 +49,8 @@ public final class PoolLocalServiceServerUtils {
    */
   public static SyncNodeServer getSyncNode() {
     PoolLocalServiceServerImpl service = getPoolLocalServiceServer();
-    if (service.getNode() instanceof SyncNodeServer) {
-      return (SyncNodeServer) service.getNode();
+    if (service.node instanceof SyncNodeServer) {
+      return (SyncNodeServer) service.node;
     }
     throw new IllegalStateException("The Local Pool Server Service is not bounded to an sync node");
   }

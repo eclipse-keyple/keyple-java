@@ -26,7 +26,7 @@ public class PoolRemotePluginClientUtils {
    * @since 1.0
    */
   public static AsyncNodeClient getAsyncNode() {
-    return (AsyncNodeClient) ((PoolRemotePluginClientImpl) getRemotePlugin()).getNode();
+    return (AsyncNodeClient) ((PoolRemotePluginClientImpl) getRemotePlugin()).node;
   }
 
   /**
