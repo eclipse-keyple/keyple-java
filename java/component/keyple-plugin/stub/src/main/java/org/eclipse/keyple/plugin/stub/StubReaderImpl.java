@@ -63,17 +63,13 @@ class StubReaderImpl extends AbstractObservableLocalReader
     this.isContactless = isContactless;
   }
 
+  @SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract")
   @Override
-  protected void onStartDetection()
-  {
-    //Do nothing
-  }
+  protected void onStartDetection() {}
 
+  @SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract")
   @Override
-  protected void onStopDetection()
-  {
-    //Do nothing
-  }
+  protected void onStopDetection() {}
 
   @Override
   protected byte[] getATR() {

@@ -123,4 +123,14 @@ public class BlankWaitForCardInsertionBlockingThreadedReader extends AbstractObs
 
   @Override
   public void stopWaitForCard() {}
+
+  @Override
+  protected void onStartDetection() {
+    // Do nothing
+  }
+
+  @Override
+  protected void onStopDetection() {
+    // Do nothing
+  }
 }

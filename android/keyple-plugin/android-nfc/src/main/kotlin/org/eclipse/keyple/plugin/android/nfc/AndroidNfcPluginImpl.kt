@@ -11,8 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
-import android.os.Build
 import android.app.Activity
+import android.os.Build
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
 import org.eclipse.keyple.core.plugin.AbstractPlugin

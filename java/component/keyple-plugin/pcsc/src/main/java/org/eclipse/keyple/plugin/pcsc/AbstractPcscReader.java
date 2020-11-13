@@ -94,17 +94,13 @@ abstract class AbstractPcscReader extends AbstractObservableLocalReader
     logger.debug("[{}] constructor => using terminal ", terminal);
   }
 
+  @SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract")
   @Override
-  protected void onStartDetection()
-  {
-    //Do nothing
-  }
+  protected void onStartDetection() {}
 
+  @SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract")
   @Override
-  protected void onStopDetection()
-  {
-    //Do nothing
-  }
+  protected void onStopDetection() {}
 
   /**
    * {@inheritDoc}
