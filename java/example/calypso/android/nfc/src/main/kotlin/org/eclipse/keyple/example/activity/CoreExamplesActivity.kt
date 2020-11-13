@@ -37,6 +37,7 @@ import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.example.calypso.android.nfc.R
 import org.eclipse.keyple.example.util.CalypsoClassicInfo
+import org.eclipse.keyple.plugin.android.nfc.AndroidNfcProtocolSettings
 import timber.log.Timber
 
 class CoreExamplesActivity : AbstractExampleActivity() {
@@ -95,11 +96,12 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             cardSelection.prepareSelection(
                     GenericCardSelectionRequest(
                             CardSelector.builder()
-                                    .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
+                                    .cardProtocol(AndroidNfcProtocolSettings.getSetting(ContactlessCardCommonProtocols.ISO_14443_4.name))
                                     .aidSelector(AidSelector.builder()
                                             .aidToSelect(cardAidPrefix)
-                                            .fileOccurrence(CardSelector.AidSelector.FileOccurrence.FIRST)
-                                            .fileControlInformation(CardSelector.AidSelector.FileControlInformation.FCI).build())
+                                            .fileOccurrence(AidSelector.FileOccurrence.FIRST)
+                                            .fileControlInformation(AidSelector.FileControlInformation.FCI)
+                                            .build())
                                     .build()))
 
             /* Do the selection and display the result */
@@ -119,11 +121,12 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             cardSelection.prepareSelection(
                     GenericCardSelectionRequest(
                             CardSelector.builder()
-                                    .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
-                                    .aidSelector(CardSelector.AidSelector.builder()
+                                    .cardProtocol(AndroidNfcProtocolSettings.getSetting(ContactlessCardCommonProtocols.ISO_14443_4.name))
+                                    .aidSelector(AidSelector.builder()
                                             .aidToSelect(cardAidPrefix)
-                                            .fileOccurrence(CardSelector.AidSelector.FileOccurrence.NEXT)
-                                            .fileControlInformation(CardSelector.AidSelector.FileControlInformation.FCI).build())
+                                            .fileOccurrence(AidSelector.FileOccurrence.NEXT)
+                                            .fileControlInformation(AidSelector.FileControlInformation.FCI)
+                                            .build())
                                     .build()))
 
             /* Do the selection and display the result */
@@ -139,11 +142,8 @@ class CoreExamplesActivity : AbstractExampleActivity() {
         try {
             val selectionsResult = cardSelection.processExplicitSelection(reader)
             if (selectionsResult.hasActiveSelection()) {
-                    val smartCard = selectionsResult.activeSmartCard
-                    addResultEvent("Selection status for selection " +
-                            "(indexed $index): \n\t\t" +
-                            "ATR: ${ByteArrayUtil.toHex(smartCard.atrBytes)}\n\t\t" +
-                            "FCI: ${ByteArrayUtil.toHex(smartCard.fciBytes)}")
+                val smartCard = selectionsResult.activeSmartCard
+                addResultEvent(getSmardCardInfos(smartCard, index))
             } else {
                 addResultEvent("The selection did not match for case $index.")
             }
@@ -171,33 +171,36 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             cardSelection.prepareSelection(
                     GenericCardSelectionRequest(
                             CardSelector.builder()
-                                    .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
-                                    .aidSelector(CardSelector.AidSelector.builder()
+                                    .cardProtocol(AndroidNfcProtocolSettings.getSetting(ContactlessCardCommonProtocols.ISO_14443_4.name))
+                                    .aidSelector(AidSelector.builder()
                                             .aidToSelect(cardAidPrefix)
-                                            .fileOccurrence(CardSelector.AidSelector.FileOccurrence.FIRST)
-                                            .fileControlInformation(CardSelector.AidSelector.FileControlInformation.FCI).build())
+                                            .fileOccurrence(AidSelector.FileOccurrence.FIRST)
+                                            .fileControlInformation(AidSelector.FileControlInformation.FCI)
+                                            .build())
                                     .build()))
 
             /* next selection (2nd selection, later indexed 1) */
             cardSelection.prepareSelection(
                     GenericCardSelectionRequest(
                             CardSelector.builder()
-                                    .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
-                                    .aidSelector(CardSelector.AidSelector.builder()
+                                    .cardProtocol(AndroidNfcProtocolSettings.getSetting(ContactlessCardCommonProtocols.ISO_14443_4.name))
+                                    .aidSelector(AidSelector.builder()
                                             .aidToSelect(cardAidPrefix)
-                                            .fileOccurrence(CardSelector.AidSelector.FileOccurrence.NEXT)
-                                            .fileControlInformation(CardSelector.AidSelector.FileControlInformation.FCI).build())
+                                            .fileOccurrence(AidSelector.FileOccurrence.NEXT)
+                                            .fileControlInformation(AidSelector.FileControlInformation.FCI)
+                                            .build())
                                     .build()))
 
             /* next selection (3rd selection, later indexed 2) */
             cardSelection.prepareSelection(
                     GenericCardSelectionRequest(
                             CardSelector.builder()
-                                    .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
-                                    .aidSelector(CardSelector.AidSelector.builder()
+                                    .cardProtocol(AndroidNfcProtocolSettings.getSetting(ContactlessCardCommonProtocols.ISO_14443_4.name))
+                                    .aidSelector(AidSelector.builder()
                                             .aidToSelect(cardAidPrefix)
-                                            .fileOccurrence(CardSelector.AidSelector.FileOccurrence.NEXT)
-                                            .fileControlInformation(CardSelector.AidSelector.FileControlInformation.FCI).build())
+                                            .fileOccurrence(AidSelector.FileOccurrence.NEXT)
+                                            .fileControlInformation(AidSelector.FileControlInformation.FCI)
+                                            .build())
                                     .build()))
 
             addActionEvent("Calypso PO selection for prefix: $cardAidPrefix")
@@ -208,13 +211,9 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             try {
                 val selectionResult = cardSelection.processExplicitSelection(reader)
 
-                if (selectionResult.smartCards.size > 0) {
+                if (selectionResult.smartCards.isNotEmpty()) {
                     selectionResult.smartCards.forEach {
-                        val smartCard = it.value
-                        addResultEvent("Selection status for selection " +
-                                "(indexed ${it.key}): \n\t\t" +
-                                "ATR: ${ByteArrayUtil.toHex(smartCard.atrBytes)}\n\t\t" +
-                                "FCI: ${ByteArrayUtil.toHex(smartCard.fciBytes)}")
+                        addResultEvent(getSmardCardInfos(it.value, it.key))
                     }
                     addResultEvent("End of selection")
                 } else {
@@ -253,9 +252,11 @@ class CoreExamplesActivity : AbstractExampleActivity() {
          * selection
          */
         val cardSelector = GenericCardSelectionRequest(CardSelector.builder()
-                .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
-                .aidSelector(AidSelector.builder()
-                        .aidToSelect(aid).build())
+                .cardProtocol(AndroidNfcProtocolSettings.getSetting(ContactlessCardCommonProtocols.ISO_14443_4.name))
+                .aidSelector(
+                        AidSelector.builder()
+                                .aidToSelect(aid)
+                                .build())
                 .build())
 
         /*
@@ -296,7 +297,8 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                             addResultEvent("CARD_REMOVED event: There is no PO inserted anymore. Return to the waiting state...")
                         }
 
-                        else -> { }
+                        else -> {
+                        }
                     }
                     eventRecyclerView.smoothScrollToPosition(events.size - 1)
                 }
@@ -344,9 +346,15 @@ class CoreExamplesActivity : AbstractExampleActivity() {
              * Generic selection: configures a CardSelector with all the desired attributes to make
              * the selection and read additional information afterwards
              */
+
             val genericCardSelectionRequest = GenericCardSelectionRequest(
-                    CardSelector.builder().cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name).aidSelector(
-                            AidSelector.builder().aidToSelect(aid).build()).build())
+                    CardSelector.builder()
+                            .cardProtocol(AndroidNfcProtocolSettings.getSetting(ContactlessCardCommonProtocols.ISO_14443_4.name))
+                            .aidSelector(
+                                    AidSelector.builder()
+                                            .aidToSelect(aid)
+                                            .build())
+                            .build())
 
             /**
              * Prepare Selection
@@ -398,7 +406,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
     inner class GenericCardSelectionRequest(cardSelector: CardSelector) : AbstractCardSelectionRequest<AbstractApduCommandBuilder>(cardSelector) {
         override fun parse(CardSelectionResponse: CardSelectionResponse): AbstractSmartCard {
             class GenericSmartCard(
-                CardSelectionResponse: CardSelectionResponse
+                    CardSelectionResponse: CardSelectionResponse
             ) : AbstractSmartCard(CardSelectionResponse)
             return GenericSmartCard(CardSelectionResponse)
         }
