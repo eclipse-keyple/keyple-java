@@ -12,10 +12,10 @@
 package org.eclipse.keyple.plugin.remote.integration.common.app;
 
 import org.eclipse.keyple.core.service.event.ReaderEvent;
-import org.eclipse.keyple.plugin.remote.ObservableReaderEventFilter;
 import org.eclipse.keyple.plugin.remote.exception.KeypleDoNotPropagateEventException;
 import org.eclipse.keyple.plugin.remote.integration.common.model.TransactionResult;
 import org.eclipse.keyple.plugin.remote.integration.common.model.UserInput;
+import org.eclipse.keyple.plugin.remote.spi.ObservableReaderEventFilter;
 
 public class ReaderEventFilter implements ObservableReaderEventFilter {
 

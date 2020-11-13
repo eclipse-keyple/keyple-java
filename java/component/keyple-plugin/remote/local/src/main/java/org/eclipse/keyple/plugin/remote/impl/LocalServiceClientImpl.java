@@ -23,9 +23,9 @@ import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.LocalServiceClient;
 import org.eclipse.keyple.plugin.remote.MessageDto;
-import org.eclipse.keyple.plugin.remote.ObservableReaderEventFilter;
 import org.eclipse.keyple.plugin.remote.RemoteServiceParameters;
 import org.eclipse.keyple.plugin.remote.exception.KeypleDoNotPropagateEventException;
+import org.eclipse.keyple.plugin.remote.spi.ObservableReaderEventFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,10 +109,10 @@ final class LocalServiceClientImpl extends AbstractLocalService
 
     try {
       // Open a new session on the node
-      node.openSession(sessionId);
+      getNode().openSession(sessionId);
 
       // send keypleMessageDto through the node
-      MessageDto receivedDto = node.sendRequest(remoteServiceDto);
+      MessageDto receivedDto = getNode().sendRequest(remoteServiceDto);
 
       T userOutputData;
 
@@ -163,13 +163,13 @@ final class LocalServiceClientImpl extends AbstractLocalService
 
     } finally {
       // Close the session
-      node.closeSessionSilently(sessionId);
+      getNode().closeSessionSilently(sessionId);
     }
   }
 
   /** {@inheritDoc} */
   @Override
-  protected void onMessage(MessageDto msg) {
+  void onMessage(MessageDto msg) {
     throw new UnsupportedOperationException("onMessage");
   }
 
@@ -207,10 +207,10 @@ final class LocalServiceClientImpl extends AbstractLocalService
 
       try {
         // Open a new session on the node
-        node.openSession(sessionId);
+        getNode().openSession(sessionId);
 
         // send keypleMessageDto through the node
-        MessageDto receivedDto = node.sendRequest(eventMessageDto);
+        MessageDto receivedDto = getNode().sendRequest(eventMessageDto);
 
         // Process all the transaction
         receivedDto = processTransaction(localReader, receivedDto);
@@ -229,7 +229,7 @@ final class LocalServiceClientImpl extends AbstractLocalService
 
       } finally {
         // Close the session
-        node.closeSessionSilently(sessionId);
+        getNode().closeSessionSilently(sessionId);
       }
 
     } catch (RuntimeException e) {
@@ -259,7 +259,7 @@ final class LocalServiceClientImpl extends AbstractLocalService
       MessageDto responseDto = executeLocally(localReader, receivedDto);
 
       // get response dto - send dto response to server
-      receivedDto = node.sendRequest(responseDto);
+      receivedDto = getNode().sendRequest(responseDto);
     }
 
     // Check if the received dto contains an error

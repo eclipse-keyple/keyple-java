@@ -13,8 +13,8 @@ package org.eclipse.keyple.plugin.remote.impl;
 
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remote.LocalServiceClient;
-import org.eclipse.keyple.plugin.remote.ObservableReaderEventFilter;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
+import org.eclipse.keyple.plugin.remote.spi.ObservableReaderEventFilter;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

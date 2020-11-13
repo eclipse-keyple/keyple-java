@@ -51,7 +51,7 @@ final class AsyncNodeClientImpl extends AbstractNode implements AsyncNodeClient 
 
   /** {@inheritDoc} */
   @Override
-  public void openSession(String sessionId) {
+  void openSession(String sessionId) {
     SessionManager manager = new SessionManager(sessionId);
     sessionManagers.put(sessionId, manager);
     manager.openSession();
@@ -69,7 +69,7 @@ final class AsyncNodeClientImpl extends AbstractNode implements AsyncNodeClient 
 
   /** {@inheritDoc} */
   @Override
-  public MessageDto sendRequest(MessageDto msg) {
+  MessageDto sendRequest(MessageDto msg) {
     msg.setClientNodeId(nodeId);
     SessionManager manager = sessionManagers.get(msg.getSessionId());
     return manager.sendRequest(msg);
@@ -77,7 +77,7 @@ final class AsyncNodeClientImpl extends AbstractNode implements AsyncNodeClient 
 
   /** {@inheritDoc} */
   @Override
-  public void sendMessage(MessageDto msg) {
+  void sendMessage(MessageDto msg) {
     msg.setClientNodeId(nodeId);
     SessionManager manager = sessionManagers.get(msg.getSessionId());
     manager.sendMessage(msg);
@@ -110,7 +110,7 @@ final class AsyncNodeClientImpl extends AbstractNode implements AsyncNodeClient 
 
   /** {@inheritDoc} */
   @Override
-  public void closeSession(String sessionId) {
+  void closeSession(String sessionId) {
     SessionManager manager = sessionManagers.get(sessionId);
     try {
       manager.closeSession();

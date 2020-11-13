@@ -56,7 +56,7 @@ public class SyncNodeClientTest extends AbstractSyncNodeTest {
     boolean isError = false;
 
     @Override
-    protected void onMessage(MessageDto msg) {
+    void onMessage(MessageDto msg) {
       isError = true;
       throw new KeypleRemoteCommunicationException("Handler error mocked");
     }

@@ -69,13 +69,13 @@ final class SyncNodeClientImpl extends AbstractNode implements SyncNodeClient {
 
   /** {@inheritDoc} */
   @Override
-  public void openSession(String sessionId) {
+  void openSession(String sessionId) {
     // NOP
   }
 
   /** {@inheritDoc} */
   @Override
-  public MessageDto sendRequest(MessageDto msg) {
+  MessageDto sendRequest(MessageDto msg) {
 
     msg.setClientNodeId(nodeId);
     List<MessageDto> responses = endpoint.sendRequest(msg);
@@ -101,14 +101,14 @@ final class SyncNodeClientImpl extends AbstractNode implements SyncNodeClient {
 
   /** {@inheritDoc} */
   @Override
-  public void sendMessage(MessageDto msg) {
+  void sendMessage(MessageDto msg) {
     msg.setClientNodeId(nodeId);
     endpoint.sendRequest(msg);
   }
 
   /** {@inheritDoc} */
   @Override
-  public void closeSession(String sessionId) {
+  void closeSession(String sessionId) {
     // NOP
   }
 

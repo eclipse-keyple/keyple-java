@@ -32,25 +32,25 @@ abstract class AbstractMessageHandler {
   private static final Logger logger = LoggerFactory.getLogger(AbstractMessageHandler.class);
 
   /**
-   * (protected)<br>
+   * (private)<br>
    * The bounded node.
    */
-  protected AbstractNode node;
+  private AbstractNode node;
 
   /**
-   * (protected)<br>
+   * (package-private)<br>
    * Constructor.
    */
-  protected AbstractMessageHandler() {}
+  AbstractMessageHandler() {}
 
   /**
-   * (protected)<br>
+   * (package-private)<br>
    * This method processes an incoming message.<br>
    * It should be called by a node following the reception of a {@link MessageDto}.
    *
    * @param msg The message to process.
    */
-  protected abstract void onMessage(MessageDto msg);
+  abstract void onMessage(MessageDto msg);
 
   /**
    * This method builds and bind a {@link AsyncNodeClient} with the handler.<br>
@@ -60,7 +60,7 @@ abstract class AbstractMessageHandler {
    * @param timeoutInSecond Time to wait for the server to transmit a request.
    * @since 1.0
    */
-  public void bindAsyncNodeClient(AsyncEndpointClient endpoint, int timeoutInSecond) {
+  void bindAsyncNodeClient(AsyncEndpointClient endpoint, int timeoutInSecond) {
     node = new AsyncNodeClientImpl(this, endpoint, timeoutInSecond);
   }
 
@@ -71,7 +71,7 @@ abstract class AbstractMessageHandler {
    * @param endpoint The {@link AsyncEndpointServer} endpoint.
    * @since 1.0
    */
-  public void bindAsyncNodeServer(AsyncEndpointServer endpoint) {
+  void bindAsyncNodeServer(AsyncEndpointServer endpoint) {
     node = new AsyncNodeServerImpl(this, endpoint, 20);
   }
 
@@ -86,7 +86,7 @@ abstract class AbstractMessageHandler {
    *     (null if observation is not activated).
    * @since 1.0
    */
-  public void bindSyncNodeClient(
+  void bindSyncNodeClient(
       SyncEndpointClient endpoint,
       ServerPushEventStrategy pluginObservationStrategy,
       ServerPushEventStrategy readerObservationStrategy) {
@@ -101,7 +101,7 @@ abstract class AbstractMessageHandler {
    *
    * @since 1.0
    */
-  public void bindSyncNodeServer() {
+  void bindSyncNodeServer() {
     node = new SyncNodeServerImpl(this, 20);
   }
 
@@ -111,17 +111,17 @@ abstract class AbstractMessageHandler {
    * @return a not null reference.
    * @since 1.0
    */
-  public AbstractNode getNode() {
+  AbstractNode getNode() {
     return node;
   }
 
   /**
-   * (protected)<br>
+   * (package-private)<br>
    * If message contains an error, throws the embedded exception.
    *
    * @param message not null instance
    */
-  protected void checkError(MessageDto message) {
+  void checkError(MessageDto message) {
     if (message.getAction().equals(MessageDto.Action.ERROR.name())) {
       BodyError body = KeypleJsonParser.getParser().fromJson(message.getBody(), BodyError.class);
       throw body.getException();
@@ -129,12 +129,12 @@ abstract class AbstractMessageHandler {
   }
 
   /**
-   * (protected)<br>
+   * (package-private)<br>
    * Generate a unique session Id.
    *
    * @return A not empty value.
    */
-  protected String generateSessionId() {
+  String generateSessionId() {
     return UUID.randomUUID().toString();
   }
 }

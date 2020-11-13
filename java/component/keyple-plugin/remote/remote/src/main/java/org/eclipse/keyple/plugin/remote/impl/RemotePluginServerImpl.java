@@ -80,7 +80,7 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
    * @since 1.0
    */
   @Override
-  protected void onMessage(MessageDto message) {
+  void onMessage(MessageDto message) {
     switch (MessageDto.Action.valueOf(message.getAction())) {
       case EXECUTE_REMOTE_SERVICE:
 

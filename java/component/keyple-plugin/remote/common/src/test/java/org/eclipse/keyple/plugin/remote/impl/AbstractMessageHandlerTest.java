@@ -44,7 +44,7 @@ public class AbstractMessageHandlerTest {
     handler =
         new AbstractMessageHandler() {
           @Override
-          protected void onMessage(MessageDto msg) {}
+          void onMessage(MessageDto msg) {}
         };
   }
 

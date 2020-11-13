@@ -63,7 +63,7 @@ public class RemoteReaderImplTest {
         new MessageDto() //
             .setAction(MessageDto.Action.TRANSMIT.name()) //
             .setRemoteReaderName(reader.getName()) //
-            .setLocalReaderName(reader.localReaderName) //
+            .setLocalReaderName(reader.getLocalReaderName()) //
             .setBody(KeypleJsonParser.getParser().toJson(cardResponse, CardResponse.class));
 
     doReturn(responseDto).when(node).sendRequest(any(MessageDto.class));
@@ -119,7 +119,7 @@ public class RemoteReaderImplTest {
         new MessageDto() //
             .setAction(MessageDto.Action.TRANSMIT_CARD_SELECTION.name()) //
             .setRemoteReaderName(reader.getName()) //
-            .setLocalReaderName(reader.localReaderName) //
+            .setLocalReaderName(reader.getLocalReaderName()) //
             .setBody(
                 KeypleJsonParser.getParser()
                     .toJson(cardResponses, new TypeToken<ArrayList<CardResponse>>() {}.getType()));
@@ -177,7 +177,7 @@ public class RemoteReaderImplTest {
         new MessageDto() //
             .setAction(MessageDto.Action.IS_CARD_PRESENT.name()) //
             .setRemoteReaderName(reader.getName()) //
-            .setLocalReaderName(reader.localReaderName) //
+            .setLocalReaderName(reader.getLocalReaderName()) //
             .setBody(KeypleJsonParser.getParser().toJson(true, Boolean.class));
 
     doReturn(responseDto).when(node).sendRequest(any(MessageDto.class));
@@ -213,7 +213,7 @@ public class RemoteReaderImplTest {
         new MessageDto() //
             .setAction(MessageDto.Action.IS_READER_CONTACTLESS.name()) //
             .setRemoteReaderName(reader.getName()) //
-            .setLocalReaderName(reader.localReaderName) //
+            .setLocalReaderName(reader.getLocalReaderName()) //
             .setBody(KeypleJsonParser.getParser().toJson(true, Boolean.class));
 
     doReturn(responseDto).when(node).sendRequest(any(MessageDto.class));
@@ -249,7 +249,7 @@ public class RemoteReaderImplTest {
         new MessageDto() //
             .setAction(MessageDto.Action.RELEASE_CHANNEL.name()) //
             .setRemoteReaderName(reader.getName()) //
-            .setLocalReaderName(reader.localReaderName);
+            .setLocalReaderName(reader.getLocalReaderName());
 
     doReturn(responseDto).when(node).sendRequest(any(MessageDto.class));
 
@@ -301,7 +301,7 @@ public class RemoteReaderImplTest {
         new MessageDto() //
             .setAction(MessageDto.Action.ERROR.name()) //
             .setRemoteReaderName(reader.getName()) //
-            .setLocalReaderName(reader.localReaderName) //
+            .setLocalReaderName(reader.getLocalReaderName()) //
             .setBody(KeypleJsonParser.getParser().toJson(new BodyError(error)));
 
     doReturn(responseDto).when(node).sendRequest(any(MessageDto.class));

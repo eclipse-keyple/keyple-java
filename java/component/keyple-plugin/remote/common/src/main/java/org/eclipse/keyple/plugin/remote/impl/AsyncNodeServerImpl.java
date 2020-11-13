@@ -53,13 +53,13 @@ final class AsyncNodeServerImpl extends AbstractNode implements AsyncNodeServer 
 
   /** {@inheritDoc} */
   @Override
-  public void openSession(String sessionId) {
+  void openSession(String sessionId) {
     throw new UnsupportedOperationException("openSession");
   }
 
   /** {@inheritDoc} */
   @Override
-  public MessageDto sendRequest(MessageDto msg) {
+  MessageDto sendRequest(MessageDto msg) {
     msg.setServerNodeId(nodeId);
     SessionManager manager = getManagerForHandler(msg.getSessionId());
     return manager.sendRequest(msg);
@@ -67,7 +67,7 @@ final class AsyncNodeServerImpl extends AbstractNode implements AsyncNodeServer 
 
   /** {@inheritDoc} */
   @Override
-  public void sendMessage(MessageDto msg) {
+  void sendMessage(MessageDto msg) {
     msg.setServerNodeId(nodeId);
     SessionManager manager = getManagerForHandler(msg.getSessionId());
     manager.sendMessage(msg);
@@ -75,7 +75,7 @@ final class AsyncNodeServerImpl extends AbstractNode implements AsyncNodeServer 
 
   /** {@inheritDoc} */
   @Override
-  public void closeSession(String sessionId) {
+  void closeSession(String sessionId) {
     throw new UnsupportedOperationException("closeSession");
   }
 

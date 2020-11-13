@@ -49,7 +49,7 @@ final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
     String sessionId = generateSessionId();
     try {
       // Open a new session on the node, session will be closed at the end of this operation
-      node.openSession(sessionId);
+      getNode().openSession(sessionId);
 
       MessageDto request =
           new MessageDto()
@@ -57,7 +57,7 @@ final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
               .setSessionId(sessionId)
               .setBody(null);
 
-      MessageDto response = node.sendRequest(request);
+      MessageDto response = getNode().sendRequest(request);
 
       checkError(response);
       String readerGroupReferencesJson =
@@ -69,7 +69,7 @@ final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
       return KeypleJsonParser.getParser().fromJson(readerGroupReferencesJson, SortedSet.class);
 
     } finally {
-      node.closeSessionSilently(sessionId);
+      getNode().closeSessionSilently(sessionId);
     }
   }
 
@@ -83,7 +83,7 @@ final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
     String sessionId = generateSessionId();
     try {
       // Open a new session on the node, session will be closed with the release reader method
-      node.openSession(sessionId);
+      getNode().openSession(sessionId);
 
       JsonObject body = new JsonObject();
       body.addProperty("groupReference", groupReference);
@@ -93,7 +93,7 @@ final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
               .setSessionId(sessionId)
               .setBody(body.toString());
 
-      MessageDto response = node.sendRequest(request);
+      MessageDto response = getNode().sendRequest(request);
 
       checkError(response);
       RemoteReaderImpl reader =
@@ -109,7 +109,7 @@ final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
       return reader;
     } catch (RuntimeException e) {
       // in case of error, session is closed
-      node.closeSessionSilently(sessionId);
+      getNode().closeSessionSilently(sessionId);
       throw e;
     }
   }
@@ -142,12 +142,12 @@ final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
       readers.remove(reader.getName());
 
       // it is assumed a session is already open on the node, else an error is thrown
-      MessageDto response = node.sendRequest(request);
+      MessageDto response = getNode().sendRequest(request);
       checkError(response);
 
     } finally {
       // close the session on the node
-      node.closeSessionSilently(remoteReaderImpl.getSessionId());
+      getNode().closeSessionSilently(remoteReaderImpl.getSessionId());
     }
   }
 
@@ -171,7 +171,7 @@ final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
    * Not used in this plugin
    */
   @Override
-  protected void onMessage(MessageDto msg) {
+  void onMessage(MessageDto msg) {
     // not used
     throw new UnsupportedOperationException("onMessage method is not supported by this plugin");
   }

@@ -30,13 +30,13 @@ class ServerPushEventStrategy {
    *
    * @param type The strategy type to set.
    */
-  public ServerPushEventStrategy(Type type) {
+  ServerPushEventStrategy(Type type) {
     this.type = type;
     this.duration = 0;
   }
 
   /** The strategy type enum. */
-  public enum Type {
+  enum Type {
     POLLING,
     LONG_POLLING
   }
@@ -47,7 +47,7 @@ class ServerPushEventStrategy {
    *
    * @return a not null value.
    */
-  public Type getType() {
+  Type getType() {
     return type;
   }
 
@@ -59,7 +59,7 @@ class ServerPushEventStrategy {
    * @return the current instance
    * @since 1.0
    */
-  public ServerPushEventStrategy setDuration(int durationInSeconds) {
+  ServerPushEventStrategy setDuration(int durationInSeconds) {
     this.duration = durationInSeconds;
     return this;
   }

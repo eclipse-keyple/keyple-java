@@ -62,7 +62,7 @@ final class PoolLocalServiceServerImpl extends AbstractLocalService
   }
 
   @Override
-  protected void onMessage(MessageDto msg) {
+  void onMessage(MessageDto msg) {
     MessageDto response;
     ProxyReader reader;
     ReaderPoolPlugin poolPlugin;

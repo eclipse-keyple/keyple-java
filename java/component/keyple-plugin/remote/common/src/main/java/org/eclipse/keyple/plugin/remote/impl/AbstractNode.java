@@ -30,16 +30,16 @@ abstract class AbstractNode {
   private static final Logger logger = LoggerFactory.getLogger(AbstractNode.class);
 
   /**
-   * (protected)<br>
+   * (package-private)<br>
    * The node id.
    */
-  protected final String nodeId;
+  final String nodeId;
 
   /**
-   * (protected)<br>
+   * (package-private)<br>
    * The associated handler.
    */
-  protected final AbstractMessageHandler handler;
+  final AbstractMessageHandler handler;
 
   /**
    * (private)<br>
@@ -66,7 +66,7 @@ abstract class AbstractNode {
    * @param sessionId The session id (must be not empty).
    * @since 1.0
    */
-  public abstract void openSession(String sessionId);
+  abstract void openSession(String sessionId);
 
   /**
    * Send a request and return a response (for internal use only).
@@ -75,7 +75,7 @@ abstract class AbstractNode {
    * @return null if there is no response.
    * @since 1.0
    */
-  public abstract MessageDto sendRequest(MessageDto msg);
+  abstract MessageDto sendRequest(MessageDto msg);
 
   /**
    * Send a message (for internal use only).
@@ -83,7 +83,7 @@ abstract class AbstractNode {
    * @param msg The message to send (must be not null).
    * @since 1.0
    */
-  public abstract void sendMessage(MessageDto msg);
+  abstract void sendMessage(MessageDto msg);
 
   /**
    * Close the session having the provided session id (for internal use only).
@@ -91,7 +91,7 @@ abstract class AbstractNode {
    * @param sessionId The session id (must be not empty).
    * @since 1.0
    */
-  public abstract void closeSession(String sessionId);
+  abstract void closeSession(String sessionId);
 
   /**
    * Close the session silently (without throwing exceptions)
@@ -99,7 +99,7 @@ abstract class AbstractNode {
    * @param sessionId The session id (must be not empty).
    * @since 1.0
    */
-  public void closeSessionSilently(String sessionId) {
+  void closeSessionSilently(String sessionId) {
     try {
       closeSession(sessionId);
     } catch (RuntimeException e) {

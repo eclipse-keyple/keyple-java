@@ -30,10 +30,10 @@ import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.LocalServiceClient;
 import org.eclipse.keyple.plugin.remote.MessageDto;
-import org.eclipse.keyple.plugin.remote.ObservableReaderEventFilter;
 import org.eclipse.keyple.plugin.remote.RemoteServiceParameters;
 import org.eclipse.keyple.plugin.remote.exception.KeypleDoNotPropagateEventException;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
+import org.eclipse.keyple.plugin.remote.spi.ObservableReaderEventFilter;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.junit.After;
 import org.junit.Before;
@@ -373,7 +373,7 @@ public class LocalServiceClientTest extends BaseLocalTest {
      *
      * @param selectionResponse the response from the card
      */
-    protected MatchingSeImpl(CardSelectionResponse selectionResponse) {
+    MatchingSeImpl(CardSelectionResponse selectionResponse) {
       super(selectionResponse);
     }
   }

@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.plugin.remote;
+package org.eclipse.keyple.plugin.remote.spi;
 
 import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.plugin.remote.exception.KeypleDoNotPropagateEventException;
