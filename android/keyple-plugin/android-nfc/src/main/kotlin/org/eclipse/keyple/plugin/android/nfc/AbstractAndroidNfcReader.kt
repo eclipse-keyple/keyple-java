@@ -31,7 +31,7 @@ import timber.log.Timber
  * and
  */
 internal abstract class AbstractAndroidNfcReader : AbstractObservableLocalAutonomousReader(AndroidNfcReader.PLUGIN_NAME, AndroidNfcReader.READER_NAME),
-        AndroidNfcReader, NfcAdapter.ReaderCallback, WaitForCardInsertionAutonomous {
+        AndroidNfcReader, NfcAdapter.ReaderCallback, WaitForCardInsertionAutonomous, DontWaitForCardRemovalDuringProcessing {
 
     // Android NFC Adapter
     protected var nfcAdapter: NfcAdapter? = null
