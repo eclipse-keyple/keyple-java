@@ -18,12 +18,12 @@ import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.core.card.selection.CardSelection;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
-import org.eclipse.keyple.plugin.remote.core.KeypleClientSync;
-import org.eclipse.keyple.plugin.remote.integration.common.endpoint.pool.StubSyncClientEndpoint;
+import org.eclipse.keyple.plugin.remote.PoolRemotePluginClient;
+import org.eclipse.keyple.plugin.remote.impl.PoolLocalServiceServerFactory;
+import org.eclipse.keyple.plugin.remote.impl.PoolRemotePluginClientFactory;
+import org.eclipse.keyple.plugin.remote.integration.common.endpoint.pool.StubSyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.integration.common.util.CalypsoUtilities;
-import org.eclipse.keyple.plugin.remote.nativ.impl.NativePoolServerServiceFactory;
-import org.eclipse.keyple.plugin.remote.virtual.RemotePoolClientPlugin;
-import org.eclipse.keyple.plugin.remote.virtual.impl.RemotePoolClientPluginFactory;
+import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -37,20 +37,20 @@ public class SyncScenario extends BaseScenario {
   public void setUp() {
     initNativePoolStubPlugin();
 
-    KeypleClientSync clientEndpoint = new StubSyncClientEndpoint();
+    SyncEndpointClient clientEndpoint = new StubSyncEndpointClient();
 
-    nativePoolServerService =
-        new NativePoolServerServiceFactory()
+    poolLocalServiceServer =
+        new PoolLocalServiceServerFactory()
             .builder()
             .withSyncNode()
-            .withPoolPlugins(nativePoolPlugin.getName())
+            .withPoolPlugins(localPoolPlugin.getName())
             .getService();
 
-    remotePoolClientPlugin =
-        (RemotePoolClientPlugin)
+    poolRemotePluginClient =
+        (PoolRemotePluginClient)
             SmartCardService.getInstance()
                 .registerPlugin(
-                    RemotePoolClientPluginFactory.builder()
+                    PoolRemotePluginClientFactory.builder()
                         .withSyncNode(clientEndpoint)
                         .usingDefaultTimeout()
                         .build());
@@ -59,16 +59,16 @@ public class SyncScenario extends BaseScenario {
   @Test
   @Override
   public void execute_transaction_on_pool_reader() {
-    SortedSet<String> groupReferences = remotePoolClientPlugin.getReaderGroupReferences();
+    SortedSet<String> groupReferences = poolRemotePluginClient.getReaderGroupReferences();
     assertThat(groupReferences).containsExactly(groupReference);
 
-    Reader virtualReader = remotePoolClientPlugin.allocateReader(groupReference);
+    Reader remoteReader = poolRemotePluginClient.allocateReader(groupReference);
     CardSelection seSelection = CalypsoUtilities.getSeSelection();
     CalypsoPo calypsoPo =
-        (CalypsoPo) seSelection.processExplicitSelection(virtualReader).getActiveSmartCard();
+        (CalypsoPo) seSelection.processExplicitSelection(remoteReader).getActiveSmartCard();
 
-    String eventLog = CalypsoUtilities.readEventLog(calypsoPo, virtualReader, logger);
+    String eventLog = CalypsoUtilities.readEventLog(calypsoPo, remoteReader, logger);
     assertThat(eventLog).isNotNull();
-    remotePoolClientPlugin.releaseReader(virtualReader);
+    poolRemotePluginClient.releaseReader(remoteReader);
   }
 }

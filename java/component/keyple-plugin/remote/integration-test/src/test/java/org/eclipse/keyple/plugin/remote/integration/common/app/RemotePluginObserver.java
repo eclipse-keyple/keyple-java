@@ -19,15 +19,15 @@ import org.eclipse.keyple.core.service.event.ObservablePlugin;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.PluginEvent;
 import org.eclipse.keyple.core.service.exception.KeypleException;
+import org.eclipse.keyple.plugin.remote.ObservableRemoteReaderServer;
+import org.eclipse.keyple.plugin.remote.RemotePluginServer;
+import org.eclipse.keyple.plugin.remote.RemoteReaderServer;
 import org.eclipse.keyple.plugin.remote.integration.common.model.ConfigurationResult;
 import org.eclipse.keyple.plugin.remote.integration.common.model.DeviceInput;
 import org.eclipse.keyple.plugin.remote.integration.common.model.TransactionResult;
 import org.eclipse.keyple.plugin.remote.integration.common.model.UserInput;
 import org.eclipse.keyple.plugin.remote.integration.common.util.CalypsoUtilities;
 import org.eclipse.keyple.plugin.remote.integration.service.BaseScenario;
-import org.eclipse.keyple.plugin.remote.virtual.RemoteServerObservableReader;
-import org.eclipse.keyple.plugin.remote.virtual.RemoteServerPlugin;
-import org.eclipse.keyple.plugin.remote.virtual.RemoteServerReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,32 +48,32 @@ public class RemotePluginObserver implements ObservablePlugin.PluginObserver {
     switch (event.getEventType()) {
       case READER_CONNECTED:
         // retrieve serviceId from reader
-        String virtualReaderName = event.getReaderNames().first();
-        RemoteServerPlugin plugin =
-            (RemoteServerPlugin) SmartCardService.getInstance().getPlugin(event.getPluginName());
-        RemoteServerReader virtualReader = plugin.getReader(virtualReaderName);
+        String remoteReaderName = event.getReaderNames().first();
+        RemotePluginServer plugin =
+            (RemotePluginServer) SmartCardService.getInstance().getPlugin(event.getPluginName());
+        RemoteReaderServer remoteReader = plugin.getReader(remoteReaderName);
 
         // execute the business logic based on serviceId
-        Object output = executeService(virtualReader);
+        Object output = executeService(remoteReader);
 
         // terminate service
-        plugin.terminateService(virtualReaderName, output);
+        plugin.terminateService(remoteReaderName, output);
 
         break;
     }
   }
 
-  Object executeService(RemoteServerReader virtualReader) {
-    logger.info("Executing ServiceId : {}", virtualReader.getServiceId());
+  Object executeService(RemoteReaderServer remoteReader) {
+    logger.info("Executing ServiceId : {}", remoteReader.getServiceId());
 
     // "EXECUTE_CALYPSO_SESSION_FROM_LOCAL_SELECTION"
-    if (BaseScenario.SERVICE_ID_1.equals(virtualReader.getServiceId())) {
+    if (BaseScenario.SERVICE_ID_1.equals(remoteReader.getServiceId())) {
 
-      CalypsoPo calypsoPo = virtualReader.getInitialCardContent(CalypsoPo.class);
-      UserInput userInput = virtualReader.getUserInputData(UserInput.class);
+      CalypsoPo calypsoPo = remoteReader.getInitialCardContent(CalypsoPo.class);
+      UserInput userInput = remoteReader.getUserInputData(UserInput.class);
       try {
         // execute a transaction
-        CalypsoUtilities.readEventLog(calypsoPo, virtualReader, logger);
+        CalypsoUtilities.readEventLog(calypsoPo, remoteReader, logger);
         return new TransactionResult().setUserId(userInput.getUserId()).setSuccessful(true);
       } catch (KeypleException e) {
         return new TransactionResult().setSuccessful(false).setUserId(userInput.getUserId());
@@ -81,35 +81,35 @@ public class RemotePluginObserver implements ObservablePlugin.PluginObserver {
     }
 
     // CREATE_CONFIGURE_OBS_VIRTUAL_READER
-    if (BaseScenario.SERVICE_ID_2.equals(virtualReader.getServiceId())) {
-      RemoteServerObservableReader observableVirtualReader =
-          (RemoteServerObservableReader) virtualReader;
-      DeviceInput deviceInput = observableVirtualReader.getUserInputData(DeviceInput.class);
+    if (BaseScenario.SERVICE_ID_2.equals(remoteReader.getServiceId())) {
+      ObservableRemoteReaderServer observableRemoteReader =
+          (ObservableRemoteReaderServer) remoteReader;
+      DeviceInput deviceInput = observableRemoteReader.getUserInputData(DeviceInput.class);
 
       // configure default selection on reader
       CardSelection cardSelection = CalypsoUtilities.getSeSelection();
-      observableVirtualReader.setDefaultSelectionRequest(
+      observableRemoteReader.setDefaultSelectionRequest(
           cardSelection.getSelectionOperation(),
           ObservableReader.NotificationMode.MATCHED_ONLY,
           ObservableReader.PollingMode.REPEATING);
 
       // add observer
-      observableVirtualReader.addObserver(new VirtualReaderObserver());
+      observableRemoteReader.addObserver(new RemoteReaderObserver());
       return new ConfigurationResult().setSuccessful(true).setDeviceId(deviceInput.getDeviceId());
     }
 
     // EXECUTE_CALYPSO_SESSION_FROM_REMOTE_SELECTION
-    if (BaseScenario.SERVICE_ID_3.equals(virtualReader.getServiceId())) {
-      UserInput userInput = virtualReader.getUserInputData(UserInput.class);
+    if (BaseScenario.SERVICE_ID_3.equals(remoteReader.getServiceId())) {
+      UserInput userInput = remoteReader.getUserInputData(UserInput.class);
 
       // remote selection
       CardSelection cardSelection = CalypsoUtilities.getSeSelection();
-      SelectionsResult selectionsResult = cardSelection.processExplicitSelection(virtualReader);
+      SelectionsResult selectionsResult = cardSelection.processExplicitSelection(remoteReader);
       CalypsoPo calypsoPo = (CalypsoPo) selectionsResult.getActiveSmartCard();
 
       try {
         // execute a transaction
-        CalypsoUtilities.readEventLog(calypsoPo, virtualReader, logger);
+        CalypsoUtilities.readEventLog(calypsoPo, remoteReader, logger);
         return new TransactionResult().setUserId(userInput.getUserId()).setSuccessful(true);
       } catch (KeypleException e) {
         return new TransactionResult().setSuccessful(false).setUserId(userInput.getUserId());
@@ -117,23 +117,23 @@ public class RemotePluginObserver implements ObservablePlugin.PluginObserver {
     }
 
     // EXECUTE ALL METHODS
-    if (BaseScenario.SERVICE_ID_4.equals(virtualReader.getServiceId())) {
+    if (BaseScenario.SERVICE_ID_4.equals(remoteReader.getServiceId())) {
 
-      RemoteServerObservableReader observableVirtualReader =
-          (RemoteServerObservableReader) virtualReader;
-      DeviceInput deviceInput = observableVirtualReader.getUserInputData(DeviceInput.class);
+      ObservableRemoteReaderServer observableRemoteReader =
+          (ObservableRemoteReaderServer) remoteReader;
+      DeviceInput deviceInput = observableRemoteReader.getUserInputData(DeviceInput.class);
 
-      observableVirtualReader.startCardDetection(ObservableReader.PollingMode.REPEATING);
+      observableRemoteReader.startCardDetection(ObservableReader.PollingMode.REPEATING);
 
-      if (!observableVirtualReader.isCardPresent()) {
+      if (!observableRemoteReader.isCardPresent()) {
         throw new IllegalStateException("Card should be inserted");
       }
 
-      if (!observableVirtualReader.isContactless()) {
+      if (!observableRemoteReader.isContactless()) {
         throw new IllegalStateException("Reader should be contactless");
       }
       ;
-      observableVirtualReader.stopCardDetection();
+      observableRemoteReader.stopCardDetection();
       return new ConfigurationResult().setDeviceId(deviceInput.getDeviceId()).setSuccessful(true);
     }
 

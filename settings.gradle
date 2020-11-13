@@ -24,14 +24,14 @@ project(':java:component:keyple-plugin:pcsc').name = "keyple-plugin-pcsc"
 include ':java:component:keyple-plugin:stub'
 project(':java:component:keyple-plugin:stub').name = "keyple-plugin-stub"
 
-include ':java:component:keyple-plugin:remote:core'
-project(':java:component:keyple-plugin:remote:core').name = "keyple-plugin-remote-core"
+include ':java:component:keyple-plugin:remote:common'
+project(':java:component:keyple-plugin:remote:common').name = "keyple-plugin-remote-common"
 
-include ':java:component:keyple-plugin:remote:native'
-project(':java:component:keyple-plugin:remote:native').name = "keyple-plugin-remote-native"
+include ':java:component:keyple-plugin:remote:local'
+project(':java:component:keyple-plugin:remote:local').name = "keyple-plugin-remote-local"
 
-include ':java:component:keyple-plugin:remote:virtual'
-project(':java:component:keyple-plugin:remote:virtual').name = "keyple-plugin-remote-virtual"
+include ':java:component:keyple-plugin:remote:remote'
+project(':java:component:keyple-plugin:remote:remote').name = "keyple-plugin-remote-remote"
 
 include ':java:component:keyple-plugin:remote:integration-test'
 project(':java:component:keyple-plugin:remote:integration-test').name = "keyple-plugin-remote-integration-test"

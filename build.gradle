@@ -95,9 +95,9 @@ task setVersion {
     dependsOn ':java:component:keyple-core:setVersion'
     dependsOn ':java:component:keyple-calypso:setVersion'
     dependsOn ':java:component:keyple-plugin:keyple-plugin-pcsc:setVersion'
-    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-core:setVersion'
-    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-native:setVersion'
-    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-virtual:setVersion'
+    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-common:setVersion'
+    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-local:setVersion'
+    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-remote:setVersion'
     dependsOn ':java:component:keyple-plugin:keyple-plugin-stub:setVersion'
 }
 
@@ -122,25 +122,25 @@ task installPcscPlugin{
 
 }
 
-task installRemotePluginCore{
+task installRemotePluginCommon{
     group 'keyple'
     description 'Builds and installs the keyple remote plugin (Core) into maven local repository'
     dependsOn installCore
-    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-core:installPlugin'
+    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-common:installPlugin'
 }
 
-task installRemotePluginNative{
+task installRemotePluginLocal{
     group 'keyple'
-    description 'Builds and installs the keyple remote plugin (Native) into maven local repository'
-    dependsOn installRemotePluginCore
-    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-native:installPlugin'
+    description 'Builds and installs the keyple remote plugin (Local) into maven local repository'
+    dependsOn installRemotePluginCommon
+    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-local:installPlugin'
 }
 
-task installRemotePluginVirtual{
+task installRemotePluginRemote{
     group 'keyple'
-    description 'Builds and installs the keyple remote plugin (Virtual) into maven local repository'
-    dependsOn installRemotePluginCore
-    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-virtual:installPlugin'
+    description 'Builds and installs the keyple remote plugin (Remote) into maven local repository'
+    dependsOn installRemotePluginCommon
+    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-remote:installPlugin'
 }
 
 task installStubPlugin{
@@ -155,9 +155,9 @@ task installAll {
     description 'Builds and installs all java Keyple library into maven local repository'
     dependsOn installCore
     dependsOn installCalypsoExtension
-    dependsOn installRemotePluginCore
-    dependsOn installRemotePluginNative
-    dependsOn installRemotePluginVirtual
+    dependsOn installRemotePluginCommon
+    dependsOn installRemotePluginLocal
+    dependsOn installRemotePluginRemote
     dependsOn installStubPlugin
     dependsOn installPcscPlugin
 
@@ -185,12 +185,12 @@ task codeQuality {
     dependsOn ':java:component:keyple-calypso:sonarqube'
     //dependsOn installRemotePlugin
     //dependsOn ':java:component:keyple-plugin:keyple-plugin-remote:sonarqube'
-    dependsOn installRemotePluginCore
-    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-core:sonarqube'
-    dependsOn installRemotePluginNative
-    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-native:sonarqube'
-    dependsOn installRemotePluginVirtual
-    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-virtual:sonarqube'
+    dependsOn installRemotePluginCommon
+    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-common:sonarqube'
+    dependsOn installRemotePluginLocal
+    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-local:sonarqube'
+    dependsOn installRemotePluginRemote
+    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-remote:sonarqube'
     dependsOn installStubPlugin
     dependsOn ':java:component:keyple-plugin:keyple-plugin-stub:sonarqube'
     dependsOn installPcscPlugin

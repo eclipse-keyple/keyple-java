@@ -14,7 +14,6 @@ package org.eclipse.keyple.plugin.remote.integration.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
-import java.lang.reflect.Field;
 import java.util.UUID;
 import java.util.concurrent.*;
 import org.eclipse.keyple.calypso.transaction.*;
@@ -26,8 +25,12 @@ import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
-import org.eclipse.keyple.plugin.remote.core.KeypleServerAsync;
-import org.eclipse.keyple.plugin.remote.core.impl.AbstractKeypleNode;
+import org.eclipse.keyple.plugin.remote.LocalServiceClient;
+import org.eclipse.keyple.plugin.remote.RemotePluginServer;
+import org.eclipse.keyple.plugin.remote.RemoteServiceParameters;
+import org.eclipse.keyple.plugin.remote.impl.LocalServiceClientTest;
+import org.eclipse.keyple.plugin.remote.impl.RemotePluginServerFactory;
+import org.eclipse.keyple.plugin.remote.impl.RemotePluginServerUtils;
 import org.eclipse.keyple.plugin.remote.integration.common.app.ReaderEventFilter;
 import org.eclipse.keyple.plugin.remote.integration.common.app.RemotePluginObserver;
 import org.eclipse.keyple.plugin.remote.integration.common.model.ConfigurationResult;
@@ -36,12 +39,7 @@ import org.eclipse.keyple.plugin.remote.integration.common.model.TransactionResu
 import org.eclipse.keyple.plugin.remote.integration.common.model.UserInput;
 import org.eclipse.keyple.plugin.remote.integration.common.se.StubCalypsoClassic;
 import org.eclipse.keyple.plugin.remote.integration.common.util.CalypsoUtilities;
-import org.eclipse.keyple.plugin.remote.nativ.NativeClientService;
-import org.eclipse.keyple.plugin.remote.nativ.RemoteServiceParameters;
-import org.eclipse.keyple.plugin.remote.nativ.impl.NativeClientServiceTest;
-import org.eclipse.keyple.plugin.remote.virtual.RemoteServerPlugin;
-import org.eclipse.keyple.plugin.remote.virtual.impl.RemoteServerPluginFactory;
-import org.eclipse.keyple.plugin.remote.virtual.impl.RemoteServerUtils;
+import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
 import org.eclipse.keyple.plugin.stub.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,19 +61,19 @@ public abstract class BaseScenario {
 
   /**
    * The client application invokes the remoteService with enabling observability capabilities. As a
-   * result the server creates a Observable Virtual Reader that receives native reader events such
-   * as Card insertions and removals.
+   * result the server creates a Observable Remote Reader that receives local reader events such as
+   * Card insertions and removals.
    *
    * <p>A Card Insertion is simulated locally followed by a card removal 1 second later.
    *
-   * <p>The Card Insertion event is sent to the Virtual Reader whose observer starts a remote
-   * Calypso session. At the end of a successful calypso session, custom data is sent back to the
-   * client as a final result.
+   * <p>The Card Insertion event is sent to the Remote Reader whose observer starts a remote Calypso
+   * session. At the end of a successful calypso session, custom data is sent back to the client as
+   * a final result.
    *
    * <p>The operation is executed twice with two different users.
    *
-   * <p>After the second Card insertion, Virtual Reader observers are cleared to purge the server
-   * virtual reader.
+   * <p>After the second Card insertion, Remote Reader observers are cleared to purge the server
+   * remote reader.
    */
   abstract void observable_defaultSelection_onMatched_transaction_successful();
 
@@ -120,12 +118,12 @@ public abstract class BaseScenario {
 
   public static String DEVICE_ID = "Xo99";
 
-  NativeClientService nativeService;
-  StubPlugin nativePlugin;
-  StubReader nativeReader;
-  StubReader nativeReader2;
+  LocalServiceClient localService;
+  StubPlugin localPlugin;
+  StubReader localReader;
+  StubReader localReader2;
 
-  RemoteServerPlugin remotePlugin;
+  RemotePluginServer remotePlugin;
   UserInput user1;
   UserInput user2;
   DeviceInput device1;
@@ -135,64 +133,64 @@ public abstract class BaseScenario {
 
   public static void unRegisterRemotePlugin() {
     try {
-      RemoteServerPlugin oldPlugin = RemoteServerUtils.getRemotePlugin();
+      RemotePluginServer oldPlugin = RemotePluginServerUtils.getRemotePlugin();
       SmartCardService.getInstance().unregisterPlugin(oldPlugin.getName());
     } catch (KeyplePluginNotFoundException e) {
       // no plugin to unregister
     }
   }
 
-  /** Init native stub plugin that can work with {@link StubSecureElement} */
+  /** Init local stub plugin that can work with {@link StubSmartCard} */
   void initNativeStubPlugin() {
     // reuse stub plugin
     try {
-      nativePlugin = (StubPlugin) SmartCardService.getInstance().getPlugin(NATIVE_PLUGIN_NAME);
+      localPlugin = (StubPlugin) SmartCardService.getInstance().getPlugin(NATIVE_PLUGIN_NAME);
     } catch (KeyplePluginNotFoundException e) {
-      nativePlugin =
+      localPlugin =
           (StubPlugin)
               SmartCardService.getInstance()
                   .registerPlugin(new StubPluginFactory(NATIVE_PLUGIN_NAME));
     }
-    // nativeReader should be reset
+    // localReader should be reset
     try {
-      nativeReader = (StubReader) nativePlugin.getReader(NATIVE_READER_NAME);
+      localReader = (StubReader) localPlugin.getReader(NATIVE_READER_NAME);
     } catch (KeypleReaderNotFoundException e) {
-      nativePlugin.plugStubReader(NATIVE_READER_NAME, true, true);
-      nativeReader = (StubReader) nativePlugin.getReader(NATIVE_READER_NAME);
+      localPlugin.plugStubReader(NATIVE_READER_NAME, true, true);
+      localReader = (StubReader) localPlugin.getReader(NATIVE_READER_NAME);
       // activate ISO_14443_4
-      nativeReader.activateProtocol(
+      localReader.activateProtocol(
           StubSupportedProtocols.ISO_14443_4.name(),
           ContactlessCardCommonProtocols.ISO_14443_4.name());
     }
-    // nativeReader should be reset
+    // localReader should be reset
     try {
-      nativeReader2 = (StubReader) nativePlugin.getReader(NATIVE_READER_NAME_2);
+      localReader2 = (StubReader) localPlugin.getReader(NATIVE_READER_NAME_2);
     } catch (KeypleReaderNotFoundException e) {
       // plug a second reader
-      nativePlugin.plugStubReader(NATIVE_READER_NAME_2, true, true);
-      nativeReader2 = (StubReader) nativePlugin.getReader(NATIVE_READER_NAME_2);
+      localPlugin.plugStubReader(NATIVE_READER_NAME_2, true, true);
+      localReader2 = (StubReader) localPlugin.getReader(NATIVE_READER_NAME_2);
       // activate ISO_14443_4
-      nativeReader2.activateProtocol(
+      localReader2.activateProtocol(
           StubSupportedProtocols.ISO_14443_4.name(),
           ContactlessCardCommonProtocols.ISO_14443_4.name());
     }
   }
 
   void clearNativeReader() {
-    nativePlugin.unplugStubReader(NATIVE_READER_NAME, true);
-    nativePlugin.unplugStubReader(NATIVE_READER_NAME_2, true);
+    localPlugin.unplugStubReader(NATIVE_READER_NAME, true);
+    localPlugin.unplugStubReader(NATIVE_READER_NAME_2, true);
   }
 
   /** Init a Sync Remote Server Plugin (ie. http server) */
   void initRemotePluginWithSyncNode() {
     try {
-      remotePlugin = RemoteServerUtils.getRemotePlugin();
+      remotePlugin = RemotePluginServerUtils.getRemotePlugin();
     } catch (KeyplePluginNotFoundException e) {
       remotePlugin =
-          (RemoteServerPlugin)
+          (RemotePluginServer)
               SmartCardService.getInstance()
                   .registerPlugin(
-                      RemoteServerPluginFactory.builder()
+                      RemotePluginServerFactory.builder()
                           .withSyncNode()
                           .withPluginObserver(new RemotePluginObserver())
                           // .usingDefaultEventNotificationPool()
@@ -202,16 +200,16 @@ public abstract class BaseScenario {
   }
 
   /** Init a Async Remote Server Plugin with an async server endpoint */
-  void initRemotePluginWithAsyncNode(KeypleServerAsync serverEndpoint) {
+  void initRemotePluginWithAsyncNode(AsyncEndpointServer serverEndpoint) {
     try {
-      remotePlugin = RemoteServerUtils.getRemotePlugin();
+      remotePlugin = RemotePluginServerUtils.getRemotePlugin();
       logger.info("RemotePluginServer already registered, reusing it");
     } catch (KeyplePluginNotFoundException e) {
       remotePlugin =
-          (RemoteServerPlugin)
+          (RemotePluginServer)
               SmartCardService.getInstance()
                   .registerPlugin(
-                      RemoteServerPluginFactory.builder()
+                      RemotePluginServerFactory.builder()
                           .withAsyncNode(serverEndpoint)
                           .withPluginObserver(new RemotePluginObserver())
                           .usingEventNotificationPool(serverPool)
@@ -240,7 +238,7 @@ public abstract class BaseScenario {
    */
   CalypsoPo explicitPoSelection() {
     CardSelection seSelection = CalypsoUtilities.getSeSelection();
-    SelectionsResult selectionsResult = seSelection.processExplicitSelection(nativeReader);
+    SelectionsResult selectionsResult = seSelection.processExplicitSelection(localReader);
     return (CalypsoPo) selectionsResult.getActiveSmartCard();
   }
 
@@ -267,19 +265,17 @@ public abstract class BaseScenario {
   }
 
   Callable<Boolean> executeTransaction(
-      final NativeClientService nativeService,
-      final StubReader nativeReader,
-      final UserInput user) {
+      final LocalServiceClient localService, final StubReader localReader, final UserInput user) {
     return new Callable<Boolean>() {
       @Override
       public Boolean call() throws Exception {
         // insert stub card into stub
-        nativeReader.insertCard(new StubCalypsoClassic());
+        localReader.insertCard(new StubCalypsoClassic());
 
         // execute remote service
         TransactionResult output =
-            nativeService.executeRemoteService(
-                RemoteServiceParameters.builder(SERVICE_ID_3, nativeReader)
+            localService.executeRemoteService(
+                RemoteServiceParameters.builder(SERVICE_ID_3, localReader)
                     .withUserInputData(user)
                     .build(),
                 TransactionResult.class);
@@ -294,15 +290,15 @@ public abstract class BaseScenario {
 
   void localselection_remoteTransaction_successful() {
     // insert stub card into stub
-    nativeReader.insertCard(new StubCalypsoClassic());
+    localReader.insertCard(new StubCalypsoClassic());
 
-    // execute a local selection on native reader
+    // execute a local selection on local reader
     CalypsoPo calypsoPo = explicitPoSelection();
 
     // execute remote service fed with the card
     TransactionResult output =
-        nativeService.executeRemoteService(
-            RemoteServiceParameters.builder(SERVICE_ID_1, nativeReader)
+        localService.executeRemoteService(
+            RemoteServiceParameters.builder(SERVICE_ID_1, localReader)
                 .withInitialSeContext(calypsoPo)
                 .withUserInputData(user1)
                 .build(),
@@ -315,12 +311,12 @@ public abstract class BaseScenario {
 
   void remoteselection_remoteTransaction_successful() {
     // insert stub card into stub
-    nativeReader.insertCard(new StubCalypsoClassic());
+    localReader.insertCard(new StubCalypsoClassic());
 
     // execute remote service
     TransactionResult output =
-        nativeService.executeRemoteService(
-            RemoteServiceParameters.builder(SERVICE_ID_3, nativeReader)
+        localService.executeRemoteService(
+            RemoteServiceParameters.builder(SERVICE_ID_3, localReader)
                 .withUserInputData(user1)
                 .build(),
             TransactionResult.class);
@@ -334,14 +330,14 @@ public abstract class BaseScenario {
     user2 = new UserInput().setUserId("user2");
 
     // insert stub card into both readers
-    nativeReader.insertCard(new StubCalypsoClassic());
-    nativeReader2.insertCard(new StubCalypsoClassic());
+    localReader.insertCard(new StubCalypsoClassic());
+    localReader2.insertCard(new StubCalypsoClassic());
 
     // execute remoteservice task concurrently on both readers
     final Future<Boolean> task1 =
-        clientPool.submit(executeTransaction(nativeService, nativeReader, user1));
+        clientPool.submit(executeTransaction(localService, localReader, user1));
     final Future<Boolean> task2 =
-        clientPool.submit(executeTransaction(nativeService, nativeReader2, user2));
+        clientPool.submit(executeTransaction(localService, localReader2, user2));
 
     // wait for termination
     await()
@@ -360,12 +356,12 @@ public abstract class BaseScenario {
     // remove read record command to make the tx fail
     failingSe.removeHexCommand("00B2014400");
 
-    nativeReader.insertCard(failingSe);
+    localReader.insertCard(failingSe);
 
     // execute remote service
     TransactionResult output =
-        nativeService.executeRemoteService(
-            RemoteServiceParameters.builder(SERVICE_ID_3, nativeReader)
+        localService.executeRemoteService(
+            RemoteServiceParameters.builder(SERVICE_ID_3, localReader)
                 .withUserInputData(user1)
                 .build(),
             TransactionResult.class);
@@ -377,13 +373,13 @@ public abstract class BaseScenario {
 
   void transaction_slowSe_success() {
 
-    nativeReader.insertCard(getSlowCard());
+    localReader.insertCard(getSlowCard());
 
     try {
       // execute remote service
       TransactionResult output =
-          nativeService.executeRemoteService(
-              RemoteServiceParameters.builder(SERVICE_ID_3, nativeReader)
+          localService.executeRemoteService(
+              RemoteServiceParameters.builder(SERVICE_ID_3, localReader)
                   .withUserInputData(user1)
                   .build(),
               TransactionResult.class);
@@ -397,10 +393,10 @@ public abstract class BaseScenario {
   }
 
   void defaultSelection_onMatched_transaction_successful(ReaderEventFilter eventFilter) {
-    // execute remote service to create observable virtual reader
+    // execute remote service to create observable remote reader
     ConfigurationResult configurationResult =
-        nativeService.executeRemoteService(
-            RemoteServiceParameters.builder(SERVICE_ID_2, nativeReader)
+        localService.executeRemoteService(
+            RemoteServiceParameters.builder(SERVICE_ID_2, localReader)
                 .withUserInputData(device1)
                 .build(),
             ConfigurationResult.class);
@@ -416,13 +412,13 @@ public abstract class BaseScenario {
      * a transaction is operated in response
      * user1 removes card
      */
-    nativeReader.insertCard(new StubCalypsoClassic());
+    localReader.insertCard(new StubCalypsoClassic());
     logger.info(
         "1 - Verify User Transaction is successful for first user {}",
         eventFilter.user.getUserId());
     await().atMost(10, TimeUnit.SECONDS).until(verifyUserTransaction(eventFilter, user1, true));
-    nativeReader.removeCard();
-    await().atMost(1, TimeUnit.SECONDS).until(seRemoved(nativeReader));
+    localReader.removeCard();
+    await().atMost(1, TimeUnit.SECONDS).until(seRemoved(localReader));
 
     /*
      * user2 inserts card ,
@@ -432,29 +428,29 @@ public abstract class BaseScenario {
      */
     UserInput user2 = new UserInput().setUserId(UUID.randomUUID().toString());
     eventFilter.setUserData(user2);
-    nativeReader.insertCard(new StubCalypsoClassic());
+    localReader.insertCard(new StubCalypsoClassic());
     logger.info(
         "2 - Verify User Transaction is successful for second user {}",
         eventFilter.user.getUserId());
     await().atMost(10, TimeUnit.SECONDS).until(verifyUserTransaction(eventFilter, user2, true));
-    nativeReader.removeCard();
-    await().atMost(1, TimeUnit.SECONDS).until(seRemoved(nativeReader));
+    localReader.removeCard();
+    await().atMost(1, TimeUnit.SECONDS).until(seRemoved(localReader));
 
     /*
-     * on the 2nd event, the virtual reader should be cleaned on native and virtual environment
+     * on the 2nd event, the remote reader should be cleaned on local and remote environment
      */
     assertThat(remotePlugin.getReaders()).isEmpty();
-    assertThat(NativeClientServiceTest.getVirtualReaders(nativeService)).isEmpty();
+    assertThat(LocalServiceClientTest.getRemoteReaders(localService)).isEmpty();
   }
 
   void remoteselection_remoteTransaction() {
     // insert stub card into stub
-    nativeReader.insertCard(new StubCalypsoClassic());
+    localReader.insertCard(new StubCalypsoClassic());
 
     // execute remote service
     TransactionResult output =
-        nativeService.executeRemoteService(
-            RemoteServiceParameters.builder(SERVICE_ID_3, nativeReader)
+        localService.executeRemoteService(
+            RemoteServiceParameters.builder(SERVICE_ID_3, localReader)
                 .withUserInputData(user1)
                 .build(),
             TransactionResult.class);
@@ -462,30 +458,17 @@ public abstract class BaseScenario {
 
   void all_methods() {
     // insert stub card into stub
-    nativeReader.insertCard(new StubCalypsoClassic());
+    localReader.insertCard(new StubCalypsoClassic());
 
     // execute remote service
     TransactionResult output =
-        nativeService.executeRemoteService(
-            RemoteServiceParameters.builder(SERVICE_ID_4, nativeReader)
+        localService.executeRemoteService(
+            RemoteServiceParameters.builder(SERVICE_ID_4, localReader)
                 .withUserInputData(device1)
                 .build(),
             TransactionResult.class);
 
     // validate result
     assertThat(output.isSuccessful()).isTrue();
-  }
-
-  void setTimeoutInNode(AbstractKeypleNode node, Integer timeoutInMilliseconds) {
-    try {
-      Class classT = node.getClass();
-      Field field = classT.getDeclaredField("timeout");
-      field.setAccessible(true);
-      field.set(node, timeoutInMilliseconds);
-    } catch (NoSuchFieldException e) {
-      e.printStackTrace();
-    } catch (IllegalAccessException e) {
-      e.printStackTrace();
-    }
   }
 }
