@@ -16,7 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class BlankWaitForCardInsertionBlockingThreadedReader extends AbstractObservableLocalReader
-    implements WaitForCardInsertionBlocking, WaitForCardRemovalNonBlocking {
+    implements WaitForCardInsertionBlocking,
+        DontWaitForCardRemovalDuringProcessing,
+        WaitForCardRemovalNonBlocking {
 
   private static final Logger logger =
       LoggerFactory.getLogger(BlankWaitForCardInsertionBlockingThreadedReader.class);

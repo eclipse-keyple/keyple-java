@@ -14,7 +14,9 @@ package org.eclipse.keyple.core.plugin.reader;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
 
 public class BlankObservableLocalReader extends AbstractObservableLocalReader
-    implements WaitForCardInsertionAutonomous, WaitForCardRemovalAutonomous {
+    implements WaitForCardInsertionAutonomous,
+        DontWaitForCardRemovalDuringProcessing,
+        WaitForCardRemovalAutonomous {
 
   /**
    * Reader constructor
