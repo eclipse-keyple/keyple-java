@@ -12,9 +12,10 @@
 package org.eclipse.keyple.core.plugin.reader;
 
 /**
- * Interface to be implemented by readers able to detect a card removal during
+ * Interface to be implemented by readers <b>not</b> able to detect a card removal during
  * processing, between two APDU commands.
  *
- * <p>A typical example of readers conforming to this mode of operation are PC/SC type readers.
+ * <p>A typical example of readers conforming to this mode of operation are are terminals embedding
+ * a slave RF communication module.
  */
-public interface WaitForCardRemovalDuringProcessing extends ObservableReaderNotifier {}
+public interface DontWaitForCardRemovalDuringProcessing extends ObservableReaderNotifier {}

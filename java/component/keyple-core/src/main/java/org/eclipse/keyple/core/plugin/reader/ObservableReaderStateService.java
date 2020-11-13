@@ -94,10 +94,13 @@ class ObservableReaderStateService {
           AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
           new WaitForCardProcessingState(
               this.reader, smartRemovalMonitoringJob, this.executorService));
-    } else {
+    } else if (reader instanceof DontWaitForCardRemovalDuringProcessing) {
       this.states.put(
           AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
           new WaitForCardProcessingState(this.reader));
+    } else {
+      throw new KeypleReaderIOException(
+              "Reader should implement implement a Wait/DontWait ForCardRemovalDuringProcessing interface.");
     }
 
     // removal
