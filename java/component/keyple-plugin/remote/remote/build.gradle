@@ -6,8 +6,8 @@ apply plugin: 'jacoco'
 apply plugin: 'org.sonarqube'
 
 sourceCompatibility = 1.6
-archivesBaseName = "keyple-java-plugin-remote"
-project.description ='Keyple Plugin Remote'
+archivesBaseName = "keyple-java-plugin-remote-remote"
+project.description ='Keyple Plugin Remote ("Remote" library)'
 
 //copy license file from root folder to each generated artifact
 task copyLICENSEplugin(type: Copy) {

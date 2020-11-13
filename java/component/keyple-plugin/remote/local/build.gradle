@@ -7,7 +7,7 @@ apply plugin: 'org.sonarqube'
 
 sourceCompatibility = 1.6
 archivesBaseName = "keyple-java-plugin-remote-local"
-project.description ='Keyple Plugin Remote (Local)'
+project.description ='Keyple Plugin Remote ("Local" library)'
 
 //copy license file from root folder to each generated artifact
 task copyLICENSEplugin(type: Copy) {
