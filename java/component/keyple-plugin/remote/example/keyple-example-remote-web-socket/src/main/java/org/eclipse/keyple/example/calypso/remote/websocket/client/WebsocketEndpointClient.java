@@ -17,28 +17,28 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.websocket.*;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
-import org.eclipse.keyple.example.calypso.remote.websocket.server.WebsocketServerEndpoint;
-import org.eclipse.keyple.plugin.remote.core.KeypleClientAsync;
-import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
-import org.eclipse.keyple.plugin.remote.nativ.impl.NativeClientUtils;
+import org.eclipse.keyple.example.calypso.remote.websocket.server.WebsocketEndpointServer;
+import org.eclipse.keyple.plugin.remote.MessageDto;
+import org.eclipse.keyple.plugin.remote.impl.LocalServiceClientUtils;
+import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Example implementation of a {@link KeypleClientAsync} based on Web Socket. Interacts with {@link
- * WebsocketServerEndpoint}
+ * Example implementation of a {@link AsyncEndpointClient} based on Web Socket. Interacts with
+ * {@link WebsocketEndpointServer}
  */
 @ClientEndpoint
-public class WebsocketClientEndpoint implements KeypleClientAsync {
+public class WebsocketEndpointClient implements AsyncEndpointClient {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(WebsocketClientEndpoint.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(WebsocketEndpointClient.class);
   /* opened sessions */
   final Map<String, Session> openSessions;
   /* URI of the server endpoint */
   private final String URI = "http://0.0.0.0:8080/remote-plugin";
 
   /** Constructor */
-  public WebsocketClientEndpoint() {
+  public WebsocketEndpointClient() {
     openSessions = new HashMap<>();
   }
 
@@ -67,7 +67,7 @@ public class WebsocketClientEndpoint implements KeypleClientAsync {
     String sessionId = session.getQueryString();
     LOGGER.trace("Client - Opened socket for sessionId {}", sessionId);
     this.openSessions.put(sessionId, session);
-    NativeClientUtils.getAsyncNode().onOpen(sessionId);
+    LocalServiceClientUtils.getAsyncNode().onOpen(sessionId);
   }
 
   /**
@@ -76,7 +76,7 @@ public class WebsocketClientEndpoint implements KeypleClientAsync {
    * @param keypleMessageDto non nullable instance
    */
   @Override
-  public void sendMessage(KeypleMessageDto keypleMessageDto) {
+  public void sendMessage(MessageDto keypleMessageDto) {
     String sessionId = keypleMessageDto.getSessionId();
     this.openSessions
         .get(sessionId)
@@ -93,8 +93,8 @@ public class WebsocketClientEndpoint implements KeypleClientAsync {
   public void onMessage(String data) {
     LOGGER.trace("Client - Received message {}", data);
     // message received
-    KeypleMessageDto message = KeypleJsonParser.getParser().fromJson(data, KeypleMessageDto.class);
-    NativeClientUtils.getAsyncNode().onMessage(message);
+    MessageDto message = KeypleJsonParser.getParser().fromJson(data, MessageDto.class);
+    LocalServiceClientUtils.getAsyncNode().onMessage(message);
   }
 
   /**
@@ -121,6 +121,6 @@ public class WebsocketClientEndpoint implements KeypleClientAsync {
     String sessionId = session.getQueryString();
     LOGGER.trace("Client - Closed socket for sessionId {}", sessionId);
     openSessions.remove(sessionId);
-    NativeClientUtils.getAsyncNode().onClose(sessionId);
+    LocalServiceClientUtils.getAsyncNode().onClose(sessionId);
   }
 }

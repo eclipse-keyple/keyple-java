@@ -15,22 +15,21 @@ import java.util.List;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import org.eclipse.keyple.example.calypso.remote.webservice.server.WebserviceServerEndpoint;
-import org.eclipse.keyple.plugin.remote.core.KeypleClientAsync;
-import org.eclipse.keyple.plugin.remote.core.KeypleClientSync;
-import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
+import org.eclipse.keyple.example.calypso.remote.webservice.server.WebserviceEndpointServer;
+import org.eclipse.keyple.plugin.remote.MessageDto;
+import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 /**
- * Example implementation of a {@link KeypleClientAsync} based on Web service. Interacts with {@link
- * WebserviceServerEndpoint}
+ * Example implementation of a {@link SyncEndpointClient} based on Web service. Interacts with {@link
+ * WebserviceEndpointServer}
  */
 @RegisterRestClient(configKey = "remote-plugin-api")
-public interface WebserviceClientEndpoint extends KeypleClientSync {
+public interface WebserviceEndpointClient extends SyncEndpointClient {
 
   @POST
   @Path("/remote-plugin")
   @Produces("application/json")
   @Override
-  public List<KeypleMessageDto> sendRequest(KeypleMessageDto keypleMessageDto);
+  public List<MessageDto> sendRequest(MessageDto keypleMessageDto);
 }

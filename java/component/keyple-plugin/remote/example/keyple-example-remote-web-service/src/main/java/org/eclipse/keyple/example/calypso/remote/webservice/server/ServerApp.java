@@ -13,9 +13,10 @@ package org.eclipse.keyple.example.calypso.remote.webservice.server;
 
 import java.util.concurrent.Executors;
 import javax.enterprise.context.ApplicationScoped;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
+
+import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
-import org.eclipse.keyple.plugin.remote.virtual.impl.RemoteServerPluginFactory;
+import org.eclipse.keyple.plugin.remote.impl.RemotePluginServerFactory;
 import org.eclipse.keyple.remote.example.app.RemotePluginObserver;
 
 /** Example of a server side app */
@@ -32,9 +33,9 @@ public class ServerApp {
 
     pluginObserver = new RemotePluginObserver();
 
-    SeProxyService.getInstance()
+    SmartCardService.getInstance()
         .registerPlugin(
-            RemoteServerPluginFactory.builder()
+            RemotePluginServerFactory.builder()
                 .withSyncNode()
                 .withPluginObserver(pluginObserver)
                 .usingEventNotificationPool(
