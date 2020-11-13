@@ -49,7 +49,7 @@ final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
     String sessionId = generateSessionId();
     try {
       // Open a new session on the node, session will be closed at the end of this operation
-      getNode().openSession(sessionId);
+      node.openSession(sessionId);
 
       MessageDto request =
           new MessageDto()
@@ -57,7 +57,7 @@ final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
               .setSessionId(sessionId)
               .setBody(null);
 
-      MessageDto response = getNode().sendRequest(request);
+      MessageDto response = node.sendRequest(request);
 
       checkError(response);
       String readerGroupReferencesJson =
@@ -69,7 +69,7 @@ final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
       return KeypleJsonParser.getParser().fromJson(readerGroupReferencesJson, SortedSet.class);
 
     } finally {
-      getNode().closeSessionSilently(sessionId);
+      node.closeSessionSilently(sessionId);
     }
   }
 
@@ -83,7 +83,7 @@ final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
     String sessionId = generateSessionId();
     try {
       // Open a new session on the node, session will be closed with the release reader method
-      getNode().openSession(sessionId);
+      node.openSession(sessionId);
 
       JsonObject body = new JsonObject();
       body.addProperty("groupReference", groupReference);
@@ -93,14 +93,14 @@ final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
               .setSessionId(sessionId)
               .setBody(body.toString());
 
-      MessageDto response = getNode().sendRequest(request);
+      MessageDto response = node.sendRequest(request);
 
       checkError(response);
       RemoteReaderImpl reader =
           new RemoteReaderImpl(
               getName(),
               response.getLocalReaderName(),
-              getNode(),
+              node,
               sessionId,
               response.getClientNodeId());
       reader.register();
@@ -109,7 +109,7 @@ final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
       return reader;
     } catch (RuntimeException e) {
       // in case of error, session is closed
-      getNode().closeSessionSilently(sessionId);
+      node.closeSessionSilently(sessionId);
       throw e;
     }
   }
@@ -142,12 +142,12 @@ final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
       readers.remove(reader.getName());
 
       // it is assumed a session is already open on the node, else an error is thrown
-      MessageDto response = getNode().sendRequest(request);
+      MessageDto response = node.sendRequest(request);
       checkError(response);
 
     } finally {
       // close the session on the node
-      getNode().closeSessionSilently(remoteReaderImpl.getSessionId());
+      node.closeSessionSilently(remoteReaderImpl.getSessionId());
     }
   }
 

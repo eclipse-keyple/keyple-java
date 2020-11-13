@@ -1,33 +1,23 @@
-# Keyple Remote Plugin (Remote library)
+# Keyple Remote Plugin - Remote Lib
 
-Read first main principles describe in the [Core](../core/README.md) library.
+## Overview
 
-## Table of Contents
+The **Remote Lib** Java library is one of the two main libraries provided by the **Keyple Remote Plugin** solution (the other one is [Local Lib](../local/README.md)).
 
-* [About Remote library](#about-remote-library)
-* [Remote Plugins](#remote-plugins)
-    * [RemotePluginServer](#remoteserverplugin)
-    * [RemoteClientPlugin](#remoteclientplugin)
-    * [RemotePoolClientPlugin](#remotepoolclientplugin)
+It must be imported and used by the application installed on the terminal not having local access to the smart card reader and that wishes to control the reader remotely.
 
-## About Remote library
+It is important to note that it uses and exposes the APIs exposed by the library [Common Lib](../common/README.md).
 
-The "**Remote**" library must be used by the application installed on the terminal not having local access to the reader and that wishes to control the reader remotely.
+## User Guide & Download Information
 
-## Remote Plugins
+The full documentation, including download information is available in the [Developer Guides / Develop a Remote Ticketing Application](http://keyple.org/docs/developer-guide/develop-ticketing-app-remote/) section of the official Keyple website [keyple.org](http://keyple.org)
 
-### RemotePluginServer
+## Build the Code
 
-* [Use cases](../core/README.md#remoterver-plugin)
-* [API](../core/README.md#remoterver-plugin-api-class-diagram)
-* [Sequence diagram](../core/README.md#remoterver-plugin-sequence-diagram)
+The code is built with **Gradle** and is compliant with **Java 1.6** in order to be able to be used by a very large number of applications.
 
-### RemoteClientPlugin
+## Code Contributions
 
-* [Use cases](../core/README.md#remote-client-plugin)
-* [API](../core/README.md#remote-client-plugin-api-class-diagram)
+We welcome code contributions through merge requests. Please help us enhance the plugin !
 
-### RemotePoolClientPlugin
-
-* [Use cases](../core/README.md#remote-pool-client-plugin)
-* [API](../core/README.md#remote-pool-client-plugin-api-class-diagram)
+In addition to the APIs class diagram available on the official website, you can find the internal API class diagram on the [Common Lib](../common/README.md) repository.

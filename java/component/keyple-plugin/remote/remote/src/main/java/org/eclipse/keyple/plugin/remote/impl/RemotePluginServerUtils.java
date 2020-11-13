@@ -39,7 +39,7 @@ public class RemotePluginServerUtils {
    * @since 1.0
    */
   public static AsyncNodeServer getAsyncNode() {
-    return (AsyncNodeServer) ((RemotePluginServerImpl) getRemotePlugin()).getNode();
+    return (AsyncNodeServer) ((RemotePluginServerImpl) getRemotePlugin()).node;
   }
 
   /**
@@ -49,6 +49,6 @@ public class RemotePluginServerUtils {
    * @since 1.0
    */
   public static SyncNodeServer getSyncNode() {
-    return (SyncNodeServer) ((RemotePluginServerImpl) getRemotePlugin()).getNode();
+    return (SyncNodeServer) ((RemotePluginServerImpl) getRemotePlugin()).node;
   }
 }

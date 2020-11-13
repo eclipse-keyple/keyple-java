@@ -109,10 +109,10 @@ final class LocalServiceClientImpl extends AbstractLocalService
 
     try {
       // Open a new session on the node
-      getNode().openSession(sessionId);
+      node.openSession(sessionId);
 
       // send keypleMessageDto through the node
-      MessageDto receivedDto = getNode().sendRequest(remoteServiceDto);
+      MessageDto receivedDto = node.sendRequest(remoteServiceDto);
 
       T userOutputData;
 
@@ -163,7 +163,7 @@ final class LocalServiceClientImpl extends AbstractLocalService
 
     } finally {
       // Close the session
-      getNode().closeSessionSilently(sessionId);
+      node.closeSessionSilently(sessionId);
     }
   }
 
@@ -207,10 +207,10 @@ final class LocalServiceClientImpl extends AbstractLocalService
 
       try {
         // Open a new session on the node
-        getNode().openSession(sessionId);
+        node.openSession(sessionId);
 
         // send keypleMessageDto through the node
-        MessageDto receivedDto = getNode().sendRequest(eventMessageDto);
+        MessageDto receivedDto = node.sendRequest(eventMessageDto);
 
         // Process all the transaction
         receivedDto = processTransaction(localReader, receivedDto);
@@ -229,7 +229,7 @@ final class LocalServiceClientImpl extends AbstractLocalService
 
       } finally {
         // Close the session
-        getNode().closeSessionSilently(sessionId);
+        node.closeSessionSilently(sessionId);
       }
 
     } catch (RuntimeException e) {
@@ -259,7 +259,7 @@ final class LocalServiceClientImpl extends AbstractLocalService
       MessageDto responseDto = executeLocally(localReader, receivedDto);
 
       // get response dto - send dto response to server
-      receivedDto = getNode().sendRequest(responseDto);
+      receivedDto = node.sendRequest(responseDto);
     }
 
     // Check if the received dto contains an error

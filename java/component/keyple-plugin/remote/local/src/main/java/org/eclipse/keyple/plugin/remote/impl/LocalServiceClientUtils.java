@@ -42,8 +42,8 @@ public class LocalServiceClientUtils {
    */
   public static AsyncNodeClient getAsyncNode() {
     LocalServiceClientImpl service = getClientService();
-    if (service.getNode() instanceof AsyncNodeClient) {
-      return (AsyncNodeClient) service.getNode();
+    if (service.node instanceof AsyncNodeClient) {
+      return (AsyncNodeClient) service.node;
     }
     throw new IllegalStateException("The Local Service is not bounded to an async node");
   }
