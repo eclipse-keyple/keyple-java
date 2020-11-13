@@ -22,7 +22,7 @@ import org.eclipse.keyple.core.card.selection.CardSelector
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing
 import org.eclipse.keyple.core.service.exception.KeypleReaderException
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException
-import org.eclipse.keyple.core.service.util.ContactsCardCommonProtocols
+import org.eclipse.keyple.core.service.util.ContactCardCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.junit.After
 import org.junit.Assert
@@ -235,7 +235,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
 
         val cardRequest = CardRequest(poApduRequestList)
         val cardSelectionRequest = CardSelectionRequest(CardSelector.builder()
-                .cardProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
+                .cardProtocol(ContactCardCommonProtocols.ISO_7816_3.name)
                 .aidSelector(CardSelector.AidSelector.builder()
                         .aidToSelect(PO_AID).build()).build(), cardRequest)
         val selectionRequestList = ArrayList<CardSelectionRequest>()
@@ -250,7 +250,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         val cardRequest = CardRequest(poApduRequestList)
 
         val cardSelectionRequest = CardSelectionRequest(CardSelector.builder()
-                .cardProtocol(ContactsCardCommonProtocols.ISO_7816_3.name).build(), cardRequest)
+                .cardProtocol(ContactCardCommonProtocols.ISO_7816_3.name).build(), cardRequest)
 
         val selectionRequestList = ArrayList<CardSelectionRequest>()
         selectionRequestList.add(cardSelectionRequest)
