@@ -13,8 +13,8 @@ package org.eclipse.keyple.example.calypso.remote.websocket.server;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.plugin.remote.virtual.impl.RemoteServerPluginFactory;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.plugin.remote.impl.RemotePluginServerFactory;
 import org.eclipse.keyple.remote.example.app.RemotePluginObserver;
 
 /** Example of a server side app */
@@ -23,20 +23,20 @@ public class ServerApp {
 
   RemotePluginObserver pluginObserver;
 
-  @Inject WebsocketServerEndpoint websocketServerEndpoint;
+  @Inject WebsocketEndpointServer websocketEndpointServer;
 
   /**
-   * Initialize the Remote Plugin with an async endpoint {@link WebsocketServerEndpoint} and attach
+   * Initialize the Remote Plugin with an async endpoint {@link WebsocketEndpointServer} and attach
    * an observer to the plugin {@link RemotePluginObserver} that contains all the business logic
    */
   public void init() {
 
     pluginObserver = new RemotePluginObserver();
 
-    SeProxyService.getInstance()
+    SmartCardService.getInstance()
         .registerPlugin(
-            RemoteServerPluginFactory.builder()
-                .withAsyncNode(websocketServerEndpoint)
+            RemotePluginServerFactory.builder()
+                .withAsyncNode(websocketEndpointServer)
                 .withPluginObserver(pluginObserver)
                 .usingDefaultEventNotificationPool()
                 .build());

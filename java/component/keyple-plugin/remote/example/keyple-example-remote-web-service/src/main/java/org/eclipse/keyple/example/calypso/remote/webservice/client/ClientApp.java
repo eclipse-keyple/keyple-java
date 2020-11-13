@@ -13,20 +13,21 @@ package org.eclipse.keyple.example.calypso.remote.webservice.client;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
+
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.eclipse.keyple.plugin.pcsc.PcscSupportedProtocols;
-import org.eclipse.keyple.plugin.remote.nativ.NativeClientService;
-import org.eclipse.keyple.plugin.remote.nativ.RemoteServiceParameters;
-import org.eclipse.keyple.plugin.remote.nativ.impl.NativeClientServiceFactory;
+import org.eclipse.keyple.plugin.remote.LocalServiceClient;
+import org.eclipse.keyple.plugin.remote.RemoteServiceParameters;
+import org.eclipse.keyple.plugin.remote.impl.LocalServiceClientFactory;
 import org.eclipse.keyple.plugin.stub.*;
 import org.eclipse.keyple.remote.example.model.TransactionResult;
 import org.eclipse.keyple.remote.example.model.UserInfo;
-import org.eclipse.keyple.remote.example.se.StubCalypsoClassic;
+import org.eclipse.keyple.remote.example.card.StubCalypsoClassic;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,17 +38,18 @@ public class ClientApp {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ClientApp.class);
 
-  @Inject @RestClient WebserviceClientEndpoint clientEndpoint;
+  @Inject @RestClient
+  WebserviceEndpointClient clientEndpoint;
 
-  NativeClientService nativeService;
-  ReaderPlugin nativePlugin;
-  SeReader nativeReader;
+  LocalServiceClient nativeService;
+  Plugin nativePlugin;
+  Reader nativeReader;
 
   /**
    * Initialize the client components : {@link StubPlugin} with a {@link StubReader} that accepts
-   * {@link org.eclipse.keyple.plugin.stub.StubSecureElement} based on protocol
+   * {@link org.eclipse.keyple.plugin.stub.StubSmartCard} based on protocol
    * SeCommonProtocols.PROTOCOL_ISO14443_4. Initialize the nativeSeService with a sync endpoint
-   * {@link WebserviceClientEndpoint}
+   * {@link WebserviceEndpointClient}
    */
   public void init() {
 
@@ -59,7 +61,7 @@ public class ClientApp {
 
     // init native service
     nativeService =
-        new NativeClientServiceFactory()
+        new LocalServiceClientFactory()
             .builder()
             .withSyncNode(clientEndpoint)
             .withoutReaderObservation()
@@ -93,7 +95,7 @@ public class ClientApp {
 
     // register plugin
     nativePlugin =
-        SeProxyService.getInstance().registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
+        SmartCardService.getInstance().registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
 
     // configure native reader
     ((StubPlugin) nativePlugin).plugStubReader(STUB_READER_NAME, true);
@@ -107,7 +109,7 @@ public class ClientApp {
         ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // insert a Stub card
-    ((StubReader) nativeReader).insertSe(new StubCalypsoClassic());
+    ((StubReader) nativeReader).insertCard(new StubCalypsoClassic());
 
     LOGGER.info(
         "Client - Native reader was configured with STUB reader : {} with a card",
@@ -121,7 +123,7 @@ public class ClientApp {
   private void initPcscReader() {
 
     // register plugin
-    nativePlugin = SeProxyService.getInstance().registerPlugin(new PcscPluginFactory());
+    nativePlugin = SmartCardService.getInstance().registerPlugin(new PcscPluginFactory());
 
     if (nativePlugin.getReaders().size() != 1) {
       throw new IllegalStateException(
@@ -131,7 +133,7 @@ public class ClientApp {
     // retrieve the connected the reader
     nativeReader = nativePlugin.getReaders().values().iterator().next();
 
-    if (!nativeReader.isSePresent()) {
+    if (!nativeReader.isCardPresent()) {
       throw new IllegalStateException(
           "For the matter of this example, we expect a card to be present at the startup");
     }

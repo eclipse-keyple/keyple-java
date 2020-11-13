@@ -12,26 +12,26 @@
 package org.eclipse.keyple.remote.example.app;
 
 import org.eclipse.keyple.calypso.transaction.*;
-import org.eclipse.keyple.core.selection.SeResource;
-import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
-import org.eclipse.keyple.core.seproxy.event.PluginEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.card.selection.CardResource;
+import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.CardSelector;
+import org.eclipse.keyple.core.card.selection.SelectionsResult;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.ObservablePlugin;
+import org.eclipse.keyple.core.service.event.PluginEvent;
+import org.eclipse.keyple.core.service.exception.KeypleException;
+import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.plugin.remote.virtual.RemoteServerPlugin;
-import org.eclipse.keyple.plugin.remote.virtual.RemoteServerReader;
+import org.eclipse.keyple.plugin.remote.RemotePluginServer;
+import org.eclipse.keyple.plugin.remote.RemoteReaderServer;
 import org.eclipse.keyple.remote.example.model.TransactionResult;
 import org.eclipse.keyple.remote.example.model.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Example of a PluginObserver for a {@link RemoteServerPlugin}. It contains the business logic of
+ * Example of a PluginObserver for a {@link RemotePluginServer}. It contains the business logic of
  * the remote service execution
  */
 public class RemotePluginObserver implements ObservablePlugin.PluginObserver {
@@ -55,18 +55,18 @@ public class RemotePluginObserver implements ObservablePlugin.PluginObserver {
     switch (event.getEventType()) {
       case READER_CONNECTED:
         // retrieve plugin
-        RemoteServerPlugin plugin =
-            (RemoteServerPlugin) SeProxyService.getInstance().getPlugin(event.getPluginName());
+        RemotePluginServer plugin =
+            (RemotePluginServer) SmartCardService.getInstance().getPlugin(event.getPluginName());
 
         // retrieve reader
-        String virtualReaderName = event.getReaderNames().first();
-        RemoteServerReader virtualReader = plugin.getReader(virtualReaderName);
+        String remoteReaderName = event.getReaderNames().first();
+        RemoteReaderServer remoteReader = plugin.getReader(remoteReaderName);
 
         // execute the business logic based on serviceId
-        Object output = executeService(virtualReader);
+        Object output = executeService(remoteReader);
 
         // terminate service
-        plugin.terminateService(virtualReaderName, output);
+        plugin.terminateService(remoteReaderName, output);
 
         break;
     }
@@ -75,15 +75,15 @@ public class RemotePluginObserver implements ObservablePlugin.PluginObserver {
   /**
    * Execute a service based on the serviceId of the virtual reader
    *
-   * @param virtualReader the virtual reader on where to execute the business logic
+   * @param remoteReader the virtual reader on where to execute the business logic
    * @return output object
    */
-  private Object executeService(RemoteServerReader virtualReader) {
+  private Object executeService(RemoteReaderServer remoteReader) {
 
     /*
      * Retrieve the serviceId specified by the client when executing the remote service. Based on this serviceId, the server can select the ticketing logic to execute.
      */
-    final String serviceId = virtualReader.getServiceId();
+    final String serviceId = remoteReader.getServiceId();
     logger.info("Executing ServiceId : {}", serviceId);
 
     // the service Id EXECUTE_CALYPSO_SESSION_FROM_REMOTE_SELECTION matches the following logic
@@ -91,7 +91,7 @@ public class RemotePluginObserver implements ObservablePlugin.PluginObserver {
       /*
        * Retrieve the userInputData specified by the client when executing the remote service.
        */
-      UserInfo userInput = virtualReader.getUserInputData(UserInfo.class);
+      UserInfo userInput = remoteReader.getUserInputData(UserInfo.class);
 
       /*
        * Execute an example of a ticketing transaction :
@@ -99,13 +99,13 @@ public class RemotePluginObserver implements ObservablePlugin.PluginObserver {
        * - read the content of event log file
        */
       // perform a remote explicit selection
-      SeSelection seSelection = getSeSelection();
-      SelectionsResult selectionsResult = seSelection.processExplicitSelection(virtualReader);
-      CalypsoPo calypsoPo = (CalypsoPo) selectionsResult.getActiveMatchingSe();
+      CardSelection seSelection = getSeSelection();
+      SelectionsResult selectionsResult = seSelection.processExplicitSelection(remoteReader);
+      CalypsoPo calypsoPo = (CalypsoPo) selectionsResult.getActiveSmartCard();
 
       try {
         // read the content of event log file
-        readEventLog(calypsoPo, virtualReader);
+        readEventLog(calypsoPo, remoteReader);
         // return a successful transaction result
         return new TransactionResult().setUserId(userInput.getUserId()).setSuccessful(true);
       } catch (KeypleException e) {
@@ -122,16 +122,16 @@ public class RemotePluginObserver implements ObservablePlugin.PluginObserver {
    *
    * @return instance of Selection object
    */
-  private SeSelection getSeSelection() {
+  private CardSelection getSeSelection() {
     // Prepare PO Selection
-    SeSelection seSelection = new SeSelection();
+    CardSelection seSelection = new CardSelection();
 
     // Calypso selection
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-                .aidSelector(SeSelector.AidSelector.builder().aidToSelect(AID).build())
+                .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                .aidSelector(CardSelector.AidSelector.builder().aidToSelect(AID).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
 
@@ -147,10 +147,10 @@ public class RemotePluginObserver implements ObservablePlugin.PluginObserver {
    * Read and return content of event log file within a Portable Object Transaction
    *
    * @param calypsoPo smartcard to read to the event log file
-   * @param seReader native reader where the smartcard is inserted
+   * @param reader native reader where the smartcard is inserted
    * @return content of the event log file in Hexadecimal
    */
-  private String readEventLog(CalypsoPo calypsoPo, SeReader seReader) {
+  private String readEventLog(CalypsoPo calypsoPo, Reader reader) {
     // execute calypso session from a se selection
     logger.info(
         "Initial PO Content, atr : {}, sn : {}",
@@ -168,7 +168,7 @@ public class RemotePluginObserver implements ObservablePlugin.PluginObserver {
     // Go on with the reading of the first record of the EventLog file
     logger.info("= #### reading transaction of the EventLog file.");
 
-    PoTransaction poTransaction = new PoTransaction(new SeResource<CalypsoPo>(seReader, calypsoPo));
+    PoTransaction poTransaction = new PoTransaction(new CardResource<>(reader, calypsoPo));
 
     // Prepare the reading order and keep the associated parser for later use once the
     // transaction has been processed.
