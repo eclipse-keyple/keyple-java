@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
+import android.os.Build
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
 import org.eclipse.keyple.core.plugin.AbstractPlugin
@@ -21,19 +22,25 @@ import timber.log.Timber
  * Enables Keyple to communicate with the the Android device by providing access to the
  * implementation of Reader.
  *
+ * Will provide 2 version of Android NFC reader based on Android OS version.
+ *
  */
 internal object AndroidNfcPluginImpl : AbstractPlugin(AndroidNfcPlugin.PLUGIN_NAME), AndroidNfcPlugin {
 
     /**
-     * For an Android NFC device, the Android NFC Plugin manages only one @[AndroidNfcReaderImpl].
+     * For an Android NFC device, the Android NFC Plugin manages only one @[AbstractAndroidNfcReader].
      *
      * @return SortedSet<ProxyReader> : contains only one element, the
-     * singleton @[AndroidNfcReaderImpl]
+     * singleton @[AbstractAndroidNfcReader]
     </ProxyReader> */
     override fun initNativeReaders(): ConcurrentMap<String, Reader>? {
         Timber.d("InitNativeReader() add the unique instance of AndroidNfcReaderImpl")
         val readers = ConcurrentHashMap<String, Reader>()
-        readers[AndroidNfcReaderImpl.name] = AndroidNfcReaderImpl
+        readers[AndroidNfcReader.READER_NAME] = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            AndroidNfcReaderPreNImpl
+        } else {
+            AndroidNfcReaderPostNImpl
+        }
         // Nfc android adapter availability is checked in AndroidNfcFragment
         return readers
     }
