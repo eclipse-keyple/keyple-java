@@ -11,8 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.service.event;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 
@@ -20,18 +19,11 @@ import org.junit.Test;
 public class ReaderEventTest {
 
   @Test
-  public void testReaderEvent() {
-    ReaderEvent event =
-        new ReaderEvent("plugin", "reader", ReaderEvent.EventType.TIMEOUT_ERROR, null);
-    assertNotNull(event);
-  }
-
-  @Test
   public void testGetEvent() {
     ReaderEvent event =
-        new ReaderEvent("plugin", "reader", ReaderEvent.EventType.TIMEOUT_ERROR, null);
-    assertEquals("reader", event.getReaderName());
-    assertEquals("plugin", event.getPluginName());
-    assertEquals(ReaderEvent.EventType.TIMEOUT_ERROR, event.getEventType());
+        new ReaderEvent("plugin", "reader", ReaderEvent.EventType.CARD_INSERTED, null);
+    assertThat(event.getReaderName()).isEqualTo("reader");
+    assertThat(event.getPluginName()).isEqualTo("plugin");
+    assertThat(event.getEventType()).isEqualTo(ReaderEvent.EventType.CARD_INSERTED);
   }
 }

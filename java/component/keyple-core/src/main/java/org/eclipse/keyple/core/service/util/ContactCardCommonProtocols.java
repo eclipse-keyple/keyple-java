@@ -9,21 +9,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.plugin.stub;
+package org.eclipse.keyple.core.service.util;
 
 /**
- * List of protocols supported by Stub readers.
+ * This enum contains a non-exhaustive list of contacts smartcard communication protocols.
  *
  * @since 1.0
  */
-public enum StubSupportedProtocols {
-  ISO_14443_4,
-  INNOVATRON_B_PRIME_CARD,
-  MIFARE_ULTRA_LIGHT,
-  MIFARE_CLASSIC,
-  MIFARE_DESFIRE,
-  MEMORY_ST25,
+public enum ContactCardCommonProtocols {
+  // contacts ISO standard
   ISO_7816_3,
-  ISO_7816_3_T0,
-  ISO_7816_3_T1
+  ISO_7816_3_TO,
+  ISO_7816_3_T1,
+
+  // contacts proprietary old Calypso SAM
+  INNOVATRON_HIGH_SPEED_PROTOCOL_SAM;
 }

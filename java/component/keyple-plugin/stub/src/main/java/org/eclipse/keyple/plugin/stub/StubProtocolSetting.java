@@ -35,7 +35,7 @@ public final class StubProtocolSetting {
   static {
     settings.put(StubSupportedProtocols.ISO_14443_4.name(), "ISO_14443_4");
 
-    settings.put(StubSupportedProtocols.CALYPSO_OLD_CARD_PRIME.name(), "CALYPSO_OLD_CARD_PRIME");
+    settings.put(StubSupportedProtocols.INNOVATRON_B_PRIME_CARD.name(), "INNOVATRON_B_PRIME_CARD");
 
     settings.put(StubSupportedProtocols.MIFARE_ULTRA_LIGHT.name(), "MIFARE_ULTRA_LIGHT");
 

@@ -1,5 +1,5 @@
 /* **************************************************************************************
- * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2019 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information
  * regarding copyright ownership.
@@ -9,21 +9,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.plugin.stub;
+package org.eclipse.keyple.core.plugin.reader;
 
 /**
- * List of protocols supported by Stub readers.
+ * Interface to be implemented by readers able to detect a card removal during processing, between
+ * two APDU commands.
  *
- * @since 1.0
+ * <p>A typical example of readers conforming to this mode of operation are PC/SC type readers.
  */
-public enum StubSupportedProtocols {
-  ISO_14443_4,
-  INNOVATRON_B_PRIME_CARD,
-  MIFARE_ULTRA_LIGHT,
-  MIFARE_CLASSIC,
-  MIFARE_DESFIRE,
-  MEMORY_ST25,
-  ISO_7816_3,
-  ISO_7816_3_T0,
-  ISO_7816_3_T1
-}
+public interface WaitForCardRemovalDuringProcessing extends ObservableReaderNotifier {}

@@ -80,10 +80,10 @@ public class Demo_CalypsoClassic_Stub {
     /* Activate protocols */
     poReader.activateProtocol(
         StubSupportedProtocols.ISO_14443_4.name(),
-        ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name());
+        ContactlessCardCommonProtocols.INNOVATRON_B_PRIME_CARD.name());
     poReader.activateProtocol(
-        StubSupportedProtocols.CALYPSO_OLD_CARD_PRIME.name(),
-        ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name());
+        StubSupportedProtocols.INNOVATRON_B_PRIME_CARD.name(),
+        ContactlessCardCommonProtocols.INNOVATRON_B_PRIME_CARD.name());
 
     /* Assign readers to the Hoplink transaction engine */
     transactionEngine.setReaders(poReader, samReader);

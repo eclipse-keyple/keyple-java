@@ -81,7 +81,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * @param pluginName the name of the plugin that instantiated the reader
    * @param readerName the name of the reader
    */
-  public AbstractLocalReader(String pluginName, String readerName) {
+  protected AbstractLocalReader(String pluginName, String readerName) {
 
     super(pluginName, readerName);
     if (logger.isDebugEnabled()) {
@@ -390,7 +390,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * @since 1.0
    */
   @Override
-  public void releaseChannel() {
+  public final void releaseChannel() {
 
     // close logical channel unconditionally
     closeLogicalChannel();
@@ -399,7 +399,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
         /*
          * request the removal sequence
          */
-        this.terminateCardCommunication();
+        ((ObservableReader) this).finalizeCardProcessing();
       } else {
         /* Not observed: close immediately the physical channel if requested */
         resetProtocolAndClosePhysicalChannel();
@@ -818,15 +818,6 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * @since 0.9
    */
   protected abstract byte[] transmitApdu(byte[] apduIn);
-
-  /**
-   * Method to be implemented by child classes in order to handle the needed actions when
-   * terminating the communication with a card (closing of the physical channel, initiating a
-   * removal sequence, etc.)
-   *
-   * @since 0.9
-   */
-  abstract void terminateCardCommunication();
 
   /**
    * Activates the protocol provided from the reader's implementation point of view.

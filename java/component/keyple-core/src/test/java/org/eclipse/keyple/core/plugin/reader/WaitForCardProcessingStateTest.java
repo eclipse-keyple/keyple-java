@@ -34,7 +34,7 @@ public class WaitForCardProcessingStateTest extends CoreBaseTest {
   final String READER_NAME = "WaitForCardProcessingStateTest";
 
   final ExecutorService executorService = Executors.newSingleThreadExecutor();
-  BlankSmartPresenceTheadedReader r;
+  BlankPresenceWaitForCardBlockingThreadedReader r;
   WaitForCardProcessingState waitForCardProcessingState;
 
   @Before

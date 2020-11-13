@@ -337,7 +337,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
     cardSelection.prepareSelection(
         new PoSelectionRequest(
             PoSelector.builder()
-                .cardProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name())
+                .cardProtocol(ContactlessCardCommonProtocols.INNOVATRON_B_PRIME_CARD.name())
                 .aidSelector(AidSelector.builder().aidToSelect(poFakeAid2).build())
                 .invalidatedPo(InvalidatedPo.REJECT)
                 .build()));
@@ -348,7 +348,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
     cardSelection.prepareSelection(
         new PoSelectionRequest(
             PoSelector.builder()
-                .cardProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name())
+                .cardProtocol(ContactlessCardCommonProtocols.INNOVATRON_B_PRIME_CARD.name())
                 .atrFilter(new PoSelector.AtrFilter(CalypsoClassicInfo.ATR_REV1_REGEX))
                 .invalidatedPo(InvalidatedPo.REJECT)
                 .build()));

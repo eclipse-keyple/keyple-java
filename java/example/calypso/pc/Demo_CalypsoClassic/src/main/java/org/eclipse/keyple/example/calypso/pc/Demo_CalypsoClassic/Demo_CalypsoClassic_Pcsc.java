@@ -17,12 +17,13 @@ import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.exception.KeypleException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.service.util.ContactCardCommonProtocols;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
-import org.eclipse.keyple.core.service.util.ContactsCardCommonProtocols;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
-import org.eclipse.keyple.plugin.pcsc.PcscSupportedProtocols;
+import org.eclipse.keyple.plugin.pcsc.PcscSupportedContactProtocols;
+import org.eclipse.keyple.plugin.pcsc.PcscSupportedContactlessProtocols;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,14 +88,15 @@ public class Demo_CalypsoClassic_Pcsc {
 
     /* Activate protocols */
     poReader.activateProtocol(
-        PcscSupportedProtocols.ISO_14443_4.name(),
+        PcscSupportedContactlessProtocols.ISO_14443_4.name(),
         ContactlessCardCommonProtocols.ISO_14443_4.name());
     poReader.activateProtocol(
-        PcscSupportedProtocols.CALYPSO_OLD_CARD_PRIME.name(),
-        ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name());
+        PcscSupportedContactlessProtocols.INNOVATRON_B_PRIME_CARD.name(),
+        ContactlessCardCommonProtocols.INNOVATRON_B_PRIME_CARD.name());
 
     samReader.activateProtocol(
-        PcscSupportedProtocols.ISO_7816_3.name(), ContactsCardCommonProtocols.ISO_7816_3.name());
+        PcscSupportedContactProtocols.ISO_7816_3.name(),
+        ContactCardCommonProtocols.ISO_7816_3.name());
 
     /* Assign the readers to the Calypso transaction engine */
     transactionEngine.setReaders(poReader, samReader);

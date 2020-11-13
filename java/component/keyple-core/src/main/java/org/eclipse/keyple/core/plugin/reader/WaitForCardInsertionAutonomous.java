@@ -1,5 +1,5 @@
 /* **************************************************************************************
- * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2019 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information
  * regarding copyright ownership.
@@ -9,21 +9,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.plugin.pcsc;
+package org.eclipse.keyple.core.plugin.reader;
 
 /**
- * List of protocols supported by PC/SC readers.
+ * Interface to be implemented by readers that have a fully integrated management of card
+ * communications for card insertion detection.
  *
- * @since 1.0
+ * <p>A typical example of readers conforming to this mode of operation are Android-based NFC
+ * readers.
  */
-public enum PcscSupportedProtocols {
-  ISO_14443_4,
-  CALYPSO_OLD_CARD_PRIME,
-  MIFARE_ULTRA_LIGHT,
-  MIFARE_CLASSIC,
-  MIFARE_DESFIRE,
-  MEMORY_ST25,
-  ISO_7816_3,
-  ISO_7816_3_T0,
-  ISO_7816_3_T1
-}
+public interface WaitForCardInsertionAutonomous extends ObservableReaderNotifier {}

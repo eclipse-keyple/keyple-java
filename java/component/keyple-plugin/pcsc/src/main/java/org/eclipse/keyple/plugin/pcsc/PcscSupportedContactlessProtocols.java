@@ -9,21 +9,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.plugin.stub;
+package org.eclipse.keyple.plugin.pcsc;
 
 /**
- * List of protocols supported by Stub readers.
+ * List of contactless protocols supported by PC/SC readers.
  *
  * @since 1.0
  */
-public enum StubSupportedProtocols {
+public enum PcscSupportedContactlessProtocols {
   ISO_14443_4,
   INNOVATRON_B_PRIME_CARD,
   MIFARE_ULTRA_LIGHT,
   MIFARE_CLASSIC,
   MIFARE_DESFIRE,
-  MEMORY_ST25,
-  ISO_7816_3,
-  ISO_7816_3_T0,
-  ISO_7816_3_T1
+  MEMORY_ST25
 }

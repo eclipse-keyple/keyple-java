@@ -46,6 +46,10 @@ public class ObservableReaderNotificationEngine {
     for (Plugin plugin : plugins) {
 
       if (plugin instanceof ObservablePlugin) {
+        /* start detection for all already present readers */
+        for (Reader reader : plugin.getReaders().values()) {
+          ((ObservableReader) reader).startCardDetection(ObservableReader.PollingMode.REPEATING);
+        }
         logger.info("Add observer PLUGINNAME = {}", plugin.getName());
         ((ObservablePlugin) plugin).addObserver(this.pluginObserver);
       } else {
@@ -112,14 +116,18 @@ public class ObservableReaderNotificationEngine {
             readerName,
             event.getEventType());
 
-        /* We retrieve the reader object from its name. */
-        try {
-          reader =
-              SmartCardService.getInstance().getPlugin(event.getPluginName()).getReader(readerName);
-        } catch (KeyplePluginNotFoundException e) {
-          e.printStackTrace();
-        } catch (KeypleReaderNotFoundException e) {
-          e.printStackTrace();
+        if (event.getEventType() != PluginEvent.EventType.READER_DISCONNECTED) {
+          /* We retrieve the reader object from its name. */
+          try {
+            reader =
+                SmartCardService.getInstance()
+                    .getPlugin(event.getPluginName())
+                    .getReader(readerName);
+          } catch (KeyplePluginNotFoundException e) {
+            e.printStackTrace();
+          } catch (KeypleReaderNotFoundException e) {
+            e.printStackTrace();
+          }
         }
         switch (event.getEventType()) {
           case READER_CONNECTED:

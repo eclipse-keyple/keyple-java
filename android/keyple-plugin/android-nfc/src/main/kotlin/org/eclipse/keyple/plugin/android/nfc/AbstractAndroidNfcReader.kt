@@ -11,17 +11,17 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
-import android.annotation.TargetApi
 import android.app.Activity
 import android.content.Intent
 import android.nfc.NfcAdapter
 import android.nfc.Tag
-import android.os.Build
 import android.os.Bundle
 import java.io.IOException
 import java.util.HashMap
+import org.eclipse.keyple.core.plugin.reader.AbstractObservableLocalAutonomousReader
 import org.eclipse.keyple.core.plugin.reader.AbstractObservableLocalReader
-import org.eclipse.keyple.core.plugin.reader.ObservableReaderStateService
+import org.eclipse.keyple.core.plugin.reader.DontWaitForCardRemovalDuringProcessing
+import org.eclipse.keyple.core.plugin.reader.WaitForCardInsertionAutonomous
 import org.eclipse.keyple.core.service.exception.KeypleReaderException
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.util.ByteArrayUtil
@@ -31,10 +31,11 @@ import timber.log.Timber
  * Implementation of [AndroidNfcReader] based on keyple core abstract classes [AbstractObservableLocalReader]
  * and
  */
-internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcReader.PLUGIN_NAME, AndroidNfcReader.READER_NAME), AndroidNfcReader, NfcAdapter.ReaderCallback {
+internal abstract class AbstractAndroidNfcReader : AbstractObservableLocalAutonomousReader(AndroidNfcReader.PLUGIN_NAME, AndroidNfcReader.READER_NAME),
+        AndroidNfcReader, NfcAdapter.ReaderCallback, WaitForCardInsertionAutonomous, DontWaitForCardRemovalDuringProcessing {
 
     // Android NFC Adapter
-    private var nfcAdapter: NfcAdapter? = null
+    protected var nfcAdapter: NfcAdapter? = null
 
     // keep state between session if required
     private var tagProxy: TagProxy? = null
@@ -43,10 +44,7 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
 
     private val protocolsMap = HashMap<String, String?>()
 
-    private const val NO_TAG = "no-tag"
-
-    private var isWatingForRemoval = false
-    private val syncWaitRemoval = Object()
+    private val NO_TAG = "no-tag"
 
     /**
      * Build Reader Mode flags Integer from parameters
@@ -95,23 +93,6 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
             }
             return options
         }
-
-    override fun initStateService(): ObservableReaderStateService {
-
-        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            ObservableReaderStateService.builder(this)
-                    .waitForCardInsertionWithNativeDetection()
-                    .waitForCardProcessingWithNativeDetection()
-                    .waitForCardRemovalWithPollingDetection()
-                    .build()
-        } else {
-            ObservableReaderStateService.builder(this)
-                    .waitForCardInsertionWithNativeDetection()
-                    .waitForCardProcessingWithNativeDetection()
-                    .waitForCardRemovalWithSmartDetection()
-                    .build()
-        }
-    }
 
     /**
      * Get Reader parameters
@@ -176,7 +157,7 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
             try {
                 Timber.i("Getting tag proxy")
                 tagProxy = TagProxy.getTagProxy(tag)
-                onEvent(InternalEvent.CARD_INSERTED)
+                onCardInserted()
             } catch (e: KeypleReaderException) {
                 Timber.e(e)
             }
@@ -353,31 +334,7 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
         nfcAdapter?.disableReaderMode(activity)
     }
 
-    override fun stopWaitForCardRemoval() {
-        Timber.d("stopWaitForCardRemoval")
-        isWatingForRemoval = false
-        synchronized(syncWaitRemoval) {
-            syncWaitRemoval.notify()
-        }
-    }
-
-    @TargetApi(Build.VERSION_CODES.N)
-    override fun waitForCardAbsentNative(): Boolean {
-        Timber.d("waitForCardAbsentNative")
-        var isRemoved = false
-        if (!isWatingForRemoval) {
-            isWatingForRemoval = true
-            nfcAdapter?.ignore(tagProxy?.tag, 1000, {
-                isRemoved = true
-                synchronized(syncWaitRemoval) {
-                    syncWaitRemoval.notify()
-                }
-            }, null)
-
-            synchronized(syncWaitRemoval) {
-                syncWaitRemoval.wait(10000)
-            }
-        }
-        return isRemoved
+    protected fun getTagProxyTag(): Tag? {
+        return tagProxy?.tag
     }
 }

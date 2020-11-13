@@ -49,9 +49,6 @@ public class BlankAbstractLocalReader extends AbstractLocalReader {
   }
 
   @Override
-  void terminateCardCommunication() {}
-
-  @Override
   protected void activateReaderProtocol(String readerProtocolName) {}
 
   @Override

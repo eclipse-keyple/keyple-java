@@ -141,9 +141,9 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
         logger.info("{} CARD_REMOVED {} {}", nodeId, event.getPluginName(), event.getReaderName());
         break;
 
-      case TIMEOUT_ERROR:
-        logger.info("{} TIMEOUT_ERROR {} {}", nodeId, event.getPluginName(), event.getReaderName());
-        break;
+      case UNREGISTERED:
+        throw new IllegalStateException(
+            "Unexpected error: the reader is no more registered in the SmartcardService.");
       default:
         throw new IllegalStateException("Unexpected value: " + event.getEventType());
     }

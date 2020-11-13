@@ -11,18 +11,20 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.plugin.reader;
 
-import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalReader
-    implements SmartInsertionReader {
+public class BlankPresenceWaitForCardBlockingThreadedReader extends AbstractObservableLocalReader
+    implements WaitForCardInsertionBlocking,
+        WaitForCardRemovalDuringProcessing,
+        WaitForCardRemovalBlocking {
 
   private static final Logger logger =
-      LoggerFactory.getLogger(BlankSmartInsertionTheadedReader.class);
+      LoggerFactory.getLogger(BlankPresenceWaitForCardBlockingThreadedReader.class);
 
-  Integer mockDetect; // TODO check why mockDetect is not initialized!
+  Integer mockDetect;
   Integer detectCount = 0;
+  volatile boolean removedOnlyOnce = false;
 
   /**
    * Reader constructor
@@ -34,40 +36,10 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
    * @param pluginName the name of the plugin that instantiated the reader
    * @param readerName the name of the reader
    */
-  public BlankSmartInsertionTheadedReader(
+  public BlankPresenceWaitForCardBlockingThreadedReader(
       String pluginName, String readerName, Integer mockDetect) {
     super(pluginName, readerName);
-  }
-
-  @Override
-  public final ObservableReaderStateService initStateService() {
-    // To be fixed with KEYP-349
-    return ObservableReaderStateService.builder(this)
-        .waitForCardInsertionWithSmartDetection()
-        .waitForCardProcessingWithNativeDetection()
-        .waitForCardRemovalWithPollingDetection()
-        .build();
-  }
-
-  private Runnable waitForCardPresentFuture() {
-    return new Runnable() {
-      @Override
-      public void run() {
-        logger.trace(
-            "[{}] Invoke waitForCardPresent asynchronously",
-            BlankSmartInsertionTheadedReader.this.getName());
-        try {
-          if (BlankSmartInsertionTheadedReader.this.waitForCardPresent()) {
-            onEvent(AbstractObservableLocalReader.InternalEvent.CARD_INSERTED);
-          }
-        } catch (KeypleReaderIOException e) {
-          logger.trace(
-              "[{}] waitForCardPresent => Error while polling card with waitForCardPresent",
-              BlankSmartInsertionTheadedReader.this.getName());
-          onEvent(AbstractObservableLocalReader.InternalEvent.STOP_DETECT);
-        }
-      }
-    };
+    this.mockDetect = mockDetect;
   }
 
   @Override
@@ -112,23 +84,24 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
     return true;
   }
 
-  /*
-   * @Override public boolean waitForCardPresent(long timeout) { // Obtain a number between [0 -
-   * 49]. int n = new Random().nextInt(10); boolean isCardPresent = (n==2);
-   * logger.trace("is card present {}",isCardPresent); return isCardPresent; }
-   */
+  @Override
+  public boolean waitForCardAbsentNative() {
+    if (!removedOnlyOnce) {
+      removedOnlyOnce = true;
+      return true;
+    }
+    return false;
+  }
+
+  @Override
+  public void stopWaitForCardRemoval() {}
+
+  @Override
+  public void stopWaitForCard() {}
 
   @Override
   public boolean waitForCardPresent() {
     detectCount++;
-    try {
-      Thread.sleep(10);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
     return detectCount <= mockDetect;
   }
-
-  @Override
-  public void stopWaitForCard() {}
 }

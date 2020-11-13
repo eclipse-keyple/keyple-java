@@ -1,5 +1,5 @@
 /* **************************************************************************************
- * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2019 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information
  * regarding copyright ownership.
@@ -9,19 +9,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.service.util;
+package org.eclipse.keyple.core.plugin.reader;
 
 /**
- * This enum contains a non-exhaustive list of contacts smartcard communication protocols.
+ * Interface to be implemented by readers <b>not</b> able to detect a card removal during
+ * processing, between two APDU commands.
  *
- * @since 1.0
+ * <p>A typical example of readers conforming to this mode of operation are are terminals embedding
+ * a slave RF communication module.
  */
-public enum ContactsCardCommonProtocols {
-  /* ---- contacts ISO standard ---------------------------- */
-  ISO_7816_3,
-  ISO_7816_3_TO,
-  ISO_7816_3_T1,
-
-  /* ---- contacts proprietary old Calypso SAM ---------------- */
-  CALYPSO_OLD_SAM_HSP; // High Speed Protocol
-}
+public interface DontWaitForCardRemovalDuringProcessing extends ObservableReaderNotifier {}
