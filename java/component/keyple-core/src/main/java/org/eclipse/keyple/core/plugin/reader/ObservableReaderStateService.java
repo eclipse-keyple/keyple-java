@@ -100,7 +100,7 @@ class ObservableReaderStateService {
           new WaitForCardProcessingState(this.reader));
     } else {
       throw new KeypleReaderIOException(
-              "Reader should implement implement a Wait/DontWait ForCardRemovalDuringProcessing interface.");
+          "Reader should implement implement a Wait/DontWait ForCardRemovalDuringProcessing interface.");
     }
 
     // removal
