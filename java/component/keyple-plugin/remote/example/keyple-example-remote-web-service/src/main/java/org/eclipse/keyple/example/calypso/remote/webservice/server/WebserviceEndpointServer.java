@@ -23,8 +23,8 @@ import org.eclipse.keyple.plugin.remote.impl.RemotePluginServerUtils;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 
 /**
- * Example implementation of a RemoteServer with a {@link SyncEndpointClient} based on Web Service. Serve {@link
- * WebserviceEndpointClient} clients
+ * Example implementation of a RemoteServer with a {@link SyncEndpointClient} based on Web Service.
+ * Serve {@link WebserviceEndpointClient} clients
  */
 @Path("/remote-plugin")
 public class WebserviceEndpointServer {
