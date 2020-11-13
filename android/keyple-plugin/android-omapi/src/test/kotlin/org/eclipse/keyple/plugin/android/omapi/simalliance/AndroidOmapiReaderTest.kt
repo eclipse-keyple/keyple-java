@@ -20,7 +20,7 @@ import org.eclipse.keyple.core.card.message.ChannelControl
 import org.eclipse.keyple.core.card.selection.CardSelector
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException
-import org.eclipse.keyple.core.service.util.ContactsCardCommonProtocols
+import org.eclipse.keyple.core.service.util.ContactCardCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiReaderTest
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiSupportedProtocols
@@ -39,7 +39,7 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
     override fun buildOmapiReaderImpl(nativeReader: Reader): AndroidOmapiReader {
         val androidOmapiReader = AndroidOmapiReader(nativeReader, PLUGIN_NAME, nativeReader.name)
         androidOmapiReader.register()
-        androidOmapiReader.activateProtocol(AndroidOmapiSupportedProtocols.ISO_7816_3.name, ContactsCardCommonProtocols.ISO_7816_3.name)
+        androidOmapiReader.activateProtocol(AndroidOmapiSupportedProtocols.ISO_7816_3.name, ContactCardCommonProtocols.ISO_7816_3.name)
         return androidOmapiReader
     }
 
@@ -70,7 +70,7 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
         val cardRequest = CardRequest(poApduRequestList)
 
         val cardSelectionRequest = CardSelectionRequest(CardSelector.builder()
-                .cardProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
+                .cardProtocol(ContactCardCommonProtocols.ISO_7816_3.name)
                 .aidSelector(CardSelector.AidSelector.builder().aidToSelect(PO_AID)
                         .fileOccurrence(CardSelector.AidSelector.FileOccurrence.NEXT)
                         .fileControlInformation(CardSelector.AidSelector.FileControlInformation.FCI).build())

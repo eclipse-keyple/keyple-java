@@ -30,8 +30,8 @@ import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.exception.KeypleException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.util.ContactCardCommonProtocols;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
-import org.eclipse.keyple.core.service.util.ContactsCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
@@ -95,7 +95,7 @@ public class PoAuthentication_Pcsc {
         ContactlessCardCommonProtocols.ISO_14443_4.name());
     samReader.activateProtocol(
         PcscSupportedContactProtocols.ISO_7816_3.name(),
-        ContactsCardCommonProtocols.ISO_7816_3.name());
+        ContactCardCommonProtocols.ISO_7816_3.name());
 
     // Create a SAM resource after selecting the SAM
     CardSelection samSelection = new CardSelection();

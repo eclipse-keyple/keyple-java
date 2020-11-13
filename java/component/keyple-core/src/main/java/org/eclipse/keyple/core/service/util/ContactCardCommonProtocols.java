@@ -16,7 +16,7 @@ package org.eclipse.keyple.core.service.util;
  *
  * @since 1.0
  */
-public enum ContactsCardCommonProtocols {
+public enum ContactCardCommonProtocols {
   // contacts ISO standard
   ISO_7816_3,
   ISO_7816_3_TO,
