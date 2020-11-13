@@ -21,8 +21,8 @@ import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.plugin.remote.PoolRemotePluginClient;
 import org.eclipse.keyple.plugin.remote.impl.PoolLocalServiceServerFactory;
 import org.eclipse.keyple.plugin.remote.impl.PoolRemotePluginClientFactory;
-import org.eclipse.keyple.plugin.remote.integration.common.endpoint.pool.StubAsyncClientEndpoint;
-import org.eclipse.keyple.plugin.remote.integration.common.endpoint.pool.StubAsyncServerEndpoint;
+import org.eclipse.keyple.plugin.remote.integration.common.endpoint.pool.StubAsyncEndpointClient;
+import org.eclipse.keyple.plugin.remote.integration.common.endpoint.pool.StubAsyncEndpointServer;
 import org.eclipse.keyple.plugin.remote.integration.common.util.CalypsoUtilities;
 import org.junit.After;
 import org.junit.Before;
@@ -38,8 +38,8 @@ public class AsyncScenario extends BaseScenario {
   public void setUp() {
     initNativePoolStubPlugin();
 
-    StubAsyncServerEndpoint serverEndpoint = new StubAsyncServerEndpoint();
-    StubAsyncClientEndpoint clientEndpoint = new StubAsyncClientEndpoint(serverEndpoint);
+    StubAsyncEndpointServer serverEndpoint = new StubAsyncEndpointServer();
+    StubAsyncEndpointClient clientEndpoint = new StubAsyncEndpointClient(serverEndpoint);
 
     poolLocalServiceServer =
         new PoolLocalServiceServerFactory()

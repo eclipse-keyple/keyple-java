@@ -24,15 +24,15 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Async client endpoint to test {@link PoolRemotePluginClient}. Send and receive asynchronously
- * json serialized {@link MessageDto} with {@link StubAsyncServerEndpoint}.
+ * json serialized {@link MessageDto} with {@link StubAsyncEndpointServer}.
  */
-public class StubAsyncClientEndpoint implements AsyncEndpointClient {
+public class StubAsyncEndpointClient implements AsyncEndpointClient {
 
-  private static final Logger logger = LoggerFactory.getLogger(StubAsyncClientEndpoint.class);
-  final StubAsyncServerEndpoint server;
-  final ExecutorService taskPool;
+  private static final Logger logger = LoggerFactory.getLogger(StubAsyncEndpointClient.class);
+  private final StubAsyncEndpointServer server;
+  private final ExecutorService taskPool;
 
-  public StubAsyncClientEndpoint(StubAsyncServerEndpoint server) {
+  public StubAsyncEndpointClient(StubAsyncEndpointServer server) {
     this.server = server;
     this.taskPool = Executors.newCachedThreadPool(new NamedThreadFactory("client-async-pool"));
   }
@@ -61,7 +61,7 @@ public class StubAsyncClientEndpoint implements AsyncEndpointClient {
 
   @Override
   public void sendMessage(final MessageDto msg) {
-    final StubAsyncClientEndpoint thisClient = this;
+    final StubAsyncEndpointClient thisClient = this;
     // submit task to server
     taskPool.submit(
         new Runnable() {

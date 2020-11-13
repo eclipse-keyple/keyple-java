@@ -26,17 +26,23 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Async client endpoint to test {@link RemotePluginServer}. Send and receive asynchronously json
- * serialized {@link MessageDto} with {@link StubAsyncServerEndpoint}.
+ * serialized {@link MessageDto} with {@link StubAsyncEndpointServer}.
  */
-public class StubAsyncClientEndpoint implements AsyncEndpointClient {
+public class StubAsyncEndpointClient implements AsyncEndpointClient {
 
-  private static final Logger logger = LoggerFactory.getLogger(StubAsyncClientEndpoint.class);
-  final StubAsyncServerEndpoint server;
-  final ExecutorService taskPool;
-  final Boolean simulateConnectionError;
-  final AtomicInteger messageSent = new AtomicInteger();
+  private static final Logger logger = LoggerFactory.getLogger(StubAsyncEndpointClient.class);
+  private final StubAsyncEndpointServer server;
+  private final ExecutorService taskPool;
+  private final Boolean simulateConnectionError;
+  private final AtomicInteger messageSent = new AtomicInteger();
 
-  public StubAsyncClientEndpoint(StubAsyncServerEndpoint server, Boolean simulateConnectionError) {
+  /**
+   * Constructor
+   *
+   * @param server
+   * @param simulateConnectionError
+   */
+  public StubAsyncEndpointClient(StubAsyncEndpointServer server, Boolean simulateConnectionError) {
     this.server = server;
     this.taskPool = Executors.newCachedThreadPool(new NamedThreadFactory("client-async-pool"));
     this.simulateConnectionError = simulateConnectionError;
@@ -68,7 +74,7 @@ public class StubAsyncClientEndpoint implements AsyncEndpointClient {
 
   @Override
   public void sendMessage(final MessageDto msg) {
-    final StubAsyncClientEndpoint thisClient = this;
+    final StubAsyncEndpointClient thisClient = this;
     if (messageSent.incrementAndGet() == 2 && simulateConnectionError) {
       throw new StubNetworkConnectionException("Simulate a unreachable server exception");
     }

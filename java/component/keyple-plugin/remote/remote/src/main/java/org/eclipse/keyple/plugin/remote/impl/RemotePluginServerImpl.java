@@ -318,14 +318,14 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
    * @return non null instance of a ObservableRemoteReaderServerImpl
    */
   private ObservableRemoteReaderServerImpl createSlaveReader(MessageDto message) {
-    final ObservableRemoteReaderServerImpl remoteObservableReader =
+    final ObservableRemoteReaderServerImpl observableRemoteReaderServer =
         (ObservableRemoteReaderServerImpl) getReader(message.getRemoteReaderName());
     final JsonObject body =
         KeypleJsonParser.getParser().fromJson(message.getBody(), JsonObject.class);
 
     String userInputData = body.has("userInputData") ? body.get("userInputData").toString() : null;
 
-    ObservableRemoteReaderImpl remoteReader =
+    ObservableRemoteReaderImpl observableRemoteReader =
         new ObservableRemoteReaderImpl(
             getName(),
             UUID.randomUUID().toString(),
@@ -335,6 +335,6 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
             eventNotificationPool);
     // create a temporary remote reader for this event
     return new ObservableRemoteReaderServerImpl(
-        remoteReader, null, userInputData, null, remoteObservableReader);
+        observableRemoteReader, null, userInputData, null, observableRemoteReaderServer);
   }
 }

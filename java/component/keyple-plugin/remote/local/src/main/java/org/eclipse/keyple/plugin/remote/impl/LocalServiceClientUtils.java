@@ -29,7 +29,7 @@ public class LocalServiceClientUtils {
    * @since 1.0
    */
   public static LocalServiceClient getLocalService() {
-    return getLocalClientService();
+    return getClientService();
   }
 
   /**
@@ -41,7 +41,7 @@ public class LocalServiceClientUtils {
    * @since 1.0
    */
   public static AsyncNodeClient getAsyncNode() {
-    LocalServiceClientImpl service = getLocalClientService();
+    LocalServiceClientImpl service = getClientService();
     if (service.getNode() instanceof AsyncNodeClient) {
       return (AsyncNodeClient) service.getNode();
     }
@@ -55,7 +55,7 @@ public class LocalServiceClientUtils {
    * @return a not null reference
    * @throws IllegalStateException if the service is not initialized.
    */
-  private static LocalServiceClientImpl getLocalClientService() {
+  private static LocalServiceClientImpl getClientService() {
     LocalServiceClientImpl service = LocalServiceClientImpl.getInstance();
     if (service == null) {
       throw new IllegalStateException("The Local Client Service is not initialized");

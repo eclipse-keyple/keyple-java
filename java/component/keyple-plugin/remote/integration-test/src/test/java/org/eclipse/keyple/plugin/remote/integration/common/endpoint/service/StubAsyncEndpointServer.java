@@ -27,26 +27,26 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Simulate a async server to test {@link RemotePluginServer}. Send and receive asynchronously
- * serialized {@link MessageDto} with connected {@link StubAsyncClientEndpoint}
+ * serialized {@link MessageDto} with connected {@link StubAsyncEndpointClient}
  */
-public class StubAsyncServerEndpoint implements AsyncEndpointServer {
+public class StubAsyncEndpointServer implements AsyncEndpointServer {
 
-  private static final Logger logger = LoggerFactory.getLogger(StubAsyncServerEndpoint.class);
-  final Map<String, StubAsyncClientEndpoint> clients; // sessionId_client
-  final Map<String, Integer> messageCounts; // sessionId_counts
-  final ExecutorService taskPool;
+  private static final Logger logger = LoggerFactory.getLogger(StubAsyncEndpointServer.class);
+  private final Map<String, StubAsyncEndpointClient> clients; // sessionId_client
+  private final Map<String, Integer> messageCounts; // sessionId_counts
+  private final ExecutorService taskPool;
 
-  boolean simulateConnectionError;
+  private boolean simulateConnectionError;
 
-  public StubAsyncServerEndpoint() {
-    clients = new HashMap<String, StubAsyncClientEndpoint>();
+  public StubAsyncEndpointServer() {
+    clients = new HashMap<String, StubAsyncEndpointClient>();
     messageCounts = new HashMap<String, Integer>();
     taskPool = Executors.newCachedThreadPool(new NamedThreadFactory("server-async-pool"));
     simulateConnectionError = false;
   }
 
   /** Simulate a close socket operation */
-  public void close(String sessionId) {
+  void close(String sessionId) {
     messageCounts.remove(sessionId);
     clients.remove(sessionId);
     RemotePluginServerUtils.getAsyncNode().onClose(sessionId);
@@ -57,7 +57,7 @@ public class StubAsyncServerEndpoint implements AsyncEndpointServer {
    *
    * @param jsonData incoming json data
    */
-  public void onData(final String jsonData, final StubAsyncClientEndpoint client) {
+  void onData(final String jsonData, final StubAsyncEndpointClient client) {
     final MessageDto message = JacksonParser.fromJson(jsonData);
     clients.put(message.getSessionId(), client);
     taskPool.submit(
@@ -77,7 +77,7 @@ public class StubAsyncServerEndpoint implements AsyncEndpointServer {
       simulateConnectionError = false; // reinit flag
       throw new StubNetworkConnectionException("Simulate a unreachable client exception");
     }
-    final StubAsyncClientEndpoint client = clients.get(msg.getSessionId());
+    final StubAsyncEndpointClient client = clients.get(msg.getSessionId());
     taskPool.submit(
         new Runnable() {
           @Override
@@ -91,11 +91,16 @@ public class StubAsyncServerEndpoint implements AsyncEndpointServer {
         });
   }
 
-  public void setSimulateConnectionError(Boolean simulateConnectionError) {
+  /**
+   * Set to true to simulate a connection for the 2nd message received
+   *
+   * @param simulateConnectionError non nullable Boolean
+   */
+  public void setSimulateConnectionError(boolean simulateConnectionError) {
     this.simulateConnectionError = simulateConnectionError;
   }
 
-  Integer incrementCountInSession(String sessionId) {
+  private Integer incrementCountInSession(String sessionId) {
     messageCounts.put(
         sessionId, messageCounts.get(sessionId) == null ? 1 : messageCounts.get(sessionId) + 1);
     return messageCounts.get(sessionId);

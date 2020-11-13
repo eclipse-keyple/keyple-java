@@ -16,8 +16,8 @@ import org.eclipse.keyple.plugin.remote.exception.KeypleTimeoutException;
 import org.eclipse.keyple.plugin.remote.impl.LocalServiceClientFactory;
 import org.eclipse.keyple.plugin.remote.integration.common.app.ReaderEventFilter;
 import org.eclipse.keyple.plugin.remote.integration.common.endpoint.StubNetworkConnectionException;
-import org.eclipse.keyple.plugin.remote.integration.common.endpoint.service.StubAsyncClientEndpoint;
-import org.eclipse.keyple.plugin.remote.integration.common.endpoint.service.StubAsyncServerEndpoint;
+import org.eclipse.keyple.plugin.remote.integration.common.endpoint.service.StubAsyncEndpointClient;
+import org.eclipse.keyple.plugin.remote.integration.common.endpoint.service.StubAsyncEndpointServer;
 import org.eclipse.keyple.plugin.remote.integration.common.model.DeviceInput;
 import org.eclipse.keyple.plugin.remote.integration.common.model.UserInput;
 import org.junit.*;
@@ -26,9 +26,9 @@ import org.slf4j.LoggerFactory;
 
 public class AsyncScenario extends BaseScenario {
 
-  StubAsyncClientEndpoint clientEndpoint;
+  StubAsyncEndpointClient clientEndpoint;
   private static final Logger logger = LoggerFactory.getLogger(AsyncScenario.class);
-  private static StubAsyncServerEndpoint serverEndpoint;
+  private static StubAsyncEndpointServer serverEndpoint;
 
   @BeforeClass
   public static void globalSetUp() {
@@ -39,7 +39,7 @@ public class AsyncScenario extends BaseScenario {
      *   <li>create an isntance of the serverEndpoint</li>
      * </ul>
      */
-    serverEndpoint = new StubAsyncServerEndpoint();
+    serverEndpoint = new StubAsyncEndpointServer();
   }
 
   @Before
@@ -64,7 +64,7 @@ public class AsyncScenario extends BaseScenario {
      * </ul>
      */
     initNativeStubPlugin();
-    clientEndpoint = new StubAsyncClientEndpoint(serverEndpoint, false);
+    clientEndpoint = new StubAsyncEndpointClient(serverEndpoint, false);
     user1 = new UserInput().setUserId(UUID.randomUUID().toString());
     device1 = new DeviceInput().setDeviceId(DEVICE_ID);
   }
@@ -148,7 +148,7 @@ public class AsyncScenario extends BaseScenario {
   @Test(expected = StubNetworkConnectionException.class)
   @Override
   public void execute_transaction_host_network_error() {
-    clientEndpoint = new StubAsyncClientEndpoint(serverEndpoint, true);
+    clientEndpoint = new StubAsyncEndpointClient(serverEndpoint, true);
 
     localService =
         new LocalServiceClientFactory()

@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.plugin.remote.integration.common.endpoint.service;
+package org.eclipse.keyple.plugin.remote.integration.common.endpoint.pool;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -19,37 +19,27 @@ import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.service.exception.KeypleRuntimeException;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.eclipse.keyple.plugin.remote.MessageDto;
-import org.eclipse.keyple.plugin.remote.RemotePluginServer;
-import org.eclipse.keyple.plugin.remote.SyncNodeServer;
-import org.eclipse.keyple.plugin.remote.impl.RemotePluginServerUtils;
-import org.eclipse.keyple.plugin.remote.integration.common.endpoint.StubNetworkConnectionException;
+import org.eclipse.keyple.plugin.remote.PoolRemotePluginClient;
+import org.eclipse.keyple.plugin.remote.impl.PoolLocalServiceServerUtils;
 import org.eclipse.keyple.plugin.remote.integration.common.util.JacksonParser;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Stub implementation of a {@link SyncEndpointClient} to test {@link RemotePluginServer}. It
+ * Stub implementation of a {@link SyncEndpointClient} for a {@link PoolRemotePluginClient}. It
  * simulates synchronous invocation to a remote server.
  */
-public class StubSyncClientEndpoint implements SyncEndpointClient {
+public class StubSyncEndpointClient implements SyncEndpointClient {
 
-  private static final Logger logger = LoggerFactory.getLogger(StubSyncClientEndpoint.class);
-  static final ExecutorService taskPool =
+  private static final Logger logger = LoggerFactory.getLogger(StubSyncEndpointClient.class);
+  private static final ExecutorService taskPool =
       Executors.newCachedThreadPool(new NamedThreadFactory("syncPool"));;
-  private final Boolean simulateConnectionError;
-  int messageSent = 0;
 
-  public StubSyncClientEndpoint(Boolean simulateConnectionError) {
-    this.simulateConnectionError = simulateConnectionError;
-  }
+  public StubSyncEndpointClient() {}
 
   @Override
   public List<MessageDto> sendRequest(MessageDto msg) {
-    if (messageSent++ == 2 && simulateConnectionError) {
-      throw new StubNetworkConnectionException("Simulate a host unreacheable error");
-    }
-
     final String responsesJson;
     // serialize request
     final String request = JacksonParser.toJson(msg);
@@ -72,15 +62,13 @@ public class StubSyncClientEndpoint implements SyncEndpointClient {
    * @param data json serialized (keyple message dto)
    * @return json serialized data (list of keyple dto)
    */
-  Callable<String> sendData(final String data) {
+  private Callable<String> sendData(final String data) {
     return new Callable<String>() {
       @Override
       public String call() throws Exception {
-        SyncNodeServer serverSyncNode;
-
         // Send the dto to the sync node
         List<MessageDto> responses =
-            RemotePluginServerUtils.getSyncNode().onRequest(JacksonParser.fromJson(data));
+            PoolLocalServiceServerUtils.getSyncNode().onRequest(JacksonParser.fromJson(data));
 
         return JacksonParser.toJson(responses);
       }

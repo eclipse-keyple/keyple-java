@@ -15,7 +15,7 @@ import java.util.UUID;
 import org.eclipse.keyple.plugin.remote.impl.LocalServiceClientFactory;
 import org.eclipse.keyple.plugin.remote.integration.common.app.ReaderEventFilter;
 import org.eclipse.keyple.plugin.remote.integration.common.endpoint.StubNetworkConnectionException;
-import org.eclipse.keyple.plugin.remote.integration.common.endpoint.service.StubSyncClientEndpoint;
+import org.eclipse.keyple.plugin.remote.integration.common.endpoint.service.StubSyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.integration.common.model.DeviceInput;
 import org.eclipse.keyple.plugin.remote.integration.common.model.UserInput;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
@@ -52,7 +52,7 @@ public class SyncScenario extends BaseScenario {
      */
     initNativeStubPlugin();
 
-    clientSyncEndpoint = new StubSyncClientEndpoint(false);
+    clientSyncEndpoint = new StubSyncEndpointClient(false);
 
     user1 = new UserInput().setUserId(UUID.randomUUID().toString());
     device1 = new DeviceInput().setDeviceId(DEVICE_ID);
@@ -132,7 +132,7 @@ public class SyncScenario extends BaseScenario {
   @Override
   @Test(expected = StubNetworkConnectionException.class)
   public void execute_transaction_host_network_error() {
-    clientSyncEndpoint = new StubSyncClientEndpoint(true);
+    clientSyncEndpoint = new StubSyncEndpointClient(true);
 
     localService =
         new LocalServiceClientFactory()
