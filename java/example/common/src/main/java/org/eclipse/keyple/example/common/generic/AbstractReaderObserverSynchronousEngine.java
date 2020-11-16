@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractReaderObserverSynchronousEngine
     implements ObservableReader.ReaderObserver {
 
-  private static final Logger logger = LoggerFactory.getLogger(AbstractReaderObserverEngine.class);
+  private static final Logger logger = LoggerFactory.getLogger(AbstractReaderObserverSynchronousEngine.class);
 
   /**
    * Method to be implemented by the application to handle the CARD_MATCHED reader event.<br>
