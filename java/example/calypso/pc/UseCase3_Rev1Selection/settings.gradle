@@ -1,1 +1,4 @@
 rootProject.name = 'example.calypso.pc.UseCase_Calypso3_Rev1Selection'
+
+include ':common'
+project(':common').projectDir = new File("../../../common")

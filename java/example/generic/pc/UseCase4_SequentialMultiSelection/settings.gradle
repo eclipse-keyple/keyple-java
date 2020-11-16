@@ -1,1 +1,4 @@
 rootProject.name = 'example.generic.pc.UseCase_Generic4_SequentialMultiSelection'
+
+include ':common'
+project(':common').projectDir = new File("../../../common")
