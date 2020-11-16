@@ -16,7 +16,7 @@ import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
 import javax.inject.Inject;
 import org.eclipse.keyple.example.calypso.remote.websocket.client.ClientApp;
-import org.eclipse.keyple.example.calypso.remote.websocket.server.ServerApp;
+import org.eclipse.keyple.example.calypso.remote.websocket.server.ServerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +34,8 @@ public class ServerStartup {
    */
   public static class RemoteWebsocketExample implements QuarkusApplication {
 
-    @Inject ServerApp serverApp;
+    @Inject
+    ServerConfiguration serverConfiguration;
 
     @Inject ClientApp clientApp;
 
@@ -43,7 +44,7 @@ public class ServerStartup {
 
       LOGGER.info("Server app init ...");
 
-      serverApp.init();
+      serverConfiguration.init();
 
       LOGGER.info("Client init...");
 

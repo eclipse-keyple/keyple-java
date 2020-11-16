@@ -17,50 +17,39 @@ import javax.inject.Inject;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.core.card.selection.CardSelection;
 import org.eclipse.keyple.core.card.selection.SelectionsResult;
-import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
-import org.eclipse.keyple.core.service.exception.KeypleException;
-import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
-import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
-import org.eclipse.keyple.plugin.pcsc.PcscReader;
-import org.eclipse.keyple.plugin.pcsc.PcscSupportedProtocols;
-import org.eclipse.keyple.plugin.remote.LocalServiceClient;
+import org.eclipse.keyple.example.calypso.remote.webservice.util.CalypsoTicketingLogic;
 import org.eclipse.keyple.plugin.remote.PoolRemotePluginClient;
-import org.eclipse.keyple.plugin.remote.RemoteServiceParameters;
-import org.eclipse.keyple.plugin.remote.impl.LocalServiceClientFactory;
 import org.eclipse.keyple.plugin.remote.impl.PoolRemotePluginClientFactory;
 import org.eclipse.keyple.plugin.remote.impl.PoolRemotePluginClientUtils;
-import org.eclipse.keyple.plugin.stub.*;
-import org.eclipse.keyple.remote.example.card.CalypsoTicketingLogic;
-import org.eclipse.keyple.remote.example.model.TransactionResult;
-import org.eclipse.keyple.remote.example.model.UserInfo;
-import org.eclipse.keyple.remote.example.card.StubCalypsoClassic;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Example of a client side app */
+/**
+ * Client app for the {@link PoolRemotePluginClient} example. Execute the transaction on a remote reader.
+ */
 @ApplicationScoped
 public class ClientApp {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ClientApp.class);
 
   @Inject @RestClient
-  WebserviceEndpointClient clientEndpoint;
+  PoolLocalServiceClient clientEndpoint;
 
   String REFERENCE_GROUP = "group1";
 
   /**
-   *
+   * Initialize the {@link PoolRemotePluginClient}
    */
   public void init() {
 
       SmartCardService.getInstance().registerPlugin(
               PoolRemotePluginClientFactory
                       .builder()
-                      .withSyncNode(clientEndpoint)
-                      .usingDefaultTimeout()
+                      .withSyncNode(clientEndpoint) //use the web service client endpoint configured to communicate with the server where is located the local pool plugin
+                      .usingDefaultTimeout() //use a default timeout
                       .build());
 
   }

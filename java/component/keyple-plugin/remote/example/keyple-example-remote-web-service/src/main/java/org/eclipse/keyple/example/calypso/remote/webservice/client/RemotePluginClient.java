@@ -15,17 +15,17 @@ import java.util.List;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import org.eclipse.keyple.example.calypso.remote.webservice.server.WebserviceEndpointServer;
+import org.eclipse.keyple.example.calypso.remote.webservice.server.RemotePluginEndpoint;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 /**
  * Example implementation of a {@link SyncEndpointClient} based on Web service. Interacts with {@link
- * WebserviceEndpointServer}
+ * RemotePluginEndpoint}
  */
 @RegisterRestClient(configKey = "remote-plugin-api")
-public interface WebserviceEndpointClient extends SyncEndpointClient {
+public interface RemotePluginClient extends SyncEndpointClient {
 
   @POST
   @Path("/remote-plugin")

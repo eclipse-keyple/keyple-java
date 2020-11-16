@@ -17,17 +17,17 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import org.eclipse.keyple.example.calypso.remote.webservice.client.WebserviceEndpointClient;
+import org.eclipse.keyple.example.calypso.remote.webservice.client.RemotePluginClient;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.impl.RemotePluginServerUtils;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 
 /**
  * Example implementation of a RemoteServer with a {@link SyncEndpointClient} based on Web Service. Serve {@link
- * WebserviceEndpointClient} clients
+ * RemotePluginClient} clients
  */
 @Path("/remote-plugin")
-public class WebserviceEndpointServer {
+public class RemotePluginEndpoint {
 
   /**
    * Endpoint that transfer message to the RemoteServer Sync Node

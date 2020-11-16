@@ -16,33 +16,41 @@ import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
 import javax.inject.Inject;
 import org.eclipse.keyple.example.calypso.remote.webservice.client.ClientApp;
-import org.eclipse.keyple.example.calypso.remote.webservice.server.ServerApp;
+import org.eclipse.keyple.example.calypso.remote.webservice.server.ServerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Main class of the Quarkus server
+ */
 @QuarkusMain
 public class ServerStartup {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ServerStartup.class);
 
+  /*
+   * Start the application
+   */
   public static void main(String... args) {
     Quarkus.run(PoolRemotePluginWebserviceExample.class, args);
   }
 
-  /*
-   * Main class of the server application.
+  /**
+   * Main class of the example application.
    */
   public static class PoolRemotePluginWebserviceExample implements QuarkusApplication {
 
-    @Inject ClientApp clientApp;
+    @Inject
+    ClientApp clientApp;
 
-    @Inject ServerApp serverApp;
+    @Inject
+    ServerConfiguration serverConfiguration;
 
     @Override
     public int run(String... args) throws Exception {
-      LOGGER.info("Server app starts...");
+      LOGGER.info("Server app init...");
 
-      serverApp.init();
+      serverConfiguration.init();
 
       LOGGER.info("Client init...");
 

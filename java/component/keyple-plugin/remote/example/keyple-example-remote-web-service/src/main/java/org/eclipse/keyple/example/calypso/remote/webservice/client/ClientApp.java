@@ -25,9 +25,9 @@ import org.eclipse.keyple.plugin.remote.LocalServiceClient;
 import org.eclipse.keyple.plugin.remote.RemoteServiceParameters;
 import org.eclipse.keyple.plugin.remote.impl.LocalServiceClientFactory;
 import org.eclipse.keyple.plugin.stub.*;
-import org.eclipse.keyple.remote.example.model.TransactionResult;
-import org.eclipse.keyple.remote.example.model.UserInfo;
-import org.eclipse.keyple.remote.example.card.StubCalypsoClassic;
+import org.eclipse.keyple.remote.example.common.TransactionResult;
+import org.eclipse.keyple.remote.example.common.UserInfo;
+import org.eclipse.keyple.remote.example.util.CalypsoSmartCard;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,7 @@ public class ClientApp {
   private static final Logger LOGGER = LoggerFactory.getLogger(ClientApp.class);
 
   @Inject @RestClient
-  WebserviceEndpointClient clientEndpoint;
+  RemotePluginClient clientEndpoint;
 
   LocalServiceClient nativeService;
   Plugin nativePlugin;
@@ -49,7 +49,7 @@ public class ClientApp {
    * Initialize the client components : {@link StubPlugin} with a {@link StubReader} that accepts
    * {@link org.eclipse.keyple.plugin.stub.StubSmartCard} based on protocol
    * SeCommonProtocols.PROTOCOL_ISO14443_4. Initialize the nativeSeService with a sync endpoint
-   * {@link WebserviceEndpointClient}
+   * {@link RemotePluginClient}
    */
   public void init() {
 
@@ -109,7 +109,7 @@ public class ClientApp {
         ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // insert a Stub card
-    ((StubReader) nativeReader).insertCard(new StubCalypsoClassic());
+    ((StubReader) nativeReader).insertCard(new CalypsoSmartCard());
 
     LOGGER.info(
         "Client - Native reader was configured with STUB reader : {} with a card",

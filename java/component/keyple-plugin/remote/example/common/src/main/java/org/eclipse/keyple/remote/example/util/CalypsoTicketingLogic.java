@@ -1,4 +1,4 @@
-package org.eclipse.keyple.remote.example.card;
+package org.eclipse.keyple.remote.example.util;
 
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.card.selection.CardResource;
@@ -7,16 +7,18 @@ import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.remote.example.app.RemotePluginObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.eclipse.keyple.remote.example.app.RemotePluginObserver.*;
 
 public class CalypsoTicketingLogic {
 
     private static final Logger logger = LoggerFactory.getLogger(CalypsoTicketingLogic.class);
+    /** AID: Keyple */
+    public static final String AID = "315449432E49434131";
 
+    public static final byte RECORD_NUMBER_1 = 1;
+    public static final byte SFI_EnvironmentAndHolder = (byte) 0x07;
+    public static final byte SFI_EventLog = (byte) 0x08;
     /**
      * Prepare a Selection object ready to select Calypso card and read environment file
      *
@@ -31,7 +33,7 @@ public class CalypsoTicketingLogic {
                 new PoSelectionRequest(
                         PoSelector.builder()
                                 .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-                                .aidSelector(CardSelector.AidSelector.builder().aidToSelect(RemotePluginObserver.AID).build())
+                                .aidSelector(CardSelector.AidSelector.builder().aidToSelect(AID).build())
                                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                                 .build());
 

@@ -9,6 +9,3 @@ pluginManagement {
     }
 }
 rootProject.name = 'keyple-example-remote-pool-webservice'
-
-include ':common'
-project(':common').projectDir = new File("../common")

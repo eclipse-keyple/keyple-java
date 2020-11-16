@@ -24,9 +24,9 @@ import org.eclipse.keyple.plugin.remote.LocalServiceClient;
 import org.eclipse.keyple.plugin.remote.RemoteServiceParameters;
 import org.eclipse.keyple.plugin.remote.impl.LocalServiceClientFactory;
 import org.eclipse.keyple.plugin.stub.*;
-import org.eclipse.keyple.remote.example.model.TransactionResult;
-import org.eclipse.keyple.remote.example.model.UserInfo;
-import org.eclipse.keyple.remote.example.se.StubCalypsoClassic;
+import org.eclipse.keyple.remote.example.common.TransactionResult;
+import org.eclipse.keyple.remote.example.common.UserInfo;
+import org.eclipse.keyple.remote.example.util.CalypsoSmartCard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -107,7 +107,7 @@ public class ClientApp {
         ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // insert a Stub card
-    ((StubReader) nativeReader).insertCard(new StubCalypsoClassic());
+    ((StubReader) nativeReader).insertCard(new CalypsoSmartCard());
 
     LOGGER.info(
         "Client - Native reader was configured with STUB reader : {} with a card",

@@ -8,6 +8,10 @@ repositories {
     mavenCentral()
 }
 
+task('runExample',  group:'keyple'){
+    dependsOn 'quarkusDev'
+}
+
 dependencies {
 
     /* Keyple dependencies */

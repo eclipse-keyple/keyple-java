@@ -9,25 +9,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.remote.example.app;
+package org.eclipse.keyple.remote.example.server;
 
 import org.eclipse.keyple.calypso.transaction.*;
-import org.eclipse.keyple.core.card.selection.CardResource;
 import org.eclipse.keyple.core.card.selection.CardSelection;
-import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.core.card.selection.SelectionsResult;
-import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservablePlugin;
 import org.eclipse.keyple.core.service.event.PluginEvent;
 import org.eclipse.keyple.core.service.exception.KeypleException;
-import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
-import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.remote.RemotePluginServer;
 import org.eclipse.keyple.plugin.remote.RemoteReaderServer;
-import org.eclipse.keyple.remote.example.card.CalypsoTicketingLogic;
-import org.eclipse.keyple.remote.example.model.TransactionResult;
-import org.eclipse.keyple.remote.example.model.UserInfo;
+import org.eclipse.keyple.remote.example.util.CalypsoTicketingLogic;
+import org.eclipse.keyple.remote.example.common.TransactionResult;
+import org.eclipse.keyple.remote.example.common.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,12 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 public class RemotePluginObserver implements ObservablePlugin.PluginObserver {
 
-  /** AID: Keyple */
-  public static final String AID = "315449432E49434131";
 
-  public static final byte RECORD_NUMBER_1 = 1;
-  public static final byte SFI_EnvironmentAndHolder = (byte) 0x07;
-  public static final byte SFI_EventLog = (byte) 0x08;
   private static final Logger logger = LoggerFactory.getLogger(RemotePluginObserver.class);
 
   @Override

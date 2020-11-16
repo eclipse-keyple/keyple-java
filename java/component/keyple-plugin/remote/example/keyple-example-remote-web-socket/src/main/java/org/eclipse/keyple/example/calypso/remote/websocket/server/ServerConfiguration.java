@@ -9,25 +9,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.calypso.remote.webservice.server;
+package org.eclipse.keyple.example.calypso.remote.websocket.server;
 
-import java.util.concurrent.Executors;
 import javax.enterprise.context.ApplicationScoped;
-
+import javax.inject.Inject;
 import org.eclipse.keyple.core.service.SmartCardService;
-import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.eclipse.keyple.plugin.remote.impl.RemotePluginServerFactory;
-import org.eclipse.keyple.remote.example.app.RemotePluginObserver;
+import org.eclipse.keyple.remote.example.server.RemotePluginObserver;
 
 /** Example of a server side app */
 @ApplicationScoped
-public class ServerApp {
+public class ServerConfiguration {
 
   RemotePluginObserver pluginObserver;
 
+  @Inject WebsocketEndpointServer websocketEndpointServer;
+
   /**
-   * Initialize the Remote Plugin wit a sync node and attach an observer to the plugin {@link
-   * RemotePluginObserver} that contains all the business logic
+   * Initialize the Remote Plugin with an async endpoint {@link WebsocketEndpointServer} and attach
+   * an observer to the plugin {@link RemotePluginObserver} that contains all the business logic
    */
   public void init() {
 
@@ -36,10 +36,9 @@ public class ServerApp {
     SmartCardService.getInstance()
         .registerPlugin(
             RemotePluginServerFactory.builder()
-                .withSyncNode()
+                .withAsyncNode(websocketEndpointServer)
                 .withPluginObserver(pluginObserver)
-                .usingEventNotificationPool(
-                    Executors.newCachedThreadPool(new NamedThreadFactory("server-pool")))
+                .usingDefaultEventNotificationPool()
                 .build());
   }
 }

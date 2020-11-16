@@ -8,6 +8,10 @@ repositories {
     mavenCentral()
 }
 
+task('runExample',  group:'keyple'){
+    dependsOn 'quarkusDev'
+}
+
 dependencies {
 
     /* Keyple dependencies */
@@ -18,9 +22,6 @@ dependencies {
     /* Keyple plugin dependencies */
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-stub', version: keyple_version
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-pcsc', version: keyple_version
-
-    /* Example dependencies */
-    implementation project(path: ':common')
 
     /* Quarkus */
     implementation 'io.quarkus:quarkus-resteasy-jsonb'
