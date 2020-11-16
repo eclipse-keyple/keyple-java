@@ -47,11 +47,4 @@ internal class AndroidNfcPluginImpl(private val activity: Activity) :
         // Nfc android adapter availability is checked in AndroidNfcFragment
         return readers
     }
-
-    override fun unregister() {
-        readers.forEach {
-            (it.value as AndroidNfcReader).clearContext()
-        }
-        super.unregister()
-    }
 }

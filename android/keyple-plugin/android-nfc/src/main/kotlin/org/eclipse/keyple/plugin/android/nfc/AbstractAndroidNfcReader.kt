@@ -33,8 +33,13 @@ import timber.log.Timber
  * Abstract implementation of [AndroidNfcReader] based on keyple core abstract classes [AbstractObservableLocalReader]
  * and
  */
-internal abstract class AbstractAndroidNfcReader(activity: Activity) : AbstractObservableLocalAutonomousReader(AndroidNfcReader.PLUGIN_NAME, AndroidNfcReader.READER_NAME),
-        AndroidNfcReader, NfcAdapter.ReaderCallback, WaitForCardInsertionAutonomous, DontWaitForCardRemovalDuringProcessing {
+internal abstract class AbstractAndroidNfcReader(activity: Activity) :
+    AbstractObservableLocalAutonomousReader(
+        AndroidNfcReader.PLUGIN_NAME,
+        AndroidNfcReader.READER_NAME
+    ),
+    AndroidNfcReader, NfcAdapter.ReaderCallback, WaitForCardInsertionAutonomous,
+    DontWaitForCardRemovalDuringProcessing {
 
     companion object {
         private const val NO_TAG = "no-tag"
@@ -240,22 +245,28 @@ internal abstract class AbstractAndroidNfcReader(activity: Activity) : AbstractO
         return with(tagProxy) {
             if (this == null) {
                 throw KeypleReaderIOException(
-                    "Error while transmitting APDU, invalid out data buffer")
+                    "Error while transmitting APDU, invalid out data buffer"
+                )
             } else {
                 try {
                     val bytes = transceive(apduIn)
-                    if (bytes.size <2) {
+                    if (bytes.size < 2) {
                         throw KeypleReaderIOException(
-                            "Error while transmitting APDU, invalid out data buffer")
+                            "Error while transmitting APDU, invalid out data buffer"
+                        )
                     } else {
                         Timber.d("Receive data from card : ${ByteArrayUtil.toHex(bytes)}")
                         bytes
                     }
                 } catch (e: IOException) {
                     throw KeypleReaderIOException(
-                        "Error while transmitting APDU, invalid out data buffer", e)
+                        "Error while transmitting APDU, invalid out data buffer", e
+                    )
                 } catch (e: NoSuchElementException) {
-                    throw KeypleReaderIOException("Error while transmitting APDU, no such Element", e)
+                    throw KeypleReaderIOException(
+                        "Error while transmitting APDU, no such Element",
+                        e
+                    )
                 }
             }
         }
@@ -275,7 +286,8 @@ internal abstract class AbstractAndroidNfcReader(activity: Activity) : AbstractO
      */
     override fun activateReaderProtocol(readerProtocolName: String?) {
         if (!protocolsMap.containsKey(readerProtocolName)) {
-            protocolsMap[readerProtocolName!!] = AndroidNfcProtocolSettings.getSetting(readerProtocolName)
+            protocolsMap[readerProtocolName!!] =
+                AndroidNfcProtocolSettings.getSetting(readerProtocolName)
         }
         Timber.d("$name: Activate protocol $readerProtocolName with rule \"${protocolsMap[readerProtocolName]}\".")
     }
@@ -312,6 +324,10 @@ internal abstract class AbstractAndroidNfcReader(activity: Activity) : AbstractO
 
     override fun onStartDetection() {
         Timber.d("onStartDetection")
+        if (contextWeakRef.get() == null) {
+            throw IllegalStateException("onStartDetection() failed : no context available")
+        }
+
         if (nfcAdapter == null) {
             nfcAdapter = NfcAdapter.getDefaultAdapter(contextWeakRef.get()!!)
         }
@@ -329,7 +345,18 @@ internal abstract class AbstractAndroidNfcReader(activity: Activity) : AbstractO
 
     override fun onStopDetection() {
         Timber.d("onStopDetection")
-        nfcAdapter?.disableReaderMode(contextWeakRef.get())
+        nfcAdapter?.let {
+            if (contextWeakRef.get() != null) {
+                it.disableReaderMode(contextWeakRef.get())
+            } else {
+                throw IllegalStateException("onStopDetection failed : no context available")
+            }
+        }
+    }
+
+    override fun unregister() {
+        super.unregister()
+        clearContext()
     }
 
     /**
@@ -349,7 +376,12 @@ internal abstract class AbstractAndroidNfcReader(activity: Activity) : AbstractO
                 NO_TAG
             } else {
                 // build a user friendly TechList
-                val techList = tag.techList.joinToString(separator = ", ") { it.replace("android.nfc.tech.", "") }
+                val techList = tag.techList.joinToString(separator = ", ") {
+                    it.replace(
+                        "android.nfc.tech.",
+                        ""
+                    )
+                }
                 // build a hexa TechId
                 val tagId = tag.id.joinToString(separator = " ") { String.format("%02X", it) }
                 "$tagId - $techList"
