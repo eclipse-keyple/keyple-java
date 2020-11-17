@@ -13,8 +13,8 @@ package org.eclipse.keyple.example.generic.pc.Demo_ObservableReaderNotification;
 
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.SmartCardService;
-import org.eclipse.keyple.example.common.generic.stub.StubSe1;
-import org.eclipse.keyple.example.common.generic.stub.StubSe2;
+import org.eclipse.keyple.example.common.generic.stub.StubSmartCard1;
+import org.eclipse.keyple.example.common.generic.stub.StubSmartCard2;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubPluginFactory;
 import org.eclipse.keyple.plugin.stub.StubReader;
@@ -63,8 +63,8 @@ public class Demo_ObservableReaderNotification_Stub {
     StubReader reader2 = (StubReader) (stubPlugin.getReader(READER2_NAME));
 
     // Create 'virtual' Hoplink and SAM card
-    StubSmartCard se1 = new StubSe1();
-    StubSmartCard se2 = new StubSe2();
+    StubSmartCard se1 = new StubSmartCard1();
+    StubSmartCard se2 = new StubSmartCard2();
 
     logger.info("Insert card into reader 1.");
     reader1.insertCard(se1);
