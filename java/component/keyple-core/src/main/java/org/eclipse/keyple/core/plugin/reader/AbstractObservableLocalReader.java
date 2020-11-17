@@ -113,6 +113,12 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
   /* Service that handles Internal Events and their impact on the current state of the reader */
   protected final ObservableReaderStateService stateService;
 
+  /** Method called when the card detection is started by the Keyple Plugin */
+  protected abstract void onStartDetection();
+
+  /** Method called when the card detection is stopped by the Keyple Plugin */
+  protected abstract void onStopDetection();
+
   /**
    * (protected)<br>
    * Constructor.

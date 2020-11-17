@@ -104,4 +104,14 @@ public class BlankPresenceWaitForCardBlockingThreadedReader extends AbstractObse
     detectCount++;
     return detectCount <= mockDetect;
   }
+
+  @Override
+  protected void onStartDetection() {
+    // Do nothing
+  }
+
+  @Override
+  protected void onStopDetection() {
+    // Do nothing
+  }
 }

@@ -79,4 +79,16 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader
   public ReaderEvent processCardInsertedTest() {
     return processCardInserted();
   }
+
+  public void stopWaitForCard() {}
+
+  @Override
+  protected void onStartDetection() {
+    // Do nothing
+  }
+
+  @Override
+  protected void onStopDetection() {
+    // Do nothing
+  }
 }
