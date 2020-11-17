@@ -5,7 +5,7 @@ Here are several ready-to-execute examples to demonstrate Keyple capabilities wi
 Keyple is compatible with any card reader as long as a Keyple plugin is provided. In theses examples, we use:
 - PCSC smartcard readers : usually USB readers, they can be with-contact or contactless. They use the Keyple PCSC plugin.
 - Stub readers : the Stub plugin allows to emulate programmatically a smartcard of any kind.
-- Remote SE readers : the Remote Se plugin allows to communicate with a smartcard inserted on a remote reader hosted on another device.
+- [Remote readers](/java/example/calypso/remote) : the Remote plugin allows to communicate with a smartcard inserted on a remote reader hosted on another device.
 
 As Keyple is not tight to Calypso protocol, both generic and Calypso examples are provided.
 - Calypso examples are available in this subproject : [Calypso examples](/java/example/calypso/)
