@@ -1,83 +1,34 @@
-buildscript {
-    repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-    dependencies {
-        classpath "com.diffplug.spotless:spotless-plugin-gradle:3.14.0"
-    }
-}
-
 plugins {
     id 'java'
 }
 
-allprojects {
+group 'org.eclipse.keyple'
 
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        
-        //to import keyple snapshots
-        maven {url 'https://oss.sonatype.org/content/repositories/snapshots' }
-        
+sourceCompatibility = 1.6
 
-    }
+ext {
+    //if a property keyple_version is specified, this version will be taken, else the '+' latest version will be taken
+    keyple_v = project.hasProperty("keyple_version") ? keyple_version : '+'
+}
 
-    apply plugin: "com.diffplug.gradle.spotless"
-    apply plugin: 'pmd'
+repositories {
+    mavenLocal()
+    mavenCentral()
+    
+    //to import keyple snapshots
+    maven {url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    
+}
 
-    group 'org.eclipse.keyple'
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
 
-    spotless {
-        java {
-            licenseHeaderFile rootProject.file('.build/spotless.license.txt')
-            importOrder 'java', 'javax', 'org', 'com', 'com.diffplug', ''
-            removeUnusedImports()
-            googleJavaFormat()
-        }
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: keyple_v
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: keyple_v
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-pcsc', version: keyple_v
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-stub', version: keyple_v
 
-        format 'misc', {
-            target '**/*.java', '**/*.gradle', '**/*.yml', '**/*.md'
-
-            indentWithSpaces()
-            endWithNewline()
-        }
-    }
-
-    pmd {
-        ruleSets = [
-                "java-basic",
-                "java-braces",
-                "java-strings",
-                "java-imports",
-                "java-unnecessary",
-                "java-unusedcode",
-//                "java-metrics",
-                "java-empty",
-                "java-codesize",
-                "java-clone",
-                "java-typeresolution",
-                "java-strictexception",
-                "java-finalizers",
-                "java-migrating",
-                "java-logging-java",
-//                 "java-controversial",
-                "java-sunsecure",
-                "java-junit",
-                "java-optimizations",
-//                "java-naming",
-                "java-coupling",
-                "java-design",
-                "java-comments"
-        ]
-        // PMD priorities levels:
-        // 1. Change absolutely required. Behavior is critically broken/buggy.
-        // 2. Change highly recommended. Behavior is quite likely to be broken/buggy.
-        // 3. Change recommended. Behavior is confusing, perhaps buggy, and/or against standards/best practices.
-        // 4. Change optional. Behavior is not likely to be buggy, but more just flies in the face of standards/style/good taste.
-        // 5. Change highly optional. Nice to have, such as a consistent naming policy for package/class/fields…
-        rulePriority = 1
-    }
+    implementation "org.slf4j:slf4j-simple:1.7.25"
+    implementation "org.slf4j:slf4j-ext:1.7.25"
+    implementation "com.squareup.retrofit2:converter-gson:2.4.0"
 }

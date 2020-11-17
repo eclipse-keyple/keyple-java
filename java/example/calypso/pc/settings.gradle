@@ -1,4 +1,1 @@
-rootProject.name = 'calypso-pc-example'
-
-include 'UseCases'
-
+rootProject.name = 'example.calypso.pc.UseCases'
