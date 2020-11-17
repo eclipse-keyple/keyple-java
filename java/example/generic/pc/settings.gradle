@@ -1,4 +1,1 @@
-rootProject.name = 'generic-pc-example'
-
-include 'Demos'
-include 'UseCases'
+rootProject.name = 'example.generic.pc.UseCases'
