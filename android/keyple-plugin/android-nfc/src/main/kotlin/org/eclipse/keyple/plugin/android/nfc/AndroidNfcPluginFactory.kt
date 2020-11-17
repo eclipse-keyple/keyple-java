@@ -11,16 +11,17 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
+import android.app.Activity
 import org.eclipse.keyple.core.service.Plugin
 import org.eclipse.keyple.core.service.PluginFactory
 
-class AndroidNfcPluginFactory : PluginFactory {
+class AndroidNfcPluginFactory(private val activity: Activity) : PluginFactory {
 
     override fun getPluginName(): String {
         return AndroidNfcPlugin.PLUGIN_NAME
     }
 
     override fun getPlugin(): Plugin {
-        return AndroidNfcPluginImpl
+        return AndroidNfcPluginImpl(activity)
     }
 }

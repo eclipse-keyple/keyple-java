@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
+import android.app.Activity
 import android.os.Build
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
@@ -25,7 +26,9 @@ import timber.log.Timber
  * Will provide 2 version of Android NFC reader based on Android OS version.
  *
  */
-internal object AndroidNfcPluginImpl : AbstractPlugin(AndroidNfcPlugin.PLUGIN_NAME), AndroidNfcPlugin {
+internal class AndroidNfcPluginImpl(private val activity: Activity) :
+    AbstractPlugin(AndroidNfcPlugin.PLUGIN_NAME),
+    AndroidNfcPlugin {
 
     /**
      * For an Android NFC device, the Android NFC Plugin manages only one @[AbstractAndroidNfcReader].
@@ -37,9 +40,9 @@ internal object AndroidNfcPluginImpl : AbstractPlugin(AndroidNfcPlugin.PLUGIN_NA
         Timber.d("InitNativeReader() add the unique instance of AndroidNfcReaderImpl")
         val readers = ConcurrentHashMap<String, Reader>()
         readers[AndroidNfcReader.READER_NAME] = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            AndroidNfcReaderPreNImpl
+            AndroidNfcReaderPreNImpl(activity)
         } else {
-            AndroidNfcReaderPostNImpl
+            AndroidNfcReaderPostNImpl(activity)
         }
         // Nfc android adapter availability is checked in AndroidNfcFragment
         return readers

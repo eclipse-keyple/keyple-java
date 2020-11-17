@@ -63,6 +63,14 @@ class StubReaderImpl extends AbstractObservableLocalReader
     this.isContactless = isContactless;
   }
 
+  @SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract")
+  @Override
+  protected void onStartDetection() {}
+
+  @SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract")
+  @Override
+  protected void onStopDetection() {}
+
   @Override
   protected byte[] getATR() {
     return card.getATR();

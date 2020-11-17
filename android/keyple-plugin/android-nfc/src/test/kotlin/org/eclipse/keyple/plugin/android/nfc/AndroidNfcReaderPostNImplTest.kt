@@ -31,6 +31,7 @@ import org.junit.FixMethodOrder
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.MethodSorters
+import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
@@ -39,6 +40,8 @@ import org.robolectric.RuntimeEnvironment
 class AndroidNfcReaderPostNImplTest {
 
     private lateinit var reader: AndroidNfcReaderPostNImpl
+
+    private lateinit var activity: Activity
 
     @MockK
     internal lateinit var tag: Tag
@@ -50,8 +53,8 @@ class AndroidNfcReaderPostNImplTest {
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
         val app = RuntimeEnvironment.application
-
-        reader = AndroidNfcReaderPostNImpl
+        activity = Robolectric.buildActivity(Activity::class.java).create().get()
+        reader = AndroidNfcReaderPostNImpl(activity)
 
         // We need to mock tag.* because it's called in printTagId() called when channel is closed
         every { tagProxy?.tag } returns tag
@@ -259,6 +262,4 @@ class AndroidNfcReaderPostNImplTest {
     private fun presentMockTag() {
         reader.onTagDiscovered(tag)
     }
-
-    class MyActivity : Activity()
 }

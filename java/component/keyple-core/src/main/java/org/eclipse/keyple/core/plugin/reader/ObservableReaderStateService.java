@@ -139,6 +139,14 @@ class ObservableReaderStateService {
    * @since 0.9
    */
   protected final synchronized void onEvent(AbstractObservableLocalReader.InternalEvent event) {
+    switch (event) {
+      case START_DETECT:
+        reader.onStartDetection();
+        break;
+      case STOP_DETECT:
+        reader.onStopDetection();
+        break;
+    }
     this.currentState.onEvent(event);
   }
 
