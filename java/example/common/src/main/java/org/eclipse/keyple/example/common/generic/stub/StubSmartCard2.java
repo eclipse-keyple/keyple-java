@@ -14,13 +14,13 @@ package org.eclipse.keyple.example.common.generic.stub;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.stub.StubSmartCard;
 
-/** Simple contact card Stub (no command) */
-public class StubSe1 extends StubSmartCard {
+/** Simple contactless card Stub (no command) */
+public class StubSmartCard2 extends StubSmartCard {
 
-  static final String cardProtocol = "PROTOCOL_ISO7816_3";
-  final String ATR_HEX = "3B3F9600805A0080C120000012345678829000"; // serial number : 12345678
+  static final String cardProtocol = "ISO_14443_4";
+  final String ATR_HEX = "3B8E800180318066409089120802830190000B";
 
-  public StubSe1() {}
+  public StubSmartCard2() {}
 
   @Override
   public byte[] getATR() {
