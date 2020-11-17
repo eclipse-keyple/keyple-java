@@ -12,7 +12,6 @@
 package org.eclipse.keyple.example.calypso.remote.webservice.server;
 
 import javax.enterprise.context.ApplicationScoped;
-
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.ReaderPoolPlugin;
 import org.eclipse.keyple.core.service.SmartCardService;
@@ -24,9 +23,7 @@ import org.eclipse.keyple.plugin.stub.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Server configuration for the {@link PoolLocalServiceServer} example.
- * */
+/** Server configuration for the {@link PoolLocalServiceServer} example. */
 @ApplicationScoped
 public class ServerConfiguration {
 
@@ -35,9 +32,7 @@ public class ServerConfiguration {
   ReaderPoolPlugin poolPlugin;
   PoolLocalServiceServer localService;
 
-  /**
-   * Initialize the {@link StubPoolPlugin} and the {@link PoolLocalServiceServer}
-   */
+  /** Initialize the {@link StubPoolPlugin} and the {@link PoolLocalServiceServer} */
   public void init() {
     /*
      * Initiliaze the StubPoolPlugin as the ReaderPoolPlugin
@@ -47,38 +42,41 @@ public class ServerConfiguration {
     /*
      * Initialize the PoolLocalServiceServer
      */
-    localService = new PoolLocalServiceServerFactory()
+    localService =
+        new PoolLocalServiceServerFactory()
             .builder()
             .withSyncNode() // HTTP webservice needs a server sync node configuration
-            .withPoolPlugins(poolPlugin.getName()) //use the registered ReaderPoolPlugin
+            .withPoolPlugins(poolPlugin.getName()) // use the registered ReaderPoolPlugin
             .getService();
   }
 
-  /**
-   * Init {@link ReaderPoolPlugin}  with a {@link StubPoolPlugin} with a inserted card
-   * */
+  /** Init {@link ReaderPoolPlugin} with a {@link StubPoolPlugin} with a inserted card */
   private void initStubPoolPlugin() {
     String STUB_PLUGIN_NAME = "stubPoolPlugin";
     String STUB_READER_NAME = "stubReader";
     String REFERENCE_GROUP = "group1";
 
     // register a StubPoolPlugin
-    poolPlugin = (StubPoolPlugin)
-            SmartCardService.getInstance().registerPlugin(new StubPoolPluginFactory(STUB_PLUGIN_NAME));
+    poolPlugin =
+        (StubPoolPlugin)
+            SmartCardService.getInstance()
+                .registerPlugin(new StubPoolPluginFactory(STUB_PLUGIN_NAME));
 
     // plug a native reader associated in a group reference
-    ((StubPoolPlugin)poolPlugin).plugStubPoolReader(REFERENCE_GROUP,STUB_READER_NAME, new CalypsoSmartCard());
+    ((StubPoolPlugin) poolPlugin)
+        .plugStubPoolReader(REFERENCE_GROUP, STUB_READER_NAME, new CalypsoSmartCard());
 
     // retrieve the connected reader
     Reader nativeReader = poolPlugin.getReader(STUB_READER_NAME);
 
     // configure the procotol ISO_14443_4
     nativeReader.activateProtocol(
-            StubSupportedProtocols.ISO_14443_4.name(),
-            ContactlessCardCommonProtocols.ISO_14443_4.name());
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     LOGGER.info(
-            "Server - a native reader was configured with a STUB reader : {} in group reference : {}",
-            nativeReader.getName(), REFERENCE_GROUP);
+        "Server - a native reader was configured with a STUB reader : {} in group reference : {}",
+        nativeReader.getName(),
+        REFERENCE_GROUP);
   }
 }

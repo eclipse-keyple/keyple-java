@@ -20,9 +20,7 @@ import org.eclipse.keyple.example.calypso.remote.webservice.server.ServerConfigu
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Main class of the Quarkus server
- */
+/** Main class of the Quarkus server */
 @QuarkusMain
 public class ServerStartup {
 
@@ -35,16 +33,12 @@ public class ServerStartup {
     Quarkus.run(PoolRemotePluginWebserviceExample.class, args);
   }
 
-  /**
-   * Main class of the example application.
-   */
+  /** Main class of the example application. */
   public static class PoolRemotePluginWebserviceExample implements QuarkusApplication {
 
-    @Inject
-    ClientApp clientApp;
+    @Inject ClientApp clientApp;
 
-    @Inject
-    ServerConfiguration serverConfiguration;
+    @Inject ServerConfiguration serverConfiguration;
 
     @Override
     public int run(String... args) throws Exception {

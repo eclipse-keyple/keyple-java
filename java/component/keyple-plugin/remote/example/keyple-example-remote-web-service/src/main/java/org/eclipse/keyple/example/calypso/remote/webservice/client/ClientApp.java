@@ -13,7 +13,6 @@ package org.eclipse.keyple.example.calypso.remote.webservice.client;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
@@ -38,8 +37,7 @@ public class ClientApp {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ClientApp.class);
 
-  @Inject @RestClient
-  RemotePluginClient clientEndpoint;
+  @Inject @RestClient RemotePluginClient clientEndpoint;
 
   LocalServiceClient nativeService;
   Plugin nativePlugin;

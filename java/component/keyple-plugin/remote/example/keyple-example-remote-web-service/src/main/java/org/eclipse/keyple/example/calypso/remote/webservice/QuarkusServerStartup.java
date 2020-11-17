@@ -36,8 +36,7 @@ public class QuarkusServerStartup {
 
     @Inject ClientApp clientApp;
 
-    @Inject
-    ServerConfiguration serverConfiguration;
+    @Inject ServerConfiguration serverConfiguration;
 
     @Override
     public int run(String... args) throws Exception {

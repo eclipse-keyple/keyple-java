@@ -11,9 +11,9 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.calypso.remote.webservice.client;
 
+import java.util.SortedSet;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.core.card.selection.CardSelection;
 import org.eclipse.keyple.core.card.selection.SelectionsResult;
@@ -28,30 +28,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Client app for the {@link PoolRemotePluginClient} example. Execute the transaction on a remote reader.
+ * Client app for the {@link PoolRemotePluginClient} example. Execute the transaction on a remote
+ * reader.
  */
 @ApplicationScoped
 public class ClientApp {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ClientApp.class);
 
-  @Inject @RestClient
-  PoolLocalServiceClient clientEndpoint;
+  @Inject @RestClient PoolLocalServiceClient clientEndpoint;
 
-  String REFERENCE_GROUP = "group1";
-
-  /**
-   * Initialize the {@link PoolRemotePluginClient}
-   */
+  /** Initialize the {@link PoolRemotePluginClient} */
   public void init() {
 
-      SmartCardService.getInstance().registerPlugin(
-              PoolRemotePluginClientFactory
-                      .builder()
-                      .withSyncNode(clientEndpoint) //use the web service client endpoint configured to communicate with the server where is located the local pool plugin
-                      .usingDefaultTimeout() //use a default timeout
-                      .build());
-
+    SmartCardService.getInstance()
+        .registerPlugin(
+            PoolRemotePluginClientFactory.builder()
+                .withSyncNode(
+                    clientEndpoint) // use the web service client endpoint configured to communicate
+                // with the server where is located the local pool plugin
+                .usingDefaultTimeout() // use a default timeout
+                .build());
   }
 
   /**
@@ -63,12 +60,17 @@ public class ClientApp {
     PoolRemotePluginClient poolRemotePlugin = PoolRemotePluginClientUtils.getRemotePlugin();
 
     /*
-     * Allocate a remote reader
+     * Request the reader group references available
      */
-    Reader remoteReader = poolRemotePlugin.allocateReader(REFERENCE_GROUP);
+    SortedSet<String> groupReferences = poolRemotePlugin.getReaderGroupReferences();
 
     /*
-     * Execute an example of a ticketing transaction :
+     * Allocate a remote reader
+     */
+    Reader remoteReader = poolRemotePlugin.allocateReader(groupReferences.first());
+
+    /*
+     * Execute a ticketing transaction :
      * - perform a remote explicit selection
      * - read the content of event log file
      */

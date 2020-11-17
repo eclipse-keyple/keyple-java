@@ -20,9 +20,9 @@ import org.eclipse.keyple.core.service.event.PluginEvent;
 import org.eclipse.keyple.core.service.exception.KeypleException;
 import org.eclipse.keyple.plugin.remote.RemotePluginServer;
 import org.eclipse.keyple.plugin.remote.RemoteReaderServer;
-import org.eclipse.keyple.remote.example.util.CalypsoTicketingLogic;
 import org.eclipse.keyple.remote.example.common.TransactionResult;
 import org.eclipse.keyple.remote.example.common.UserInfo;
+import org.eclipse.keyple.remote.example.util.CalypsoTicketingLogic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
  * the remote service execution
  */
 public class RemotePluginObserver implements ObservablePlugin.PluginObserver {
-
 
   private static final Logger logger = LoggerFactory.getLogger(RemotePluginObserver.class);
 
@@ -107,6 +106,4 @@ public class RemotePluginObserver implements ObservablePlugin.PluginObserver {
 
     throw new IllegalArgumentException("Service Id not recognized");
   }
-
-
 }

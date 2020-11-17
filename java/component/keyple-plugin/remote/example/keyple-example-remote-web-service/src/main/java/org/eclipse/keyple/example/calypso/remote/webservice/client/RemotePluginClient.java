@@ -21,8 +21,8 @@ import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 /**
- * Example implementation of a {@link SyncEndpointClient} based on Web service. Interacts with {@link
- * RemotePluginEndpoint}
+ * Example implementation of a {@link SyncEndpointClient} based on Web service. Interacts with
+ * {@link RemotePluginEndpoint}
  */
 @RegisterRestClient(configKey = "remote-plugin-api")
 public interface RemotePluginClient extends SyncEndpointClient {

@@ -34,8 +34,7 @@ public class ServerStartup {
    */
   public static class RemoteWebsocketExample implements QuarkusApplication {
 
-    @Inject
-    ServerConfiguration serverConfiguration;
+    @Inject ServerConfiguration serverConfiguration;
 
     @Inject ClientApp clientApp;
 

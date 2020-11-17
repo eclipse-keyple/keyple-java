@@ -22,8 +22,8 @@ import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.impl.PoolLocalServiceServerUtils;
 
 /**
- * Implementation of a Pool Local Service based on Web Service. Serve {@link
- * PoolLocalServiceClient} clients
+ * Implementation of a Pool Local Service based on Web Service. Serve {@link PoolLocalServiceClient}
+ * clients
  */
 @Path("/pool-local-service")
 public class PoolLocalServiceEndpoint {
