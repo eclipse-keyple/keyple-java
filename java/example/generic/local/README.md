@@ -1,4 +1,4 @@
-Getting Started - Generic Example
+Getting Started - Generic Local Example
 ---
 
 Those examples make use of the Keyple Core library. They demonstrate how to observe insertion/removal of Secure Elements (smartcard) or Readers.
