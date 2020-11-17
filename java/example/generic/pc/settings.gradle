@@ -1,8 +1,4 @@
 rootProject.name = 'generic-pc-example'
 
-include 'Demo_ObservableReaderNotification'
-include 'Demo_CardProtocolDetection'
-include 'UseCase1_ExplicitSelectionAid'
-include 'UseCase2_DefaultSelectionNotification'
-include 'UseCase3_GroupedMultiSelection'
-include 'UseCase4_SequentialMultiSelection'
+include 'Demos'
+include 'UseCases'
