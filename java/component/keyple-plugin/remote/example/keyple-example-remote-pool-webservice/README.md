@@ -31,7 +31,7 @@ For the matter of this example, the client app is included within the quarkus se
 
 The application can be packaged using `./gradlew quarkusBuild`.
 It produces the `keyple-example-remote-pool-web-service-1.0.0-SNAPSHOT-runner.jar` file in the `build` directory.
-Be aware that it is a _über-jar_ as the dependencies are copied inside the jar.
+Be aware that it is a uber-jar as the dependencies are copied inside the jar.
 
 The application is now runnable using `java -jar build/keyple-example-remote-pool-web-service-1.0.0-SNAPSHOT-runner.jar`.
 
