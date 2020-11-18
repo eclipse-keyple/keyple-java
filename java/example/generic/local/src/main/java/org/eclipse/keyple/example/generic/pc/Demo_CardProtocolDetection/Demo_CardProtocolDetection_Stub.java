@@ -60,11 +60,7 @@ public class Demo_CardProtocolDetection_Stub {
     Thread.sleep(200);
 
     StubReader poReader = null;
-    try {
-      poReader = (StubReader) (stubPlugin.getReader("poReader"));
-    } catch (KeypleReaderNotFoundException e) {
-      e.printStackTrace();
-    }
+    poReader = (StubReader) (stubPlugin.getReader("poReader"));
 
     observer.setReader(poReader);
 
