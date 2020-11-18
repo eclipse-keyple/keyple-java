@@ -13,6 +13,7 @@ package org.eclipse.keyple.plugin.pcsc;
 
 import javax.smartcardio.CardTerminal;
 import org.eclipse.keyple.core.plugin.reader.WaitForCardInsertionNonBlocking;
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 
 /**
  * (package-private)<br>
@@ -31,9 +32,14 @@ final class PcscReaderMacOsImpl extends AbstractPcscReader
    *
    * @param pluginName the name of the plugin
    * @param terminal the PC/SC terminal
+   * @param readerObservationExceptionHandler A not reference to an object implementing the {@link
+   *     ReaderObservationExceptionHandler} interface.
    * @since 1.0
    */
-  protected PcscReaderMacOsImpl(String pluginName, CardTerminal terminal) {
-    super(pluginName, terminal);
+  protected PcscReaderMacOsImpl(
+      String pluginName,
+      CardTerminal terminal,
+      ReaderObservationExceptionHandler readerObservationExceptionHandler) {
+    super(pluginName, terminal, readerObservationExceptionHandler);
   }
 }

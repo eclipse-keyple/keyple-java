@@ -14,6 +14,7 @@ package org.eclipse.keyple.plugin.pcsc;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.smartcardio.*;
 import org.eclipse.keyple.core.plugin.reader.WaitForCardInsertionBlocking;
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,10 +44,15 @@ final class PcscReaderImpl extends AbstractPcscReader implements WaitForCardInse
    *
    * @param pluginName the name of the plugin
    * @param terminal the PC/SC terminal
+   * @param readerObservationExceptionHandler A not reference to an object implementing the {@link
+   *     ReaderObservationExceptionHandler} interface.
    * @since 0.9
    */
-  protected PcscReaderImpl(String pluginName, CardTerminal terminal) {
-    super(pluginName, terminal);
+  protected PcscReaderImpl(
+      String pluginName,
+      CardTerminal terminal,
+      ReaderObservationExceptionHandler readerObservationExceptionHandler) {
+    super(pluginName, terminal, readerObservationExceptionHandler);
   }
 
   /**
