@@ -18,7 +18,9 @@ import org.eclipse.keyple.core.card.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.card.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.PluginObservationExceptionHandler;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.slf4j.Logger;
@@ -562,13 +564,32 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
     this.stateService.onEvent(InternalEvent.SE_PROCESSED);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * <p>Notifies all observers of the UNREGISTERED event.<br>
+   * Stops the card detection unconditionally.<br>
+   * Shuts down the reader's executor service.
+   */
   @Override
   public void unregister() {
     super.unregister();
-    notifyObservers(
-        new ReaderEvent(getPluginName(), getName(), ReaderEvent.EventType.UNREGISTERED, null));
-    clearObservers();
-    stopCardDetection();
+    try {
+      notifyObservers(
+          new ReaderEvent(getPluginName(), getName(), ReaderEvent.EventType.UNREGISTERED, null));
+      stopCardDetection();
+    } finally {
+      clearObservers();
+      stateService.shutdown();
+    }
   }
+
+  /**
+   * Allows to call the defined handler when an exception condition needs to be transmitted to the
+   * application level.
+   *
+   * @return A not null reference to an object implementing the {@link
+   *     PluginObservationExceptionHandler} interface.
+   */
+  protected abstract ReaderObservationExceptionHandler getObservationExceptionHandler();
 }

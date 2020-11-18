@@ -204,4 +204,17 @@ class ObservableReaderStateService {
   public final synchronized AbstractObservableState.MonitoringState getCurrentMonitoringState() {
     return this.currentState.getMonitoringState();
   }
+
+  /**
+   * (package-private)<br>
+   * Shuts down the {@link ExecutorService} of this reader.
+   *
+   * <p>This method should be invoked when the reader monitoring ends in order to stop any remaining
+   * threads.
+   *
+   * @since 1.0
+   */
+  final void shutdown() {
+    executorService.shutdown();
+  }
 }

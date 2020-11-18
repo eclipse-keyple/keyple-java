@@ -11,6 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.plugin.reader;
 
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,5 +114,10 @@ public class BlankPresenceWaitForCardBlockingThreadedReader extends AbstractObse
   @Override
   protected void onStopDetection() {
     // Do nothing
+  }
+
+  @Override
+  protected ReaderObservationExceptionHandler getObservationExceptionHandler() {
+    return null;
   }
 }

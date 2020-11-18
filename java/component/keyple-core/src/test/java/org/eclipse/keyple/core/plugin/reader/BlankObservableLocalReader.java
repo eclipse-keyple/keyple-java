@@ -12,6 +12,7 @@
 package org.eclipse.keyple.core.plugin.reader;
 
 import org.eclipse.keyple.core.service.event.ReaderEvent;
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 
 public class BlankObservableLocalReader extends AbstractObservableLocalReader
     implements WaitForCardInsertionAutonomous,
@@ -26,6 +27,11 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader
    */
   public BlankObservableLocalReader(String pluginName, String readerName) {
     super(pluginName, readerName);
+  }
+
+  @Override
+  protected ReaderObservationExceptionHandler getObservationExceptionHandler() {
+    return null;
   }
 
   @Override

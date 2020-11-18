@@ -112,10 +112,16 @@ public class SmartCardServiceTest {
 
   @Test
   public void testRegisterTwicePlugin() {
-
+    boolean isExceptionRaised = false;
     // register plugin1 by its factory
     proxyService.registerPlugin(factory1);
-    proxyService.registerPlugin(factory1);
+    try {
+      proxyService.registerPlugin(factory1);
+    } catch (IllegalStateException e) {
+      isExceptionRaised = true;
+    }
+
+    Assert.assertTrue(isExceptionRaised);
 
     // should not be added twice
     Map<String, Plugin> testPlugins = proxyService.getPlugins();

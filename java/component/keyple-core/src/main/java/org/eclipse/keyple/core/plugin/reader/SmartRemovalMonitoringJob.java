@@ -11,7 +11,6 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.plugin.reader;
 
-import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +27,10 @@ import org.slf4j.LoggerFactory;
  *
  * <p>If a communication problem with the reader occurs (KeypleReaderIOException) an internal
  * STOP_DETECT event is fired.
+ *
+ * <p>All runtime exceptions that may occur during the monitoring process are caught and notified at
+ * the application level through the {@link
+ * org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler} mechanism.
  */
 class SmartRemovalMonitoringJob extends AbstractMonitoringJob {
 
@@ -59,11 +62,11 @@ class SmartRemovalMonitoringJob extends AbstractMonitoringJob {
                   reader.getName());
             }
           }
-        } catch (KeypleReaderIOException e) {
-          logger.trace(
-              "[{}] waitForCardAbsent => Error while polling the card with waitForCardAbsent",
-              reader.getName());
-          state.onEvent(AbstractObservableLocalReader.InternalEvent.STOP_DETECT);
+        } catch (RuntimeException e) {
+          ((AbstractObservableLocalReader) reader)
+              .getObservationExceptionHandler()
+              .onReaderObservationError(
+                  ((AbstractReader) reader).getPluginName(), reader.getName(), e);
         }
       }
     };
