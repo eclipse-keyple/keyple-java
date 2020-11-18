@@ -28,7 +28,6 @@ public class Demo_ObservableReaderNotification_Stub {
   public static final Object waitBeforeEnd = new Object();
 
   public static void main(String[] args) throws Exception {
-    ObservableReaderNotificationEngine demoEngine = new ObservableReaderNotificationEngine();
 
     // Set Stub plugin
     SmartCardService smartCardService = SmartCardService.getInstance();
@@ -43,7 +42,7 @@ public class Demo_ObservableReaderNotification_Stub {
 
     // Set observers
     logger.info("Set plugin observer.");
-    demoEngine.setPluginObserver();
+    ObserversConfiguration.initObservers();
 
     logger.info("Wait a little to see the \"no reader available message\".");
     Thread.sleep(200);

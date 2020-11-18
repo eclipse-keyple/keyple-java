@@ -16,7 +16,6 @@ import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.PluginObservationExceptionHandler;
 import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleException;
-import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.service.util.ContactCardCommonProtocols;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.calypso.local.common.PcscReaderUtilities;
@@ -79,7 +78,7 @@ public class Demo_CalypsoClassic_Pcsc {
             new PcscPluginFactory(exceptionHandlerImpl, exceptionHandlerImpl));
 
     /* Setting up the transaction engine (implements Observer) */
-    CalypsoClassicTransactionEngine transactionEngine = new CalypsoClassicTransactionEngine();
+    ObserversConfiguration.ReaderObserver transactionEngine = new ObserversConfiguration.ReaderObserver();
 
     /*
      * Get PO and SAM readers. Apply regulars expressions to reader names to select PO / SAM
@@ -130,7 +129,7 @@ public class Demo_CalypsoClassic_Pcsc {
     /* Set the default selection operation */
     ((ObservableReader) poReader)
         .setDefaultSelectionRequest(
-            transactionEngine.preparePoSelection(),
+            SelectionConfiguration.preparePoSelection().getSelectionOperation(),
             ObservableReader.NotificationMode.MATCHED_ONLY,
             ObservableReader.PollingMode.REPEATING);
 

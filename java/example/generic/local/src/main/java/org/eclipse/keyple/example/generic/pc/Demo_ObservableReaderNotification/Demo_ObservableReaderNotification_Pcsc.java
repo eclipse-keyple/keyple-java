@@ -47,7 +47,7 @@ public class Demo_ObservableReaderNotification_Pcsc {
   }
 
   public static void main(String[] args) throws Exception {
-    ObservableReaderNotificationEngine demoEngine = new ObservableReaderNotificationEngine();
+    ObserversConfiguration demoEngine = new ObserversConfiguration();
 
     // Get the instance of the SmartCardService (Singleton pattern)
     final SmartCardService smartCardService = SmartCardService.getInstance();
@@ -60,7 +60,7 @@ public class Demo_ObservableReaderNotification_Pcsc {
         smartCardService.registerPlugin(new PcscPluginFactory(exceptionHandler, exceptionHandler));
 
     // /* Set observers *//**/
-    demoEngine.setPluginObserver();
+    demoEngine.initObservers();
 
     logger.info("Wait for reader or card insertion/removal");
 

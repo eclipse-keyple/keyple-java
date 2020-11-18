@@ -17,7 +17,6 @@ import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.calypso.local.common.StubCalypsoClassic;
 import org.eclipse.keyple.example.calypso.local.common.StubSamCalypsoClassic;
@@ -49,7 +48,7 @@ public class Demo_CalypsoClassic_Stub {
         smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME, null, null));
 
     /* Setting up the transaction engine (implements Observer) */
-    CalypsoClassicTransactionEngine transactionEngine = new CalypsoClassicTransactionEngine();
+    ObserversConfiguration.ReaderObserver transactionEngine = new ObserversConfiguration.ReaderObserver();
 
     /*
      * Plug PO and SAM stub readers.
@@ -91,7 +90,7 @@ public class Demo_CalypsoClassic_Stub {
 
     /* Set the default selection operation */
     poReader.setDefaultSelectionRequest(
-        transactionEngine.preparePoSelection(),
+        SelectionConfiguration.preparePoSelection().getSelectionOperation(),
         ObservableReader.NotificationMode.MATCHED_ONLY,
         ObservableReader.PollingMode.REPEATING);
 

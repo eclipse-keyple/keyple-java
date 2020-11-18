@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.calypso.local.Demo_CalypsoClassic;
+package org.eclipse.keyple.example.calypso.local.common;
 
 import static org.eclipse.keyple.calypso.transaction.PoTransaction.SessionSetting.AccessLevel;
 
