@@ -17,6 +17,7 @@ import org.eclipse.keyple.core.plugin.reader.WaitForCardInsertionBlocking;
 import org.eclipse.keyple.core.plugin.reader.WaitForCardRemovalBlocking;
 import org.eclipse.keyple.core.plugin.reader.WaitForCardRemovalDuringProcessing;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderProtocolNotFoundException;
@@ -49,6 +50,11 @@ class StubReaderImpl extends AbstractObservableLocalReader
    */
   StubReaderImpl(String pluginName, String readerName) {
     super(pluginName, readerName);
+  }
+
+  @Override
+  protected ReaderObservationExceptionHandler getObservationExceptionHandler() {
+    return null;
   }
 
   /**

@@ -49,7 +49,9 @@ public class StubPluginTest extends BaseStubTest {
   public void instantiatePlugin() {
     final String PLUGIN_NAME = "test1";
 
-    StubPluginFactory factory = new StubPluginFactory(PLUGIN_NAME);
+    StubPluginFactory factory =
+        new StubPluginFactory(
+            PLUGIN_NAME, observationExceptionHandler, observationExceptionHandler);
 
     Plugin plugin = factory.getPlugin();
 
