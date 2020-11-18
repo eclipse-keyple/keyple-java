@@ -11,7 +11,6 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.generic.pc.Demo_ObservableReaderNotification;
 
-import java.util.Collection;
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
@@ -22,42 +21,37 @@ import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ObservableReaderNotificationEngine {
+/**
+ * Configuration of the Plugin and Reader observers
+ */
+public class ObserversConfiguration {
   private static final Logger logger =
-      LoggerFactory.getLogger(ObservableReaderNotificationEngine.class);
+      LoggerFactory.getLogger(ObserversConfiguration.class);
 
-  private final SpecificPluginObserver pluginObserver;
+  public ObserversConfiguration() {}
 
-  public ObservableReaderNotificationEngine() {
-    /* initializes observers */
-    SpecificReaderObserver readerObserver = new SpecificReaderObserver();
-    pluginObserver = new SpecificPluginObserver(readerObserver);
-  }
-
-  public void setPluginObserver() {
-
+  /**
+   * Attach observers to the register plugin
+   */
+  static public void initObservers() {
     /*
      * We add an observer to each plugin (only one in this example) the readers observers will
      * be added dynamically upon plugin notification (see SpecificPluginObserver.update)
      */
-    Collection<Plugin> plugins = SmartCardService.getInstance().getPlugins().values();
-    for (Plugin plugin : plugins) {
-
-      if (plugin instanceof ObservablePlugin) {
-        /* start detection for all already present readers */
-        for (Reader reader : plugin.getReaders().values()) {
-          ((ObservableReader) reader).startCardDetection(ObservableReader.PollingMode.REPEATING);
-        }
-        logger.info("Add observer PLUGINNAME = {}", plugin.getName());
-        ((ObservablePlugin) plugin).addObserver(this.pluginObserver);
-      } else {
-        logger.info("PLUGINNAME = {} isn't observable", plugin.getName());
+    Plugin plugin = SmartCardService.getInstance().getPlugins().values().iterator().next();
+    if (plugin instanceof ObservablePlugin) {
+      /* start detection for all already present readers */
+      for (Reader reader : plugin.getReaders().values()) {
+        ((ObservableReader) reader).startCardDetection(ObservableReader.PollingMode.REPEATING);
       }
+      logger.info("Add observer PLUGINNAME = {}", plugin.getName());
+      ((ObservablePlugin) plugin).addObserver(new ObserversConfiguration.SpecificPluginObserver(new ObserversConfiguration.SpecificReaderObserver()));
     }
+
   }
 
-  /** This method is called whenever a Reader event occurs (card insertion/removal) */
-  public class SpecificReaderObserver implements ObservableReader.ReaderObserver {
+  /** This observer is called whenever a Reader event occurs (card insertion/removal) */
+  static public class SpecificReaderObserver implements ObservableReader.ReaderObserver {
 
     SpecificReaderObserver() {
       super();
@@ -89,8 +83,11 @@ public class ObservableReaderNotificationEngine {
     }
   }
 
-  /** This method is called whenever a Plugin event occurs (reader insertion/removal) */
-  public class SpecificPluginObserver implements ObservablePlugin.PluginObserver {
+
+  /**
+   * Observer of the {@link Plugin}. This observer is called whenever a Plugin event occurs (reader connection/disconnected)
+   */
+  static public class SpecificPluginObserver implements ObservablePlugin.PluginObserver {
 
     SpecificReaderObserver readerObserver;
 
