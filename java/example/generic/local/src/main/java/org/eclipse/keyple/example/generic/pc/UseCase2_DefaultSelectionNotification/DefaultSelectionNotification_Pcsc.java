@@ -26,7 +26,7 @@ import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.generic.pc.common.GenericCardSelectionRequest;
-import org.eclipse.keyple.example.generic.pc.common.ReaderUtilities;
+import org.eclipse.keyple.example.generic.pc.common.PcscReaderUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.slf4j.Logger;
@@ -88,7 +88,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
     Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory(null, errorHandler));
 
     // Get and configure the PO reader
-    Reader reader = plugin.getReader(ReaderUtilities.getContactlessReaderName());
+    Reader reader = plugin.getReader(PcscReaderUtilities.getContactlessReaderName());
     ((PcscReader) reader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     logger.info(

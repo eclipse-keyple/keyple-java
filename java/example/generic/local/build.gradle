@@ -32,6 +32,7 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: keyple_v
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: keyple_v
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-pcsc', version: keyple_v
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-stub', version: keyple_v
 

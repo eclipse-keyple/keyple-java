@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.generic.pc.common;
+package org.eclipse.keyple.example.generic.pc.Demo_CardProtocolDetection;
 
 import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.service.event.ObservableReader;

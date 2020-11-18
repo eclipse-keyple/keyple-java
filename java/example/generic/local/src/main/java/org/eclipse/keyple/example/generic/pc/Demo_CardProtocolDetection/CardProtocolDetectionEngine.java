@@ -22,7 +22,6 @@ import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
-import org.eclipse.keyple.example.generic.pc.common.AbstractReaderObserverAsynchronousEngine;
 import org.eclipse.keyple.example.generic.pc.common.GenericCardSelectionRequest;
 
 /**

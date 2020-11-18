@@ -9,14 +9,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.calypso.local.common;
+package org.eclipse.keyple.example.calypso.local.Demo_CalypsoClassic;
 
 import static org.eclipse.keyple.calypso.transaction.PoTransaction.SessionSetting.AccessLevel;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 import org.eclipse.keyple.calypso.transaction.CalypsoSam;
 import org.eclipse.keyple.calypso.transaction.PoSecuritySettings;
 import org.eclipse.keyple.core.card.selection.CardResource;
@@ -24,30 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class CalypsoUtilities {
+
   private static final Logger logger = LoggerFactory.getLogger(CalypsoUtilities.class);
-
-  private static Properties properties;
-
-  static {
-    properties = new Properties();
-
-    String propertiesFileName = "config.properties";
-
-    InputStream inputStream =
-        CalypsoUtilities.class.getClassLoader().getResourceAsStream(propertiesFileName);
-
-    try {
-      if (inputStream != null) {
-        properties.load(inputStream);
-      } else {
-        throw new FileNotFoundException("property file '" + propertiesFileName + "' not found!");
-      }
-    } catch (FileNotFoundException e) {
-      logger.error("File not found exception: {}", e.getMessage());
-    } catch (IOException e) {
-      logger.error("IO exception: {}", e.getMessage());
-    }
-  }
 
   private CalypsoUtilities() {}
 

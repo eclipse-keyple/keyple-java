@@ -19,7 +19,7 @@ import org.eclipse.keyple.core.service.exception.KeypleException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.service.util.ContactCardCommonProtocols;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
-import org.eclipse.keyple.example.calypso.local.common.ReaderUtilities;
+import org.eclipse.keyple.example.calypso.local.common.PcscReaderUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.eclipse.keyple.plugin.pcsc.PcscSupportedContactProtocols;
@@ -88,8 +88,8 @@ public class Demo_CalypsoClassic_Pcsc {
     Reader poReader = null;
     Reader samReader = null;
     try {
-      poReader = plugin.getReader(ReaderUtilities.getContactlessReaderName());
-      samReader = plugin.getReader(ReaderUtilities.getContactReaderName());
+      poReader = plugin.getReader(PcscReaderUtilities.getContactlessReaderName());
+      samReader = plugin.getReader(PcscReaderUtilities.getContactReaderName());
     } catch (KeypleReaderNotFoundException e) {
       e.printStackTrace();
     }

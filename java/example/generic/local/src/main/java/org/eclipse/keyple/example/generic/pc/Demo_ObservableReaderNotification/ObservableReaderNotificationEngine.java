@@ -19,8 +19,6 @@ import org.eclipse.keyple.core.service.event.ObservablePlugin;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.PluginEvent;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
-import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,12 +64,12 @@ public class ObservableReaderNotificationEngine {
     }
 
     public void update(ReaderEvent event) {
-
+      /* just log the event */
       logger.info(
-          "ReaderEvent: {} : {} : {}",
+          "Event: PLUGINNAME = {}, READERNAME = {}, EVENT = {}",
           event.getPluginName(),
           event.getReaderName(),
-          event.getEventType());
+          event.getEventType().name());
 
       switch (event.getEventType()) {
         case CARD_MATCHED:
@@ -79,13 +77,7 @@ public class ObservableReaderNotificationEngine {
            * Informs the underlying layer of the end of the card processing, in order to
            * manage the removal sequence.
            */
-          try {
-            ((ObservableReader) (event.getReader())).finalizeCardProcessing();
-          } catch (KeypleReaderNotFoundException e) {
-            e.printStackTrace();
-          } catch (KeyplePluginNotFoundException e) {
-            e.printStackTrace();
-          }
+          ((ObservableReader) (event.getReader())).finalizeCardProcessing();
           break;
 
         case CARD_INSERTED:
@@ -94,13 +86,6 @@ public class ObservableReaderNotificationEngine {
            */
           break;
       }
-
-      /* just log the event */
-      logger.info(
-          "Event: PLUGINNAME = {}, READERNAME = {}, EVENT = {}",
-          event.getPluginName(),
-          event.getReaderName(),
-          event.getEventType().name());
     }
   }
 
@@ -123,21 +108,13 @@ public class ObservableReaderNotificationEngine {
             readerName,
             event.getEventType());
 
-        if (event.getEventType() != PluginEvent.EventType.READER_DISCONNECTED) {
-          /* We retrieve the reader object from its name. */
-          try {
+        switch (event.getEventType()) {
+          case READER_CONNECTED:
+            /* We retrieve the reader object from its name. */
             reader =
                 SmartCardService.getInstance()
                     .getPlugin(event.getPluginName())
                     .getReader(readerName);
-          } catch (KeyplePluginNotFoundException e) {
-            e.printStackTrace();
-          } catch (KeypleReaderNotFoundException e) {
-            e.printStackTrace();
-          }
-        }
-        switch (event.getEventType()) {
-          case READER_CONNECTED:
             logger.info("New reader! READERNAME = {}", reader.getName());
 
             /*
@@ -165,6 +142,14 @@ public class ObservableReaderNotificationEngine {
              * reader before the list update.
              */
             logger.info("Reader removed. READERNAME = {}", readerName);
+            if (reader instanceof ObservableReader) {
+              if (readerObserver != null) {
+                logger.info("Remove observer READERNAME = {}", readerName);
+                ((ObservableReader) reader).removeObserver(readerObserver);
+              } else {
+                logger.info("Unplugged reader READERNAME = {} wasn't observed.", readerName);
+              }
+            }
             break;
           default:
             logger.info("Unexpected reader event. EVENT = {}", event.getEventType().name());

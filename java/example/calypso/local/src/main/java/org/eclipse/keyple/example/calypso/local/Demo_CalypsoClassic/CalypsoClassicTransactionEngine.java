@@ -31,7 +31,6 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
-import org.eclipse.keyple.example.calypso.local.common.CalypsoUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.profiler.Profiler;

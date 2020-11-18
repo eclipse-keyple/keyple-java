@@ -33,9 +33,9 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.core.service.util.ContactCardCommonProtocols;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.example.calypso.local.Demo_CalypsoClassic.CalypsoUtilities;
 import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
-import org.eclipse.keyple.example.calypso.local.common.CalypsoUtilities;
-import org.eclipse.keyple.example.calypso.local.common.ReaderUtilities;
+import org.eclipse.keyple.example.calypso.local.common.PcscReaderUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.eclipse.keyple.plugin.pcsc.PcscSupportedContactProtocols;
@@ -82,11 +82,11 @@ public class PoAuthentication_Pcsc {
     Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory(null, null));
 
     // Get and configure the PO reader
-    Reader poReader = plugin.getReader(ReaderUtilities.getContactlessReaderName());
+    Reader poReader = plugin.getReader(PcscReaderUtilities.getContactlessReaderName());
     ((PcscReader) poReader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     // Get and configure the SAM reader
-    Reader samReader = plugin.getReader(ReaderUtilities.getContactReaderName());
+    Reader samReader = plugin.getReader(PcscReaderUtilities.getContactReaderName());
     ((PcscReader) samReader).setContactless(false).setIsoProtocol(PcscReader.IsoProtocol.T0);
 
     // activate protocols

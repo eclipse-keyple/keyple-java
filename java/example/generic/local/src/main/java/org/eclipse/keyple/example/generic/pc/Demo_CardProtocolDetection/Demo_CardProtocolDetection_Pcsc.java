@@ -22,7 +22,7 @@ import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleException;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
-import org.eclipse.keyple.example.generic.pc.common.ReaderUtilities;
+import org.eclipse.keyple.example.generic.pc.common.PcscReaderUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.eclipse.keyple.plugin.pcsc.PcscSupportedContactlessProtocols;
@@ -71,7 +71,7 @@ public class Demo_CardProtocolDetection_Pcsc {
     Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory(null, exceptionHandler));
 
     // Get and configure the PO reader
-    Reader poReader = plugin.getReader(ReaderUtilities.getContactlessReaderName());
+    Reader poReader = plugin.getReader(PcscReaderUtilities.getContactlessReaderName());
     ((PcscReader) poReader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     logger.info("PO Reader  : {}", poReader.getName());

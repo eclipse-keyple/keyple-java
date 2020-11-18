@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.generic.pc.common;
+package org.eclipse.keyple.example.calypso.local.common;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -23,13 +23,13 @@ import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 
-public final class ReaderUtilities {
+public final class PcscReaderUtilities {
   private static Properties properties;
 
   static {
     properties = new Properties();
     InputStream inputStream =
-        ReaderUtilities.class.getClassLoader().getResourceAsStream("config.properties");
+        PcscReaderUtilities.class.getClassLoader().getResourceAsStream("config.properties");
     try {
       properties.load(inputStream);
       inputStream.close();
@@ -42,7 +42,7 @@ public final class ReaderUtilities {
    * (private)<br>
    * Constructor
    */
-  private ReaderUtilities() {}
+  private PcscReaderUtilities() {}
 
   /**
    * Sets the properties file for reader settings<br>
