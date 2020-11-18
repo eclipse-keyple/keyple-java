@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.calypso.local.VerifyPin;
+package org.eclipse.keyple.example.calypso.local.UseCase6_VerifyPin;
 
 import static org.eclipse.keyple.calypso.command.sam.SamRevision.C1;
 
@@ -55,8 +55,8 @@ import org.slf4j.LoggerFactory;
  *
  * The remaining attempt counter is logged after each operation.
  */
-public class VerifyPin_Pcsc {
-  private static final Logger logger = LoggerFactory.getLogger(VerifyPin_Pcsc.class);
+public class UseCase6_VerifyPin_Pcsc {
+  private static final Logger logger = LoggerFactory.getLogger(UseCase6_VerifyPin_Pcsc.class);
   private static Reader poReader;
   private static CalypsoPo calypsoPo;
 

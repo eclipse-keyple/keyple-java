@@ -11,6 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.generic.pc.Demo_ObservableReaderNotification;
 
+import java.util.Collection;
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
@@ -22,8 +23,6 @@ import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Collection;
 
 public class ObservableReaderNotificationEngine {
   private static final Logger logger =

@@ -11,6 +11,11 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.calypso.local.Demo_CalypsoClassic;
 
+import static org.eclipse.keyple.calypso.command.sam.SamRevision.C1;
+import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
+
+import java.util.Map;
+import java.util.SortedMap;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException;
 import org.eclipse.keyple.calypso.transaction.*;
@@ -30,12 +35,6 @@ import org.eclipse.keyple.example.calypso.local.common.CalypsoUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.profiler.Profiler;
-
-import java.util.Map;
-import java.util.SortedMap;
-
-import static org.eclipse.keyple.calypso.command.sam.SamRevision.C1;
-import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
 
 /**
  * This Calypso demonstration code consists in:

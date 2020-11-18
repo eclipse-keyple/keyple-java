@@ -3,9 +3,9 @@ Getting started - Example
 Here are several ready-to-execute examples to demonstrate Keyple capabilities with different types of Keyple plugins and Secure Elements.
 
 Keyple is compatible with any card reader as long as a Keyple plugin is provided. In theses examples, we use:
-- Local reader - [PCSC smartcard readers](/java/component/keyple-plugin/pcsc), usually USB readers, they can be with-contact or contactless. 
-- Local reader - [Stub readers](/java/component/keyple-plugin/stub) : allow to emulate programmatically a smartcard of any kind.
-- [Remote readers](/java/example/calypso/remote) : they allow to communicate with a smartcard inserted on a remote reader hosted on another device.
+- PCSC readers, usually USB readers, they can be with-contact or contactless. More info on the [PCSC plugin](/java/component/keyple-plugin/pcsc) 
+- Stub readers : allow to emulate programmatically a smart card of any kind. More info on the More info on the [Stub plugin](/java/component/keyple-plugin/stub)
+- Remote readers : they allow to communicate with a smart card inserted on a remote reader hosted on another device. More info on the [Remote plugin](/java/component/keyple-plugin/stub)
 
 As Keyple is not tight to Calypso protocol, both generic and Calypso examples are provided.
 - Calypso examples are available in this subproject : [Calypso examples](/java/example/calypso/)
