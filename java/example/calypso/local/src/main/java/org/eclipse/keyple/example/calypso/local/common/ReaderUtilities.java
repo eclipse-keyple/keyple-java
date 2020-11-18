@@ -11,18 +11,17 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.calypso.local.common;
 
-import org.eclipse.keyple.core.service.Plugin;
-import org.eclipse.keyple.core.service.Reader;
-import org.eclipse.keyple.core.service.SmartCardService;
-import org.eclipse.keyple.core.service.exception.KeypleReaderException;
-import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Properties;
 import java.util.regex.Pattern;
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 
 public final class ReaderUtilities {
   private static Properties properties;

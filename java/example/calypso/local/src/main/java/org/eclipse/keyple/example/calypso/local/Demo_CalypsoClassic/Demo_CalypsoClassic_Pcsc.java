@@ -115,14 +115,14 @@ public class Demo_CalypsoClassic_Pcsc {
 
     /* Activate protocols */
     poReader.activateProtocol(
-            PcscSupportedContactlessProtocols.ISO_14443_4.name(),
+        PcscSupportedContactlessProtocols.ISO_14443_4.name(),
         ContactlessCardCommonProtocols.ISO_14443_4.name());
     poReader.activateProtocol(
-            PcscSupportedContactlessProtocols.INNOVATRON_B_PRIME_CARD.name(),
+        PcscSupportedContactlessProtocols.INNOVATRON_B_PRIME_CARD.name(),
         ContactlessCardCommonProtocols.INNOVATRON_B_PRIME_CARD.name());
 
     samReader.activateProtocol(
-            PcscSupportedContactProtocols.ISO_7816_3.name(),
+        PcscSupportedContactProtocols.ISO_7816_3.name(),
         ContactCardCommonProtocols.ISO_7816_3.name());
 
     /* Assign the readers to the Calypso transaction engine */

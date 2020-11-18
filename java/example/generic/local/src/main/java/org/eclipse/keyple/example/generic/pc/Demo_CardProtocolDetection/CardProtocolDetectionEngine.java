@@ -11,6 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.generic.pc.Demo_CardProtocolDetection;
 
+import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
+
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
@@ -22,8 +24,6 @@ import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.generic.pc.common.AbstractReaderObserverAsynchronousEngine;
 import org.eclipse.keyple.example.generic.pc.common.GenericCardSelectionRequest;
-
-import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
 
 /**
  * This code demonstrates the multi-protocols capability of the Keyple SmartCardService
@@ -67,7 +67,8 @@ public class CardProtocolDetectionEngine extends AbstractReaderObserverAsynchron
               new PoSelectionRequest(
                   PoSelector.builder()
                       .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-                      .aidSelector(CardSelector.AidSelector.builder().aidToSelect(HoplinkAID).build())
+                      .aidSelector(
+                          CardSelector.AidSelector.builder().aidToSelect(HoplinkAID).build())
                       .invalidatedPo(InvalidatedPo.REJECT)
                       .build());
 
