@@ -55,8 +55,8 @@ import org.slf4j.LoggerFactory;
  *
  * The remaining attempt counter is logged after each operation.
  */
-public class UseCase6_VerifyPin_Pcsc {
-  private static final Logger logger = LoggerFactory.getLogger(UseCase6_VerifyPin_Pcsc.class);
+public class VerifyPin_Pcsc {
+  private static final Logger logger = LoggerFactory.getLogger(VerifyPin_Pcsc.class);
   private static Reader poReader;
   private static CalypsoPo calypsoPo;
 
