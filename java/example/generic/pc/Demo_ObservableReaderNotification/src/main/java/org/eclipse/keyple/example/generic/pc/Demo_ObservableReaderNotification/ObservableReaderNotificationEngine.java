@@ -66,6 +66,13 @@ public class ObservableReaderNotificationEngine {
     }
 
     public void update(ReaderEvent event) {
+
+      logger.info(
+          "ReaderEvent: {} : {} : {}",
+          event.getPluginName(),
+          event.getReaderName(),
+          event.getEventType());
+
       switch (event.getEventType()) {
         case CARD_MATCHED:
           /*
@@ -158,14 +165,6 @@ public class ObservableReaderNotificationEngine {
              * reader before the list update.
              */
             logger.info("Reader removed. READERNAME = {}", readerName);
-            if (reader instanceof ObservableReader) {
-              if (readerObserver != null) {
-                logger.info("Remove observer READERNAME = {}", readerName);
-                ((ObservableReader) reader).removeObserver(readerObserver);
-              } else {
-                logger.info("Unplugged reader READERNAME = {} wasn't observed.", readerName);
-              }
-            }
             break;
           default:
             logger.info("Unexpected reader event. EVENT = {}", event.getEventType().name());

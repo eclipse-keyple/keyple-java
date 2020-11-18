@@ -11,10 +11,10 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.calypso.pc.Demo_CalypsoClassic;
 
-import org.eclipse.keyple.core.service.Plugin;
-import org.eclipse.keyple.core.service.Reader;
-import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.*;
 import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.PluginObservationExceptionHandler;
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.service.util.ContactCardCommonProtocols;
@@ -28,12 +28,35 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Demo_CalypsoClassic_Pcsc {
+
   /**
    * This object is used to freeze the main thread while card operations are handle through the
    * observers callbacks. A call to the notify() method would end the program (not demonstrated
    * here).
    */
   private static final Object waitForEnd = new Object();
+
+  static class ExceptionHandlerImpl
+      implements PluginObservationExceptionHandler, ReaderObservationExceptionHandler {
+    final Logger logger = LoggerFactory.getLogger(ExceptionHandlerImpl.class);
+
+    @Override
+    public void onPluginObservationError(String pluginName, Throwable throwable) {
+      logger.error("An unexpected plugin error occurred: {}", pluginName, throwable);
+      synchronized (waitForEnd) {
+        waitForEnd.notifyAll();
+      }
+    }
+
+    @Override
+    public void onReaderObservationError(
+        String pluginName, String readerName, Throwable throwable) {
+      logger.error("An unexpected reader error occurred: {}:{}", pluginName, readerName, throwable);
+      synchronized (waitForEnd) {
+        waitForEnd.notifyAll();
+      }
+    }
+  }
 
   /**
    * main program entry
@@ -43,13 +66,17 @@ public class Demo_CalypsoClassic_Pcsc {
    * @throws InterruptedException thread exception
    */
   public static void main(String[] args) throws InterruptedException {
-    Logger logger = LoggerFactory.getLogger(Demo_CalypsoClassic_Pcsc.class);
+    final Logger logger = LoggerFactory.getLogger(Demo_CalypsoClassic_Pcsc.class);
 
     /* Get the instance of the SmartCardService (Singleton pattern) */
     SmartCardService smartCardService = SmartCardService.getInstance();
 
+    ExceptionHandlerImpl exceptionHandlerImpl = new ExceptionHandlerImpl();
+
     /* Assign PcscPlugin to the SmartCardService */
-    Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory());
+    Plugin plugin =
+        smartCardService.registerPlugin(
+            new PcscPluginFactory(exceptionHandlerImpl, exceptionHandlerImpl));
 
     /* Setting up the transaction engine (implements Observer) */
     CalypsoClassicTransactionEngine transactionEngine = new CalypsoClassicTransactionEngine();
@@ -115,5 +142,10 @@ public class Demo_CalypsoClassic_Pcsc {
     synchronized (waitForEnd) {
       waitForEnd.wait();
     }
+
+    // unregister plugin
+    smartCardService.unregisterPlugin(plugin.getName());
+
+    logger.info("Exit program.");
   }
 }

@@ -38,7 +38,8 @@ public class Demo_ObservableReaderNotification_Stub {
     final String READER2_NAME = "Reader2";
 
     // Register Stub plugin in the platform
-    Plugin stubPlugin = smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
+    Plugin stubPlugin =
+        smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME, null, null));
 
     // Set observers
     logger.info("Set plugin observer.");
