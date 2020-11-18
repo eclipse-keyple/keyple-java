@@ -87,12 +87,8 @@ public class Demo_CalypsoClassic_Pcsc {
      */
     Reader poReader = null;
     Reader samReader = null;
-    try {
-      poReader = plugin.getReader(PcscReaderUtilities.getContactlessReaderName());
-      samReader = plugin.getReader(PcscReaderUtilities.getContactReaderName());
-    } catch (KeypleReaderNotFoundException e) {
-      e.printStackTrace();
-    }
+    poReader = plugin.getReader(PcscReaderUtilities.getContactlessReaderName());
+    samReader = plugin.getReader(PcscReaderUtilities.getContactReaderName());
 
     /* Both readers are expected not null */
     if (poReader == samReader || poReader == null || samReader == null) {

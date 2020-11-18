@@ -59,12 +59,8 @@ public class Demo_CalypsoClassic_Stub {
 
     StubReader poReader = null;
     StubReader samReader = null;
-    try {
-      poReader = (StubReader) (stubPlugin.getReader("poReader"));
-      samReader = (StubReader) (stubPlugin.getReader("samReader"));
-    } catch (KeypleReaderNotFoundException e) {
-      e.printStackTrace();
-    }
+    poReader = (StubReader) (stubPlugin.getReader("poReader"));
+    samReader = (StubReader) (stubPlugin.getReader("samReader"));
 
     /* Both readers are expected not null */
     if (poReader == samReader || poReader == null || samReader == null) {

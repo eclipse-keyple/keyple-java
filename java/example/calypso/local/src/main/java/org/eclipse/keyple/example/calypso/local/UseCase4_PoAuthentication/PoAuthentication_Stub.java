@@ -121,22 +121,17 @@ public class PoAuthentication_Stub {
     // Prepare selector
     samSelection.prepareSelection(new SamSelectionRequest(samSelector));
     CalypsoSam calypsoSam;
-    try {
-      if (samReader.isCardPresent()) {
-        SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
-        if (selectionsResult.hasActiveSelection()) {
-          calypsoSam = (CalypsoSam) selectionsResult.getActiveSmartCard();
-        } else {
-          throw new IllegalStateException("Unable to open a logical channel for SAM!");
-        }
+    if (samReader.isCardPresent()) {
+      SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
+      if (selectionsResult.hasActiveSelection()) {
+        calypsoSam = (CalypsoSam) selectionsResult.getActiveSmartCard();
       } else {
-        throw new IllegalStateException("No SAM is present in the reader " + samReader.getName());
+        throw new IllegalStateException("Unable to open a logical channel for SAM!");
       }
-    } catch (KeypleReaderException e) {
-      throw new IllegalStateException("Reader exception: " + e.getMessage());
-    } catch (KeypleException e) {
-      throw new IllegalStateException("Reader exception: " + e.getMessage());
+    } else {
+      throw new IllegalStateException("No SAM is present in the reader " + samReader.getName());
     }
+
     CardResource<CalypsoSam> samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
 
     logger.info("=============== UseCase Calypso #4: Po Authentication ==================");
