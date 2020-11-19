@@ -21,7 +21,7 @@ import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleException;
 import org.eclipse.keyple.core.service.util.ContactCardCommonProtocols;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
-import org.eclipse.keyple.example.calypso.local.Demo_CalypsoClassic.PoReaderConfiguration.PoReaderObserver;
+import org.eclipse.keyple.example.calypso.local.Demo_CalypsoClassic.PoReaderConfig.PoReaderObserver;
 import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
 import org.eclipse.keyple.example.calypso.local.common.PcscReaderUtils;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  *
  * <ol>
  *   <li>Setting up a sam reader configuration and adding an observer method ({@link
- *       PoReaderConfiguration#getObserver()#update})
+ *       PoReaderConfig#getObserver()#update})
  *   <li>Starting a card operation when a PO presence is notified (processSeMatch
  *       operateSeTransaction)
  *   <li>Opening a logical channel with the SAM (C1 SAM is expected) see ({@link
@@ -141,7 +141,7 @@ public class Demo_CalypsoClassic_Pcsc {
         ContactCardCommonProtocols.ISO_7816_3.name());
 
     /* Setting up the reader observer on the po Reader */
-    PoReaderObserver poReaderObserver = PoReaderConfiguration.getObserver();
+    PoReaderObserver poReaderObserver = PoReaderConfig.getObserver();
 
     poReaderObserver.setSamReader(samReader);
 
@@ -151,7 +151,7 @@ public class Demo_CalypsoClassic_Pcsc {
     /* Set the default selection operation */
     ((ObservableReader) poReader)
         .setDefaultSelectionRequest(
-            PoReaderConfiguration.getPoCardSelection().getSelectionOperation(),
+            PoReaderConfig.getPoCardSelection().getSelectionOperation(),
             ObservableReader.NotificationMode.MATCHED_ONLY,
             ObservableReader.PollingMode.REPEATING);
 

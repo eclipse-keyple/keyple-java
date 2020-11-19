@@ -20,9 +20,9 @@ import org.eclipse.keyple.core.service.event.PluginEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class PluginConfiguration {
+class PluginConfig {
 
-  private static final Logger logger = LoggerFactory.getLogger(PluginConfiguration.class);
+  private static final Logger logger = LoggerFactory.getLogger(PluginConfig.class);
 
   /** Attach observers to the register plugin */
   static void initObservers() {
@@ -38,7 +38,7 @@ class PluginConfiguration {
       }
       logger.info("Add observer PLUGINNAME = {}", plugin.getName());
       ((ObservablePlugin) plugin)
-          .addObserver(PluginConfiguration.getObserver(ReaderConfiguration.getObserver()));
+          .addObserver(PluginConfig.getObserver(ReaderConfig.getObserver()));
     }
   }
 

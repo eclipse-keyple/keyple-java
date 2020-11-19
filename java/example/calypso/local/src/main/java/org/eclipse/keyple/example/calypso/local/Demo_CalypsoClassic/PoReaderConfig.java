@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.profiler.Profiler;
 
 /** Po Reader Configuration class */
-class PoReaderConfiguration {
+class PoReaderConfig {
   static CardSelection poCardSelection;
   /**
    * Return the card selection object
@@ -125,7 +125,7 @@ class PoReaderConfiguration {
 
   /** Definition of the ticketing logic within the {@link ReaderObserver#update} method */
   static class PoReaderObserver implements ReaderObserver {
-    Logger logger = LoggerFactory.getLogger(PoReaderConfiguration.class);
+    Logger logger = LoggerFactory.getLogger(PoReaderConfig.class);
 
     /* reference to the sam reader and sam resource to operate the transaction */
     private Reader samReader;

@@ -21,7 +21,7 @@ import org.eclipse.keyple.core.card.selection.CardSelection;
 import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
 
-public class CardSelectionConfiguration {
+public class CardSelectionConfig {
 
   static CardSelection getCardSelection() {
 

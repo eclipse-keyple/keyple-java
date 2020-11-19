@@ -16,9 +16,9 @@ import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class ReaderConfiguration {
+class ReaderConfig {
 
-  private static final Logger logger = LoggerFactory.getLogger(ReaderConfiguration.class);
+  private static final Logger logger = LoggerFactory.getLogger(ReaderConfig.class);
 
   static ObservableReader.ReaderObserver getObserver() {
     return new ObservableReader.ReaderObserver() {

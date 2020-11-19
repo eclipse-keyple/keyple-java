@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.calypso.local.UseCase4_PoAuthentication;
+package org.eclipse.keyple.example.calypso.local.UseCase6_VerifyPin;
 
 import static org.eclipse.keyple.calypso.command.sam.SamRevision.C1;
 
@@ -19,16 +19,21 @@ import org.eclipse.keyple.calypso.transaction.SamSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.SamSelector;
 import org.eclipse.keyple.core.card.selection.CardSelection;
 import org.eclipse.keyple.core.card.selection.CardSelector;
-import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
 
-class CardSelectionConfiguration {
+public class CardSelectionConfig {
+
+  static CardSelection poCardSelection;
 
   static CardSelection getPoCardSelection() {
+    if (poCardSelection != null) {
+      return poCardSelection;
+    }
     // Prepare a Calypso PO selection
-    CardSelection cardSelection = new CardSelection();
+    poCardSelection = new CardSelection();
 
     // Setting of an AID based selection of a Calypso REV3 PO
+    //
     // Select the first application matching the selection AID whatever the card communication
     // protocol keep the logical channel open after the selection
 
@@ -37,7 +42,6 @@ class CardSelectionConfiguration {
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(
                     CardSelector.AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
@@ -48,10 +52,11 @@ class CardSelectionConfiguration {
         CalypsoClassicInfo.SFI_EnvironmentAndHolder, CalypsoClassicInfo.RECORD_NUMBER_1);
 
     // Add the selection case to the current selection
+    //
     // (we could have added other cases here)
-    cardSelection.prepareSelection(poSelectionRequest);
+    poCardSelection.prepareSelection(poSelectionRequest);
 
-    return cardSelection;
+    return poCardSelection;
   }
 
   static CardSelection getSamCardSelection() {

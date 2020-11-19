@@ -93,7 +93,7 @@ public class ExplicitSelectionAid_Stub {
     logger.info("= #### 1st PO exchange: AID based selection with reading of Environment file.");
 
     // Prepare a Calypso PO selection
-    CardSelection cardSelection = CardSelectionConfiguration.getCardSelection();
+    CardSelection cardSelection = CardSelectionConfig.getCardSelection();
 
     // Actual PO communication: operate through a single request the Calypso PO selection
     // and the file read

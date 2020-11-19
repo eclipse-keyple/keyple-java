@@ -76,7 +76,7 @@ public class StoredValue_DebitInSession_Pcsc {
     }
 
     SelectionsResult selectionsResult =
-        CardSelectionConfiguration.getSamCardSelection().processExplicitSelection(samReader);
+        CardSelectionConfig.getSamCardSelection().processExplicitSelection(samReader);
 
     if (!selectionsResult.hasActiveSelection()) {
       throw new IllegalStateException("Unable to open a logical channel for SAM!");
@@ -93,7 +93,7 @@ public class StoredValue_DebitInSession_Pcsc {
 
     CalypsoPo calypsoPo =
         (CalypsoPo)
-            CardSelectionConfiguration.getCardSelection()
+            CardSelectionConfig.getCardSelection()
                 .processExplicitSelection(poReader)
                 .getActiveSmartCard();
 

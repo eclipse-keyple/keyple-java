@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  *
  * <ol>
  *   <li>Setting up a sam reader configuration and adding an observer method ({@link
- *       PoReaderConfiguration#getObserver()#update})
+ *       PoReaderConfig#getObserver()#update})
  *   <li>Starting a card operation when a PO presence is notified (processSeMatch
  *       operateSeTransaction)
  *   <li>Opening a logical channel with the SAM (C1 SAM is expected) see ({@link
@@ -113,12 +113,12 @@ public class Demo_CalypsoClassic_Stub {
 
     /* Set the default selection operation */
     poReader.setDefaultSelectionRequest(
-        PoReaderConfiguration.getPoCardSelection().getSelectionOperation(),
+        PoReaderConfig.getPoCardSelection().getSelectionOperation(),
         ObservableReader.NotificationMode.MATCHED_ONLY,
         ObservableReader.PollingMode.REPEATING);
 
     /* Setting up the observer on the PO Reader */
-    PoReaderConfiguration.PoReaderObserver poReadeObserver = PoReaderConfiguration.getObserver();
+    PoReaderConfig.PoReaderObserver poReadeObserver = PoReaderConfig.getObserver();
 
     /* Assign readers to the Hoplink transaction engine */
     poReadeObserver.setSamReader(samReader);

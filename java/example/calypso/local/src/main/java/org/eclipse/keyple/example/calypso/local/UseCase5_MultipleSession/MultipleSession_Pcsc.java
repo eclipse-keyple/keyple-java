@@ -85,7 +85,7 @@ public class MultipleSession_Pcsc {
     ((PcscReader) samReader).setContactless(false).setIsoProtocol(PcscReader.IsoProtocol.T0);
 
     // Create a SAM resource after selecting the SAM
-    CardSelection samSelection = CardSelectionConfiguration.getSamCardSelection();
+    CardSelection samSelection = CardSelectionConfig.getSamCardSelection();
 
     if (samReader.isCardPresent()) {
       throw new IllegalStateException("No SAM is present in the reader " + samReader.getName());
@@ -115,7 +115,7 @@ public class MultipleSession_Pcsc {
     logger.info("= #### 1st PO exchange: AID based selection with reading of Environment file.");
 
     // Prepare a Calypso PO selection
-    CardSelection cardSelection = CardSelectionConfiguration.getPoCardSelection();
+    CardSelection cardSelection = CardSelectionConfig.getPoCardSelection();
 
     // Actual PO communication: operate through a single request the Calypso PO selection
     // and the file read

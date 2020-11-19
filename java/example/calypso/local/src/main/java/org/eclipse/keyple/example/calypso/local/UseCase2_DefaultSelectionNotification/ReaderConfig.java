@@ -29,7 +29,7 @@ import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class ReaderConfiguration {
+class ReaderConfig {
 
   static CardSelection cardSelection;
 
@@ -66,7 +66,7 @@ class ReaderConfiguration {
 
   static ObservableReader.ReaderObserver getObserver() {
     return new ObservableReader.ReaderObserver() {
-      private final Logger logger = LoggerFactory.getLogger(ReaderConfiguration.class);
+      private final Logger logger = LoggerFactory.getLogger(ReaderConfig.class);
 
       /**
        * Method invoked in the case of a reader event
