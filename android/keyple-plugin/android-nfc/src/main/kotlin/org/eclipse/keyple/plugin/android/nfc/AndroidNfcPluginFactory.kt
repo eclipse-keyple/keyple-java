@@ -14,14 +14,15 @@ package org.eclipse.keyple.plugin.android.nfc
 import android.app.Activity
 import org.eclipse.keyple.core.service.Plugin
 import org.eclipse.keyple.core.service.PluginFactory
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler
 
-class AndroidNfcPluginFactory(private val activity: Activity) : PluginFactory {
+class AndroidNfcPluginFactory(private val activity: Activity, private val readerObservationExceptionHandler: ReaderObservationExceptionHandler) : PluginFactory {
 
     override fun getPluginName(): String {
         return AndroidNfcPlugin.PLUGIN_NAME
     }
 
     override fun getPlugin(): Plugin {
-        return AndroidNfcPluginImpl(activity)
+        return AndroidNfcPluginImpl(activity, readerObservationExceptionHandler)
     }
 }

@@ -13,10 +13,11 @@ package org.eclipse.keyple.plugin.android.nfc
 
 import android.app.Activity
 import org.eclipse.keyple.core.plugin.reader.WaitForCardRemovalNonBlocking
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler
 
 /**
  * Singleton used by the plugin to run native NFC reader on Android version < 24 (Android N).
  *
  * It uses a Ping monitoring job to detect card removal
  */
-internal class AndroidNfcReaderPreNImpl(activity: Activity) : AbstractAndroidNfcReader(activity), WaitForCardRemovalNonBlocking
+internal class AndroidNfcReaderPreNImpl(activity: Activity, readerObservationExceptionHandler: ReaderObservationExceptionHandler) : AbstractAndroidNfcReader(activity, readerObservationExceptionHandler), WaitForCardRemovalNonBlocking

@@ -15,6 +15,7 @@ import android.annotation.TargetApi
 import android.app.Activity
 import android.os.Build
 import org.eclipse.keyple.core.plugin.reader.WaitForCardRemovalBlocking
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler
 import timber.log.Timber
 
 /**
@@ -22,7 +23,7 @@ import timber.log.Timber
  *
  * It will used native features of Android NFC API to detect card removal.
  */
-internal class AndroidNfcReaderPostNImpl(activity: Activity) : AbstractAndroidNfcReader(activity), WaitForCardRemovalBlocking {
+internal class AndroidNfcReaderPostNImpl(activity: Activity, readerObservationExceptionHandler: ReaderObservationExceptionHandler) : AbstractAndroidNfcReader(activity, readerObservationExceptionHandler), WaitForCardRemovalBlocking {
 
     private var isWatingForRemoval = false
     private val syncWaitRemoval = Object()
