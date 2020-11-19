@@ -9,57 +9,43 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.calypso.local.UseCase7_StoredValue_SimpleReload;
-
-import static org.eclipse.keyple.calypso.command.sam.SamRevision.C1;
+package org.eclipse.keyple.example.calypso.local.UseCase3_Rev1Selection;
 
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
-import org.eclipse.keyple.calypso.transaction.SamSelectionRequest;
-import org.eclipse.keyple.calypso.transaction.SamSelector;
 import org.eclipse.keyple.core.card.selection.CardSelection;
 import org.eclipse.keyple.core.card.selection.CardSelector;
+import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
 
-public class ReaderConfiguration {
+class CardSelectionConfiguration {
 
-  static CardSelection getCardSelection() {
-
-    // Prepare a Calypso PO selection
+  static CardSelection getPoCardSelection() {
+    // Select the first application matching the selection.
     CardSelection cardSelection = new CardSelection();
-
-    // Setting of an AID based selection of a Calypso REV3 PO
-    //
-    // Select the first application matching the selection AID whatever the card communication
-    // protocol keep the logical channel open after the selection
 
     // Calypso selection: configures a PoSelectionRequest with all the desired attributes to
     // make the selection and read additional information afterwards
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .aidSelector(
-                    CardSelector.AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
+                .cardProtocol(ContactlessCardCommonProtocols.INNOVATRON_B_PRIME_CARD.name())
+                .atrFilter(new CardSelector.AtrFilter(Rev1Selection_Pcsc.PO_ATR_REGEX))
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
 
-    // Add the selection case to the current selection
-    //
-    // (we could have added other cases here)
+    // Prepare the selection of the DF RT.
+    poSelectionRequest.prepareSelectFile(ByteArrayUtil.fromHex(Rev1Selection_Pcsc.PO_DF_RT_PATH));
+
+    // Prepare the reading order.
+    poSelectionRequest.prepareReadRecordFile(
+        CalypsoClassicInfo.SFI_EnvironmentAndHolder, CalypsoClassicInfo.RECORD_NUMBER_1);
+
+    // Add the selection case to the current selection (we could have added other cases
+    // here)
     cardSelection.prepareSelection(poSelectionRequest);
 
     return cardSelection;
-  }
-
-  static CardSelection getSamCardSelection() {
-    // Create a SAM resource after selecting the SAM
-    CardSelection samSelection = new CardSelection();
-
-    SamSelector samSelector = SamSelector.builder().samRevision(C1).serialNumber(".*").build();
-
-    // Prepare selector
-    samSelection.prepareSelection(new SamSelectionRequest(samSelector));
-
-    return samSelection;
   }
 }
