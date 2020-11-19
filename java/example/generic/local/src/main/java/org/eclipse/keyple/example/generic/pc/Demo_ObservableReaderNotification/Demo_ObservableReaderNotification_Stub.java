@@ -42,7 +42,7 @@ public class Demo_ObservableReaderNotification_Stub {
 
     // Set observers
     logger.info("Set plugin observer.");
-    ObserversConfiguration.initObservers();
+    PluginConfiguration.initObservers();
 
     logger.info("Wait a little to see the \"no reader available message\".");
     Thread.sleep(200);

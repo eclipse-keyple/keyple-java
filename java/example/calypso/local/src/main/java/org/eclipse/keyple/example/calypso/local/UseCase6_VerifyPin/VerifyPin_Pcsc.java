@@ -29,7 +29,6 @@ import org.eclipse.keyple.core.card.selection.SelectionsResult;
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
-import org.eclipse.keyple.core.service.exception.KeypleException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
 import org.eclipse.keyple.example.calypso.local.common.PcscReaderUtilities;

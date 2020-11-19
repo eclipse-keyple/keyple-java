@@ -36,7 +36,6 @@ import org.eclipse.keyple.plugin.stub.StubSupportedProtocols;
  *   <li>shows the identified protocol when a card is detected
  *   <li>executes a simple Hoplink reading when a Hoplink card is identified
  * </ul>
- *
  */
 public class Demo_CardProtocolDetection_Stub {
 
@@ -64,7 +63,7 @@ public class Demo_CardProtocolDetection_Stub {
         smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME, null, null));
 
     // create an observer class to handle the card operations
-    ObservableReader.ReaderObserver observer = new ObserversConfiguration.ReaderObserver();
+    ObservableReader.ReaderObserver observer = ReaderConfiguration.getObserver();
 
     // Plug PO reader.
     ((StubPlugin) stubPlugin).plugStubReader("poReader", true);
