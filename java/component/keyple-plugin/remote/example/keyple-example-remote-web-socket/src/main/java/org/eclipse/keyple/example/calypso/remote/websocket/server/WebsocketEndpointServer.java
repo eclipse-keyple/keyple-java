@@ -20,27 +20,27 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
-import org.eclipse.keyple.example.calypso.remote.websocket.client.WebsocketClientEndpoint;
-import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
-import org.eclipse.keyple.plugin.remote.core.KeypleServerAsync;
-import org.eclipse.keyple.plugin.remote.virtual.impl.RemoteServerUtils;
+import org.eclipse.keyple.example.calypso.remote.websocket.client.WebsocketEndpointClient;
+import org.eclipse.keyple.plugin.remote.MessageDto;
+import org.eclipse.keyple.plugin.remote.impl.RemotePluginServerUtils;
+import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Example implementation of {@link KeypleServerAsync} based on Websocket. Interacts with {@link
- * WebsocketClientEndpoint}
+ * Example implementation of {@link AsyncEndpointServer} based on Websocket. Interacts with {@link
+ * WebsocketEndpointClient}
  */
 @ApplicationScoped
 @ServerEndpoint("/remote-plugin")
-public class WebsocketServerEndpoint implements KeypleServerAsync {
-  private static final Logger LOGGER = LoggerFactory.getLogger(WebsocketServerEndpoint.class);
+public class WebsocketEndpointServer implements AsyncEndpointServer {
+  private static final Logger LOGGER = LoggerFactory.getLogger(WebsocketEndpointServer.class);
 
   /* opened sessions */
   private final Map<String, Session> openSessions;
 
   /** constructor */
-  public WebsocketServerEndpoint() {
+  public WebsocketEndpointServer() {
     openSessions = new ConcurrentHashMap<>();
   }
 
@@ -64,9 +64,8 @@ public class WebsocketServerEndpoint implements KeypleServerAsync {
   @OnMessage
   public void onMessage(String data) {
     LOGGER.trace("Server - Received message {} : ", data);
-    KeypleMessageDto messageDto =
-        KeypleJsonParser.getParser().fromJson(data, KeypleMessageDto.class);
-    RemoteServerUtils.getAsyncNode().onMessage(messageDto);
+    MessageDto messageDto = KeypleJsonParser.getParser().fromJson(data, MessageDto.class);
+    RemotePluginServerUtils.getAsyncNode().onMessage(messageDto);
   }
 
   /**
@@ -79,7 +78,7 @@ public class WebsocketServerEndpoint implements KeypleServerAsync {
     String sessionId = session.getQueryString();
     LOGGER.trace("Server - Closed socket for sessionId {} : ", sessionId);
     openSessions.remove(sessionId);
-    RemoteServerUtils.getAsyncNode().onClose(sessionId);
+    RemotePluginServerUtils.getAsyncNode().onClose(sessionId);
   }
 
   /**
@@ -88,7 +87,7 @@ public class WebsocketServerEndpoint implements KeypleServerAsync {
    * @param keypleMessageDto non nullable instance
    */
   @Override
-  public void sendMessage(KeypleMessageDto keypleMessageDto) {
+  public void sendMessage(MessageDto keypleMessageDto) {
     String sessionId = keypleMessageDto.getSessionId();
     openSessions
         .get(sessionId)

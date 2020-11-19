@@ -9,39 +9,38 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.calypso.remote.websocket;
+package org.eclipse.keyple.example.calypso.remote.webservice;
 
 import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
 import javax.inject.Inject;
-import org.eclipse.keyple.example.calypso.remote.websocket.client.ClientApp;
-import org.eclipse.keyple.example.calypso.remote.websocket.server.ServerConfiguration;
+import org.eclipse.keyple.example.calypso.remote.webservice.client.ClientApp;
+import org.eclipse.keyple.example.calypso.remote.webservice.server.ServerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @QuarkusMain
-public class ServerStartup {
+public class QuarkusServerStartup {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ServerStartup.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(QuarkusServerStartup.class);
 
   public static void main(String... args) {
-    Quarkus.run(RemoteWebsocketExample.class, args);
+    Quarkus.run(RemoteSeWebserviceExample.class, args);
   }
 
   /*
    * Main class of the server application.
    */
-  public static class RemoteWebsocketExample implements QuarkusApplication {
-
-    @Inject ServerConfiguration serverConfiguration;
+  public static class RemoteSeWebserviceExample implements QuarkusApplication {
 
     @Inject ClientApp clientApp;
 
+    @Inject ServerConfiguration serverConfiguration;
+
     @Override
     public int run(String... args) throws Exception {
-
-      LOGGER.info("Server app init ...");
+      LOGGER.info("Server app starts...");
 
       serverConfiguration.init();
 
@@ -55,7 +54,7 @@ public class ServerStartup {
 
       LOGGER.info("Is scenario successful - {}", isSuccessful);
 
-      // Quarkus.waitForExit(); close jvm after scenario
+      // Quarkus.waitForExit();
       return 0;
     }
   }

@@ -9,21 +9,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.remote.example.se;
+package org.eclipse.keyple.remote.example.util;
 
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.plugin.stub.StubSecureElement;
+import org.eclipse.keyple.plugin.stub.StubSmartCard;
 
 /**
  * This class is an example of a Stub Implementation of SecureElement. It works with the protocol
  * PROTOCOL_ISO14443_4 and simulates a Calypso PO with an Hoplink application
  */
-public class StubCalypsoClassic extends StubSecureElement {
+public class CalypsoSmartCard extends StubSmartCard {
 
-  private static final String SE_PROTOCOL = "ISO_14443_4";
+  private static final String PROTOCOL = "ISO_14443_4";
   private static final String ATR_HEX = "3B8880010000000000718100F9";
 
-  public StubCalypsoClassic() {
+  public CalypsoSmartCard() {
     /* Select Application */
     addHexCommand("00A4 0400 05 AABBCCDDEE 00", "6A82");
     /* Select Application */
@@ -69,7 +69,7 @@ public class StubCalypsoClassic extends StubSecureElement {
   }
 
   @Override
-  public String getSeProtocol() {
-    return SE_PROTOCOL;
+  public String getCardProtocol() {
+    return PROTOCOL;
   }
 }

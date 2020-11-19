@@ -9,36 +9,36 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.calypso.remote.websocket.server;
+package org.eclipse.keyple.example.calypso.remote.webservice.server;
 
+import java.util.concurrent.Executors;
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.plugin.remote.virtual.impl.RemoteServerPluginFactory;
-import org.eclipse.keyple.remote.example.app.RemotePluginObserver;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.util.NamedThreadFactory;
+import org.eclipse.keyple.plugin.remote.impl.RemotePluginServerFactory;
+import org.eclipse.keyple.remote.example.server.RemotePluginObserver;
 
 /** Example of a server side app */
 @ApplicationScoped
-public class ServerApp {
+public class ServerConfiguration {
 
   RemotePluginObserver pluginObserver;
 
-  @Inject WebsocketServerEndpoint websocketServerEndpoint;
-
   /**
-   * Initialize the Remote Plugin with an async endpoint {@link WebsocketServerEndpoint} and attach
-   * an observer to the plugin {@link RemotePluginObserver} that contains all the business logic
+   * Initialize the Remote Plugin wit a sync node and attach an observer to the plugin {@link
+   * RemotePluginObserver} that contains all the business logic
    */
   public void init() {
 
     pluginObserver = new RemotePluginObserver();
 
-    SeProxyService.getInstance()
+    SmartCardService.getInstance()
         .registerPlugin(
-            RemoteServerPluginFactory.builder()
-                .withAsyncNode(websocketServerEndpoint)
+            RemotePluginServerFactory.builder()
+                .withSyncNode()
                 .withPluginObserver(pluginObserver)
-                .usingDefaultEventNotificationPool()
+                .usingEventNotificationPool(
+                    Executors.newCachedThreadPool(new NamedThreadFactory("server-pool")))
                 .build());
   }
 }

@@ -9,17 +9,28 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.remote.example.model;
+package org.eclipse.keyple.remote.example.common;
 
-/** Custom object that stores the userId */
-public class UserInfo {
+/** Custom object that reflects the state of the transactions */
+public class TransactionResult {
+
+  private Boolean isSuccessful;
   private String userId;
+
+  public TransactionResult setSuccessful(Boolean successful) {
+    isSuccessful = successful;
+    return this;
+  }
+
+  public Boolean isSuccessful() {
+    return isSuccessful;
+  }
 
   public String getUserId() {
     return userId;
   }
 
-  public UserInfo setUserId(String userId) {
+  public TransactionResult setUserId(String userId) {
     this.userId = userId;
     return this;
   }

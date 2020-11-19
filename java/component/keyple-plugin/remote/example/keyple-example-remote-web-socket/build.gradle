@@ -8,12 +8,17 @@ repositories {
     mavenCentral()
 }
 
+
+task('runExample',  group:'keyple'){
+    dependsOn 'quarkusDev'
+}
+
 dependencies {
     
     /* Keyple dependencies */
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: keyple_version
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remote-native', version: keyple_version
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remote-virtual', version: keyple_version
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remote-local', version: keyple_version
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remote-remote', version: keyple_version
 
     /* Keyple plugin dependencies */
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-stub', version: keyple_version
@@ -39,15 +44,7 @@ compileJava {
     options.compilerArgs << '-parameters'
 }
 
-compileTestJava {
-    options.encoding = 'UTF-8'
-}
-
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
-}
-
-test {
-    systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
 }

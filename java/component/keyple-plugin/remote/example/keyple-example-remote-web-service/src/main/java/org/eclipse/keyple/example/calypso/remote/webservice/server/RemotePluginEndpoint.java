@@ -17,17 +17,17 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import org.eclipse.keyple.example.calypso.remote.webservice.client.WebserviceClientEndpoint;
-import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
-import org.eclipse.keyple.plugin.remote.virtual.impl.RemoteServerUtils;
+import org.eclipse.keyple.example.calypso.remote.webservice.client.RemotePluginClient;
+import org.eclipse.keyple.plugin.remote.MessageDto;
+import org.eclipse.keyple.plugin.remote.impl.RemotePluginServerUtils;
+import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 
 /**
- * Example implementation of a RemoteServer with a {@link
- * org.eclipse.keyple.plugin.remote.core.KeypleServerSyncNode} based on Web Service. Serve {@link
- * WebserviceClientEndpoint} clients
+ * Example implementation of a RemoteServer with a {@link SyncEndpointClient} based on Web Service.
+ * Serve {@link RemotePluginClient} clients
  */
 @Path("/remote-plugin")
-public class WebserviceServerEndpoint {
+public class RemotePluginEndpoint {
 
   /**
    * Endpoint that transfer message to the RemoteServer Sync Node
@@ -38,7 +38,7 @@ public class WebserviceServerEndpoint {
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  public List<KeypleMessageDto> add(KeypleMessageDto message) {
-    return RemoteServerUtils.getSyncNode().onRequest(message);
+  public List<MessageDto> add(MessageDto message) {
+    return RemotePluginServerUtils.getSyncNode().onRequest(message);
   }
 }
