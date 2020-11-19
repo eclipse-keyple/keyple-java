@@ -26,7 +26,7 @@ import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
-import org.eclipse.keyple.example.calypso.local.common.PcscReaderUtilities;
+import org.eclipse.keyple.example.calypso.local.common.PcscReaderUtils;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.eclipse.keyple.plugin.pcsc.PcscSupportedContactlessProtocols;
@@ -72,7 +72,7 @@ public class Rev1Selection_Pcsc {
     Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory(null, null));
 
     // Get and configure the PO reader
-    Reader poReader = plugin.getReader(PcscReaderUtilities.getContactlessReaderName());
+    Reader poReader = plugin.getReader(PcscReaderUtils.getContactlessReaderName());
     ((PcscReader) poReader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     /* Activate protocols */
@@ -85,82 +85,82 @@ public class Rev1Selection_Pcsc {
     logger.info("= PO Reader  NAME = {}", poReader.getName());
 
     // Check if a PO is present in the reader
-    if (poReader.isCardPresent()) {
-
-      logger.info("= #### 1st PO exchange: ATR based selection with reading of Environment file.");
-
-      // Prepare a Calypso PO selection Setting up a selection of a Calypso REV1 PO (B Prime)
-      // based on ATR
-      //
-      // Select the first application matching the selection.
-      CardSelection cardSelection = new CardSelection();
-
-      // Calypso selection: configures a PoSelectionRequest with all the desired attributes to
-      // make the selection and read additional information afterwards
-      PoSelectionRequest poSelectionRequest =
-          new PoSelectionRequest(
-              PoSelector.builder()
-                  .cardProtocol(ContactlessCardCommonProtocols.INNOVATRON_B_PRIME_CARD.name())
-                  .atrFilter(new AtrFilter(PO_ATR_REGEX))
-                  .invalidatedPo(InvalidatedPo.REJECT)
-                  .build());
-
-      // Prepare the selection of the DF RT.
-      poSelectionRequest.prepareSelectFile(ByteArrayUtil.fromHex(PO_DF_RT_PATH));
-
-      // Prepare the reading order.
-      poSelectionRequest.prepareReadRecordFile(
-          CalypsoClassicInfo.SFI_EnvironmentAndHolder, CalypsoClassicInfo.RECORD_NUMBER_1);
-
-      // Add the selection case to the current selection (we could have added other cases
-      // here)
-      cardSelection.prepareSelection(poSelectionRequest);
-
-      // Actual PO communication: operate through a single request the Calypso PO selection
-      // and the file read
-      CalypsoPo calypsoPo =
-          (CalypsoPo) cardSelection.processExplicitSelection(poReader).getActiveSmartCard();
-      logger.info("The selection of the PO has succeeded.");
-
-      // Retrieve the data read from the CalyspoPo updated during the transaction process
-      ElementaryFile efEnvironmentAndHolder =
-          calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EnvironmentAndHolder);
-      String environmentAndHolder =
-          ByteArrayUtil.toHex(efEnvironmentAndHolder.getData().getContent());
-
-      // Log the result
-      logger.info("EnvironmentAndHolder file data: {}", environmentAndHolder);
-
-      // Go on with the reading of the first record of the EventLog file
-      logger.info("= #### 2nd PO exchange: reading transaction of the EventLog file.");
-
-      PoTransaction poTransaction =
-          new PoTransaction(new CardResource<CalypsoPo>(poReader, calypsoPo));
-
-      // Prepare the reading order and keep the associated parser for later use once the
-      // transaction has been processed. We provide the expected record length since the REV1
-      // PO need it. TODO Check if we need to specify the expected length (29 bytes here)
-      poTransaction.prepareReadRecordFile(
-          CalypsoClassicInfo.SFI_EventLog, CalypsoClassicInfo.RECORD_NUMBER_1);
-
-      // Actual PO communication: send the prepared read order, then close the channel with
-      // the PO
-      poTransaction.prepareReleasePoChannel();
-      poTransaction.processPoCommands();
-
-      logger.info("The reading of the EventLog has succeeded.");
-
-      // Retrieve the data read from the CalyspoPo updated during the transaction process
-      ElementaryFile efEventLog = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
-      String eventLog = ByteArrayUtil.toHex(efEventLog.getData().getContent());
-
-      // Log the result
-      logger.info("EventLog file data: {}", eventLog);
-
-      logger.info("= #### End of the Calypso PO processing.");
-    } else {
-      logger.error("The selection of the PO has failed.");
+    if (!poReader.isCardPresent()) {
+      logger.error("No PO is present in the reader");
     }
+
+    logger.info("= #### 1st PO exchange: ATR based selection with reading of Environment file.");
+
+    // Prepare a Calypso PO selection Setting up a selection of a Calypso REV1 PO (B Prime)
+    // based on ATR
+    //
+    // Select the first application matching the selection.
+    CardSelection cardSelection = new CardSelection();
+
+    // Calypso selection: configures a PoSelectionRequest with all the desired attributes to
+    // make the selection and read additional information afterwards
+    PoSelectionRequest poSelectionRequest =
+        new PoSelectionRequest(
+            PoSelector.builder()
+                .cardProtocol(ContactlessCardCommonProtocols.INNOVATRON_B_PRIME_CARD.name())
+                .atrFilter(new AtrFilter(PO_ATR_REGEX))
+                .invalidatedPo(InvalidatedPo.REJECT)
+                .build());
+
+    // Prepare the selection of the DF RT.
+    poSelectionRequest.prepareSelectFile(ByteArrayUtil.fromHex(PO_DF_RT_PATH));
+
+    // Prepare the reading order.
+    poSelectionRequest.prepareReadRecordFile(
+        CalypsoClassicInfo.SFI_EnvironmentAndHolder, CalypsoClassicInfo.RECORD_NUMBER_1);
+
+    // Add the selection case to the current selection (we could have added other cases
+    // here)
+    cardSelection.prepareSelection(poSelectionRequest);
+
+    // Actual PO communication: operate through a single request the Calypso PO selection
+    // and the file read
+    CalypsoPo calypsoPo =
+        (CalypsoPo) cardSelection.processExplicitSelection(poReader).getActiveSmartCard();
+    logger.info("The selection of the PO has succeeded.");
+
+    // Retrieve the data read from the CalyspoPo updated during the transaction process
+    ElementaryFile efEnvironmentAndHolder =
+        calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EnvironmentAndHolder);
+    String environmentAndHolder =
+        ByteArrayUtil.toHex(efEnvironmentAndHolder.getData().getContent());
+
+    // Log the result
+    logger.info("EnvironmentAndHolder file data: {}", environmentAndHolder);
+
+    // Go on with the reading of the first record of the EventLog file
+    logger.info("= #### 2nd PO exchange: reading transaction of the EventLog file.");
+
+    PoTransaction poTransaction =
+        new PoTransaction(new CardResource<CalypsoPo>(poReader, calypsoPo));
+
+    // Prepare the reading order and keep the associated parser for later use once the
+    // transaction has been processed. We provide the expected record length since the REV1
+    // PO need it. TODO Check if we need to specify the expected length (29 bytes here)
+    poTransaction.prepareReadRecordFile(
+        CalypsoClassicInfo.SFI_EventLog, CalypsoClassicInfo.RECORD_NUMBER_1);
+
+    // Actual PO communication: send the prepared read order, then close the channel with
+    // the PO
+    poTransaction.prepareReleasePoChannel();
+    poTransaction.processPoCommands();
+
+    logger.info("The reading of the EventLog has succeeded.");
+
+    // Retrieve the data read from the CalyspoPo updated during the transaction process
+    ElementaryFile efEventLog = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
+    String eventLog = ByteArrayUtil.toHex(efEventLog.getData().getContent());
+
+    // Log the result
+    logger.info("EventLog file data: {}", eventLog);
+
+    logger.info("= #### End of the Calypso PO processing.");
+
     System.exit(0);
   }
 }

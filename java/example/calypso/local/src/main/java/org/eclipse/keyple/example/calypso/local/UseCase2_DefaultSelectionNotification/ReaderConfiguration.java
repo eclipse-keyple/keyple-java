@@ -31,9 +31,14 @@ import org.slf4j.LoggerFactory;
 
 class ReaderConfiguration {
 
+  static CardSelection cardSelection;
+
   static CardSelection getCardSelection() {
+    if (cardSelection != null) {
+      return cardSelection;
+    }
     // Prepare a Calypso PO selection
-    CardSelection cardSelection = new CardSelection();
+    cardSelection = new CardSelection();
 
     // Setting of an AID based selection of a Calypso REV3 PO
     // // Select the first application matching the selection AID whatever the card communication

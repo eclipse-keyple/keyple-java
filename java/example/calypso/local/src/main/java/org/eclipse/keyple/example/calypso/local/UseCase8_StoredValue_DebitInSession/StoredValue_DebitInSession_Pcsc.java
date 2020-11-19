@@ -37,7 +37,7 @@ import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
-import org.eclipse.keyple.example.calypso.local.common.PcscReaderUtilities;
+import org.eclipse.keyple.example.calypso.local.common.PcscReaderUtils;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.slf4j.Logger;
@@ -124,11 +124,11 @@ public class StoredValue_DebitInSession_Pcsc {
     Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory(null, null));
 
     // Get and configure the PO reader
-    poReader = plugin.getReader(PcscReaderUtilities.getContactlessReaderName());
+    poReader = plugin.getReader(PcscReaderUtils.getContactlessReaderName());
     ((PcscReader) poReader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     // Get and configure the SAM reader
-    Reader samReader = plugin.getReader(PcscReaderUtilities.getContactReaderName());
+    Reader samReader = plugin.getReader(PcscReaderUtils.getContactReaderName());
     ((PcscReader) samReader).setContactless(false).setIsoProtocol(PcscReader.IsoProtocol.T0);
 
     // Create a SAM resource after selecting the SAM
@@ -138,17 +138,17 @@ public class StoredValue_DebitInSession_Pcsc {
 
     // Prepare selector
     samSelection.prepareSelection(new SamSelectionRequest(samSelector));
-    CalypsoSam calypsoSam;
+
     if (samReader.isCardPresent()) {
-      SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
-      if (selectionsResult.hasActiveSelection()) {
-        calypsoSam = (CalypsoSam) selectionsResult.getActiveSmartCard();
-      } else {
-        throw new IllegalStateException("Unable to open a logical channel for SAM!");
-      }
-    } else {
       throw new IllegalStateException("No SAM is present in the reader " + samReader.getName());
     }
+    SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
+
+    if (!selectionsResult.hasActiveSelection()) {
+      throw new IllegalStateException("Unable to open a logical channel for SAM!");
+    }
+
+    CalypsoSam calypsoSam = (CalypsoSam) selectionsResult.getActiveSmartCard();
 
     CardResource<CalypsoSam> samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
 

@@ -18,10 +18,10 @@ import org.slf4j.LoggerFactory;
 
 class ReaderConfiguration {
 
+  private static final Logger logger = LoggerFactory.getLogger(ReaderConfiguration.class);
+
   static ObservableReader.ReaderObserver getObserver() {
     return new ObservableReader.ReaderObserver() {
-      private final Logger logger = LoggerFactory.getLogger(ReaderConfiguration.class);
-
       public void update(ReaderEvent event) {
         /* just log the event */
         logger.info(

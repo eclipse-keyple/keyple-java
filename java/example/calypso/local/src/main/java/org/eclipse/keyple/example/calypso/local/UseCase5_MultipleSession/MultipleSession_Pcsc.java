@@ -30,7 +30,7 @@ import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
-import org.eclipse.keyple.example.calypso.local.common.PcscReaderUtilities;
+import org.eclipse.keyple.example.calypso.local.common.PcscReaderUtils;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.slf4j.Logger;
@@ -84,11 +84,11 @@ public class MultipleSession_Pcsc {
     Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory(null, null));
 
     // Get and configure the PO reader
-    Reader poReader = plugin.getReader(PcscReaderUtilities.getContactlessReaderName());
+    Reader poReader = plugin.getReader(PcscReaderUtils.getContactlessReaderName());
     ((PcscReader) poReader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     // Get and configure the SAM reader
-    Reader samReader = plugin.getReader(PcscReaderUtilities.getContactReaderName());
+    Reader samReader = plugin.getReader(PcscReaderUtils.getContactReaderName());
     ((PcscReader) samReader).setContactless(false).setIsoProtocol(PcscReader.IsoProtocol.T0);
 
     // Create a SAM resource after selecting the SAM
@@ -98,17 +98,20 @@ public class MultipleSession_Pcsc {
 
     // Prepare selector
     samSelection.prepareSelection(new SamSelectionRequest(samSelector));
-    CalypsoSam calypsoSam;
+
     if (samReader.isCardPresent()) {
-      SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
-      if (selectionsResult.hasActiveSelection()) {
-        calypsoSam = (CalypsoSam) selectionsResult.getActiveSmartCard();
-      } else {
-        throw new IllegalStateException("Unable to open a logical channel for SAM!");
-      }
-    } else {
       throw new IllegalStateException("No SAM is present in the reader " + samReader.getName());
     }
+
+    // process explicit selection
+    SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
+
+    if (!selectionsResult.hasActiveSelection()) {
+      throw new IllegalStateException("Unable to open a logical channel for SAM!");
+    }
+
+    CalypsoSam calypsoSam = (CalypsoSam) selectionsResult.getActiveSmartCard();
+
     CardResource<CalypsoSam> samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
 
     // display basic information about the readers and SAM
@@ -117,104 +120,104 @@ public class MultipleSession_Pcsc {
     logger.info("= SAM Reader  NAME = {}", samResource.getReader().getName());
 
     // Check if a PO is present in the reader
-    if (poReader.isCardPresent()) {
-
-      logger.info("= #### 1st PO exchange: AID based selection with reading of Environment file.");
-
-      // Prepare a Calypso PO selection
-      CardSelection cardSelection = new CardSelection();
-
-      // Setting of an AID based selection of a Calypso REV3 PO
-      //
-      // Select the first application matching the selection AID whatever the card
-      // communication
-      // protocol keep the logical channel open after the selection
-
-      // Calypso selection: configures a PoSelectionRequest with all the desired attributes
-      // to
-      // make the selection and read additional information afterwards
-      PoSelectionRequest poSelectionRequest =
-          new PoSelectionRequest(
-              PoSelector.builder()
-                  .aidSelector(AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
-                  .invalidatedPo(InvalidatedPo.REJECT)
-                  .build());
-
-      // Add the selection case to the current selection (we could have added other cases
-      // here)
-      cardSelection.prepareSelection(poSelectionRequest);
-
-      // Actual PO communication: operate through a single request the Calypso PO selection
-      // and the file read
-      CalypsoPo calypsoPo =
-          (CalypsoPo) cardSelection.processExplicitSelection(poReader).getActiveSmartCard();
-      logger.info("The selection of the PO has succeeded.");
-
-      // Go on with the reading of the first record of the EventLog file
-      logger.info(
-          "= #### 2nd PO exchange: open and close a secure session to perform authentication.");
-
-      // The default KIF values for debiting
-      final byte DEFAULT_KIF_DEBIT = (byte) 0x30;
-      // The default key record number values for debiting
-      // The actual value should be adjusted.
-      final byte DEFAULT_KEY_RECORD_NUMBER_DEBIT = (byte) 0x03;
-      // define the security parameters to provide when creating PoTransaction
-      PoSecuritySettings poSecuritySettings =
-          new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)
-              .sessionDefaultKif(
-                  PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT, DEFAULT_KIF_DEBIT)
-              .sessionDefaultKeyRecordNumber(
-                  PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT,
-                  DEFAULT_KEY_RECORD_NUMBER_DEBIT)
-              .sessionModificationMode(PoTransaction.SessionSetting.ModificationMode.MULTIPLE)
-              .build();
-
-      PoTransaction poTransaction =
-          new PoTransaction(new CardResource<CalypsoPo>(poReader, calypsoPo), poSecuritySettings);
-
-      // Open Session for the debit key
-      poTransaction.processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT);
-
-      if (!calypsoPo.isDfRatified()) {
-        logger.info("========= Previous Secure Session was not ratified. =====================");
-      }
-      // Compute the number of append records (29 bytes) commands that will overflow the PO
-      // modifications buffer. Each append records will consume 35 (29 + 6) bytes in the
-      // buffer.
-      //
-      // We'll send one more command to demonstrate the MULTIPLE mode
-      int modificationsBufferSize = 430; // not all PO have this buffer size
-
-      int nbCommands = (modificationsBufferSize / 35) + 1;
-
-      logger.info(
-          "==== Send {} Append Record commands. Modifications buffer capacity = {} bytes i.e. {} 29-byte commands ====",
-          nbCommands,
-          modificationsBufferSize,
-          modificationsBufferSize / 35);
-
-      for (int i = 0; i < nbCommands; i++) {
-
-        poTransaction.prepareAppendRecord(
-            CalypsoClassicInfo.SFI_EventLog,
-            ByteArrayUtil.fromHex(CalypsoClassicInfo.eventLog_dataFill));
-      }
-
-      // proceed with the sending of commands, don't close the channel
-      poTransaction.processPoCommands();
-
-      // Close the Secure Session.
-
-      logger.info("========= PO Calypso session ======= Closing ============================");
-
-      // A ratification command will be sent (CONTACTLESS_MODE).
-      poTransaction.processClosing();
-
-      logger.info("= #### End of the Calypso PO processing.");
-    } else {
-      logger.error("The selection of the PO has failed.");
+    if (!poReader.isCardPresent()) {
+      logger.error("No PO is present in the reader");
     }
+
+    logger.info("= #### 1st PO exchange: AID based selection with reading of Environment file.");
+
+    // Prepare a Calypso PO selection
+    CardSelection cardSelection = new CardSelection();
+
+    // Setting of an AID based selection of a Calypso REV3 PO
+    //
+    // Select the first application matching the selection AID whatever the card
+    // communication
+    // protocol keep the logical channel open after the selection
+
+    // Calypso selection: configures a PoSelectionRequest with all the desired attributes
+    // to
+    // make the selection and read additional information afterwards
+    PoSelectionRequest poSelectionRequest =
+        new PoSelectionRequest(
+            PoSelector.builder()
+                .aidSelector(AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
+                .invalidatedPo(InvalidatedPo.REJECT)
+                .build());
+
+    // Add the selection case to the current selection (we could have added other cases
+    // here)
+    cardSelection.prepareSelection(poSelectionRequest);
+
+    // Actual PO communication: operate through a single request the Calypso PO selection
+    // and the file read
+    CalypsoPo calypsoPo =
+        (CalypsoPo) cardSelection.processExplicitSelection(poReader).getActiveSmartCard();
+    logger.info("The selection of the PO has succeeded.");
+
+    // Go on with the reading of the first record of the EventLog file
+    logger.info(
+        "= #### 2nd PO exchange: open and close a secure session to perform authentication.");
+
+    // The default KIF values for debiting
+    final byte DEFAULT_KIF_DEBIT = (byte) 0x30;
+    // The default key record number values for debiting
+    // The actual value should be adjusted.
+    final byte DEFAULT_KEY_RECORD_NUMBER_DEBIT = (byte) 0x03;
+    // define the security parameters to provide when creating PoTransaction
+    PoSecuritySettings poSecuritySettings =
+        new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)
+            .sessionDefaultKif(
+                PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT, DEFAULT_KIF_DEBIT)
+            .sessionDefaultKeyRecordNumber(
+                PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT,
+                DEFAULT_KEY_RECORD_NUMBER_DEBIT)
+            .sessionModificationMode(PoTransaction.SessionSetting.ModificationMode.MULTIPLE)
+            .build();
+
+    PoTransaction poTransaction =
+        new PoTransaction(new CardResource<CalypsoPo>(poReader, calypsoPo), poSecuritySettings);
+
+    // Open Session for the debit key
+    poTransaction.processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT);
+
+    if (!calypsoPo.isDfRatified()) {
+      logger.info("========= Previous Secure Session was not ratified. =====================");
+    }
+    // Compute the number of append records (29 bytes) commands that will overflow the PO
+    // modifications buffer. Each append records will consume 35 (29 + 6) bytes in the
+    // buffer.
+    //
+    // We'll send one more command to demonstrate the MULTIPLE mode
+    int modificationsBufferSize = 430; // not all PO have this buffer size
+
+    int nbCommands = (modificationsBufferSize / 35) + 1;
+
+    logger.info(
+        "==== Send {} Append Record commands. Modifications buffer capacity = {} bytes i.e. {} 29-byte commands ====",
+        nbCommands,
+        modificationsBufferSize,
+        modificationsBufferSize / 35);
+
+    for (int i = 0; i < nbCommands; i++) {
+
+      poTransaction.prepareAppendRecord(
+          CalypsoClassicInfo.SFI_EventLog,
+          ByteArrayUtil.fromHex(CalypsoClassicInfo.eventLog_dataFill));
+    }
+
+    // proceed with the sending of commands, don't close the channel
+    poTransaction.processPoCommands();
+
+    // Close the Secure Session.
+
+    logger.info("========= PO Calypso session ======= Closing ============================");
+
+    // A ratification command will be sent (CONTACTLESS_MODE).
+    poTransaction.processClosing();
+
+    logger.info("= #### End of the Calypso PO processing.");
+
     System.exit(0);
   }
 }

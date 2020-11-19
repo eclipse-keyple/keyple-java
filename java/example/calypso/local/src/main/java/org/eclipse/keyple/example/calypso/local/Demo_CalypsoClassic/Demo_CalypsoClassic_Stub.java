@@ -14,16 +14,45 @@ package org.eclipse.keyple.example.calypso.local.Demo_CalypsoClassic;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalArgumentException;
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
 import org.eclipse.keyple.example.calypso.local.common.StubCalypsoClassic;
 import org.eclipse.keyple.example.calypso.local.common.StubSamCalypsoClassic;
 import org.eclipse.keyple.plugin.stub.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This Calypso demonstration code consists in:
+ *
+ * <ol>
+ *   <li>Setting up a sam reader configuration and adding an observer method ({@link
+ *       PoReaderConfiguration#getObserver()#update})
+ *   <li>Starting a card operation when a PO presence is notified (processSeMatch
+ *       operateSeTransaction)
+ *   <li>Opening a logical channel with the SAM (C1 SAM is expected) see ({@link
+ *       CalypsoClassicInfo#SAM_C1_ATR_REGEX SAM_C1_ATR_REGEX})
+ *   <li>Attempting to open a logical channel with the PO with 3 options:
+ *       <ul>
+ *         <li>Selecting with a fake AID (1)
+ *         <li>Selecting with the Calypso AID and reading the event log file
+ *         <li>Selecting with a fake AID (2)
+ *       </ul>
+ *   <li>Display {@link AbstractDefaultSelectionsResponse} data
+ *   <li>If the Calypso selection succeeded, do a Calypso transaction
+ *       ({doCalypsoReadWriteTransaction(PoTransaction, ApduResponse, boolean)}
+ *       doCalypsoReadWriteTransaction}).
+ * </ol>
+ *
+ * <p>The Calypso transactions demonstrated here shows the Keyple API in use with Calypso card (PO
+ * and SAM).
+ *
+ * <p>Read the doc of each methods for further details.
+ */
 public class Demo_CalypsoClassic_Stub {
 
   /**
@@ -84,7 +113,7 @@ public class Demo_CalypsoClassic_Stub {
 
     /* Set the default selection operation */
     poReader.setDefaultSelectionRequest(
-        PoReaderConfiguration.getPoSelection().getSelectionOperation(),
+        PoReaderConfiguration.getPoCardSelection().getSelectionOperation(),
         ObservableReader.NotificationMode.MATCHED_ONLY,
         ObservableReader.PollingMode.REPEATING);
 
