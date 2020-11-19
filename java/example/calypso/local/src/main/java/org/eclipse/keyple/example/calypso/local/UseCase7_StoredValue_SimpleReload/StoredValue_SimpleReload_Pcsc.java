@@ -11,7 +11,6 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.calypso.local.UseCase7_StoredValue_SimpleReload;
 
-import static org.eclipse.keyple.calypso.command.sam.SamRevision.C1;
 import static org.eclipse.keyple.calypso.transaction.PoTransaction.SvSettings;
 
 import com.google.gson.Gson;
@@ -21,21 +20,14 @@ import com.google.gson.JsonParser;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.CalypsoSam;
 import org.eclipse.keyple.calypso.transaction.PoSecuritySettings;
-import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
-import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
-import org.eclipse.keyple.calypso.transaction.SamSelectionRequest;
-import org.eclipse.keyple.calypso.transaction.SamSelector;
 import org.eclipse.keyple.core.card.selection.CardResource;
 import org.eclipse.keyple.core.card.selection.CardSelection;
-import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.core.card.selection.SelectionsResult;
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
-import org.eclipse.keyple.core.service.exception.KeypleReaderException;
-import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
-import org.eclipse.keyple.example.calypso.local.common.PcscReaderUtilities;
+import org.eclipse.keyple.example.calypso.local.common.PcscReaderUtils;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.slf4j.Logger;
@@ -57,52 +49,6 @@ public class StoredValue_SimpleReload_Pcsc {
   private static CalypsoPo calypsoPo;
 
   /**
-   * Selects the PO
-   *
-   * @return true if the PO is selected
-   * @throws KeypleReaderException in case of reader communication failure
-   */
-  private static boolean selectPo() {
-    /* Check if a PO is present in the reader */
-    if (poReader.isCardPresent()) {
-      logger.info("= ##### 1st PO exchange: AID based selection with reading of Environment file.");
-
-      // Prepare a Calypso PO selection
-      CardSelection cardSelection = new CardSelection();
-
-      // Setting of an AID based selection of a Calypso REV3 PO
-      //
-      // Select the first application matching the selection AID whatever the card communication
-      // protocol keep the logical channel open after the selection
-
-      // Calypso selection: configures a PoSelectionRequest with all the desired attributes to
-      // make the selection and read additional information afterwards
-      PoSelectionRequest poSelectionRequest =
-          new PoSelectionRequest(
-              PoSelector.builder()
-                  .aidSelector(
-                      CardSelector.AidSelector.builder()
-                          .aidToSelect(CalypsoClassicInfo.AID)
-                          .build())
-                  .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
-                  .build());
-
-      // Add the selection case to the current selection
-      //
-      // (we could have added other cases here)
-      cardSelection.prepareSelection(poSelectionRequest);
-
-      // Actual PO communication: operate through a single request the Calypso PO selection
-      // and the file read
-      calypsoPo = (CalypsoPo) cardSelection.processExplicitSelection(poReader).getActiveSmartCard();
-      return true;
-    } else {
-      logger.error("No PO were detected.");
-    }
-    return false;
-  }
-
-  /**
    * Main program entry
    *
    * <p>Any error will be notified by a runtime exception (not captured in this example).
@@ -119,31 +65,25 @@ public class StoredValue_SimpleReload_Pcsc {
     Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory(null, null));
 
     // Get and configure the PO reader
-    poReader = plugin.getReader(PcscReaderUtilities.getContactlessReaderName());
+    poReader = plugin.getReader(PcscReaderUtils.getContactlessReaderName());
     ((PcscReader) poReader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     // Get and configure the SAM reader
-    Reader samReader = plugin.getReader(PcscReaderUtilities.getContactReaderName());
+    Reader samReader = plugin.getReader(PcscReaderUtils.getContactReaderName());
     ((PcscReader) samReader).setContactless(false).setIsoProtocol(PcscReader.IsoProtocol.T0);
 
-    // Create a SAM resource after selecting the SAM
-    CardSelection samSelection = new CardSelection();
+    CardSelection samSelection = ReaderConfiguration.getSamCardSelection();
 
-    SamSelector samSelector = SamSelector.builder().samRevision(C1).serialNumber(".*").build();
-
-    // Prepare selector
-    samSelection.prepareSelection(new SamSelectionRequest(samSelector));
-    CalypsoSam calypsoSam;
     if (samReader.isCardPresent()) {
-      SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
-      if (selectionsResult.hasActiveSelection()) {
-        calypsoSam = (CalypsoSam) selectionsResult.getActiveSmartCard();
-      } else {
-        throw new IllegalStateException("Unable to open a logical channel for SAM!");
-      }
-    } else {
       throw new IllegalStateException("No SAM is present in the reader " + samReader.getName());
     }
+    SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
+
+    if (!selectionsResult.hasActiveSelection()) {
+      throw new IllegalStateException("Unable to open a logical channel for SAM!");
+    }
+
+    CalypsoSam calypsoSam = (CalypsoSam) selectionsResult.getActiveSmartCard();
 
     CardResource<CalypsoSam> samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
 
@@ -152,46 +92,50 @@ public class StoredValue_SimpleReload_Pcsc {
     logger.info("= PO Reader  NAME = {}", poReader.getName());
     logger.info("= SAM Reader  NAME = {}", samResource.getReader().getName());
 
-    if (selectPo()) {
-      // Security settings
-      // Keep the default setting for SV logs reading (only the reload log will be read here)
-      PoSecuritySettings poSecuritySettings =
-          new PoSecuritySettings.PoSecuritySettingsBuilder(samResource).build();
+    logger.info("= ##### 1st PO exchange: AID based selection with reading of Environment file.");
 
-      // Create the PO resource
-      CardResource<CalypsoPo> poResource;
-      poResource = new CardResource<CalypsoPo>(poReader, calypsoPo);
+    // Actual PO communication: operate through a single request the Calypso PO selection
+    // and the file read
+    calypsoPo =
+        (CalypsoPo)
+            ReaderConfiguration.getCardSelection()
+                .processExplicitSelection(poReader)
+                .getActiveSmartCard(); // Security settings
+    // Keep the default setting for SV logs reading (only the reload log will be read here)
+    PoSecuritySettings poSecuritySettings =
+        new PoSecuritySettings.PoSecuritySettingsBuilder(samResource).build();
 
-      // Create a secured PoTransaction
-      PoTransaction poTransaction = new PoTransaction(poResource, poSecuritySettings);
+    // Create the PO resource
+    CardResource<CalypsoPo> poResource;
+    poResource = new CardResource<CalypsoPo>(poReader, calypsoPo);
 
-      // Prepare the command to retrieve the SV status with the two debit and reload logs.
-      poTransaction.prepareSvGet(SvSettings.Operation.RELOAD, SvSettings.Action.DO);
+    // Create a secured PoTransaction
+    PoTransaction poTransaction = new PoTransaction(poResource, poSecuritySettings);
 
-      // Execute the command
-      poTransaction.processPoCommands();
+    // Prepare the command to retrieve the SV status with the two debit and reload logs.
+    poTransaction.prepareSvGet(SvSettings.Operation.RELOAD, SvSettings.Action.DO);
 
-      // Display the current SV status
-      logger.info("Current SV status (SV Get for RELOAD):");
-      logger.info(". Balance = {}", calypsoPo.getSvBalance());
-      logger.info(". Last Transaction Number = {}", calypsoPo.getSvLastTNum());
+    // Execute the command
+    poTransaction.processPoCommands();
 
-      // To easily display the content of the log, we use here the toString method which
-      // exports the data in JSON format.
-      String loadLogRecordJson = prettyPrintJson(calypsoPo.getSvLoadLogRecord().toString());
-      logger.info(". Debit log record = {}", loadLogRecordJson);
+    // Display the current SV status
+    logger.info("Current SV status (SV Get for RELOAD):");
+    logger.info(". Balance = {}", calypsoPo.getSvBalance());
+    logger.info(". Last Transaction Number = {}", calypsoPo.getSvLastTNum());
 
-      // Reload with 2 units
-      poTransaction.prepareSvReload(2);
+    // To easily display the content of the log, we use here the toString method which
+    // exports the data in JSON format.
+    String loadLogRecordJson = prettyPrintJson(calypsoPo.getSvLoadLogRecord().toString());
+    logger.info(". Debit log record = {}", loadLogRecordJson);
 
-      // Execute the command and close the communication after
-      poTransaction.prepareReleasePoChannel();
-      poTransaction.processPoCommands();
+    // Reload with 2 units
+    poTransaction.prepareSvReload(2);
 
-      logger.info("The balance of the PO has been recharged by 2 units");
-    } else {
-      logger.error("The PO selection failed");
-    }
+    // Execute the command and close the communication after
+    poTransaction.prepareReleasePoChannel();
+    poTransaction.processPoCommands();
+
+    logger.info("The balance of the PO has been recharged by 2 units");
 
     System.exit(0);
   }

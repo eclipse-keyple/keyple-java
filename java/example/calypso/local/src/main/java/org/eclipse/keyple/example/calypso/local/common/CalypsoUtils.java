@@ -19,12 +19,19 @@ import org.eclipse.keyple.core.card.selection.CardResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class CalypsoUtilities {
+public final class CalypsoUtils {
 
-  private static final Logger logger = LoggerFactory.getLogger(CalypsoUtilities.class);
+  private static final Logger logger = LoggerFactory.getLogger(CalypsoUtils.class);
 
-  private CalypsoUtilities() {}
+  private CalypsoUtils() {}
 
+  /**
+   * Define the security parameters to provide when creating {@link
+   * org.eclipse.keyple.calypso.transaction.PoTransaction}
+   *
+   * @param samResource sam resource to build Po Security from
+   * @return PoSecuritySettings settings the set the security on the PO
+   */
   public static PoSecuritySettings getSecuritySettings(CardResource<CalypsoSam> samResource) {
 
     // The default KIF values for personalization, loading and debiting

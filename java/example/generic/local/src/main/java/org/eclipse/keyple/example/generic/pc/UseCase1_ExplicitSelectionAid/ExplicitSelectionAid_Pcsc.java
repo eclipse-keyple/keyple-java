@@ -68,51 +68,50 @@ public class ExplicitSelectionAid_Pcsc {
     logger.info("= Card Reader  NAME = {}", reader.getName());
 
     // Check if a card is present in the reader
-    if (reader.isCardPresent()) {
-
-      logger.info("= #### AID based selection.");
-
-      // Prepare the card selection
-      CardSelection cardSelection = new CardSelection();
-
-      // Setting of an AID based selection (in this example a Calypso REV3 PO)
-      //
-      // Select the first application matching the selection AID whatever the card communication
-      // protocol keep the logical channel open after the selection
-
-      // Generic selection: configures a CardSelector with all the desired attributes to make
-      // the selection and read additional information afterwards
-      GenericCardSelectionRequest genericCardSelectionRequest =
-          new GenericCardSelectionRequest(
-              CardSelector.builder()
-                  .aidSelector(CardSelector.AidSelector.builder().aidToSelect(cardAid).build())
-                  .build());
-
-      // Add the selection case to the current selection (we could have added other cases
-      // here)
-      cardSelection.prepareSelection(genericCardSelectionRequest);
-
-      // Actual card communication: operate through a single request the card selection
-      SelectionsResult selectionsResult = cardSelection.processExplicitSelection(reader);
-      if (selectionsResult.hasActiveSelection()) {
-        AbstractSmartCard smartCard = selectionsResult.getActiveSmartCard();
-        logger.info("The selection of the card has succeeded.");
-        if (smartCard.hasFci()) {
-          String fci = ByteArrayUtil.toHex(smartCard.getFciBytes());
-          logger.info("Application FCI = {}", fci);
-        }
-        if (smartCard.hasAtr()) {
-          String atr = ByteArrayUtil.toHex(smartCard.getAtrBytes());
-          logger.info("Card ATR = {}", atr);
-        }
-      } else {
-        logger.info("The selection of the application " + cardAid + " failed.");
-      }
-
-      logger.info("= #### End of the generic card processing.");
-    } else {
-      logger.error("The selection of the card has failed.");
+    if (!reader.isCardPresent()) {
+      logger.error("No Po Card is present in the reader.");
     }
+
+    logger.info("= #### AID based selection.");
+
+    // Prepare the card selection
+    CardSelection cardSelection = new CardSelection();
+
+    // Setting of an AID based selection (in this example a Calypso REV3 PO)
+    //
+    // Select the first application matching the selection AID whatever the card communication
+    // protocol keep the logical channel open after the selection
+
+    // Generic selection: configures a CardSelector with all the desired attributes to make
+    // the selection and read additional information afterwards
+    GenericCardSelectionRequest genericCardSelectionRequest =
+        new GenericCardSelectionRequest(
+            CardSelector.builder()
+                .aidSelector(CardSelector.AidSelector.builder().aidToSelect(cardAid).build())
+                .build());
+
+    // Add the selection case to the current selection (we could have added other cases
+    // here)
+    cardSelection.prepareSelection(genericCardSelectionRequest);
+
+    // Actual card communication: operate through a single request the card selection
+    SelectionsResult selectionsResult = cardSelection.processExplicitSelection(reader);
+    if (!selectionsResult.hasActiveSelection()) {
+      logger.info("The selection of the application " + cardAid + " failed.");
+    }
+    AbstractSmartCard smartCard = selectionsResult.getActiveSmartCard();
+    logger.info("The selection of the card has succeeded.");
+    if (smartCard.hasFci()) {
+      String fci = ByteArrayUtil.toHex(smartCard.getFciBytes());
+      logger.info("Application FCI = {}", fci);
+    }
+    if (smartCard.hasAtr()) {
+      String atr = ByteArrayUtil.toHex(smartCard.getAtrBytes());
+      logger.info("Card ATR = {}", atr);
+    }
+
+    logger.info("= #### End of the generic card processing.");
+
     System.exit(0);
   }
 }

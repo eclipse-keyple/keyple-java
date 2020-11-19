@@ -27,6 +27,53 @@ class ReaderConfiguration {
 
   private static final Logger logger = LoggerFactory.getLogger(ReaderConfiguration.class);
 
+  static CardSelection cardSelection;
+
+  static CardSelection getCardSelection() {
+    if (cardSelection != null) {
+      return cardSelection;
+    }
+
+    cardSelection = new CardSelection();
+
+    // process SDK defined protocols
+    for (ContactlessCardCommonProtocols protocol : ContactlessCardCommonProtocols.values()) {
+      switch (protocol) {
+        case ISO_14443_4:
+          /* Add a Hoplink selector */
+          String HoplinkAID = "A000000291A000000191";
+          PoSelectionRequest poSelectionRequest =
+              new PoSelectionRequest(
+                  PoSelector.builder()
+                      .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                      .aidSelector(
+                          CardSelector.AidSelector.builder().aidToSelect(HoplinkAID).build())
+                      .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
+                      .build());
+
+          cardSelection.prepareSelection(poSelectionRequest);
+          break;
+        case NFC_A_ISO_14443_3A:
+        case NFC_B_ISO_14443_3B:
+          // not handled in this demo code
+          break;
+        case INNOVATRON_B_PRIME_CARD:
+          // intentionally ignored for demo purpose
+          break;
+        default:
+          /* Add a generic selector */
+          cardSelection.prepareSelection(
+              new GenericCardSelectionRequest(
+                  CardSelector.builder()
+                      .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                      .atrFilter(new CardSelector.AtrFilter(".*"))
+                      .build()));
+          break;
+      }
+    }
+    return cardSelection;
+  }
+
   static ObservableReader.ReaderObserver getObserver() {
     return new ObservableReader.ReaderObserver() {
 
@@ -66,47 +113,5 @@ class ReaderConfiguration {
         }
       }
     };
-  }
-
-  public static CardSelection getCardSelection() {
-
-    CardSelection cardSelection = new CardSelection();
-
-    // process SDK defined protocols
-    for (ContactlessCardCommonProtocols protocol : ContactlessCardCommonProtocols.values()) {
-      switch (protocol) {
-        case ISO_14443_4:
-          /* Add a Hoplink selector */
-          String HoplinkAID = "A000000291A000000191";
-          PoSelectionRequest poSelectionRequest =
-              new PoSelectionRequest(
-                  PoSelector.builder()
-                      .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-                      .aidSelector(
-                          CardSelector.AidSelector.builder().aidToSelect(HoplinkAID).build())
-                      .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
-                      .build());
-
-          cardSelection.prepareSelection(poSelectionRequest);
-          break;
-        case NFC_A_ISO_14443_3A:
-        case NFC_B_ISO_14443_3B:
-          // not handled in this demo code
-          break;
-        case INNOVATRON_B_PRIME_CARD:
-          // intentionally ignored for demo purpose
-          break;
-        default:
-          /* Add a generic selector */
-          cardSelection.prepareSelection(
-              new GenericCardSelectionRequest(
-                  CardSelector.builder()
-                      .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-                      .atrFilter(new CardSelector.AtrFilter(".*"))
-                      .build()));
-          break;
-      }
-    }
-    return cardSelection;
   }
 }

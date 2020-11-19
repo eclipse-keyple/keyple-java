@@ -26,23 +26,32 @@ import org.eclipse.keyple.core.card.selection.SelectionsResult;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsResponse;
-import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
-import org.eclipse.keyple.example.calypso.local.common.CalypsoUtilities;
+import org.eclipse.keyple.example.calypso.local.common.CalypsoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.profiler.Profiler;
 
+/** Po Reader Configuration class */
 class PoReaderConfiguration {
-
-  static CardSelection getPoSelection() {
+  static CardSelection poCardSelection;
+  /**
+   * Return the card selection object
+   *
+   * @return card selection configuration
+   */
+  static CardSelection getPoCardSelection() {
+    if (poCardSelection != null) {
+      return poCardSelection;
+    }
     /*
      * Initialize the selection process
      */
-    CardSelection cardSelection = new CardSelection();
+    poCardSelection = new CardSelection();
 
     /* operate multiple PO selections */
     String poFakeAid1 = "AABBCCDDEE"; // fake AID 1
@@ -51,7 +60,7 @@ class PoReaderConfiguration {
     /*
      * Add selection case 1: Fake AID1, protocol ISO, target rev 3
      */
-    cardSelection.prepareSelection(
+    poCardSelection.prepareSelection(
         new PoSelectionRequest(
             PoSelector.builder()
                 .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poFakeAid1).build())
@@ -78,12 +87,12 @@ class PoReaderConfiguration {
     poSelectionRequestCalypsoAid.prepareReadRecordFile(
         CalypsoClassicInfo.SFI_EventLog, CalypsoClassicInfo.RECORD_NUMBER_1);
 
-    cardSelection.prepareSelection(poSelectionRequestCalypsoAid);
+    poCardSelection.prepareSelection(poSelectionRequestCalypsoAid);
 
     /*
      * Add selection case 3: Fake AID2, unspecified protocol, target rev 2 or 3
      */
-    cardSelection.prepareSelection(
+    poCardSelection.prepareSelection(
         new PoSelectionRequest(
             PoSelector.builder()
                 .cardProtocol(ContactlessCardCommonProtocols.INNOVATRON_B_PRIME_CARD.name())
@@ -94,7 +103,7 @@ class PoReaderConfiguration {
     /*
      * Add selection case 4: ATR selection, rev 1 atrregex
      */
-    cardSelection.prepareSelection(
+    poCardSelection.prepareSelection(
         new PoSelectionRequest(
             PoSelector.builder()
                 .cardProtocol(ContactlessCardCommonProtocols.INNOVATRON_B_PRIME_CARD.name())
@@ -102,48 +111,27 @@ class PoReaderConfiguration {
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build()));
 
-    return cardSelection;
+    return poCardSelection;
   }
 
+  /**
+   * Return the observer configuration that contains the ticketing logic
+   *
+   * @return
+   */
   static PoReaderObserver getObserver() {
     return new PoReaderObserver();
   }
 
-  /**
-   * This Calypso demonstration code consists in:
-   *
-   * <ol>
-   *   <li>Setting up a sam reader configuration and adding an observer method ({@link #update})
-   *   <li>Starting a card operation when a PO presence is notified (processSeMatch
-   *       operateSeTransaction)
-   *   <li>Opening a logical channel with the SAM (C1 SAM is expected) see ({@link
-   *       CalypsoClassicInfo#SAM_C1_ATR_REGEX SAM_C1_ATR_REGEX})
-   *   <li>Attempting to open a logical channel with the PO with 3 options:
-   *       <ul>
-   *         <li>Selecting with a fake AID (1)
-   *         <li>Selecting with the Calypso AID and reading the event log file
-   *         <li>Selecting with a fake AID (2)
-   *       </ul>
-   *   <li>Display {@link AbstractDefaultSelectionsResponse} data
-   *   <li>If the Calypso selection succeeded, do a Calypso transaction
-   *       ({doCalypsoReadWriteTransaction(PoTransaction, ApduResponse, boolean)}
-   *       doCalypsoReadWriteTransaction}).
-   * </ol>
-   *
-   * <p>The Calypso transactions demonstrated here shows the Keyple API in use with Calypso card (PO
-   * and SAM).
-   *
-   * <p>Read the doc of each methods for further details.
-   */
-  static class PoReaderObserver implements ObservableReader.ReaderObserver {
+  /** Definition of the ticketing logic within the {@link ReaderObserver#update} method */
+  static class PoReaderObserver implements ReaderObserver {
     Logger logger = LoggerFactory.getLogger(PoReaderConfiguration.class);
 
+    /* reference to the sam reader and sam resource to operate the transaction */
     private Reader samReader;
     private CardResource<CalypsoSam> samResource = null;
 
-    private CardSelection cardSelection;
-
-    /* Assign readers to the transaction engine */
+    /* Assign sam reader to the transaction engine */
     public void setSamReader(Reader samReader) {
       this.samReader = samReader;
     }
@@ -344,7 +332,9 @@ class PoReaderConfiguration {
         AbstractDefaultSelectionsResponse defaultSelectionsResponse, Reader poReader) {
       CalypsoPo calypsoPo =
           (CalypsoPo)
-              cardSelection.processDefaultSelection(defaultSelectionsResponse).getActiveSmartCard();
+              getPoCardSelection()
+                  .processDefaultSelection(defaultSelectionsResponse)
+                  .getActiveSmartCard();
       if (calypsoPo != null) {
         logger.info("DF RT header: {}", calypsoPo.getDirectoryHeader());
 
@@ -373,7 +363,7 @@ class PoReaderConfiguration {
           profiler.start("Calypso1");
 
           /* define the SAM parameters to provide when creating PoTransaction */
-          PoSecuritySettings poSecuritySettings = CalypsoUtilities.getSecuritySettings(samResource);
+          PoSecuritySettings poSecuritySettings = CalypsoUtils.getSecuritySettings(samResource);
 
           PoTransaction poTransaction =
               new PoTransaction(

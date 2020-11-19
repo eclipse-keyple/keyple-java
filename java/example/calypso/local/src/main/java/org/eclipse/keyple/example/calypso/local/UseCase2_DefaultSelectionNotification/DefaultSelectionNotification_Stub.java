@@ -52,8 +52,8 @@ public class DefaultSelectionNotification_Stub {
   private static final Logger logger =
       LoggerFactory.getLogger(DefaultSelectionNotification_Stub.class);
 
-  public DefaultSelectionNotification_Stub() throws InterruptedException {
-
+  /** main program entry */
+  public static void main(String[] args) throws InterruptedException {
     /* Get the instance of the SmartCardService (Singleton pattern) */
     SmartCardService smartCardService = SmartCardService.getInstance();
 
@@ -116,11 +116,5 @@ public class DefaultSelectionNotification_Stub {
     ((StubReader) poReader).removeCard();
 
     System.exit(0);
-  }
-
-  /** main program entry */
-  public static void main(String[] args) throws InterruptedException {
-    // Create the observable object to handle the PO processing
-    new DefaultSelectionNotification_Stub();
   }
 }

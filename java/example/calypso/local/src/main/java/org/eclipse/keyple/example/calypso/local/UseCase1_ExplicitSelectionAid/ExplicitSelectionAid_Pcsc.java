@@ -25,7 +25,7 @@ import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
-import org.eclipse.keyple.example.calypso.local.common.PcscReaderUtilities;
+import org.eclipse.keyple.example.calypso.local.common.PcscReaderUtils;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.slf4j.Logger;
@@ -66,7 +66,7 @@ public class ExplicitSelectionAid_Pcsc {
     Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory(null, null));
 
     // Get and configure the PO reader
-    Reader poReader = plugin.getReader(PcscReaderUtilities.getContactlessReaderName());
+    Reader poReader = plugin.getReader(PcscReaderUtils.getContactlessReaderName());
     ((PcscReader) poReader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     logger.info(

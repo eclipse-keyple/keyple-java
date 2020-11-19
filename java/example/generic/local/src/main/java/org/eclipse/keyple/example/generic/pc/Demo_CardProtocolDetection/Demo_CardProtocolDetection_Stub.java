@@ -13,7 +13,7 @@ package org.eclipse.keyple.example.generic.pc.Demo_CardProtocolDetection;
 
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.SmartCardService;
-import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.service.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
@@ -63,7 +63,7 @@ public class Demo_CardProtocolDetection_Stub {
         smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME, null, null));
 
     // create an observer class to handle the card operations
-    ObservableReader.ReaderObserver observer = ReaderConfiguration.getObserver();
+    ReaderObserver observer = ReaderConfiguration.getObserver();
 
     // Plug PO reader.
     ((StubPlugin) stubPlugin).plugStubReader("poReader", true);
