@@ -36,10 +36,23 @@ public class PcscPluginFactory implements PluginFactory {
   /**
    * Constructor.
    *
-   * @param pluginObservationExceptionHandler A not reference to an object implementing the {@link
-   *     PluginObservationExceptionHandler} interface.
-   * @param readerObservationExceptionHandler A not reference to an object implementing the {@link
-   *     ReaderObservationExceptionHandler} interface.
+   * <p>It is requested to provide during the creation of the factory the references of the
+   * exception handlers in charge of receiving notifications of exceptions raised within the
+   * observation threads.
+   *
+   * <p>Both arguments (pluginObservationExceptionHandler and readerObservationExceptionHandler) are
+   * only needed if the underlying object will be observed or not.
+   *
+   * <p>The handler references can be set to null only when no observation is used. The addition of
+   * an observer without having provided a observation exception handler will be refused and
+   * notified by an exception.
+   *
+   * <p>The value null can be used when no observations are expected.
+   *
+   * @param pluginObservationExceptionHandler A reference to an object implementing the {@link
+   *     PluginObservationExceptionHandler} interface or null if the plugin is not observed.
+   * @param readerObservationExceptionHandler A reference to an object implementing the {@link
+   *     ReaderObservationExceptionHandler} interface or null if the reader are not observed.
    * @throws IllegalArgumentException If the provided argument is null.
    * @since 1.0
    */

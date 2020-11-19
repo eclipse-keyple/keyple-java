@@ -21,6 +21,7 @@ import org.eclipse.keyple.core.service.event.PluginObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.util.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,11 +79,15 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
    * of getObservationExceptionHandler as an uncaught exception handler.
    *
    * @param observer the observer object
-   * @throws IllegalStateException If no {@link PluginObservationExceptionHandler} has been set.
+   * @throws IllegalStateException If observer is null or no {@link
+   *     PluginObservationExceptionHandler} has been set.
    * @since 0.9
    */
   @Override
   public final void addObserver(final ObservablePlugin.PluginObserver observer) {
+
+    Assert.getInstance().notNull(observer, "observer");
+
     super.addObserver(observer);
     if (countObservers() == 1) {
       if (getObservationExceptionHandler() == null) {

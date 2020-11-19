@@ -28,10 +28,10 @@ public class StubPluginFactory implements PluginFactory {
    * SmartCardService#registerPlugin(PluginFactory)}
    *
    * @param pluginName name of the plugin that will be instantiated
-   * @param pluginObservationExceptionHandler A not reference to an object implementing the {@link
-   *     PluginObservationExceptionHandler} interface.
-   * @param readerObservationExceptionHandler A not reference to an object implementing the {@link
-   *     ReaderObservationExceptionHandler} interface.
+   * @param pluginObservationExceptionHandler A not null reference to an object implementing the
+   *     {@link PluginObservationExceptionHandler} interface.
+   * @param readerObservationExceptionHandler A not null reference to an object implementing the
+   *     {@link ReaderObservationExceptionHandler} interface.
    * @since 1.0
    */
   public StubPluginFactory(

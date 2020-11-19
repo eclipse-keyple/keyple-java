@@ -23,6 +23,7 @@ import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.util.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -145,12 +146,13 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
    * etc.)
    *
    * @param observer the observer object
+   * @throws IllegalStateException If observer is null or no {@link
+   *     PluginObservationExceptionHandler} has been set.
    */
   @Override
   public final void addObserver(final ObservableReader.ReaderObserver observer) {
-    if (observer == null) {
-      return;
-    }
+
+    Assert.getInstance().notNull(observer, "observer");
 
     if (logger.isTraceEnabled()) {
       logger.trace(
@@ -159,6 +161,9 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
 
     synchronized (sync) {
       if (observers == null) {
+        if (getObservationExceptionHandler() == null) {
+          throw new IllegalStateException("No reader observation exception handler has been set.");
+        }
         observers = new ArrayList<ReaderObserver>(1);
       }
       observers.add(observer);

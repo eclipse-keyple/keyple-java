@@ -44,8 +44,8 @@ final class PcscReaderImpl extends AbstractPcscReader implements WaitForCardInse
    *
    * @param pluginName the name of the plugin
    * @param terminal the PC/SC terminal
-   * @param readerObservationExceptionHandler A not reference to an object implementing the {@link
-   *     ReaderObservationExceptionHandler} interface.
+   * @param readerObservationExceptionHandler A reference to an object implementing the {@link
+   *     ReaderObservationExceptionHandler} interface or null if the reader are not observed.
    * @since 0.9
    */
   protected PcscReaderImpl(

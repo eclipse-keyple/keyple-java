@@ -32,8 +32,8 @@ final class PcscReaderMacOsImpl extends AbstractPcscReader
    *
    * @param pluginName the name of the plugin
    * @param terminal the PC/SC terminal
-   * @param readerObservationExceptionHandler A not reference to an object implementing the {@link
-   *     ReaderObservationExceptionHandler} interface.
+   * @param readerObservationExceptionHandler A not null reference to an object implementing the
+   *     {@link ReaderObservationExceptionHandler} interface.
    * @since 1.0
    */
   protected PcscReaderMacOsImpl(
