@@ -77,17 +77,12 @@ public class Demo_CalypsoClassic_Pcsc {
         smartCardService.registerPlugin(
             new PcscPluginFactory(exceptionHandlerImpl, exceptionHandlerImpl));
 
-    /* Setting up the transaction engine (implements Observer) */
-    ObserversConfiguration.ReaderObserver transactionEngine = new ObserversConfiguration.ReaderObserver();
-
     /*
      * Get PO and SAM readers. Apply regulars expressions to reader names to select PO / SAM
      * readers. Use the getReader helper method from the transaction engine.
      */
-    Reader poReader = null;
-    Reader samReader = null;
-    poReader = plugin.getReader(PcscReaderUtilities.getContactlessReaderName());
-    samReader = plugin.getReader(PcscReaderUtilities.getContactReaderName());
+    Reader poReader = plugin.getReader(PcscReaderUtilities.getContactlessReaderName());
+    Reader samReader = plugin.getReader(PcscReaderUtilities.getContactReaderName());
 
     /* Both readers are expected not null */
     if (poReader == samReader || poReader == null || samReader == null) {
@@ -120,16 +115,18 @@ public class Demo_CalypsoClassic_Pcsc {
         PcscSupportedContactProtocols.ISO_7816_3.name(),
         ContactCardCommonProtocols.ISO_7816_3.name());
 
-    /* Assign the readers to the Calypso transaction engine */
-    transactionEngine.setReaders(poReader, samReader);
+    /* Setting up the reader observer on the po Reader */
+    PoReaderConfiguration.PoReaderObserver poReaderObserver = PoReaderConfiguration.getObserver();
+
+    poReaderObserver.setSamReader(samReader);
 
     /* Set terminal as Observer of the first reader */
-    ((ObservableReader) poReader).addObserver((ObservableReader.ReaderObserver) transactionEngine);
+    ((ObservableReader) poReader).addObserver(poReaderObserver);
 
     /* Set the default selection operation */
     ((ObservableReader) poReader)
         .setDefaultSelectionRequest(
-            SelectionConfiguration.preparePoSelection().getSelectionOperation(),
+            PoReaderConfiguration.getPoSelection().getSelectionOperation(),
             ObservableReader.NotificationMode.MATCHED_ONLY,
             ObservableReader.PollingMode.REPEATING);
 

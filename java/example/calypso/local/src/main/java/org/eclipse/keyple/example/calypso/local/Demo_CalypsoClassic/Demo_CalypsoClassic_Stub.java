@@ -47,9 +47,6 @@ public class Demo_CalypsoClassic_Stub {
     Plugin stubPlugin =
         smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME, null, null));
 
-    /* Setting up the transaction engine (implements Observer) */
-    ObserversConfiguration.ReaderObserver transactionEngine = new ObserversConfiguration.ReaderObserver();
-
     /*
      * Plug PO and SAM stub readers.
      */
@@ -77,9 +74,6 @@ public class Demo_CalypsoClassic_Stub {
         StubSupportedProtocols.INNOVATRON_B_PRIME_CARD.name(),
         ContactlessCardCommonProtocols.INNOVATRON_B_PRIME_CARD.name());
 
-    /* Assign readers to the Hoplink transaction engine */
-    transactionEngine.setReaders(poReader, samReader);
-
     /* Create 'virtual' Hoplink and SAM card */
     StubSmartCard calypsoStubCard = new StubCalypsoClassic();
     StubSmartCard samSE = new StubSamCalypsoClassic();
@@ -90,12 +84,18 @@ public class Demo_CalypsoClassic_Stub {
 
     /* Set the default selection operation */
     poReader.setDefaultSelectionRequest(
-        SelectionConfiguration.preparePoSelection().getSelectionOperation(),
+        PoReaderConfiguration.getPoSelection().getSelectionOperation(),
         ObservableReader.NotificationMode.MATCHED_ONLY,
         ObservableReader.PollingMode.REPEATING);
 
-    /* Set the transactionEngine as Observer of the PO reader */
-    poReader.addObserver(transactionEngine);
+    /* Setting up the observer on the PO Reader */
+    PoReaderConfiguration.PoReaderObserver poReadeObserver = PoReaderConfiguration.getObserver();
+
+    /* Assign readers to the Hoplink transaction engine */
+    poReadeObserver.setSamReader(samReader);
+
+    /* Set the readerObserver as Observer of the PO reader */
+    poReader.addObserver(poReadeObserver);
 
     logger.info("Insert stub PO card.");
     poReader.insertCard(calypsoStubCard);
