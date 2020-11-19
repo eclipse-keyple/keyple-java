@@ -81,9 +81,9 @@ public class MultipleSession_Pcsc {
     // Get the instance of the SmartCardService (Singleton pattern)
     SmartCardService smartCardService = SmartCardService.getInstance();
 
-    // Register the PcscPlugin with SmartCardService, get the corresponding generic Plugin in
-    // return
-    Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory());
+    // Register the PcscPlugin with SmartCardService, get the corresponding generic Plugin in return
+    // This example does not use observation, no exception handler is defined.
+    Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory(null, null));
 
     // Get and configure the PO reader
     Reader poReader = plugin.getReader(ReaderUtilities.getContactlessReaderName());

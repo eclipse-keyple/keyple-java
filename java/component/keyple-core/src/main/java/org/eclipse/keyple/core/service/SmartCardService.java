@@ -57,6 +57,7 @@ public final class SmartCardService {
    * @param pluginFactory : plugin factory to instantiate plugin to be added
    * @throws KeyplePluginInstantiationException if instantiation failed
    * @return Plugin : registered reader plugin
+   * @throws IllegalStateException if the plugin has already been registered.
    */
   public Plugin registerPlugin(PluginFactory pluginFactory) {
 
@@ -67,8 +68,8 @@ public final class SmartCardService {
     synchronized (MONITOR) {
       final String pluginName = pluginFactory.getPluginName();
       if (this.plugins.containsKey(pluginName)) {
-        logger.warn("Plugin has already been registered to the platform : {}", pluginName);
-        return this.plugins.get(pluginName);
+        throw new IllegalStateException(
+            "Plugin has already been registered to the platform : " + pluginName);
       } else {
         Plugin pluginInstance = pluginFactory.getPlugin();
         logger.info("Registering a new Plugin to the platform : {}", pluginName);
@@ -92,7 +93,6 @@ public final class SmartCardService {
         removedPlugin.unregister();
         logger.info("Unregistering a plugin from the platform : {}", removedPlugin.getName());
       } else {
-        logger.warn("Plugin is not registered to the platform : {}", pluginName);
         throw new IllegalStateException(
             String.format("This plugin, %s, is not registered", pluginName));
       }

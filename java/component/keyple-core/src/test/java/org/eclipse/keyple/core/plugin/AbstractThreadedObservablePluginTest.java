@@ -14,6 +14,7 @@ package org.eclipse.keyple.core.plugin;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.service.event.ObservablePlugin;
 import org.eclipse.keyple.core.service.event.PluginEvent;
+import org.eclipse.keyple.core.service.event.PluginObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -33,6 +34,13 @@ public class AbstractThreadedObservablePluginTest extends CoreBaseTest {
     logger.info("------------------------------");
   }
 
+  /** Observation exception handler */
+  class PluginExceptionHandler implements PluginObservationExceptionHandler {
+
+    @Override
+    public void onPluginObservationError(String pluginName, Throwable e) {}
+  }
+
   /**
    * An KeypleRuntimeException is thrown when registering the plugin
    *
@@ -44,9 +52,20 @@ public class AbstractThreadedObservablePluginTest extends CoreBaseTest {
     plugin.register();
   }
 
+  @Test(expected = IllegalStateException.class)
+  public void addObserver_without_exception_handler() throws Throwable {
+    MockAbstractThreadedPlugin plugin = new MockAbstractThreadedPlugin("addObserverTest");
+
+    // add observer
+    plugin.addObserver(getOneObserver());
+  }
+
   @Test
   public void addObserver() throws Throwable {
     MockAbstractThreadedPlugin plugin = new MockAbstractThreadedPlugin("addObserverTest");
+
+    // add exception handler
+    plugin.setPluginObservationExceptionHandler(new PluginExceptionHandler());
 
     // add observer
     plugin.addObserver(getOneObserver());
@@ -62,6 +81,9 @@ public class AbstractThreadedObservablePluginTest extends CoreBaseTest {
   @Test
   public void removeObserver() throws Throwable {
     MockAbstractThreadedPlugin plugin = new MockAbstractThreadedPlugin("addObserverTest");
+
+    // add exception handler
+    plugin.setPluginObservationExceptionHandler(new PluginExceptionHandler());
 
     ObservablePlugin.PluginObserver obs = getOneObserver();
 
@@ -83,6 +105,9 @@ public class AbstractThreadedObservablePluginTest extends CoreBaseTest {
 
     ObservablePlugin.PluginObserver obs = getOneObserver();
 
+    // add exception handler
+    plugin.setPluginObservationExceptionHandler(new PluginExceptionHandler());
+
     // add observer
     plugin.addObserver(obs);
     plugin.clearObservers();
@@ -95,6 +120,29 @@ public class AbstractThreadedObservablePluginTest extends CoreBaseTest {
     plugin.finalize();
   }
 
+  @Test
+  public void trigExceptionHandler() throws Throwable {
+    MockAbstractThreadedPlugin plugin = new MockAbstractThreadedPlugin("addObserverTest");
+
+    plugin.register();
+
+    // add exception handler
+    plugin.setPluginObservationExceptionHandler(new PluginExceptionHandler());
+
+    // add observer
+    plugin.addObserver(getOneFailingObserver());
+
+    Assert.assertEquals(1, plugin.countObservers());
+
+    // test if thread is activated
+    Assert.assertTrue(plugin.isMonitoring());
+
+    // insert a reader to trig the monitoring thread
+    plugin.addNativeReaderName("READER1");
+
+    // TODO add a delay and check that the exception handle is invoked
+  }
+
   /*
    * Helpers
    */
@@ -102,6 +150,15 @@ public class AbstractThreadedObservablePluginTest extends CoreBaseTest {
     return new ObservablePlugin.PluginObserver() {
       @Override
       public void update(PluginEvent event) {}
+    };
+  }
+
+  ObservablePlugin.PluginObserver getOneFailingObserver() {
+    return new ObservablePlugin.PluginObserver() {
+      @Override
+      public void update(PluginEvent event) {
+        throw new IllegalStateException("Exception from update");
+      }
     };
   }
 }

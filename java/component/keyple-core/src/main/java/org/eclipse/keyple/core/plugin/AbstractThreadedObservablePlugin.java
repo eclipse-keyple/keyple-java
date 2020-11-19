@@ -17,15 +17,19 @@ import org.eclipse.keyple.core.plugin.reader.AbstractReader;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.event.ObservablePlugin;
 import org.eclipse.keyple.core.service.event.PluginEvent;
+import org.eclipse.keyple.core.service.event.PluginObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.util.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The {@link AbstractThreadedObservablePlugin} class provides the means to observe a plugin
  * (insertion/removal of readers) using a monitoring thread.
+ *
+ * @since 0.9
  */
 public abstract class AbstractThreadedObservablePlugin extends AbstractObservablePlugin {
   private static final Logger logger =
@@ -36,6 +40,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
    *
    * @param name name of the plugin
    * @throws KeypleReaderException when an issue is raised with reader
+   * @since 0.9
    */
   protected AbstractThreadedObservablePlugin(String name) {
     super(name);
@@ -47,6 +52,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
    *
    * @return connected readers' name list
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
+   * @since 0.9
    */
   protected abstract SortedSet<String> fetchNativeReadersNames();
 
@@ -59,6 +65,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
    * @return the list of AbstractReader objects.
    * @throws KeypleReaderNotFoundException if the reader was not found by its name
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
+   * @since 0.9
    */
   protected abstract Reader fetchNativeReader(String name);
 
@@ -68,16 +75,35 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
    * <p>Overrides the method defined in {@link AbstractObservablePlugin}, a thread is created if it
    * does not already exist (when the first observer is added).
    *
+   * <p>Register the {@link PluginObservationExceptionHandler} returned by the plugin implementation
+   * of getObservationExceptionHandler as an uncaught exception handler.
+   *
    * @param observer the observer object
+   * @throws IllegalStateException If observer is null or no {@link
+   *     PluginObservationExceptionHandler} has been set.
+   * @since 0.9
    */
   @Override
   public final void addObserver(final ObservablePlugin.PluginObserver observer) {
+
+    Assert.getInstance().notNull(observer, "observer");
+
     super.addObserver(observer);
     if (countObservers() == 1) {
+      if (getObservationExceptionHandler() == null) {
+        throw new IllegalStateException("No plugin observation exception handler has been set.");
+      }
       if (logger.isDebugEnabled()) {
         logger.debug("Start monitoring the plugin {}", this.getName());
       }
       thread = new EventThread(this.getName());
+      thread.setName("PluginEventMonitoringThread");
+      thread.setUncaughtExceptionHandler(
+          new Thread.UncaughtExceptionHandler() {
+            public void uncaughtException(Thread t, Throwable e) {
+              getObservationExceptionHandler().onPluginObservationError(thread.pluginName, e);
+            }
+          });
       thread.start();
     }
   }
@@ -89,6 +115,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
    * ended when the last observer is removed.
    *
    * @param observer the observer object
+   * @since 0.9
    */
   @Override
   public final void removeObserver(final ObservablePlugin.PluginObserver observer) {
@@ -106,7 +133,9 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
   /**
    * Remove all observers at once
    *
-   * <p>Overrides the method defined in {@link AbstractObservablePlugin}, the thread is ended.
+   * <p>In addition to the super method in {@link AbstractObservablePlugin}, the thread is ended.
+   *
+   * @since 0.9
    */
   @Override
   public final void clearObservers() {
@@ -124,6 +153,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
    *
    * @return true, if the background job is monitoring, false in all other cases.
    * @deprecated will change in a later version
+   * @since 0.9
    */
   @Deprecated
   protected Boolean isMonitoring() {
@@ -152,7 +182,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
       this.pluginName = pluginName;
     }
 
-    /** Marks the thread as one that should end when the last cardWaitTimeout occurs */
+    /** Marks the thread as one that should end when the last threadWaitTimeout occurs */
     void end() {
       running = false;
       this.interrupt();
@@ -301,4 +331,16 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
       }
     }
   }
+
+  /**
+   * Allows to call the defined handler when an exception condition needs to be transmitted to the
+   * application level.
+   *
+   * <p>Must be implemented by the plugin provider.
+   *
+   * @return A not null reference to an object implementing the {@link
+   *     PluginObservationExceptionHandler} interface.
+   * @since 1.0
+   */
+  protected abstract PluginObservationExceptionHandler getObservationExceptionHandler();
 }

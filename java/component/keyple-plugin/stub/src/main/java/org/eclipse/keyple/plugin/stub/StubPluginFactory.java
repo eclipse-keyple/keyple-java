@@ -13,22 +13,34 @@ package org.eclipse.keyple.plugin.stub;
 
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.PluginFactory;
+import org.eclipse.keyple.core.service.event.PluginObservationExceptionHandler;
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeyplePluginInstantiationException;
 
 /** Instantiate a {@link StubPlugin} with a custom plugin name */
 public class StubPluginFactory implements PluginFactory {
 
-  private String pluginName;
-
+  private final String pluginName;
+  private final PluginObservationExceptionHandler pluginObservationExceptionHandler;
+  private final ReaderObservationExceptionHandler readerObservationExceptionHandler;
   /**
    * Register the plugin by passing an instance of this factory to @link
    * SmartCardService#registerPlugin(PluginFactory)}
    *
    * @param pluginName name of the plugin that will be instantiated
+   * @param pluginObservationExceptionHandler A not null reference to an object implementing the
+   *     {@link PluginObservationExceptionHandler} interface.
+   * @param readerObservationExceptionHandler A not null reference to an object implementing the
+   *     {@link ReaderObservationExceptionHandler} interface.
    * @since 1.0
    */
-  public StubPluginFactory(String pluginName) {
+  public StubPluginFactory(
+      String pluginName,
+      PluginObservationExceptionHandler pluginObservationExceptionHandler,
+      ReaderObservationExceptionHandler readerObservationExceptionHandler) {
     this.pluginName = pluginName;
+    this.pluginObservationExceptionHandler = pluginObservationExceptionHandler;
+    this.readerObservationExceptionHandler = readerObservationExceptionHandler;
   }
 
   /** {@inheritDoc} */
@@ -41,7 +53,8 @@ public class StubPluginFactory implements PluginFactory {
   @Override
   public Plugin getPlugin() {
     try {
-      return new StubPluginImpl(pluginName);
+      return new StubPluginImpl(
+          pluginName, pluginObservationExceptionHandler, readerObservationExceptionHandler);
     } catch (Exception e) {
       throw new KeyplePluginInstantiationException("Can not access StubPlugin", e);
     }

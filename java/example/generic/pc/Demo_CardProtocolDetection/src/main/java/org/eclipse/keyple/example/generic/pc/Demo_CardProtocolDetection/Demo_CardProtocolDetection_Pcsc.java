@@ -14,10 +14,12 @@ package org.eclipse.keyple.example.generic.pc.Demo_CardProtocolDetection;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleException;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.common.ReaderUtilities;
@@ -32,8 +34,23 @@ public class Demo_CardProtocolDetection_Pcsc {
   private static final Logger logger =
       LoggerFactory.getLogger(Demo_CardProtocolDetection_Pcsc.class);
 
+  private static final AtomicBoolean waitForEnd = new AtomicBoolean();
+
   public Demo_CardProtocolDetection_Pcsc() {
     super();
+  }
+
+  static class ExceptionHandlerImpl implements ReaderObservationExceptionHandler {
+    final Logger logger = LoggerFactory.getLogger(ExceptionHandlerImpl.class);
+
+    @Override
+    public void onReaderObservationError(
+        String pluginName, String readerName, Throwable throwable) {
+      logger.error("An unexpected reader error occurred: {}:{}", pluginName, readerName, throwable);
+      synchronized (waitForEnd) {
+        waitForEnd.set(false);
+      }
+    }
   }
 
   /**
@@ -47,9 +64,11 @@ public class Demo_CardProtocolDetection_Pcsc {
     // get the SmartCardService instance
     SmartCardService smartCardService = SmartCardService.getInstance();
 
+    ExceptionHandlerImpl exceptionHandler = new ExceptionHandlerImpl();
+
     // Register the PcscPlugin with SmartCardService, get the corresponding generic Plugin in
     // return
-    Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory());
+    Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory(null, exceptionHandler));
 
     // Get and configure the PO reader
     Reader poReader = plugin.getReader(ReaderUtilities.getContactlessReaderName());
@@ -86,7 +105,8 @@ public class Demo_CardProtocolDetection_Pcsc {
     // wait for Enter key to exit.
     logger.info("Press Enter to exit");
     BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    while (true) {
+    waitForEnd.set(true);
+    while (waitForEnd.get()) {
       int c = 0;
       try {
         c = br.read();

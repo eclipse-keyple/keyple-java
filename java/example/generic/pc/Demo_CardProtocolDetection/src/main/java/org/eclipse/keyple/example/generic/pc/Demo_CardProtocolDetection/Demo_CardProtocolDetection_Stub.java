@@ -48,7 +48,8 @@ public class Demo_CardProtocolDetection_Stub {
     final String STUB_PLUGIN_NAME = "stub1";
 
     // Register Stub plugin in the platform
-    Plugin stubPlugin = smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
+    Plugin stubPlugin =
+        smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME, null, null));
 
     // create an observer class to handle the card operations
     CardProtocolDetectionEngine observer = new CardProtocolDetectionEngine();

@@ -22,6 +22,7 @@ import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import java.io.IOException
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler
 import org.eclipse.keyple.core.service.exception.KeypleReaderException
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException
 import org.junit.After
@@ -43,6 +44,8 @@ class AndroidNfcReaderPostNImplTest {
 
     private lateinit var activity: Activity
 
+    private val readerObservationExceptionHandler = ReaderObservationExceptionHandler { pluginName, readerName, e -> }
+
     @MockK
     internal lateinit var tag: Tag
 
@@ -54,7 +57,7 @@ class AndroidNfcReaderPostNImplTest {
         MockKAnnotations.init(this, relaxUnitFun = true)
         val app = RuntimeEnvironment.application
         activity = Robolectric.buildActivity(Activity::class.java).create().get()
-        reader = AndroidNfcReaderPostNImpl(activity)
+        reader = AndroidNfcReaderPostNImpl(activity, readerObservationExceptionHandler)
 
         // We need to mock tag.* because it's called in printTagId() called when channel is closed
         every { tagProxy?.tag } returns tag

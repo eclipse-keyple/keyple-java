@@ -24,6 +24,7 @@ import org.eclipse.keyple.core.plugin.reader.WaitForCardRemovalBlocking;
 import org.eclipse.keyple.core.plugin.reader.WaitForCardRemovalDuringProcessing;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderProtocolNotSupportedException;
 import org.eclipse.keyple.core.util.Assert;
@@ -55,6 +56,7 @@ abstract class AbstractPcscReader extends AbstractObservableLocalReader
   private static final Logger logger = LoggerFactory.getLogger(AbstractPcscReader.class);
 
   protected final CardTerminal terminal;
+  private final ReaderObservationExceptionHandler readerObservationExceptionHandler;
   private String parameterCardProtocol;
   private boolean cardExclusiveMode;
   private boolean cardReset;
@@ -79,7 +81,10 @@ abstract class AbstractPcscReader extends AbstractObservableLocalReader
    * @param terminal the PC/SC terminal
    * @since 0.9
    */
-  protected AbstractPcscReader(String pluginName, CardTerminal terminal) {
+  protected AbstractPcscReader(
+      String pluginName,
+      CardTerminal terminal,
+      ReaderObservationExceptionHandler readerObservationExceptionHandler) {
 
     super(pluginName, terminal.getName());
 
@@ -90,6 +95,7 @@ abstract class AbstractPcscReader extends AbstractObservableLocalReader
     this.cardExclusiveMode = true;
     this.cardReset = false;
     this.isContactless = null;
+    this.readerObservationExceptionHandler = readerObservationExceptionHandler;
 
     logger.debug("[{}] constructor => using terminal ", terminal);
   }
@@ -433,5 +439,11 @@ abstract class AbstractPcscReader extends AbstractObservableLocalReader
               .isContactless(getName());
     }
     return isContactless;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  protected ReaderObservationExceptionHandler getObservationExceptionHandler() {
+    return readerObservationExceptionHandler;
   }
 }

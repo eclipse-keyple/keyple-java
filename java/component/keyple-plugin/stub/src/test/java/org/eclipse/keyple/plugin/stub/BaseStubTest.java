@@ -27,6 +27,9 @@ public class BaseStubTest {
 
   public static String PLUGIN_NAME = "stub1";
 
+  protected ObservationExceptionHandler observationExceptionHandler =
+      new ObservationExceptionHandler();
+
   @Rule public TestName name = new TestName();
 
   public void registerStub() throws Exception {
@@ -35,7 +38,11 @@ public class BaseStubTest {
     logger.info("------------------------------");
 
     logger.info("setupStub, assert stubplugin is empty");
-    stubPlugin = (StubPluginImpl) new StubPluginFactory(PLUGIN_NAME).getPlugin();
+    stubPlugin =
+        (StubPluginImpl)
+            new StubPluginFactory(
+                    PLUGIN_NAME, observationExceptionHandler, observationExceptionHandler)
+                .getPlugin();
     stubPlugin.register();
 
     logger.info("Stubplugin readers size {}", stubPlugin.getReaders().size());

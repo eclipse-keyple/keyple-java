@@ -23,6 +23,7 @@ import org.eclipse.keyple.core.plugin.reader.AbstractObservableLocalAutonomousRe
 import org.eclipse.keyple.core.plugin.reader.AbstractObservableLocalReader
 import org.eclipse.keyple.core.plugin.reader.DontWaitForCardRemovalDuringProcessing
 import org.eclipse.keyple.core.plugin.reader.WaitForCardInsertionAutonomous
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler
 import org.eclipse.keyple.core.service.exception.KeypleReaderException
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.util.ByteArrayUtil
@@ -33,7 +34,7 @@ import timber.log.Timber
  * Abstract implementation of [AndroidNfcReader] based on keyple core abstract classes [AbstractObservableLocalReader]
  * and
  */
-internal abstract class AbstractAndroidNfcReader(activity: Activity) :
+internal abstract class AbstractAndroidNfcReader(activity: Activity, readerObservationExceptionHandler: ReaderObservationExceptionHandler) :
     AbstractObservableLocalAutonomousReader(
         AndroidNfcReader.PLUGIN_NAME,
         AndroidNfcReader.READER_NAME
@@ -45,10 +46,12 @@ internal abstract class AbstractAndroidNfcReader(activity: Activity) :
         private const val NO_TAG = "no-tag"
     }
 
+    private val readerObservationExceptionHandler: ReaderObservationExceptionHandler
     private var contextWeakRef: WeakReference<Activity?>
 
     init {
-        contextWeakRef = WeakReference(activity)
+        this.contextWeakRef = WeakReference(activity)
+        this.readerObservationExceptionHandler = readerObservationExceptionHandler
     }
 
     // Android NFC Adapter
@@ -391,5 +394,9 @@ internal abstract class AbstractAndroidNfcReader(activity: Activity) :
 
     protected fun getTagProxyTag(): Tag? {
         return tagProxy?.tag
+    }
+
+    override fun getObservationExceptionHandler(): ReaderObservationExceptionHandler {
+        return readerObservationExceptionHandler
     }
 }

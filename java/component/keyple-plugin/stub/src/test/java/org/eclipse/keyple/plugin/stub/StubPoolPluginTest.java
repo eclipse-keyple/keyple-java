@@ -12,6 +12,8 @@
 package org.eclipse.keyple.plugin.stub;
 
 import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.event.PluginObservationExceptionHandler;
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleAllocationNoReaderException;
 import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
@@ -41,11 +43,27 @@ public class StubPoolPluginTest extends BaseStubTest {
     super.unregisterStub();
   }
 
+  /** Plugin observation exception handler */
+  class PluginExceptionHandler implements PluginObservationExceptionHandler {
+
+    @Override
+    public void onPluginObservationError(String pluginName, Throwable e) {}
+  }
+
+  /** Reader observation exception handler */
+  class ReaderExceptionHandler implements ReaderObservationExceptionHandler {
+    @Override
+    public void onReaderObservationError(String pluginName, String readerName, Throwable e) {}
+  }
+
   /** Plug a pool reader */
   @Test
   public void plugStubPoolReader_success() {
     StubPoolPluginImpl stubPoolPlugin =
-        (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME).getPlugin();
+        (StubPoolPluginImpl)
+            new StubPoolPluginFactory(
+                    POOL_PLUGIN_NAME, new PluginExceptionHandler(), new ReaderExceptionHandler())
+                .getPlugin();
 
     stubPoolPlugin.register();
 
@@ -60,7 +78,10 @@ public class StubPoolPluginTest extends BaseStubTest {
   @Test
   public void unplugStubPoolReader_success() throws Exception {
     StubPoolPluginImpl stubPoolPlugin =
-        (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME).getPlugin();
+        (StubPoolPluginImpl)
+            new StubPoolPluginFactory(
+                    POOL_PLUGIN_NAME, new PluginExceptionHandler(), new ReaderExceptionHandler())
+                .getPlugin();
 
     stubPoolPlugin.register();
 
@@ -79,7 +100,10 @@ public class StubPoolPluginTest extends BaseStubTest {
   public void allocate_success() throws Exception {
     // init stubPoolPlugin
     StubPoolPluginImpl stubPoolPlugin =
-        (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME).getPlugin();
+        (StubPoolPluginImpl)
+            new StubPoolPluginFactory(
+                    POOL_PLUGIN_NAME, new PluginExceptionHandler(), new ReaderExceptionHandler())
+                .getPlugin();
 
     stubPoolPlugin.register();
 
@@ -103,7 +127,10 @@ public class StubPoolPluginTest extends BaseStubTest {
   public void allocate_twice() throws Exception {
     // init stubPoolPlugin
     StubPoolPluginImpl stubPoolPlugin =
-        (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME).getPlugin();
+        (StubPoolPluginImpl)
+            new StubPoolPluginFactory(
+                    POOL_PLUGIN_NAME, new PluginExceptionHandler(), new ReaderExceptionHandler())
+                .getPlugin();
 
     stubPoolPlugin.register();
 
@@ -121,7 +148,10 @@ public class StubPoolPluginTest extends BaseStubTest {
   public void release_success() throws Exception {
     // init stubPoolPlugin
     StubPoolPluginImpl stubPoolPlugin =
-        (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME).getPlugin();
+        (StubPoolPluginImpl)
+            new StubPoolPluginFactory(
+                    POOL_PLUGIN_NAME, new PluginExceptionHandler(), new ReaderExceptionHandler())
+                .getPlugin();
 
     stubPoolPlugin.register();
 

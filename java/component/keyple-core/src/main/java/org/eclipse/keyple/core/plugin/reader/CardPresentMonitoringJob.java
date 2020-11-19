@@ -20,6 +20,10 @@ import org.slf4j.LoggerFactory;
 /**
  * This monitoring job polls the {@link Reader#isCardPresent()} method to detect
  * CARD_INSERTED/CARD_REMOVED
+ *
+ * <p>All runtime exceptions that may occur during the monitoring process are caught and notified at
+ * the application level through the {@link
+ * org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler} mechanism.
  */
 class CardPresentMonitoringJob extends AbstractMonitoringJob {
 
@@ -51,21 +55,26 @@ class CardPresentMonitoringJob extends AbstractMonitoringJob {
 
       @Override
       public void run() {
-        if (logger.isDebugEnabled()) {
-          logger.debug("[{}] Polling from isCardPresent", reader.getName());
-        }
-        // re-init loop value to true
-        loop.set(true);
-        while (loop.get()) {
-          try {
+        try {
+          if (logger.isDebugEnabled()) {
+            logger.debug("[{}] Polling from isCardPresent", reader.getName());
+          }
+          // re-init loop value to true
+          loop.set(true);
+          while (loop.get()) {
             // polls for CARD_INSERTED
             if (monitorInsertion && reader.isCardPresent()) {
               if (logger.isDebugEnabled()) {
                 logger.debug("[{}] The card is present ", reader.getName());
               }
-              loop.set(false);
-              state.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_INSERTED);
-              return;
+              try {
+                state.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_INSERTED);
+                return;
+              } catch (KeypleReaderIOException e) {
+                logger.warn(
+                    "[{}] waitForCardPresent => Error while processing card insertion event",
+                    reader.getName());
+              }
             }
             // polls for CARD_REMOVED
             if (!monitorInsertion && !reader.isCardPresent()) {
@@ -73,30 +82,37 @@ class CardPresentMonitoringJob extends AbstractMonitoringJob {
                 logger.debug("[{}] The card is not present ", reader.getName());
               }
               loop.set(false);
-              state.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_REMOVED);
-              return;
+              try {
+                state.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_REMOVED);
+                return;
+              } catch (KeypleReaderIOException e) {
+                logger.warn(
+                    "[{}] waitForCardAbsent => Error while processing card removal event",
+                    reader.getName());
+              }
             }
+            retries++;
 
-          } catch (KeypleReaderIOException e) {
-            loop.set(false);
-            // what do do here
+            if (logger.isTraceEnabled()) {
+              logger.trace("[{}] isCardPresent polling retries : {}", reader.getName(), retries);
+            }
+            try {
+              // wait a bit
+              Thread.sleep(waitTimeout);
+            } catch (InterruptedException ignored) {
+              // Restore interrupted state...
+              Thread.currentThread().interrupt();
+              loop.set(false);
+            }
           }
-          retries++;
-
           if (logger.isTraceEnabled()) {
-            logger.trace("[{}] isCardPresent polling retries : {}", reader.getName(), retries);
+            logger.trace("[{}] Looping has been stopped", reader.getName());
           }
-          try {
-            // wait a bit
-            Thread.sleep(waitTimeout);
-          } catch (InterruptedException ignored) {
-            // Restore interrupted state...
-            Thread.currentThread().interrupt();
-            loop.set(false);
-          }
-        }
-        if (logger.isTraceEnabled()) {
-          logger.trace("[{}] Looping has been stopped", reader.getName());
+        } catch (RuntimeException e) {
+          ((AbstractObservableLocalReader) reader)
+              .getObservationExceptionHandler()
+              .onReaderObservationError(
+                  ((AbstractReader) reader).getPluginName(), reader.getName(), e);
         }
       }
     };
