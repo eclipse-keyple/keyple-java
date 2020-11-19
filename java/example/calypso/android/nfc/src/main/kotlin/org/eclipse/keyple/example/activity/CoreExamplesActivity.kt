@@ -406,7 +406,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
     inner class GenericCardSelectionRequest(cardSelector: CardSelector) : AbstractCardSelectionRequest<AbstractApduCommandBuilder>(cardSelector) {
         override fun parse(CardSelectionResponse: CardSelectionResponse): AbstractSmartCard {
             class GenericSmartCard(
-                    CardSelectionResponse: CardSelectionResponse
+                CardSelectionResponse: CardSelectionResponse
             ) : AbstractSmartCard(CardSelectionResponse)
             return GenericSmartCard(CardSelectionResponse)
         }

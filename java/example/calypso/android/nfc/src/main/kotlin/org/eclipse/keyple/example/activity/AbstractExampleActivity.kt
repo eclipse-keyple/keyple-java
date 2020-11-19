@@ -31,6 +31,7 @@ import org.eclipse.keyple.core.card.selection.CardSelection
 import org.eclipse.keyple.core.service.SmartCardService
 import org.eclipse.keyple.core.service.event.ObservableReader
 import org.eclipse.keyple.core.service.event.ReaderEvent
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.example.adapter.EventAdapter
@@ -46,7 +47,7 @@ import timber.log.Timber
 abstract class AbstractExampleActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, ObservableReader.ReaderObserver {
 
     /**
-     * Use to modify event update behaviour reguarding current use case execution
+     * Use to modify event update behaviour regarding current use case execution
      */
     interface UseCase {
         fun onEventUpdate(event: ReaderEvent?)
@@ -84,10 +85,12 @@ abstract class AbstractExampleActivity : AppCompatActivity(), NavigationView.OnN
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
+        val readerObservationExceptionHandler = ReaderObservationExceptionHandler { pluginName, readerName, e -> }
+
         /**
          * Register AndroidNfc plugin Factory
          */
-        val plugin = SmartCardService.getInstance().registerPlugin(AndroidNfcPluginFactory(this))
+        val plugin = SmartCardService.getInstance().registerPlugin(AndroidNfcPluginFactory(this, readerObservationExceptionHandler))
 
         /**
          *  remove the observer if it already exist
@@ -174,7 +177,7 @@ abstract class AbstractExampleActivity : AppCompatActivity(), NavigationView.OnN
         super.onDestroy()
     }
 
-    protected fun getSmardCardInfos(smartCard: AbstractSmartCard, index: Int): String{
+    protected fun getSmardCardInfos(smartCard: AbstractSmartCard, index: Int): String {
         val atr = try {
             ByteArrayUtil.toHex(smartCard.atrBytes)
         } catch (e: IllegalStateException) {
