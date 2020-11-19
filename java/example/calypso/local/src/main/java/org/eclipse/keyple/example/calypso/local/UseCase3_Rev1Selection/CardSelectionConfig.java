@@ -19,7 +19,7 @@ import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
 
-class CardSelectionConfiguration {
+class CardSelectionConfig {
 
   static CardSelection getPoCardSelection() {
     // Select the first application matching the selection.
