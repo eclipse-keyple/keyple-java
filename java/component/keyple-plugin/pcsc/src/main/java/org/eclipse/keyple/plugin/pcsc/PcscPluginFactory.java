@@ -40,20 +40,22 @@ public class PcscPluginFactory implements PluginFactory {
    * exception handlers in charge of receiving notifications of exceptions raised within the
    * observation threads.
    *
-   * <p>Both arguments (pluginObservationExceptionHandler and readerObservationExceptionHandler) are
-   * only needed if the underlying object will be observed or not.
+   * <p>The <b>pluginObservationExceptionHandler</b> parameter is mandatory if you intend to observe
+   * the plugin. In case of a fatal error during the observation, the handler will receive a
+   * notification.
+   *
+   * <p>The <b>readerObservationExceptionHandler</b> parameter is mandatory if you intend to observe
+   * at least one reader. In case of a fatal error during the observation, the handler will receive
+   * a notification.
    *
    * <p>The handler references can be set to null only when no observation is used. The addition of
    * an observer without having provided a observation exception handler will be refused and
    * notified by an exception.
    *
-   * <p>The value null can be used when no observations are expected.
-   *
    * @param pluginObservationExceptionHandler A reference to an object implementing the {@link
-   *     PluginObservationExceptionHandler} interface or null if the plugin is not observed.
+   *     PluginObservationExceptionHandler} interface or null if the plugin will not be observed.
    * @param readerObservationExceptionHandler A reference to an object implementing the {@link
-   *     ReaderObservationExceptionHandler} interface or null if the reader are not observed.
-   * @throws IllegalArgumentException If the provided argument is null.
+   *     ReaderObservationExceptionHandler} interface or null if no reader will be observed.
    * @since 1.0
    */
   public PcscPluginFactory(

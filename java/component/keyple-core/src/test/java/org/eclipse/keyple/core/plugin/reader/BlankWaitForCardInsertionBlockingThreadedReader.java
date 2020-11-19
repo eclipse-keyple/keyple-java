@@ -137,6 +137,9 @@ public class BlankWaitForCardInsertionBlockingThreadedReader extends AbstractObs
 
   @Override
   protected ReaderObservationExceptionHandler getObservationExceptionHandler() {
-    return null;
+    return new ReaderObservationExceptionHandler() {
+      @Override
+      public void onReaderObservationError(String pluginName, String readerName, Throwable e) {}
+    };
   }
 }
