@@ -91,7 +91,7 @@ public class Rev1Selection_Pcsc {
     // based on ATR
     //
     // Select the first application matching the selection.
-    CardSelection cardSelection = CardSelectionConfiguration.getPoCardSelection();
+    CardSelection cardSelection = CardSelectionConfig.getPoCardSelection();
 
     // Actual PO communication: operate through a single request the Calypso PO selection
     // and the file read
