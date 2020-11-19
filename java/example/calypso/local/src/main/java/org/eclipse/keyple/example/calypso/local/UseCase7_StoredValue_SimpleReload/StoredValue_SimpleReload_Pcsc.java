@@ -70,7 +70,7 @@ public class StoredValue_SimpleReload_Pcsc {
     Reader samReader = plugin.getReader(PcscReaderUtils.getContactReaderName());
     ((PcscReader) samReader).setContactless(false).setIsoProtocol(PcscReader.IsoProtocol.T0);
 
-    CardSelection samSelection = ReaderConfiguration.getSamCardSelection();
+    CardSelection samSelection = CardSelectionConfiguration.getSamCardSelection();
 
     if (samReader.isCardPresent()) {
       throw new IllegalStateException("No SAM is present in the reader " + samReader.getName());
@@ -96,7 +96,7 @@ public class StoredValue_SimpleReload_Pcsc {
     // and the file read
     CalypsoPo calypsoPo =
         (CalypsoPo)
-            ReaderConfiguration.getCardSelection()
+            CardSelectionConfiguration.getCardSelection()
                 .processExplicitSelection(poReader)
                 .getActiveSmartCard(); // Security settings
 

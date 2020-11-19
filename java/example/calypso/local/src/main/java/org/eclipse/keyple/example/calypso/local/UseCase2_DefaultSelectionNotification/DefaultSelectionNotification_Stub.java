@@ -93,7 +93,7 @@ public class DefaultSelectionNotification_Stub {
             ObservableReader.NotificationMode.MATCHED_ONLY,
             ObservableReader.PollingMode.REPEATING);
 
-    /* Set a ReaderConfiguration that contains the ticketing logic for the reader */
+    /* Set a CardSelectionConfiguration that contains the ticketing logic for the reader */
     ((ObservableReader) poReader).addObserver(ReaderConfiguration.getObserver());
 
     logger.info(

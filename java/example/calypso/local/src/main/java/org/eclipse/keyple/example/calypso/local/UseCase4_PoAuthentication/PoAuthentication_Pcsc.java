@@ -11,17 +11,10 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.calypso.local.UseCase4_PoAuthentication;
 
-import static org.eclipse.keyple.calypso.command.sam.SamRevision.C1;
-import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
-
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.CalypsoSam;
 import org.eclipse.keyple.calypso.transaction.ElementaryFile;
-import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
-import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
-import org.eclipse.keyple.calypso.transaction.SamSelectionRequest;
-import org.eclipse.keyple.calypso.transaction.SamSelector;
 import org.eclipse.keyple.core.card.selection.CardResource;
 import org.eclipse.keyple.core.card.selection.CardSelection;
 import org.eclipse.keyple.core.card.selection.SelectionsResult;
@@ -96,12 +89,7 @@ public class PoAuthentication_Pcsc {
         ContactCardCommonProtocols.ISO_7816_3.name());
 
     // Create a SAM resource after selecting the SAM
-    CardSelection samSelection = new CardSelection();
-
-    SamSelector samSelector = SamSelector.builder().samRevision(C1).serialNumber(".*").build();
-
-    // Prepare selector
-    samSelection.prepareSelection(new SamSelectionRequest(samSelector));
+    CardSelection samSelection = CardSelectionConfiguration.getSamCardSelection();
 
     if (samReader.isCardPresent()) {
       throw new IllegalStateException("No SAM is present in the reader " + samReader.getName());
@@ -133,30 +121,7 @@ public class PoAuthentication_Pcsc {
     logger.info("= ##### 1st PO exchange: AID based selection with reading of Environment file.");
 
     // Prepare a Calypso PO selection
-    CardSelection cardSelection = new CardSelection();
-
-    // Setting of an AID based selection of a Calypso REV3 PO
-    //
-    // Select the first application matching the selection AID whatever the card communication
-    // protocol keep the logical channel open after the selection
-
-    // Calypso selection: configures a PoSelectionRequest with all the desired attributes to
-    // make the selection and read additional information afterwards
-    PoSelectionRequest poSelectionRequest =
-        new PoSelectionRequest(
-            PoSelector.builder()
-                .aidSelector(AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
-                .invalidatedPo(InvalidatedPo.REJECT)
-                .build());
-
-    // Prepare the reading of the Environment and Holder file.
-    poSelectionRequest.prepareReadRecordFile(
-        CalypsoClassicInfo.SFI_EnvironmentAndHolder, CalypsoClassicInfo.RECORD_NUMBER_1);
-
-    // Add the selection case to the current selection
-    //
-    // (we could have added other cases here)
-    cardSelection.prepareSelection(poSelectionRequest);
+    CardSelection cardSelection = CardSelectionConfiguration.getPoCardSelection();
 
     // Actual PO communication: operate through a single request the Calypso PO selection
     // and the file read
