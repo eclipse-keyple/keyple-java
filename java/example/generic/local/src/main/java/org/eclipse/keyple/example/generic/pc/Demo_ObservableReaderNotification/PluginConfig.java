@@ -37,8 +37,7 @@ class PluginConfig {
         ((ObservableReader) reader).startCardDetection(ObservableReader.PollingMode.REPEATING);
       }
       logger.info("Add observer PLUGINNAME = {}", plugin.getName());
-      ((ObservablePlugin) plugin)
-          .addObserver(PluginConfig.getObserver(ReaderConfig.getObserver()));
+      ((ObservablePlugin) plugin).addObserver(PluginConfig.getObserver(ReaderConfig.getObserver()));
     }
   }
 
