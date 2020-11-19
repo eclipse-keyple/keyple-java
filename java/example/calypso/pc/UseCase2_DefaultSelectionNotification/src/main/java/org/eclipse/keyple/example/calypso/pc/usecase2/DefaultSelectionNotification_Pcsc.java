@@ -28,6 +28,7 @@ import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleException;
 import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
@@ -73,13 +74,28 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
   // here).
   private static final Object waitForEnd = new Object();
 
+  static class ExceptionHandlerImpl implements ReaderObservationExceptionHandler {
+    final Logger logger = LoggerFactory.getLogger(ExceptionHandlerImpl.class);
+
+    @Override
+    public void onReaderObservationError(
+        String pluginName, String readerName, Throwable throwable) {
+      logger.error("An unexpected reader error occurred: {}:{}", pluginName, readerName, throwable);
+      synchronized (waitForEnd) {
+        waitForEnd.notify();
+      }
+    }
+  }
+
   public DefaultSelectionNotification_Pcsc() throws InterruptedException {
     // Get the instance of the SmartCardService (Singleton pattern)
     SmartCardService smartCardService = SmartCardService.getInstance();
 
+    ExceptionHandlerImpl exceptionHandler = new ExceptionHandlerImpl();
+
     // Register the PcscPlugin with SmartCardService, get the corresponding generic Plugin in
     // return
-    Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory());
+    Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory(null, exceptionHandler));
 
     // Get and configure the PO reader
     Reader poReader = plugin.getReader(ReaderUtilities.getContactlessReaderName());

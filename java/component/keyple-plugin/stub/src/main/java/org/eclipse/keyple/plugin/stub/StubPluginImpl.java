@@ -16,6 +16,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import org.eclipse.keyple.core.plugin.AbstractThreadedObservablePlugin;
 import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.event.PluginObservationExceptionHandler;
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,13 +29,18 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
 
   // simulated list of real-time connected stubReader
   private SortedSet<String> connectedStubNames = new TreeSet<String>();
+  private PluginObservationExceptionHandler pluginObservationExceptionHandler;
+  private ReaderObservationExceptionHandler readerObservationExceptionHandler;
 
   /**
    * Constructor
    *
    * @param pluginName : custom name for the plugin
    */
-  StubPluginImpl(String pluginName) {
+  StubPluginImpl(
+      String pluginName,
+      PluginObservationExceptionHandler pluginObservationExceptionHandler,
+      ReaderObservationExceptionHandler readerObservationExceptionHandler) {
     super(pluginName);
 
     /*
@@ -41,6 +48,8 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
      * 10 ms to speed up responsiveness.
      */
     threadWaitTimeout = 10;
+    this.pluginObservationExceptionHandler = pluginObservationExceptionHandler;
+    this.readerObservationExceptionHandler = readerObservationExceptionHandler;
   }
 
   public void plugStubReader(String readerName, Boolean synchronous) {
@@ -230,5 +239,10 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
       reader = new StubReaderImpl(this.getName(), readerName);
     }
     return reader;
+  }
+
+  @Override
+  protected PluginObservationExceptionHandler getObservationExceptionHandler() {
+    return pluginObservationExceptionHandler;
   }
 }

@@ -14,6 +14,7 @@ package org.eclipse.keyple.example.activity
 import android.nfc.NfcAdapter
 import android.view.MenuItem
 import androidx.core.view.GravityCompat
+import java.io.IOException
 import kotlinx.android.synthetic.main.activity_calypso_examples.drawerLayout
 import kotlinx.android.synthetic.main.activity_calypso_examples.eventRecyclerView
 import kotlinx.android.synthetic.main.activity_calypso_examples.toolbar
@@ -43,7 +44,6 @@ import org.eclipse.keyple.example.calypso.android.nfc.R
 import org.eclipse.keyple.example.util.CalypsoClassicInfo
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcProtocolSettings
 import timber.log.Timber
-import java.io.IOException
 
 /**
  * Example of @[SmartCardService] implementation based on the @[AndroidNfcPlugin]
@@ -574,7 +574,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
      * @param defaultSelectionsResponse
      */
     private fun executeCommands(
-            defaultSelectionsResponse: AbstractDefaultSelectionsResponse
+        defaultSelectionsResponse: AbstractDefaultSelectionsResponse
     ) {
 
         // addHeaderEvent("Running Calypso Simple Read transaction")

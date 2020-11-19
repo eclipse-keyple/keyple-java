@@ -11,7 +11,10 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.generic.pc.Demo_ObservableReaderNotification;
 
+import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.PluginObservationExceptionHandler;
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,14 +24,40 @@ public class Demo_ObservableReaderNotification_Pcsc {
       LoggerFactory.getLogger(Demo_ObservableReaderNotification_Pcsc.class);
   public static final Object waitBeforeEnd = new Object();
 
+  static class ExceptionHandlerImpl
+      implements PluginObservationExceptionHandler, ReaderObservationExceptionHandler {
+
+    @Override
+    public void onPluginObservationError(String pluginName, Throwable e) {
+      logger.error("An unexpected plugin error occurred: {}", pluginName, e);
+      // exit
+      synchronized (waitBeforeEnd) {
+        waitBeforeEnd.notify();
+      }
+    }
+
+    @Override
+    public void onReaderObservationError(String pluginName, String readerName, Throwable e) {
+      logger.error("An unexpected reader error occurred: {}:{}", pluginName, readerName, e);
+      // exit
+      synchronized (waitBeforeEnd) {
+        waitBeforeEnd.notify();
+      }
+    }
+  }
+
   public static void main(String[] args) throws Exception {
     ObservableReaderNotificationEngine demoEngine = new ObservableReaderNotificationEngine();
 
     // Get the instance of the SmartCardService (Singleton pattern)
-    SmartCardService smartCardService = SmartCardService.getInstance();
+    final SmartCardService smartCardService = SmartCardService.getInstance();
+    final Plugin plugin;
+
+    ExceptionHandlerImpl exceptionHandler = new ExceptionHandlerImpl();
 
     // Assign PcscPlugin to the SmartCardService
-    smartCardService.registerPlugin(new PcscPluginFactory());
+    plugin =
+        smartCardService.registerPlugin(new PcscPluginFactory(exceptionHandler, exceptionHandler));
 
     // /* Set observers *//**/
     demoEngine.setPluginObserver();
@@ -39,5 +68,10 @@ public class Demo_ObservableReaderNotification_Pcsc {
     synchronized (waitBeforeEnd) {
       waitBeforeEnd.wait();
     }
+
+    // unregister plugin
+    smartCardService.unregisterPlugin(plugin.getName());
+
+    logger.info("Exit program.");
   }
 }

@@ -14,9 +14,11 @@ package org.eclipse.keyple.plugin.pcsc;
 import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CardTerminals;
 import javax.smartcardio.TerminalFactory;
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 
 /**
+ * (package-private)<br>
  * Implementation of AbstractPcscPlugin suitable for platforms other than Windows.
  *
  * <p>Provides a createInstance method that receives a boolean as an argument to indicate that the
@@ -24,7 +26,7 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderException;
  * This information is used to create readers capable of handling the technical issues specific to
  * this platform.
  */
-public final class PcscPluginImpl extends AbstractPcscPlugin {
+final class PcscPluginImpl extends AbstractPcscPlugin {
 
   /**
    * Singleton instance of SmartCardService 'volatile' qualifier ensures that read access to the
@@ -74,11 +76,14 @@ public final class PcscPluginImpl extends AbstractPcscPlugin {
    * platform. {@inheritDoc}
    */
   @Override
-  protected AbstractPcscReader createReader(String name, CardTerminal terminal) {
+  AbstractPcscReader createReader(
+      String name,
+      CardTerminal terminal,
+      ReaderObservationExceptionHandler readerObservationExceptionHandler) {
     if (isOsMac) {
-      return new PcscReaderMacOsImpl(name, terminal);
+      return new PcscReaderMacOsImpl(name, terminal, readerObservationExceptionHandler);
     } else {
-      return new PcscReaderImpl(name, terminal);
+      return new PcscReaderImpl(name, terminal, readerObservationExceptionHandler);
     }
   }
 }

@@ -25,6 +25,10 @@ import org.slf4j.LoggerFactory;
  *
  * <p>If a communication problem with the reader occurs (KeypleReaderIOException) an internal
  * STOP_DETECT event is fired.
+ *
+ * <p>All runtime exceptions that may occur during the monitoring process are caught and notified at
+ * the application level through the {@link
+ * org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler} mechanism.
  */
 class SmartInsertionMonitoringJob extends AbstractMonitoringJob {
 
@@ -45,20 +49,31 @@ class SmartInsertionMonitoringJob extends AbstractMonitoringJob {
     return new Runnable() {
       @Override
       public void run() {
-        if (logger.isTraceEnabled()) {
-          logger.trace("[{}] Invoke waitForCardPresent asynchronously", reader.getName());
-        }
         try {
-          if (reader.waitForCardPresent()) {
-            state.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_INSERTED);
+          boolean isCardFound = false;
+          while (!isCardFound && !Thread.currentThread().isInterrupted()) {
+            if (logger.isTraceEnabled()) {
+              logger.trace("[{}] Invoke waitForCardPresent asynchronously", reader.getName());
+            }
+
+            boolean isCardPresent = reader.waitForCardPresent();
+
+            try {
+              if (isCardPresent) {
+                state.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_INSERTED);
+                isCardFound = true;
+              }
+            } catch (KeypleReaderIOException e) {
+              logger.warn(
+                  "[{}] waitForCardPresent => Error while processing card insertion event",
+                  reader.getName());
+            }
           }
-        } catch (KeypleReaderIOException e) {
-          if (logger.isTraceEnabled()) {
-            logger.trace(
-                "[{}] waitForCardPresent => Error while polling card with waitForCardPresent",
-                reader.getName());
-          }
-          state.onEvent(AbstractObservableLocalReader.InternalEvent.STOP_DETECT);
+        } catch (RuntimeException e) {
+          ((AbstractObservableLocalReader) reader)
+              .getObservationExceptionHandler()
+              .onReaderObservationError(
+                  ((AbstractReader) reader).getPluginName(), reader.getName(), e);
         }
       }
     };

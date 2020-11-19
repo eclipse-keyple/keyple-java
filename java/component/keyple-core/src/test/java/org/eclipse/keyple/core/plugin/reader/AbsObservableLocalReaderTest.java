@@ -28,6 +28,7 @@ import org.eclipse.keyple.core.card.message.SelectionStatus;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -310,6 +311,14 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         .when(r)
         .processCardSelectionRequests(
             any(List.class), any(MultiSelectionProcessing.class), any(ChannelControl.class));
+    doReturn(
+            new ReaderObservationExceptionHandler() {
+              @Override
+              public void onReaderObservationError(
+                  String pluginName, String readerName, Throwable e) {}
+            })
+        .when(r)
+        .getObservationExceptionHandler();
     return r;
   }
 

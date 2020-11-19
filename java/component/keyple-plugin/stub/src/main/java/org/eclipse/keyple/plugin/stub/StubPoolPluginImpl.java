@@ -14,6 +14,8 @@ package org.eclipse.keyple.plugin.stub;
 import java.util.*;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.ReaderPoolPlugin;
+import org.eclipse.keyple.core.service.event.PluginObservationExceptionHandler;
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleAllocationNoReaderException;
 import org.eclipse.keyple.core.service.exception.KeypleAllocationReaderException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
@@ -33,9 +35,18 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
   // can have only one reader
   Map<String, String> allocatedReader; // readerName,groupReference
 
-  public StubPoolPluginImpl(String pluginName) {
+  public StubPoolPluginImpl(
+      String pluginName,
+      PluginObservationExceptionHandler pluginObservationExceptionHandler,
+      ReaderObservationExceptionHandler readerObservationExceptionHandler) {
     // create an embedded stubplugin to manage reader
-    this.stubPlugin = (StubPluginImpl) new StubPluginFactory(pluginName).getPlugin();
+    this.stubPlugin =
+        (StubPluginImpl)
+            new StubPluginFactory(
+                    pluginName,
+                    pluginObservationExceptionHandler,
+                    readerObservationExceptionHandler)
+                .getPlugin();
     this.readerPool = new HashMap<String, StubReaderImpl>();
     this.allocatedReader = new HashMap<String, String>();
   }

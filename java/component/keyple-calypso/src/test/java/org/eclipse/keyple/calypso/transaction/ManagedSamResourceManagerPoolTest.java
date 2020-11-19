@@ -72,7 +72,7 @@ public class ManagedSamResourceManagerPoolTest extends CalypsoBaseTest {
 
     // assert an exception is thrown after MAX_BLOCKING_TIME
     Assert.assertTrue(exceptionThrown);
-    Assert.assertTrue(stop - start > MAX_BLOCKING_TIME);
+    Assert.assertTrue(stop - start >= MAX_BLOCKING_TIME);
   }
 
   @Test

@@ -26,6 +26,10 @@ import org.slf4j.LoggerFactory;
  * CARD_REMOVED event is fired when the card is no longer responding.
  *
  * <p>By default a delay of 200 ms is inserted between each APDU sending .
+ *
+ * <p>All runtime exceptions that may occur during the monitoring process are caught and notified at
+ * the application level through the {@link
+ * org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler} mechanism.
  */
 class CardAbsentPingMonitoringJob extends AbstractMonitoringJob {
 
@@ -69,37 +73,42 @@ class CardAbsentPingMonitoringJob extends AbstractMonitoringJob {
 
       @Override
       public void run() {
-        if (logger.isDebugEnabled()) {
-          logger.debug("[{}] Polling from isCardPresentPing", reader.getName());
-        }
-        // re-init loop value to true
-        loop.set(true);
-        while (loop.get()) {
-          if (!reader.isCardPresentPing()) {
-            if (logger.isDebugEnabled()) {
-              logger.debug("[{}] the card stopped responding", reader.getName());
+        try {
+          if (logger.isDebugEnabled()) {
+            logger.debug("[{}] Polling from isCardPresentPing", reader.getName());
+          }
+          // re-init loop value to true
+          loop.set(true);
+          while (loop.get()) {
+            if (!reader.isCardPresentPing()) {
+              if (logger.isDebugEnabled()) {
+                logger.debug("[{}] the card stopped responding", reader.getName());
+              }
+              state.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_REMOVED);
+              return;
             }
-            loop.set(false);
-            state.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_REMOVED);
-            return;
-          }
-          retries++;
+            retries++;
 
-          if (logger.isTraceEnabled()) {
-            logger.trace("[{}] Polling retries : {}", reader.getName(), retries);
+            if (logger.isTraceEnabled()) {
+              logger.trace("[{}] Polling retries : {}", reader.getName(), retries);
+            }
+            try {
+              // wait a bit
+              Thread.sleep(removalWait);
+            } catch (InterruptedException ignored) {
+              // Restore interrupted state...
+              Thread.currentThread().interrupt();
+              loop.set(false);
+            }
           }
-          try {
-            // wait a bit
-            Thread.sleep(removalWait);
-          } catch (InterruptedException ignored) {
-            // Restore interrupted state...
-            Thread.currentThread().interrupt();
-            loop.set(false);
-          }
-        }
 
-        if (logger.isDebugEnabled()) {
-          logger.debug("[{}] Polling loop has been stopped", reader.getName());
+          if (logger.isDebugEnabled()) {
+            logger.debug("[{}] Polling loop has been stopped", reader.getName());
+          }
+        } catch (RuntimeException e) {
+          reader
+              .getObservationExceptionHandler()
+              .onReaderObservationError(reader.getPluginName(), reader.getName(), e);
         }
       }
     };
