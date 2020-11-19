@@ -45,8 +45,6 @@ import org.slf4j.LoggerFactory;
  */
 public class StoredValue_SimpleReload_Pcsc {
   private static final Logger logger = LoggerFactory.getLogger(StoredValue_SimpleReload_Pcsc.class);
-  private static Reader poReader;
-  private static CalypsoPo calypsoPo;
 
   /**
    * Main program entry
@@ -65,7 +63,7 @@ public class StoredValue_SimpleReload_Pcsc {
     Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory(null, null));
 
     // Get and configure the PO reader
-    poReader = plugin.getReader(PcscReaderUtils.getContactlessReaderName());
+    Reader poReader = plugin.getReader(PcscReaderUtils.getContactlessReaderName());
     ((PcscReader) poReader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     // Get and configure the SAM reader
@@ -96,11 +94,12 @@ public class StoredValue_SimpleReload_Pcsc {
 
     // Actual PO communication: operate through a single request the Calypso PO selection
     // and the file read
-    calypsoPo =
+    CalypsoPo calypsoPo =
         (CalypsoPo)
             ReaderConfiguration.getCardSelection()
                 .processExplicitSelection(poReader)
                 .getActiveSmartCard(); // Security settings
+
     // Keep the default setting for SV logs reading (only the reload log will be read here)
     PoSecuritySettings poSecuritySettings =
         new PoSecuritySettings.PoSecuritySettingsBuilder(samResource).build();

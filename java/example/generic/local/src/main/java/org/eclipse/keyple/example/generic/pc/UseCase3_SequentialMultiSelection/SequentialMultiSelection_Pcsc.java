@@ -66,60 +66,56 @@ public class SequentialMultiSelection_Pcsc {
     logger.info("= Card reader  NAME = {}", reader.getName());
 
     // Check if a card is present in the reader
-    if (reader.isCardPresent()) {
-
-      CardSelection cardSelection;
-
-      // operate card AID selection (change the AID prefix here to adapt it to the card used for
-      // the test [the card should have at least two applications matching the AID prefix])
-      String cardAidPrefix = "315449432E494341";
-
-      // First selection case
-      cardSelection = new CardSelection();
-
-      // AID based selection: get the first application occurrence matching the AID, keep the
-      // physical channel open
-      cardSelection.prepareSelection(
-          new GenericCardSelectionRequest(
-              CardSelector.builder()
-                  .aidSelector(
-                      CardSelector.AidSelector.builder()
-                          .aidToSelect(cardAidPrefix)
-                          .fileOccurrence(CardSelector.AidSelector.FileOccurrence.FIRST)
-                          .fileControlInformation(
-                              CardSelector.AidSelector.FileControlInformation.FCI)
-                          .build())
-                  .build()));
-
-      // Do the selection and display the result
-      doAndAnalyseSelection(reader, cardSelection, 1);
-
-      // New selection: get the next application occurrence matching the same AID, close the
-      // physical channel after
-      cardSelection = new CardSelection();
-
-      cardSelection.prepareSelection(
-          new GenericCardSelectionRequest(
-              CardSelector.builder()
-                  .aidSelector(
-                      CardSelector.AidSelector.builder()
-                          .aidToSelect(cardAidPrefix)
-                          .fileOccurrence(CardSelector.AidSelector.FileOccurrence.NEXT)
-                          .fileControlInformation(
-                              CardSelector.AidSelector.FileControlInformation.FCI)
-                          .build())
-                  .build()));
-
-      // close the channel after the selection
-      cardSelection.prepareReleaseChannel();
-
-      // Do the selection and display the result
-      doAndAnalyseSelection(reader, cardSelection, 2);
-
-    } else {
-
-      logger.error("No cards were detected.");
+    if (!reader.isCardPresent()) {
+      logger.error("No card was detected.");
     }
+
+    CardSelection cardSelection;
+
+    // operate card AID selection (change the AID prefix here to adapt it to the card used for
+    // the test [the card should have at least two applications matching the AID prefix])
+    String cardAidPrefix = "315449432E494341";
+
+    // First selection case
+    cardSelection = new CardSelection();
+
+    // AID based selection: get the first application occurrence matching the AID, keep the
+    // physical channel open
+    cardSelection.prepareSelection(
+        new GenericCardSelectionRequest(
+            CardSelector.builder()
+                .aidSelector(
+                    CardSelector.AidSelector.builder()
+                        .aidToSelect(cardAidPrefix)
+                        .fileOccurrence(CardSelector.AidSelector.FileOccurrence.FIRST)
+                        .fileControlInformation(CardSelector.AidSelector.FileControlInformation.FCI)
+                        .build())
+                .build()));
+
+    // Do the selection and display the result
+    doAndAnalyseSelection(reader, cardSelection, 1);
+
+    // New selection: get the next application occurrence matching the same AID, close the
+    // physical channel after
+    cardSelection = new CardSelection();
+
+    cardSelection.prepareSelection(
+        new GenericCardSelectionRequest(
+            CardSelector.builder()
+                .aidSelector(
+                    CardSelector.AidSelector.builder()
+                        .aidToSelect(cardAidPrefix)
+                        .fileOccurrence(CardSelector.AidSelector.FileOccurrence.NEXT)
+                        .fileControlInformation(CardSelector.AidSelector.FileControlInformation.FCI)
+                        .build())
+                .build()));
+
+    // close the channel after the selection
+    cardSelection.prepareReleaseChannel();
+
+    // Do the selection and display the result
+    doAndAnalyseSelection(reader, cardSelection, 2);
+
     System.exit(0);
   }
 }

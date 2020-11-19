@@ -11,7 +11,6 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.calypso.local.UseCase8_StoredValue_DebitInSession;
 
-import static org.eclipse.keyple.calypso.command.sam.SamRevision.C1;
 import static org.eclipse.keyple.calypso.transaction.PoTransaction.SvSettings;
 
 import com.google.gson.Gson;
@@ -22,19 +21,12 @@ import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.CalypsoSam;
 import org.eclipse.keyple.calypso.transaction.ElementaryFile;
 import org.eclipse.keyple.calypso.transaction.PoSecuritySettings;
-import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
-import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
-import org.eclipse.keyple.calypso.transaction.SamSelectionRequest;
-import org.eclipse.keyple.calypso.transaction.SamSelector;
 import org.eclipse.keyple.core.card.selection.CardResource;
-import org.eclipse.keyple.core.card.selection.CardSelection;
-import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.core.card.selection.SelectionsResult;
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
-import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
 import org.eclipse.keyple.example.calypso.local.common.PcscReaderUtils;
@@ -54,58 +46,6 @@ import org.slf4j.LoggerFactory;
 public class StoredValue_DebitInSession_Pcsc {
   private static final Logger logger =
       LoggerFactory.getLogger(StoredValue_DebitInSession_Pcsc.class);
-  private static Reader poReader;
-  private static CalypsoPo calypsoPo;
-
-  /**
-   * Selects the PO
-   *
-   * @return true if the PO is selected
-   * @throws KeypleReaderException in case of reader communication failure
-   */
-  private static boolean selectPo() {
-    /* Check if a PO is present in the reader */
-    if (poReader.isCardPresent()) {
-      logger.info("= ##### 1st PO exchange: AID based selection with reading of Environment file.");
-
-      // Prepare a Calypso PO selection
-      CardSelection cardSelection = new CardSelection();
-
-      // Setting of an AID based selection of a Calypso REV3 PO
-      //
-      // Select the first application matching the selection AID whatever the card communication
-      // protocol keep the logical channel open after the selection
-
-      // Calypso selection: configures a PoSelectionRequest with all the desired attributes to
-      // make the selection and read additional information afterwards
-      PoSelectionRequest poSelectionRequest =
-          new PoSelectionRequest(
-              PoSelector.builder()
-                  .aidSelector(
-                      CardSelector.AidSelector.builder()
-                          .aidToSelect(CalypsoClassicInfo.AID)
-                          .build())
-                  .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
-                  .build());
-
-      // Prepare the reading of the Environment and Holder file.
-      poSelectionRequest.prepareReadRecordFile(
-          CalypsoClassicInfo.SFI_EnvironmentAndHolder, CalypsoClassicInfo.RECORD_NUMBER_1);
-
-      // Add the selection case to the current selection
-      //
-      // (we could have added other cases here)
-      cardSelection.prepareSelection(poSelectionRequest);
-
-      // Actual PO communication: operate through a single request the Calypso PO selection
-      // and the file read
-      calypsoPo = (CalypsoPo) cardSelection.processExplicitSelection(poReader).getActiveSmartCard();
-      return true;
-    } else {
-      logger.error("No PO were detected.");
-    }
-    return false;
-  }
 
   /**
    * Main program entry
@@ -124,25 +64,19 @@ public class StoredValue_DebitInSession_Pcsc {
     Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory(null, null));
 
     // Get and configure the PO reader
-    poReader = plugin.getReader(PcscReaderUtils.getContactlessReaderName());
+    Reader poReader = plugin.getReader(PcscReaderUtils.getContactlessReaderName());
     ((PcscReader) poReader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     // Get and configure the SAM reader
     Reader samReader = plugin.getReader(PcscReaderUtils.getContactReaderName());
     ((PcscReader) samReader).setContactless(false).setIsoProtocol(PcscReader.IsoProtocol.T0);
 
-    // Create a SAM resource after selecting the SAM
-    CardSelection samSelection = new CardSelection();
-
-    SamSelector samSelector = SamSelector.builder().samRevision(C1).serialNumber(".*").build();
-
-    // Prepare selector
-    samSelection.prepareSelection(new SamSelectionRequest(samSelector));
-
     if (samReader.isCardPresent()) {
       throw new IllegalStateException("No SAM is present in the reader " + samReader.getName());
     }
-    SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
+
+    SelectionsResult selectionsResult =
+        ReaderConfiguration.getSamCardSelection().processExplicitSelection(samReader);
 
     if (!selectionsResult.hasActiveSelection()) {
       throw new IllegalStateException("Unable to open a logical channel for SAM!");
@@ -157,67 +91,69 @@ public class StoredValue_DebitInSession_Pcsc {
     logger.info("= PO Reader  NAME = {}", poReader.getName());
     logger.info("= SAM Reader  NAME = {}", samResource.getReader().getName());
 
-    if (selectPo()) {
-      // Security settings
-      // Both Reload and Debit SV logs are requested
-      PoSecuritySettings poSecuritySettings =
-          new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)
-              .svGetLogReadMode(SvSettings.LogRead.ALL)
-              .build();
+    CalypsoPo calypsoPo =
+        (CalypsoPo)
+            ReaderConfiguration.getCardSelection()
+                .processExplicitSelection(poReader)
+                .getActiveSmartCard();
 
-      // Create the PO resource
-      CardResource<CalypsoPo> poResource;
-      poResource = new CardResource<CalypsoPo>(poReader, calypsoPo);
+    // Security settings
+    // Both Reload and Debit SV logs are requested
+    PoSecuritySettings poSecuritySettings =
+        new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)
+            .svGetLogReadMode(SvSettings.LogRead.ALL)
+            .build();
 
-      PoTransaction poTransaction = new PoTransaction(poResource, poSecuritySettings);
+    // Create the PO resource
+    CardResource<CalypsoPo> poResource;
+    poResource = new CardResource<CalypsoPo>(poReader, calypsoPo);
 
-      // Read the EventLog file at the Session Opening
-      poTransaction.prepareReadRecordFile(
-          CalypsoClassicInfo.SFI_EventLog, CalypsoClassicInfo.RECORD_NUMBER_1);
+    PoTransaction poTransaction = new PoTransaction(poResource, poSecuritySettings);
 
-      // Open a secure session (DEBIT level) and execute the prepared command
-      poTransaction.processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT);
+    // Read the EventLog file at the Session Opening
+    poTransaction.prepareReadRecordFile(
+        CalypsoClassicInfo.SFI_EventLog, CalypsoClassicInfo.RECORD_NUMBER_1);
 
-      // Get and display the EventLog data
-      ElementaryFile efEventLog = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
+    // Open a secure session (DEBIT level) and execute the prepared command
+    poTransaction.processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT);
 
-      String eventLog = ByteArrayUtil.toHex(efEventLog.getData().getContent());
-      logger.info("File Event log: {}", eventLog);
+    // Get and display the EventLog data
+    ElementaryFile efEventLog = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
 
-      // Prepare a SV Debit (this command could also have been placed before processOpening
-      // since it is not followed by any other command)
-      poTransaction.prepareSvGet(SvSettings.Operation.DEBIT, SvSettings.Action.DO);
+    String eventLog = ByteArrayUtil.toHex(efEventLog.getData().getContent());
+    logger.info("File Event log: {}", eventLog);
 
-      // Execute the prepared command
-      poTransaction.processPoCommands();
+    // Prepare a SV Debit (this command could also have been placed before processOpening
+    // since it is not followed by any other command)
+    poTransaction.prepareSvGet(SvSettings.Operation.DEBIT, SvSettings.Action.DO);
 
-      // Display the current SV status
-      logger.info("Current SV status (SV Get for DEBIT):");
-      logger.info(". Balance = {}", calypsoPo.getSvBalance());
-      logger.info(". Last Transaction Number = {}", calypsoPo.getSvLastTNum());
+    // Execute the prepared command
+    poTransaction.processPoCommands();
 
-      // To easily display the content of the logs, we use here the toString method which
-      // exports the data in JSON format.
-      String loadLogRecordJson = prettyPrintJson(calypsoPo.getSvLoadLogRecord().toString());
-      String debitLogRecordJson = prettyPrintJson(calypsoPo.getSvDebitLogLastRecord().toString());
-      logger.info(". Load log record = {}", loadLogRecordJson);
-      logger.info(". Debit log record = {}", debitLogRecordJson);
+    // Display the current SV status
+    logger.info("Current SV status (SV Get for DEBIT):");
+    logger.info(". Balance = {}", calypsoPo.getSvBalance());
+    logger.info(". Last Transaction Number = {}", calypsoPo.getSvLastTNum());
 
-      // Prepare an SV Debit of 2 units
-      poTransaction.prepareSvDebit(2);
+    // To easily display the content of the logs, we use here the toString method which
+    // exports the data in JSON format.
+    String loadLogRecordJson = prettyPrintJson(calypsoPo.getSvLoadLogRecord().toString());
+    String debitLogRecordJson = prettyPrintJson(calypsoPo.getSvDebitLogLastRecord().toString());
+    logger.info(". Load log record = {}", loadLogRecordJson);
+    logger.info(". Debit log record = {}", debitLogRecordJson);
 
-      // Prepare to append a new record to EventLog. Just increment the first byte.
-      byte[] log = efEventLog.getData().getContent();
-      log[0] = (byte) (log[0] + 1);
-      poTransaction.prepareAppendRecord(CalypsoClassicInfo.SFI_EventLog, log);
+    // Prepare an SV Debit of 2 units
+    poTransaction.prepareSvDebit(2);
 
-      // Execute the 2 prepared commands, close the secure session, verify the SV signature
-      // and close the communication after
-      poTransaction.prepareReleasePoChannel();
-      poTransaction.processClosing();
-    } else {
-      logger.error("The PO selection failed");
-    }
+    // Prepare to append a new record to EventLog. Just increment the first byte.
+    byte[] log = efEventLog.getData().getContent();
+    log[0] = (byte) (log[0] + 1);
+    poTransaction.prepareAppendRecord(CalypsoClassicInfo.SFI_EventLog, log);
+
+    // Execute the 2 prepared commands, close the secure session, verify the SV signature
+    // and close the communication after
+    poTransaction.prepareReleasePoChannel();
+    poTransaction.processClosing();
 
     System.exit(0);
   }

@@ -47,7 +47,6 @@ public class Demo_ObservableReaderNotification_Pcsc {
   }
 
   public static void main(String[] args) throws Exception {
-    ;
 
     // Get the instance of the SmartCardService (Singleton pattern)
     final SmartCardService smartCardService = SmartCardService.getInstance();
