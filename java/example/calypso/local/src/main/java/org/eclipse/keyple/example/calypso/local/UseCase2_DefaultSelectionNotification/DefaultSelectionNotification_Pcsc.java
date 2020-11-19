@@ -85,7 +85,7 @@ public class DefaultSelectionNotification_Pcsc {
         "=============== UseCase Calypso #2: AID based default selection ===================");
     logger.info("= PO Reader  NAME = {}", poReader.getName());
 
-    CardSelection cardSelection = ReaderConfiguration.getCardSelection();
+    CardSelection cardSelection = ReaderConfig.getCardSelection();
 
     // Provide the Reader with the selection operation to be processed when a PO is inserted.
     poReader.setDefaultSelectionRequest(
@@ -94,7 +94,7 @@ public class DefaultSelectionNotification_Pcsc {
         ObservableReader.PollingMode.REPEATING);
 
     // Set the current class as Observer of the first reader
-    poReader.addObserver(ReaderConfiguration.getObserver());
+    poReader.addObserver(ReaderConfig.getObserver());
 
     logger.info(
         "= #### Wait for a PO. The default AID based selection with reading of Environment");

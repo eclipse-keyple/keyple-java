@@ -17,7 +17,7 @@ import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
 
-class CardSelectionConfiguration {
+class CardSelectionConfig {
 
   static CardSelection getCardSelection() {
 

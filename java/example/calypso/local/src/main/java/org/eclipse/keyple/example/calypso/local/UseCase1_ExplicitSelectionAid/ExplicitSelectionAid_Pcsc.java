@@ -11,8 +11,6 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.calypso.local.UseCase1_ExplicitSelectionAid;
 
-import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
-
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.ElementaryFile;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
@@ -79,7 +77,7 @@ public class ExplicitSelectionAid_Pcsc {
     logger.info("= #### 1st PO exchange: AID based selection with reading of Environment file.");
 
     // Prepare a Calypso PO selection
-    CardSelection cardSelection = CardSelectionConfiguration.getCardSelection();
+    CardSelection cardSelection = CardSelectionConfig.getCardSelection();
 
     // Actual PO communication: operate through a single request the Calypso PO selection
     // and the file read

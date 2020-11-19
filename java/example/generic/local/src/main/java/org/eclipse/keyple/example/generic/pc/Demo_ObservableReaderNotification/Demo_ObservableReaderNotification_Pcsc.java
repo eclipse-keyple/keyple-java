@@ -59,7 +59,7 @@ public class Demo_ObservableReaderNotification_Pcsc {
         smartCardService.registerPlugin(new PcscPluginFactory(exceptionHandler, exceptionHandler));
 
     // /* Set observers *//**/
-    PluginConfiguration.initObservers();
+    PluginConfig.initObservers();
 
     logger.info("Wait for reader or card insertion/removal");
 

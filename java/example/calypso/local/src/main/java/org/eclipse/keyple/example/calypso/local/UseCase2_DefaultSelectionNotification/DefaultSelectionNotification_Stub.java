@@ -83,7 +83,7 @@ public class DefaultSelectionNotification_Stub {
     /*
      * Prepare a Calypso PO selection
      */
-    CardSelection cardSelection = ReaderConfiguration.getCardSelection();
+    CardSelection cardSelection = ReaderConfig.getCardSelection();
     /*
      * Provide the Reader with the selection operation to be processed when a PO is inserted.
      */
@@ -93,8 +93,8 @@ public class DefaultSelectionNotification_Stub {
             ObservableReader.NotificationMode.MATCHED_ONLY,
             ObservableReader.PollingMode.REPEATING);
 
-    /* Set a CardSelectionConfiguration that contains the ticketing logic for the reader */
-    ((ObservableReader) poReader).addObserver(ReaderConfiguration.getObserver());
+    /* Set a CardSelectionConfig that contains the ticketing logic for the reader */
+    ((ObservableReader) poReader).addObserver(ReaderConfig.getObserver());
 
     logger.info(
         "= #### Wait for a PO. The default AID based selection with reading of Environment");

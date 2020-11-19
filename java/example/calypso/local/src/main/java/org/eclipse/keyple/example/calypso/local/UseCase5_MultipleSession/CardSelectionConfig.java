@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.calypso.local.UseCase8_StoredValue_DebitInSession;
+package org.eclipse.keyple.example.calypso.local.UseCase5_MultipleSession;
 
 import static org.eclipse.keyple.calypso.command.sam.SamRevision.C1;
 
@@ -21,19 +21,20 @@ import org.eclipse.keyple.core.card.selection.CardSelection;
 import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
 
-class CardSelectionConfiguration {
+class CardSelectionConfig {
 
-  static CardSelection getCardSelection() {
-
+  static CardSelection getPoCardSelection() {
     // Prepare a Calypso PO selection
     CardSelection cardSelection = new CardSelection();
 
     // Setting of an AID based selection of a Calypso REV3 PO
     //
-    // Select the first application matching the selection AID whatever the card communication
+    // Select the first application matching the selection AID whatever the card
+    // communication
     // protocol keep the logical channel open after the selection
 
-    // Calypso selection: configures a PoSelectionRequest with all the desired attributes to
+    // Calypso selection: configures a PoSelectionRequest with all the desired attributes
+    // to
     // make the selection and read additional information afterwards
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
@@ -43,13 +44,8 @@ class CardSelectionConfiguration {
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
 
-    // Prepare the reading of the Environment and Holder file.
-    poSelectionRequest.prepareReadRecordFile(
-        CalypsoClassicInfo.SFI_EnvironmentAndHolder, CalypsoClassicInfo.RECORD_NUMBER_1);
-
-    // Add the selection case to the current selection
-    //
-    // (we could have added other cases here)
+    // Add the selection case to the current selection (we could have added other cases
+    // here)
     cardSelection.prepareSelection(poSelectionRequest);
 
     return cardSelection;

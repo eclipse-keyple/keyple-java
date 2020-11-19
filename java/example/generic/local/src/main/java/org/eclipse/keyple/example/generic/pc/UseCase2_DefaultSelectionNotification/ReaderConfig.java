@@ -24,11 +24,11 @@ import org.eclipse.keyple.example.generic.pc.common.GenericCardSelectionRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class ReaderConfiguration {
+class ReaderConfig {
 
   private static CardSelection cardSelection;
 
-  private static final Logger logger = LoggerFactory.getLogger(ReaderConfiguration.class);
+  private static final Logger logger = LoggerFactory.getLogger(ReaderConfig.class);
 
   static CardSelection getCardSelection() {
     if (cardSelection != null) {
