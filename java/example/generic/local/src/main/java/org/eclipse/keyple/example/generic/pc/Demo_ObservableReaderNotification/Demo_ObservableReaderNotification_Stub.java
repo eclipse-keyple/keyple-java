@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 public class Demo_ObservableReaderNotification_Stub {
   private static final Logger logger =
       LoggerFactory.getLogger(Demo_ObservableReaderNotification_Stub.class);
-  public static final Object waitBeforeEnd = new Object();
 
   public static void main(String[] args) throws Exception {
 

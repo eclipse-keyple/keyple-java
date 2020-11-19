@@ -11,21 +11,11 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.generic.pc.UseCase2_DefaultSelectionNotification;
 
-import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
-import org.eclipse.keyple.core.card.selection.CardSelection;
-import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservableReader;
-import org.eclipse.keyple.core.service.event.ObservableReader.ReaderObserver;
-import org.eclipse.keyple.core.service.event.ReaderEvent;
-import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleException;
-import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
-import org.eclipse.keyple.example.generic.pc.common.GenericCardSelectionRequest;
 import org.eclipse.keyple.example.generic.pc.common.PcscReaderUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
@@ -54,11 +44,10 @@ import org.slf4j.LoggerFactory;
  *       </ul>
  * </ul>
  */
-public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
+public class DefaultSelectionNotification_Pcsc {
   private static final Logger logger =
       LoggerFactory.getLogger(DefaultSelectionNotification_Pcsc.class);
-  private String cardAid = "A0000004040125090101";
-  private CardSelection cardSelection;
+  static String cardAid = "A0000004040125090101";
   /**
    * This object is used to freeze the main thread while card operations are handle through the
    * observers callbacks. A call to the notify() method would end the program (not demonstrated
@@ -95,35 +84,15 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
         "=============== UseCase Generic #2: AID based default selection ===================");
     logger.info("= Card reader  NAME = {}", reader.getName());
 
-    // Prepare a card selection
-    cardSelection = new CardSelection();
-
-    // Setting of an AID based selection
-    //
-    // Select the first application matching the selection AID whatever the card communication
-    // protocol keep the logical channel open after the selection
-
-    // Generic selection: configures a CardSelector with all the desired attributes to make the
-    // selection
-    GenericCardSelectionRequest cardSelector =
-        new GenericCardSelectionRequest(
-            CardSelector.builder()
-                .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-                .aidSelector(CardSelector.AidSelector.builder().aidToSelect(cardAid).build())
-                .build());
-
-    // Add the selection case to the current selection (we could have added other cases here)
-    cardSelection.prepareSelection(cardSelector);
-
     // Provide the Reader with the selection operation to be processed when a card is inserted.
     ((ObservableReader) reader)
         .setDefaultSelectionRequest(
-            cardSelection.getSelectionOperation(),
+            ReaderConfiguration.getCardSelection().getSelectionOperation(),
             ObservableReader.NotificationMode.MATCHED_ONLY,
             ObservableReader.PollingMode.REPEATING);
 
     // Set the current class as Observer of the first reader
-    ((ObservableReader) reader).addObserver(this);
+    ((ObservableReader) reader).addObserver(ReaderConfiguration.getObserver());
 
     logger.info(
         "= #### Wait for a card. The default AID based selection to be processed as soon as the card is detected.");
@@ -131,66 +100,6 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
     // Wait for ever (exit with CTRL-C)
     synchronized (waitForEnd) {
       waitForEnd.wait();
-    }
-  }
-
-  /**
-   * Method invoked in the case of a reader event
-   *
-   * @param event the reader event
-   */
-  @Override
-  public void update(ReaderEvent event) {
-    switch (event.getEventType()) {
-      case CARD_MATCHED:
-        // the selection has one target, get the result at index 0
-        AbstractSmartCard selectedCard = null;
-        try {
-          selectedCard =
-              cardSelection
-                  .processDefaultSelection(event.getDefaultSelectionsResponse())
-                  .getActiveSmartCard();
-        } catch (KeypleException e) {
-          logger.error("Exception: {}", e.getMessage());
-          try {
-            ((ObservableReader) (event.getReader())).finalizeCardProcessing();
-          } catch (KeypleReaderNotFoundException ex) {
-            logger.error("Reader not found exception: {}", ex.getMessage());
-          } catch (KeyplePluginNotFoundException ex) {
-            logger.error("Plugin not found exception: {}", ex.getMessage());
-          }
-        }
-
-        if (selectedCard != null) {
-          logger.info("Observer notification: the selection of the card has succeeded.");
-
-          logger.info("= #### End of the card processing.");
-        } else {
-          logger.error(
-              "The selection of the card has failed. Should not have occurred due to the MATCHED_ONLY selection mode.");
-        }
-        break;
-      case CARD_INSERTED:
-        logger.error(
-            "CARD_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.");
-        break;
-      case CARD_REMOVED:
-        logger.info("There is no PO inserted anymore. Return to the waiting state...");
-        break;
-      default:
-        break;
-    }
-    if (event.getEventType() == ReaderEvent.EventType.CARD_INSERTED
-        || event.getEventType() == ReaderEvent.EventType.CARD_MATCHED) {
-      // Informs the underlying layer of the end of the card processing, in order to manage the
-      // removal sequence.
-      try {
-        ((ObservableReader) (event.getReader())).finalizeCardProcessing();
-      } catch (KeypleReaderNotFoundException e) {
-        logger.error("Reader not found exception: {}", e.getMessage());
-      } catch (KeyplePluginNotFoundException e) {
-        logger.error("Plugin not found exception: {}", e.getMessage());
-      }
     }
   }
 

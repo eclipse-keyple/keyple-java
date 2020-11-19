@@ -27,7 +27,7 @@ class ReaderConfiguration {
 
   private static final Logger logger = LoggerFactory.getLogger(ReaderConfiguration.class);
 
-  static CardSelection cardSelection;
+  private static CardSelection cardSelection;
 
   static CardSelection getCardSelection() {
     if (cardSelection != null) {
