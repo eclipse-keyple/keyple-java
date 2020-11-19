@@ -43,6 +43,14 @@ class StubReaderImpl extends AbstractObservableLocalReader
   private final AtomicBoolean loopWaitCard = new AtomicBoolean();
   private final AtomicBoolean loopWaitCardRemoval = new AtomicBoolean();
 
+  ReaderObservationExceptionHandler readerObservationExceptionHandler =
+      new ReaderObservationExceptionHandler() {
+        @Override
+        public void onReaderObservationError(String pluginName, String readerName, Throwable e) {
+          logger.error("Unexpected exception {}:{}", pluginName, readerName, e);
+        }
+      };
+
   /**
    * Do not use directly
    *
@@ -54,7 +62,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
 
   @Override
   protected ReaderObservationExceptionHandler getObservationExceptionHandler() {
-    return null;
+    return readerObservationExceptionHandler;
   }
 
   /**
