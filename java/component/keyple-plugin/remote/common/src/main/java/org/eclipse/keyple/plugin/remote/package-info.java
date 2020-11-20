@@ -1,5 +1,5 @@
 /**
- * Contains the APIs of the <b>Common</b> components (Nodes & DTO).
+ * Contains the APIs of the <b>Common</b> components (Nodes, DTOs, Exceptions).
  *
  * @since 1.0
  */
