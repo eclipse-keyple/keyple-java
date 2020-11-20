@@ -92,7 +92,6 @@ public class PoAuthentication_Stub {
         ByteArrayUtil.toHex(calypsoSam.getSerialNumber()));
     logger.info("= ##### 1st PO exchange: AID based selection with reading of Environment file.");
 
-
     // All data collected from the PO are available in CalypsoPo
     // Get the Environment and Holder data
     ElementaryFile efEnvironmentAndHolder =
