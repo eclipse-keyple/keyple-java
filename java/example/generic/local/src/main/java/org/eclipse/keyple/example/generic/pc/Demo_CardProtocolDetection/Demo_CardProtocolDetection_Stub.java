@@ -63,7 +63,7 @@ public class Demo_CardProtocolDetection_Stub {
         smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME, null, null));
 
     // create an observer class to handle the card operations
-    ReaderObserver observer = ReaderConfig.getObserver();
+    ReaderObserver observer = new CardEventObserver();
 
     // Plug PO reader.
     ((StubPlugin) stubPlugin).plugStubReader("poReader", true);

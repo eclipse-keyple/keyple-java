@@ -94,5 +94,4 @@ class CardSelectionConfig {
 
     return poCardSelection;
   }
-
 }

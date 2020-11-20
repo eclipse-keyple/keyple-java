@@ -11,23 +11,10 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.calypso.local.UseCase2_DefaultSelectionNotification;
 
-import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
 import org.eclipse.keyple.calypso.transaction.*;
-import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
-import org.eclipse.keyple.core.card.selection.CardResource;
 import org.eclipse.keyple.core.card.selection.CardSelection;
 import org.eclipse.keyple.core.card.selection.CardSelector;
-import org.eclipse.keyple.core.service.Reader;
-import org.eclipse.keyple.core.service.SmartCardService;
-import org.eclipse.keyple.core.service.event.ObservableReader;
-import org.eclipse.keyple.core.service.event.ReaderEvent;
-import org.eclipse.keyple.core.service.exception.KeypleException;
-import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class CardSelectionConfig {
 
