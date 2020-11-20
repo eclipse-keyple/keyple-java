@@ -11,8 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.calypso.local.Demo_CalypsoClassic;
 
-import static org.eclipse.keyple.calypso.command.sam.SamRevision.C1;
-import static org.eclipse.keyple.example.calypso.local.Demo_CalypsoClassic.CardSelectionConfig.getPoCardSelection;
+import static org.eclipse.keyple.example.calypso.local.Demo_CalypsoClassic.CardSelectionConfig.getPoDefaultCardSelection;
+import static org.eclipse.keyple.example.calypso.local.Demo_CalypsoClassic.CardSelectionConfig.selectSam;
 
 import java.util.Map;
 import java.util.SortedMap;
@@ -21,11 +21,8 @@ import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandExcepti
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
 import org.eclipse.keyple.core.card.selection.CardResource;
-import org.eclipse.keyple.core.card.selection.CardSelection;
-import org.eclipse.keyple.core.card.selection.SelectionsResult;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
-import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -49,6 +46,84 @@ class CardEventObserver implements ObservableReader.ReaderObserver {
   /* Assign sam reader to the transaction engine */
   public void setSamReader(Reader samReader) {
     this.samReader = samReader;
+  }
+
+  @Override
+  public void update(ReaderEvent event) {
+    logger.info("New reader event: {}", event.getReaderName());
+
+    switch (event.getEventType()) {
+      case CARD_INSERTED:
+        break;
+
+      case CARD_MATCHED:
+        // get PO reader from event information
+        Reader poReader =
+            SmartCardService.getInstance()
+                .getPlugin(event.getPluginName())
+                .getReader(event.getReaderName());
+
+        // get matching PO
+        CalypsoPo calypsoPo =
+            (CalypsoPo)
+                getPoDefaultCardSelection()
+                    .processDefaultSelection(event.getDefaultSelectionsResponse())
+                    .getActiveSmartCard();
+
+        // operate a transaction
+        operateCalypsoTransaction(calypsoPo, poReader);
+        break;
+
+      case CARD_REMOVED:
+        break;
+      case UNREGISTERED:
+        throw new IllegalStateException(
+            "Unexpected error: the reader is no more registered in the SmartcardService.");
+    }
+  }
+
+  /** Do the PO selection and possibly go on with Calypso transactions. */
+  private void operateCalypsoTransaction(CalypsoPo calypsoPo, Reader poReader) {
+
+    ElementaryFile eventLogEF = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
+    byte[] eventLogBytes = eventLogEF.getData().getContent(CalypsoClassicInfo.RECORD_NUMBER_1);
+    String eventLog = ByteArrayUtil.toHex(eventLogBytes);
+
+    logger.info("DF RT header: {}", calypsoPo.getDirectoryHeader());
+    logger.info("Event Log header: {}", eventLogEF.getHeader());
+    logger.info("EventLog: {}", eventLog);
+
+    try {
+      /* first time: create a SAM resource */
+      if (samResource == null) {
+        /* the following method will throw an exception if the SAM is not available. */
+        CalypsoSam calypsoSam = selectSam(samReader);
+        samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
+      }
+
+      Profiler profiler = new Profiler("Entire transaction");
+
+      /* Time measurement */
+      profiler.start("Initial selection");
+      profiler.start("Calypso1");
+
+      /* define the SAM parameters to provide when creating PoTransaction */
+      PoSecuritySettings poSecuritySettings = CalypsoUtils.getSecuritySettings(samResource);
+
+      PoTransaction poTransaction =
+          new PoTransaction(new CardResource<CalypsoPo>(poReader, calypsoPo), poSecuritySettings);
+
+      doCalypsoReadWriteTransaction(calypsoPo, poTransaction);
+
+      profiler.stop();
+      logger.warn("{}{}", System.getProperty("line.separator"), profiler);
+    } catch (CalypsoPoCommandException e) {
+      logger.error(
+          "PO command {} failed with the status code 0x{}. {}",
+          e.getCommand(),
+          Integer.toHexString(e.getStatusCode() & 0xFFFF).toUpperCase(),
+          e.getMessage());
+    }
   }
 
   /**
@@ -91,14 +166,12 @@ class CardEventObserver implements ObservableReader.ReaderObserver {
    *
    * @param calypsoPo the current {@link CalypsoPo}
    * @param poTransaction PoTransaction object
-   * @param closeSeChannel flag to ask or not the channel closing at the end of the transaction
    * @throws CalypsoPoTransactionException if a functional error occurs (including PO and SAM IO
    *     errors)
    * @throws CalypsoPoCommandException if a PO command failed
    * @throws CalypsoSamCommandException if a SAM command failed
    */
-  private void doCalypsoReadWriteTransaction(
-      CalypsoPo calypsoPo, PoTransaction poTransaction, boolean closeSeChannel) {
+  private void doCalypsoReadWriteTransaction(CalypsoPo calypsoPo, PoTransaction poTransaction) {
 
     /*
      * Read commands to execute during the opening step: EventLog, ContractList
@@ -209,108 +282,5 @@ class CardEventObserver implements ObservableReader.ReaderObserver {
     }
 
     logger.info("========= PO Calypso session ======= SUCCESS !!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-  }
-
-  /** Do the PO selection and possibly go on with Calypso transactions. */
-  private void operateCalypsoTransaction(
-      AbstractDefaultSelectionsResponse defaultSelectionsResponse, Reader poReader) {
-    CalypsoPo calypsoPo =
-        (CalypsoPo)
-            getPoCardSelection()
-                .processDefaultSelection(defaultSelectionsResponse)
-                .getActiveSmartCard();
-
-    if (calypsoPo == null) {
-      throw new IllegalStateException("PO selection has failed");
-    }
-
-    logger.info("DF RT header: {}", calypsoPo.getDirectoryHeader());
-
-    ElementaryFile eventLogEF = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
-
-    logger.info("Event Log header: {}", eventLogEF.getHeader());
-
-    byte[] eventLogBytes = eventLogEF.getData().getContent(CalypsoClassicInfo.RECORD_NUMBER_1);
-
-    String eventLog = ByteArrayUtil.toHex(eventLogBytes);
-
-    logger.info("EventLog: {}", eventLog);
-
-    try {
-      /* first time: create a SAM resource */
-      if (samResource == null) {
-        /* the following method will throw an exception if the SAM is not available. */
-        samResource = getSamResource();
-      }
-
-      Profiler profiler = new Profiler("Entire transaction");
-
-      /* Time measurement */
-      profiler.start("Initial selection");
-
-      profiler.start("Calypso1");
-
-      /* define the SAM parameters to provide when creating PoTransaction */
-      PoSecuritySettings poSecuritySettings = CalypsoUtils.getSecuritySettings(samResource);
-
-      PoTransaction poTransaction =
-          new PoTransaction(new CardResource<CalypsoPo>(poReader, calypsoPo), poSecuritySettings);
-
-      doCalypsoReadWriteTransaction(calypsoPo, poTransaction, true);
-
-      profiler.stop();
-      logger.warn("{}{}", System.getProperty("line.separator"), profiler);
-    } catch (CalypsoPoCommandException e) {
-      logger.error(
-          "PO command {} failed with the status code 0x{}. {}",
-          e.getCommand(),
-          Integer.toHexString(e.getStatusCode() & 0xFFFF).toUpperCase(),
-          e.getMessage());
-    }
-  }
-
-  @Override
-  public void update(ReaderEvent event) {
-    logger.info("New reader event: {}", event.getReaderName());
-
-    switch (event.getEventType()) {
-      case CARD_INSERTED:
-        break;
-
-      case CARD_MATCHED:
-        Reader poReader =
-            SmartCardService.getInstance()
-                .getPlugin(event.getPluginName())
-                .getReader(event.getReaderName());
-        operateCalypsoTransaction(event.getDefaultSelectionsResponse(), poReader);
-        break;
-
-      case CARD_REMOVED:
-        break;
-      case UNREGISTERED:
-        throw new IllegalStateException(
-            "Unexpected error: the reader is no more registered in the SmartcardService.");
-    }
-  }
-
-  private CardResource<CalypsoSam> getSamResource() {
-    // Create a SAM resource after selecting the SAM
-    CardSelection samSelection = new CardSelection();
-
-    SamSelector samSelector = SamSelector.builder().samRevision(C1).serialNumber(".*").build();
-
-    // Prepare selector
-    samSelection.prepareSelection(new SamSelectionRequest(samSelector));
-    CalypsoSam calypsoSam;
-    if (!samReader.isCardPresent()) {
-      throw new IllegalStateException("No SAM is present in the reader " + samReader.getName());
-    }
-    SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
-    if (!selectionsResult.hasActiveSelection()) {
-      throw new IllegalStateException("Unable to open a logical channel for SAM!");
-    }
-    calypsoSam = (CalypsoSam) selectionsResult.getActiveSmartCard();
-
-    return new CardResource<CalypsoSam>(samReader, calypsoSam);
   }
 }

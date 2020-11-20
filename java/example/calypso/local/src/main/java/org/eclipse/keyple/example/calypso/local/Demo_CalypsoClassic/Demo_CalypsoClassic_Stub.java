@@ -55,6 +55,8 @@ import org.slf4j.LoggerFactory;
  */
 public class Demo_CalypsoClassic_Stub {
 
+  private static Logger logger = LoggerFactory.getLogger(Demo_CalypsoClassic_Stub.class);
+  private static Plugin plugin;
   /**
    * main program entry
    *
@@ -65,7 +67,6 @@ public class Demo_CalypsoClassic_Stub {
    * @throws CalypsoPoIllegalArgumentException if an command argument is wrong
    */
   public static void main(String[] args) throws InterruptedException {
-    final Logger logger = LoggerFactory.getLogger(Demo_CalypsoClassic_Stub.class);
 
     /* Get the instance of the SmartCardService (Singleton pattern) */
     SmartCardService smartCardService = SmartCardService.getInstance();
@@ -76,46 +77,14 @@ public class Demo_CalypsoClassic_Stub {
     Plugin stubPlugin =
         smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME, null, null));
 
-    /*
-     * Plug PO and SAM stub readers.
-     */
-    ((StubPlugin) stubPlugin).plugStubReader("poReader", true);
-    ((StubPlugin) stubPlugin).plugStubReader("samReader", true);
+    StubReader poReader = initPoReader();
 
-    StubReader poReader = null;
-    StubReader samReader = null;
-    poReader = (StubReader) (stubPlugin.getReader("poReader"));
-    samReader = (StubReader) (stubPlugin.getReader("samReader"));
+    StubReader samReader = initSamReader();
 
     /* Both readers are expected not null */
-    if (poReader == samReader || poReader == null || samReader == null) {
+    if (poReader == samReader) {
       throw new IllegalStateException("Bad PO/SAM setup");
     }
-
-    logger.info("PO Reader  NAME = {}", poReader.getName());
-    logger.info("SAM Reader  NAME = {}", samReader.getName());
-
-    /* Activate protocols */
-    poReader.activateProtocol(
-        StubSupportedProtocols.ISO_14443_4.name(),
-        ContactlessCardCommonProtocols.INNOVATRON_B_PRIME_CARD.name());
-    poReader.activateProtocol(
-        StubSupportedProtocols.INNOVATRON_B_PRIME_CARD.name(),
-        ContactlessCardCommonProtocols.INNOVATRON_B_PRIME_CARD.name());
-
-    /* Create 'virtual' Hoplink and SAM card */
-    StubSmartCard calypsoStubCard = new StubCalypsoClassic();
-    StubSmartCard samSE = new StubSamCalypsoClassic();
-
-    /* Insert the SAM into the SAM reader */
-    logger.info("Insert stub SAM card.");
-    samReader.insertCard(samSE);
-
-    /* Set the default selection operation */
-    poReader.setDefaultSelectionRequest(
-        CardSelectionConfig.getPoCardSelection().getSelectionOperation(),
-        ObservableReader.NotificationMode.MATCHED_ONLY,
-        ObservableReader.PollingMode.REPEATING);
 
     /* Setting up the observer on the PO Reader */
     CardEventObserver poEventObserver = new CardEventObserver();
@@ -124,7 +93,10 @@ public class Demo_CalypsoClassic_Stub {
     poEventObserver.setSamReader(samReader);
 
     /* Set the readerObserver as Observer of the PO reader */
-    poReader.addObserver(poEventObserver);
+    ((ObservableReader) poReader).addObserver(poEventObserver);
+
+    /* Create 'virtual' Hoplink and SAM card */
+    StubSmartCard calypsoStubCard = new StubCalypsoClassic();
 
     logger.info("Insert stub PO card.");
     poReader.insertCard(calypsoStubCard);
@@ -140,5 +112,48 @@ public class Demo_CalypsoClassic_Stub {
     logger.info("END.");
 
     System.exit(0);
+  }
+
+  private static StubReader initPoReader() {
+    /*
+     * Plug PO and SAM stub readers.
+     */
+    ((StubPlugin) plugin).plugStubReader("poReader", true);
+
+    StubReader poReader = (StubReader) (plugin.getReader("poReader"));
+
+    logger.info("PO Reader  NAME = {}", poReader.getName());
+
+    /* Activate protocols */
+    poReader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.INNOVATRON_B_PRIME_CARD.name());
+    poReader.activateProtocol(
+        StubSupportedProtocols.INNOVATRON_B_PRIME_CARD.name(),
+        ContactlessCardCommonProtocols.INNOVATRON_B_PRIME_CARD.name());
+
+    /* Set the default selection operation */
+    poReader.setDefaultSelectionRequest(
+        CardSelectionConfig.getPoDefaultCardSelection().getSelectionOperation(),
+        ObservableReader.NotificationMode.MATCHED_ONLY,
+        ObservableReader.PollingMode.REPEATING);
+
+    return poReader;
+  }
+
+  private static StubReader initSamReader() {
+    // Get and configure the SAM reader
+    ((StubPlugin) plugin).plugStubReader("samReader", true);
+
+    StubReader samReader = (StubReader) (plugin.getReader("samReader"));
+    logger.info("SAM Reader  NAME = {}", samReader.getName());
+
+    StubSmartCard samSE = new StubSamCalypsoClassic();
+
+    /* Insert the SAM into the SAM reader */
+    logger.info("Insert stub SAM card.");
+    samReader.insertCard(samSE);
+
+    return samReader;
   }
 }

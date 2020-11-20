@@ -58,6 +58,9 @@ import org.slf4j.LoggerFactory;
  * <p>Read the doc of each methods for further details.
  */
 public class Demo_CalypsoClassic_Pcsc {
+  private static Logger logger = LoggerFactory.getLogger(Demo_CalypsoClassic_Pcsc.class);
+
+  private static Plugin plugin;
 
   static class ExceptionHandlerImpl
       implements PluginObservationExceptionHandler, ReaderObservationExceptionHandler {
@@ -89,7 +92,6 @@ public class Demo_CalypsoClassic_Pcsc {
    * @throws InterruptedException thread exception
    */
   public static void main(String[] args) throws InterruptedException {
-    final Logger logger = LoggerFactory.getLogger(Demo_CalypsoClassic_Pcsc.class);
 
     /* Get the instance of the SmartCardService (Singleton pattern) */
     SmartCardService smartCardService = SmartCardService.getInstance();
@@ -97,47 +99,15 @@ public class Demo_CalypsoClassic_Pcsc {
     ExceptionHandlerImpl exceptionHandlerImpl = new ExceptionHandlerImpl();
 
     /* Assign PcscPlugin to the SmartCardService */
-    Plugin plugin =
-        smartCardService.registerPlugin(
-            new PcscPluginFactory(exceptionHandlerImpl, exceptionHandlerImpl));
+    plugin = smartCardService.registerPlugin(new PcscPluginFactory());
 
-    /*
-     * Get PO and SAM readers. Apply regulars expressions to reader names to select PO / SAM
-     * readers. Use the getReader helper method from the transaction engine.
-     */
-    Reader poReader = plugin.getReader(PcscReaderUtils.getContactlessReaderName());
-    Reader samReader = plugin.getReader(PcscReaderUtils.getContactReaderName());
+    Reader poReader = initPoReader();
 
-    /* Both readers are expected not null */
-    if (poReader == samReader || poReader == null || samReader == null) {
+    Reader samReader = initSamReader();
+
+    if (poReader == samReader) {
       throw new IllegalStateException("Bad PO/SAM setup");
     }
-
-    logger.info("PO Reader  NAME = {}", poReader.getName());
-    logger.info("SAM Reader  NAME = {}", samReader.getName());
-
-    /* Set PcSc settings per reader */
-    ((PcscReader) poReader)
-        .setContactless(true)
-        .setIsoProtocol(PcscReader.IsoProtocol.T1)
-        .setSharingMode(PcscReader.SharingMode.SHARED);
-
-    ((PcscReader) samReader)
-        .setContactless(false)
-        .setIsoProtocol(PcscReader.IsoProtocol.T0)
-        .setSharingMode(PcscReader.SharingMode.SHARED);
-
-    /* Activate protocols */
-    poReader.activateProtocol(
-        PcscSupportedContactlessProtocols.ISO_14443_4.name(),
-        ContactlessCardCommonProtocols.ISO_14443_4.name());
-    poReader.activateProtocol(
-        PcscSupportedContactlessProtocols.INNOVATRON_B_PRIME_CARD.name(),
-        ContactlessCardCommonProtocols.INNOVATRON_B_PRIME_CARD.name());
-
-    samReader.activateProtocol(
-        PcscSupportedContactProtocols.ISO_7816_3.name(),
-        ContactCardCommonProtocols.ISO_7816_3.name());
 
     /* Setting up the reader observer on the po Reader */
     CardEventObserver poEventObserver = new CardEventObserver();
@@ -150,7 +120,7 @@ public class Demo_CalypsoClassic_Pcsc {
     /* Set the default selection operation */
     ((ObservableReader) poReader)
         .setDefaultSelectionRequest(
-            CardSelectionConfig.getPoCardSelection().getSelectionOperation(),
+            CardSelectionConfig.getPoDefaultCardSelection().getSelectionOperation(),
             ObservableReader.NotificationMode.MATCHED_ONLY,
             ObservableReader.PollingMode.REPEATING);
 
@@ -158,11 +128,59 @@ public class Demo_CalypsoClassic_Pcsc {
     synchronized (waitForEnd) {
       waitForEnd.wait();
     }
+  }
 
-    // unregister plugin
-    smartCardService.unregisterPlugin(plugin.getName());
+  private static Reader initPoReader() {
+    /*
+     * Get PO and SAM readers. Apply regulars expressions to reader names to select PO / SAM
+     * readers. Use the getReader helper method from the transaction engine.
+     */
+    Reader poReader = plugin.getReader(PcscReaderUtils.getContactlessReaderName());
 
-    logger.info("Exit program.");
+    /* Both readers are expected not null */
+    if (poReader == null) {
+      throw new IllegalStateException("Bad PO setup");
+    }
+
+    logger.info("PO Reader  NAME = {}", poReader.getName());
+
+    /* Set PcSc settings per reader */
+    ((PcscReader) poReader)
+        .setContactless(true)
+        .setIsoProtocol(PcscReader.IsoProtocol.T1)
+        .setSharingMode(PcscReader.SharingMode.SHARED);
+
+    /* Activate protocols */
+    poReader.activateProtocol(
+        PcscSupportedContactlessProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
+    poReader.activateProtocol(
+        PcscSupportedContactlessProtocols.INNOVATRON_B_PRIME_CARD.name(),
+        ContactlessCardCommonProtocols.INNOVATRON_B_PRIME_CARD.name());
+
+    return poReader;
+  }
+
+  private static Reader initSamReader() {
+    // Get and configure the SAM reader
+    Reader samReader = plugin.getReader(PcscReaderUtils.getContactReaderName());
+
+    logger.info("SAM Reader  NAME = {}", samReader.getName());
+
+    /* Both readers are expected not null */
+    if (samReader == null) {
+      throw new IllegalStateException("Bad SAM setup");
+    }
+    ((PcscReader) samReader)
+        .setContactless(false)
+        .setIsoProtocol(PcscReader.IsoProtocol.T0)
+        .setSharingMode(PcscReader.SharingMode.SHARED);
+
+    samReader.activateProtocol(
+        PcscSupportedContactProtocols.ISO_7816_3.name(),
+        ContactCardCommonProtocols.ISO_7816_3.name());
+
+    return samReader;
   }
 
   /**
