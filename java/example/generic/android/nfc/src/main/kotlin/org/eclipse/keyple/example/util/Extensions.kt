@@ -13,16 +13,10 @@ package org.eclipse.keyple.example.util
 
 import android.content.Context
 import android.os.Build
-import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader
 
 /**
  * Extensions to improve readability of example code
  */
-fun AndroidNfcReader.configFlags(presenceCheckDelay: Int? = null, noPlateformSound: Int? = null, skipNdefCheck: Int? = null) {
-    presenceCheckDelay?.let { this.setParameter("FLAG_READER_PRESENCE_CHECK_DELAY", "$presenceCheckDelay") }
-    noPlateformSound?.let { this.setParameter("FLAG_READER_NO_PLATFORM_SOUNDS", "$noPlateformSound") }
-    skipNdefCheck?.let { this.setParameter("FLAG_READER_SKIP_NDEF_CHECK", "$skipNdefCheck") }
-}
 
 fun Context.getColorResource(id: Int): Int {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

@@ -1,13 +1,13 @@
-apply from: "../../build.gradle"
+//apply from: "../../build.gradle"
 
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'org.eclipse.keyple'
-apply plugin: 'jacoco'
-apply plugin: 'jacoco-android'
-apply plugin: 'org.sonarqube'
+//apply plugin: 'org.eclipse.keyple'
+//apply plugin: 'jacoco'
+//apply plugin: 'jacoco-android'
+//apply plugin: 'org.sonarqube'
 
 
 archivesBaseName = "keyple-android-plugin-nfc"
@@ -48,9 +48,9 @@ android {
             includeAndroidResources = true
         }
         unitTests.all {
-            jacoco {
-                includeNoLocationClasses = true
-            }
+//            jacoco {
+//                includeNoLocationClasses = true
+//            }
         }
     }
 
@@ -107,26 +107,26 @@ android {
 
 }
 
-jacoco {
-    toolVersion "0.8.5"
-}
-
-jacocoAndroidUnitTestReport {
-  csv.enabled false
-  html.enabled true
-  xml.enabled true
-}
-
-sonarqube {
-    properties {
-        property "sonar.projectKey", "eclipse_keyple-plugin_android-nfc"
-        property "sonar.organization", "eclipse"
-        property "sonar.host.url", "https://sonarcloud.io"
-        property "sonar.login", System.getenv('SONAR_LOGIN')
-        property "sonar.branch.name", System.getenv('BRANCH_NAME')
-        property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacocoTestDebugUnitTestReport/jacocoTestDebugUnitTestReport.xml"
-    }
-}
+//jacoco {
+//    toolVersion "0.8.5"
+//}
+//
+//jacocoAndroidUnitTestReport {
+//  csv.enabled false
+//  html.enabled true
+//  xml.enabled true
+//}
+//
+//sonarqube {
+//    properties {
+//        property "sonar.projectKey", "eclipse_keyple-plugin_android-nfc"
+//        property "sonar.organization", "eclipse"
+//        property "sonar.host.url", "https://sonarcloud.io"
+//        property "sonar.login", System.getenv('SONAR_LOGIN')
+//        property "sonar.branch.name", System.getenv('BRANCH_NAME')
+//        property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacocoTestDebugUnitTestReport/jacocoTestDebugUnitTestReport.xml"
+//    }
+//}
 
 //build sources jar
 task androidSourcesJar(type: Jar) {
@@ -136,7 +136,7 @@ task androidSourcesJar(type: Jar) {
 
 //declare javadoc and sources jar as artifacts also
 artifacts {
-    archives androidSourcesJar, javadocJar
+//    archives androidSourcesJar, javadocJar
 }
 
 //sign if needed (based on the doSign variable)
@@ -254,6 +254,7 @@ dependencies {
     Tests
      */
     /** Test **/
+    testImplementation "androidx.test:core-ktx:1.3.0"
     testImplementation "junit:junit:4.12"
 
     /** Mocking for tests **/
@@ -261,5 +262,6 @@ dependencies {
 
     /** Allow to use Android SDK in JVM */
     testImplementation 'org.robolectric:robolectric:4.3.1'
+
 
 }

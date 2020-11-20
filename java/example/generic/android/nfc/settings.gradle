@@ -1,1 +1,4 @@
 rootProject.name = 'example-android-nfc'
+include ':android-nfc-plugin'
+project(':android-nfc-plugin').projectDir = new File(settingsDir, '../../../../../android/keyple-plugin/android-nfc')
+

@@ -38,7 +38,6 @@ import org.eclipse.keyple.example.adapter.EventAdapter
 import org.eclipse.keyple.example.calypso.android.nfc.R
 import org.eclipse.keyple.example.model.ChoiceEventModel
 import org.eclipse.keyple.example.model.EventModel
-import org.eclipse.keyple.example.util.configFlags
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPluginFactory
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcProtocolSettings
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader
@@ -96,7 +95,9 @@ abstract class AbstractExampleActivity : AppCompatActivity(), NavigationView.OnN
          *  remove the observer if it already exist
          */
         reader = plugin.readers.values.first() as AndroidNfcReader
-        reader.configFlags(presenceCheckDelay = 100, noPlateformSound = 0, skipNdefCheck = 0)
+        reader.presenceCheckDelay = 100
+        reader.noPlateformSound = false
+        reader.skipNdefCheck = false
 
         (reader as ObservableReader).addObserver(this)
 
