@@ -30,7 +30,7 @@ class ReaderConfig {
 
   private static final Logger logger = LoggerFactory.getLogger(ReaderConfig.class);
 
-  static CardSelection getCardSelection() {
+  static CardSelection getDefaultSelection() {
     if (cardSelection != null) {
       return cardSelection;
     }
@@ -75,7 +75,7 @@ class ReaderConfig {
             AbstractSmartCard selectedCard = null;
             try {
               selectedCard =
-                  getCardSelection()
+                  getDefaultSelection()
                       .processDefaultSelection(event.getDefaultSelectionsResponse())
                       .getActiveSmartCard();
             } catch (KeypleException e) {

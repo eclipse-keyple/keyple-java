@@ -13,18 +13,17 @@ package org.eclipse.keyple.example.calypso.local.UseCase4_PoAuthentication;
 
 import static org.eclipse.keyple.calypso.command.sam.SamRevision.C1;
 
-import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
-import org.eclipse.keyple.calypso.transaction.PoSelector;
-import org.eclipse.keyple.calypso.transaction.SamSelectionRequest;
-import org.eclipse.keyple.calypso.transaction.SamSelector;
+import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.card.selection.CardSelection;
 import org.eclipse.keyple.core.card.selection.CardSelector;
+import org.eclipse.keyple.core.card.selection.SelectionsResult;
+import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
 
 class CardSelectionConfig {
 
-  static CardSelection getPoCardSelection() {
+  private static CardSelection getPoCardSelection() {
     // Prepare a Calypso PO selection
     CardSelection cardSelection = new CardSelection();
 
@@ -54,7 +53,7 @@ class CardSelectionConfig {
     return cardSelection;
   }
 
-  static CardSelection getSamCardSelection() {
+  private static CardSelection getSamCardSelection() {
     // Create a SAM resource after selecting the SAM
     CardSelection samSelection = new CardSelection();
 
@@ -64,5 +63,36 @@ class CardSelectionConfig {
     samSelection.prepareSelection(new SamSelectionRequest(samSelector));
 
     return samSelection;
+  }
+
+  static CalypsoSam selectSam(Reader samReader) {
+    // Create a SAM resource after selecting the SAM
+    CardSelection samSelection = CardSelectionConfig.getSamCardSelection();
+
+    if (!samReader.isCardPresent()) {
+      throw new IllegalStateException("No SAM is present in the reader " + samReader.getName());
+    }
+
+    SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
+
+    if (!selectionsResult.hasActiveSelection()) {
+      throw new IllegalStateException("Unable to open a logical channel for SAM!");
+    }
+
+    CalypsoSam calypsoSam = (CalypsoSam) selectionsResult.getActiveSmartCard();
+
+    return calypsoSam;
+  }
+
+  static CalypsoPo selectPo(Reader poReader) {
+    // Prepare a Calypso PO selection
+    CardSelection cardSelection = CardSelectionConfig.getPoCardSelection();
+
+    // Actual PO communication: operate through a single request the Calypso PO selection
+    // and the file read
+    CalypsoPo calypsoPo =
+        (CalypsoPo) cardSelection.processExplicitSelection(poReader).getActiveSmartCard();
+
+    return calypsoPo;
   }
 }
