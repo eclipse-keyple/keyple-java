@@ -11,23 +11,20 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.calypso.local.UseCase4_PoAuthentication;
 
+import static org.eclipse.keyple.example.calypso.local.UseCase4_PoAuthentication.CardSelectionConfig.selectPo;
+import static org.eclipse.keyple.example.calypso.local.UseCase4_PoAuthentication.CardSelectionConfig.selectSam;
+
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.CalypsoSam;
 import org.eclipse.keyple.calypso.transaction.ElementaryFile;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.core.card.selection.CardResource;
-import org.eclipse.keyple.core.card.selection.CardSelection;
-import org.eclipse.keyple.core.card.selection.SelectionsResult;
-import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.util.ContactCardCommonProtocols;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
-import org.eclipse.keyple.example.calypso.local.common.CalypsoUtils;
-import org.eclipse.keyple.example.calypso.local.common.StubCalypsoClassic;
-import org.eclipse.keyple.example.calypso.local.common.StubSamCalypsoClassic;
+import org.eclipse.keyple.example.calypso.local.common.*;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubPluginFactory;
 import org.eclipse.keyple.plugin.stub.StubReader;
@@ -66,6 +63,8 @@ import org.slf4j.LoggerFactory;
 public class PoAuthentication_Stub {
   private static final Logger logger = LoggerFactory.getLogger(PoAuthentication_Stub.class);
 
+  private static StubPlugin plugin;
+
   public static void main(String[] args) {
 
     // Get the instance of the SmartCardService (Singleton pattern)
@@ -74,49 +73,13 @@ public class PoAuthentication_Stub {
     final String STUB_PLUGIN_NAME = "stub1";
 
     // Register Stub plugin in the platform
-    Plugin stubPlugin =
-        smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME, null, null));
+    plugin = (StubPlugin) smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
 
-    // Plug PO and SAM stub reader.
-    ((StubPlugin) stubPlugin).plugStubReader("poReader", true);
-    ((StubPlugin) stubPlugin).plugStubReader("samReader", true);
+    Reader poReader = initPoReader();
 
-    // Get a PO and a SAM reader ready to work with a Calypso PO.
-    Reader poReader = stubPlugin.getReader("poReader");
-    Reader samReader = stubPlugin.getReader("samReader");
+    Reader samReader = initSamReader();
 
-    // activate protocols
-    poReader.activateProtocol(
-        StubSupportedProtocols.ISO_14443_4.name(),
-        ContactlessCardCommonProtocols.ISO_14443_4.name());
-    samReader.activateProtocol(
-        StubSupportedProtocols.ISO_7816_3.name(), ContactCardCommonProtocols.ISO_7816_3.name());
-
-    // Create 'virtual' Calypso PO
-    StubSmartCard calypsoStubCard = new StubCalypsoClassic();
-
-    logger.info("Insert stub PO.");
-    ((StubReader) poReader).insertCard(calypsoStubCard);
-
-    // Create 'virtual' Calypso SAM
-    StubSmartCard calypsoSamStubCard = new StubSamCalypsoClassic();
-
-    logger.info("Insert stub SAM.");
-    ((StubReader) samReader).insertCard(calypsoSamStubCard);
-
-    // Create a SAM resource after selecting the SAM
-    CardSelection samSelection = CardSelectionConfig.getSamCardSelection();
-
-    if (samReader.isCardPresent()) {
-      throw new IllegalStateException("No SAM is present in the reader " + samReader.getName());
-    }
-    SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
-
-    if (!selectionsResult.hasActiveSelection()) {
-      throw new IllegalStateException("Unable to open a logical channel for SAM!");
-    }
-
-    CalypsoSam calypsoSam = (CalypsoSam) selectionsResult.getActiveSmartCard();
+    CalypsoSam calypsoSam = selectSam(samReader);
 
     CardResource<CalypsoSam> samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
 
@@ -125,19 +88,12 @@ public class PoAuthentication_Stub {
     logger.info("= SAM Reader  NAME = {}", samReader.getName());
 
     // Check if a PO is present in the reader
-    // Check if a PO is present in the reader
     if (!poReader.isCardPresent()) {
       logger.error("No PO is present in the reader");
     }
     logger.info("= ##### 1st PO exchange: AID based selection with reading of Environment file.");
 
-    // Prepare a Calypso PO selection
-    CardSelection cardSelection = CardSelectionConfig.getPoCardSelection();
-
-    // Actual PO communication: operate through a single request the Calypso PO selection
-    // and the file read
-    CalypsoPo calypsoPo =
-        (CalypsoPo) cardSelection.processExplicitSelection(poReader).getActiveSmartCard();
+    CalypsoPo calypsoPo = selectPo(poReader);
 
     logger.info("The selection of the PO has succeeded.");
 
@@ -205,5 +161,43 @@ public class PoAuthentication_Stub {
     logger.info("= ##### End of the Calypso PO processing.");
 
     System.exit(0);
+  }
+
+  private static Reader initPoReader() {
+    // Plug PO
+    plugin.plugStubReader("poReader", true);
+
+    Reader poReader = plugin.getReader("poReader");
+
+    // activate protocols
+    poReader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
+
+    // Create 'virtual' Calypso PO
+    StubSmartCard calypsoStubCard = new StubCalypsoClassic();
+
+    logger.info("Insert stub PO.");
+    ((StubReader) poReader).insertCard(calypsoStubCard);
+
+    return poReader;
+  }
+
+  private static Reader initSamReader() {
+    // Plug a SAM stub reader.
+    ((StubPlugin) plugin).plugStubReader("samReader", true);
+    Reader samReader = plugin.getReader("samReader");
+
+    // activate protocols
+    samReader.activateProtocol(
+        StubSupportedProtocols.ISO_7816_3.name(), ContactCardCommonProtocols.ISO_7816_3.name());
+
+    // Create 'virtual' Calypso SAM
+    StubSmartCard calypsoSamStubCard = new StubSamCalypsoClassic();
+
+    logger.info("Insert stub SAM.");
+    ((StubReader) samReader).insertCard(calypsoSamStubCard);
+
+    return samReader;
   }
 }

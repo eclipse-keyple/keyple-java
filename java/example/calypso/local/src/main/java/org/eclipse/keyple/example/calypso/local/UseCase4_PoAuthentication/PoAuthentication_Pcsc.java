@@ -11,14 +11,14 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.calypso.local.UseCase4_PoAuthentication;
 
+import static org.eclipse.keyple.example.calypso.local.UseCase4_PoAuthentication.CardSelectionConfig.selectPo;
+import static org.eclipse.keyple.example.calypso.local.UseCase4_PoAuthentication.CardSelectionConfig.selectSam;
+
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.CalypsoSam;
 import org.eclipse.keyple.calypso.transaction.ElementaryFile;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.core.card.selection.CardResource;
-import org.eclipse.keyple.core.card.selection.CardSelection;
-import org.eclipse.keyple.core.card.selection.SelectionsResult;
-import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.util.ContactCardCommonProtocols;
@@ -27,10 +27,7 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
 import org.eclipse.keyple.example.calypso.local.common.CalypsoUtils;
 import org.eclipse.keyple.example.calypso.local.common.PcscReaderUtils;
-import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
-import org.eclipse.keyple.plugin.pcsc.PcscReader;
-import org.eclipse.keyple.plugin.pcsc.PcscSupportedContactProtocols;
-import org.eclipse.keyple.plugin.pcsc.PcscSupportedContactlessProtocols;
+import org.eclipse.keyple.plugin.pcsc.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,55 +60,29 @@ import org.slf4j.LoggerFactory;
 public class PoAuthentication_Pcsc {
   private static final Logger logger = LoggerFactory.getLogger(PoAuthentication_Pcsc.class);
 
+  private static PcscPlugin plugin;
+
   public static void main(String[] args) {
 
     // Get the instance of the SmartCardService (Singleton pattern)
     SmartCardService smartCardService = SmartCardService.getInstance();
 
-    // Register the PcscPlugin with SmartCardService, get the corresponding generic Plugin in return
-    // This example does not use observation, no exception handler is defined.
-    Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory(null, null));
+    // Register the PcscPlugin with SmartCardService, get the corresponding generic Plugin in
+    // return
+    plugin = (PcscPlugin) smartCardService.registerPlugin(new PcscPluginFactory());
 
-    // Get and configure the PO reader
-    Reader poReader = plugin.getReader(PcscReaderUtils.getContactlessReaderName());
-    ((PcscReader) poReader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
+    Reader poReader = initPoReader();
 
-    // Get and configure the SAM reader
-    Reader samReader = plugin.getReader(PcscReaderUtils.getContactReaderName());
-    ((PcscReader) samReader).setContactless(false).setIsoProtocol(PcscReader.IsoProtocol.T0);
+    Reader samReader = initSamReader();
 
-    // activate protocols
-    poReader.activateProtocol(
-        PcscSupportedContactlessProtocols.ISO_14443_4.name(),
-        ContactlessCardCommonProtocols.ISO_14443_4.name());
-    samReader.activateProtocol(
-        PcscSupportedContactProtocols.ISO_7816_3.name(),
-        ContactCardCommonProtocols.ISO_7816_3.name());
-
-    // Create a SAM resource after selecting the SAM
-    CardSelection samSelection = CardSelectionConfig.getSamCardSelection();
-
-    if (samReader.isCardPresent()) {
-      throw new IllegalStateException("No SAM is present in the reader " + samReader.getName());
-    }
-    SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
-
-    if (!selectionsResult.hasActiveSelection()) {
-      throw new IllegalStateException("Unable to open a logical channel for SAM!");
-    }
-
-    CalypsoSam calypsoSam = (CalypsoSam) selectionsResult.getActiveSmartCard();
-
-    CardResource<CalypsoSam> samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
+    CalypsoSam calypsoSam = selectSam(samReader);
 
     // display basic information about the readers and SAM
     logger.info("=============== UseCase Calypso #4: Po Authentication ==================");
     logger.info("= PO Reader  NAME = {}", poReader.getName());
-    String samSerialNumber = ByteArrayUtil.toHex(samResource.getSmartCard().getSerialNumber());
+    String samSerialNumber = ByteArrayUtil.toHex(calypsoSam.getSerialNumber());
     logger.info(
-        "= SAM Reader  NAME = {}, SERIAL NUMBER = {}",
-        samResource.getReader().getName(),
-        samSerialNumber);
+        "= SAM Reader  NAME = {}, SERIAL NUMBER = {}", samReader.getName(), samSerialNumber);
 
     // Check if a PO is present in the reader
     if (!poReader.isCardPresent()) {
@@ -120,13 +91,7 @@ public class PoAuthentication_Pcsc {
 
     logger.info("= ##### 1st PO exchange: AID based selection with reading of Environment file.");
 
-    // Prepare a Calypso PO selection
-    CardSelection cardSelection = CardSelectionConfig.getPoCardSelection();
-
-    // Actual PO communication: operate through a single request the Calypso PO selection
-    // and the file read
-    CalypsoPo calypsoPo =
-        (CalypsoPo) cardSelection.processExplicitSelection(poReader).getActiveSmartCard();
+    CalypsoPo calypsoPo = selectPo(poReader);
 
     logger.info("The selection of the PO has succeeded.");
 
@@ -143,12 +108,16 @@ public class PoAuthentication_Pcsc {
     logger.info(
         "= ##### 2nd PO exchange: open and close a secure session to perform authentication.");
 
+    // create a sam resource
+    CardResource<CalypsoSam> samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
+
+    // prepare the PO Transaction
     PoTransaction poTransaction =
         new PoTransaction(
             new CardResource<CalypsoPo>(poReader, calypsoPo),
             CalypsoUtils.getSecuritySettings(samResource));
 
-    // Read the EventLog file at the Session Opening
+    // prepare the reading of the EventLog file at the Session Opening
     poTransaction.prepareReadRecordFile(
         CalypsoClassicInfo.SFI_EventLog, CalypsoClassicInfo.RECORD_NUMBER_1);
 
@@ -165,7 +134,7 @@ public class PoAuthentication_Pcsc {
       logger.info("========= Previous Secure Session was not ratified. =====================");
     }
 
-    // Read the ContractList file inside the Secure Session
+    // Prepare the reading the ContractList file inside the Secure Session
     poTransaction.prepareReadRecordFile(
         CalypsoClassicInfo.SFI_ContractList, CalypsoClassicInfo.RECORD_NUMBER_1);
 
@@ -195,5 +164,28 @@ public class PoAuthentication_Pcsc {
     logger.info("= ##### End of the Calypso PO processing.");
 
     System.exit(0);
+  }
+
+  private static Reader initPoReader() {
+    // Get and configure the PO reader
+    Reader poReader = plugin.getReader(PcscReaderUtils.getContactlessReaderName());
+    ((PcscReader) poReader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
+
+    // activate protocols
+    poReader.activateProtocol(
+        PcscSupportedContactlessProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
+    return poReader;
+  }
+
+  private static Reader initSamReader() {
+    // Get and configure the SAM reader
+    Reader samReader = plugin.getReader(PcscReaderUtils.getContactReaderName());
+    ((PcscReader) samReader).setContactless(false).setIsoProtocol(PcscReader.IsoProtocol.T0);
+
+    samReader.activateProtocol(
+        PcscSupportedContactProtocols.ISO_7816_3.name(),
+        ContactCardCommonProtocols.ISO_7816_3.name());
+    return samReader;
   }
 }

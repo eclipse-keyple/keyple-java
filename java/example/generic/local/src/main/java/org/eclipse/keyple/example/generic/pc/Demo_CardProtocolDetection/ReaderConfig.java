@@ -29,7 +29,7 @@ class ReaderConfig {
 
   private static CardSelection cardSelection;
 
-  static CardSelection getCardSelection() {
+  static CardSelection getDefaultSelection() {
     if (cardSelection != null) {
       return cardSelection;
     }
@@ -92,7 +92,7 @@ class ReaderConfig {
             logger.warn("Unexpected card insertion event");
             break;
           case CARD_MATCHED:
-            CardSelection cardSelection = getCardSelection();
+            CardSelection cardSelection = getDefaultSelection();
             /* get the card that matches one of the two selection targets */
             if (cardSelection
                 .processDefaultSelection(event.getDefaultSelectionsResponse())
