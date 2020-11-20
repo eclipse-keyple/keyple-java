@@ -46,8 +46,7 @@ import org.eclipse.keyple.plugin.remote.MessageDto;
 public interface AsyncEndpointServer {
 
   /**
-   * This method is invoked by the {@link AsyncNodeServer} node to send a {@link MessageDto} to the
-   * client. <br>
+   * Is invoked by the {@link AsyncNodeServer} node to send a {@link MessageDto} to the client. <br>
    * You have to :
    *
    * <ul>

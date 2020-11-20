@@ -34,8 +34,8 @@ import org.eclipse.keyple.plugin.remote.impl.LocalServiceClientUtils;
 public interface LocalServiceClient {
 
   /**
-   * This method allows you to connect a local card reader to a remote server and execute a specific
-   * ticketing service from the server.
+   * Allows you to connect a local card reader to a remote server and execute a specific ticketing
+   * service from the server.
    *
    * <p>The service is identify by the <b>serviceId</b> parameter.
    *

@@ -44,9 +44,9 @@ import java.util.List;
 public interface SyncNodeServer {
 
   /**
-   * This method must be invoked by the server controller endpoint following the reception and
-   * deserialization of a {@link MessageDto} from the client. Following the receive of a request,
-   * the controller must :
+   * Must be invoked by the server controller endpoint following the reception and deserialization
+   * of a {@link MessageDto} from the client. Following the receive of a request, the controller
+   * must :
    *
    * <ul>
    *   <li>Retrieve the node {@link SyncNodeServer} using one of the following utility methods,

@@ -39,7 +39,7 @@ abstract class AbstractMessageHandler {
 
   /**
    * (package-private)<br>
-   * This method processes an incoming message.<br>
+   * Processes an incoming message.<br>
    * It should be invoked by a node following the reception of a {@link MessageDto}.
    *
    * @param msg The message to process.
@@ -48,7 +48,7 @@ abstract class AbstractMessageHandler {
 
   /**
    * (package-private)<br>
-   * This method builds and bind a {@link AsyncNodeClient} with the handler.<br>
+   * Builds and bind a {@link AsyncNodeClient} with the handler.<br>
    * It must be invoked by the factory during the initialization phase.
    *
    * @param endpoint The {@link AsyncEndpointClient} endpoint.
@@ -60,7 +60,7 @@ abstract class AbstractMessageHandler {
 
   /**
    * (package-private)<br>
-   * This method builds and bind a {@link AsyncNodeServer} with the handler.<br>
+   * Builds and bind a {@link AsyncNodeServer} with the handler.<br>
    * It must be invoked by the factory during the initialization phase.
    *
    * @param endpoint The {@link AsyncEndpointServer} endpoint.
@@ -71,7 +71,7 @@ abstract class AbstractMessageHandler {
 
   /**
    * (package-private)<br>
-   * This method builds and bind a {@link SyncNodeClient} with the handler.<br>
+   * Builds and bind a {@link SyncNodeClient} with the handler.<br>
    * It must be invoked by the factory during the initialization phase.
    *
    * @param endpoint The {@link SyncEndpointClient} endpoint.
@@ -91,7 +91,7 @@ abstract class AbstractMessageHandler {
 
   /**
    * (package-private)<br>
-   * This method builds and bind a {@link SyncNodeServer} with the handler.<br>
+   * Builds and bind a {@link SyncNodeServer} with the handler.<br>
    * It must be invoked by the factory during the initialization phase.
    */
   void bindSyncNodeServer() {

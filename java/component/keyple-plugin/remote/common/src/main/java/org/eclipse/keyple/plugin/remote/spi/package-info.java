@@ -1,5 +1,5 @@
 /**
- * Contains the SPIs of the <b>Common</b> components (Network Endpoints).
+ * Contains the SPIs used by the <b>Common</b> components (Network Endpoints).
  *
  * @since 1.0
  */

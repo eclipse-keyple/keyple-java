@@ -28,8 +28,7 @@ import org.eclipse.keyple.plugin.remote.SyncNodeClient;
 public interface SyncEndpointClient {
 
   /**
-   * This method is invoked by the {@link SyncNodeClient} node to send a {@link MessageDto} to the
-   * server.<br>
+   * Is invoked by the {@link SyncNodeClient} node to send a {@link MessageDto} to the server.<br>
    * You have to serialize and send the provided {@link MessageDto} to the server, then retry the
    * response which is a list of {@link MessageDto}.
    *

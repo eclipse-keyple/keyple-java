@@ -28,8 +28,8 @@ import org.eclipse.keyple.plugin.remote.MessageDto;
 public interface AsyncEndpointClient {
 
   /**
-   * This method is invoked by the {@link AsyncNodeClient} node to open a communication session with
-   * the server.<br>
+   * Is invoked by the {@link AsyncNodeClient} node to open a communication session with the server.
+   * <br>
    * Following the opening of the session you must :
    *
    * <ul>
@@ -51,8 +51,7 @@ public interface AsyncEndpointClient {
   void openSession(String sessionId);
 
   /**
-   * This method is invoked by the {@link AsyncNodeClient} node to send a {@link MessageDto} to the
-   * server. <br>
+   * Is invoked by the {@link AsyncNodeClient} node to send a {@link MessageDto} to the server. <br>
    * You have to :
    *
    * <ul>
@@ -67,8 +66,8 @@ public interface AsyncEndpointClient {
   void sendMessage(MessageDto msg);
 
   /**
-   * This method is invoked by the {@link AsyncNodeClient} node to close a communication session
-   * with the server identified by the provided <b>sessionId</b>.<br>
+   * Is invoked by the {@link AsyncNodeClient} node to close a communication session with the server
+   * identified by the provided <b>sessionId</b>.<br>
    * Following the closing of the session you must :
    *
    * <ul>

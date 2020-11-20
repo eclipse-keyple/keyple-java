@@ -47,8 +47,8 @@ import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
 public interface AsyncNodeServer {
 
   /**
-   * This method must be invoked by the {@link AsyncEndpointServer} endpoint following the reception
-   * and deserialization of a {@link MessageDto} from the client.
+   * Must be invoked by the {@link AsyncEndpointServer} endpoint following the reception and
+   * deserialization of a {@link MessageDto} from the client.
    *
    * @param msg The message to process.
    * @since 1.0
@@ -56,8 +56,8 @@ public interface AsyncNodeServer {
   void onMessage(MessageDto msg);
 
   /**
-   * This method must be invoked by the {@link AsyncEndpointServer} endpoint following the closing
-   * of a communication session with the client.
+   * Must be invoked by the {@link AsyncEndpointServer} endpoint following the closing of a
+   * communication session with the client.
    *
    * @param sessionId The session id registered during the session opening process.
    * @since 1.0
@@ -65,8 +65,8 @@ public interface AsyncNodeServer {
   void onClose(String sessionId);
 
   /**
-   * This method must be invoked by the {@link AsyncEndpointServer} endpoint if a technical error
-   * occurs when sending a message to the client.
+   * Must be invoked by the {@link AsyncEndpointServer} endpoint if a technical error occurs when
+   * sending a message to the client.
    *
    * @param sessionId The session id register during the session opening process.
    * @param error The unexpected error.

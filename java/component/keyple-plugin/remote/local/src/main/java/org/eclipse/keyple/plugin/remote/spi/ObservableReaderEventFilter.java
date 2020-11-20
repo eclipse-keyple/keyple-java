@@ -25,7 +25,7 @@ import org.eclipse.keyple.core.service.event.ReaderEvent;
 public interface ObservableReaderEventFilter {
 
   /**
-   * This method is invoked when a reader event occurs, before propagating it to the server.
+   * Is invoked when a reader event occurs, before propagating it to the server.
    *
    * <p>Then, you have the possibility to :
    *
@@ -45,11 +45,10 @@ public interface ObservableReaderEventFilter {
   Object beforePropagation(ReaderEvent event);
 
   /**
-   * This method must return the class of the user output data expected at the output of the remote
-   * service.
+   * Must return the class of the user output data expected at the output of the remote service.
    *
-   * <p>This method is invoked in order to deserialize the user output data before to invoke the
-   * method {@link #afterPropagation(Object)}.
+   * <p>Is invoked in order to deserialize the user output data before to invoke the method {@link
+   * #afterPropagation(Object)}.
    *
    * @return <b>null</b> if there is no user output data to deserialize.
    * @since 1.0
@@ -57,8 +56,7 @@ public interface ObservableReaderEventFilter {
   Class<? extends Object> getUserOutputDataClass();
 
   /**
-   * This method is invoked at the end of the processing of the remote service to deliver the
-   * result.
+   * Is invoked at the end of the processing of the remote service to deliver the result.
    *
    * @param userOutputData The user output data previously deserialized using the method {@link
    *     #getUserOutputDataClass()}, or <b>null</b> if there is no data.

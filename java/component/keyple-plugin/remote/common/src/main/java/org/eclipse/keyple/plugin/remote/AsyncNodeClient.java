@@ -47,8 +47,8 @@ import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
 public interface AsyncNodeClient {
 
   /**
-   * This method must be invoked by the {@link AsyncEndpointClient} endpoint following the opening
-   * of a new communication session with the server.
+   * Must be invoked by the {@link AsyncEndpointClient} endpoint following the opening of a new
+   * communication session with the server.
    *
    * @param sessionId The session id previously transmitted to the {@link AsyncEndpointClient}
    *     endpoint to open a session.
@@ -57,8 +57,8 @@ public interface AsyncNodeClient {
   void onOpen(String sessionId);
 
   /**
-   * This method must be invoked by the {@link AsyncEndpointClient} endpoint following the reception
-   * and deserialization of a {@link MessageDto} from the server.
+   * Must be invoked by the {@link AsyncEndpointClient} endpoint following the reception and
+   * deserialization of a {@link MessageDto} from the server.
    *
    * @param msg The message to process.
    * @since 1.0
@@ -66,8 +66,8 @@ public interface AsyncNodeClient {
   void onMessage(MessageDto msg);
 
   /**
-   * This method must be invoked by the {@link AsyncEndpointClient} endpoint following the closing
-   * of a communication session with the server.
+   * Must be invoked by the {@link AsyncEndpointClient} endpoint following the closing of a
+   * communication session with the server.
    *
    * @param sessionId The session id registered during the session opening process.
    * @since 1.0
@@ -75,8 +75,8 @@ public interface AsyncNodeClient {
   void onClose(String sessionId);
 
   /**
-   * This method must be invoked by the {@link AsyncEndpointClient} endpoint if a technical error
-   * occurs when sending a message to the server.
+   * Must be invoked by the {@link AsyncEndpointClient} endpoint if a technical error occurs when
+   * sending a message to the server.
    *
    * @param sessionId The session id registered during the session opening process.
    * @param error The unexpected error.

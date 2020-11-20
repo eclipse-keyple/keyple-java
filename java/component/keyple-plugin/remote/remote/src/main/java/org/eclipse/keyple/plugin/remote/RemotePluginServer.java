@@ -94,8 +94,8 @@ public interface RemotePluginServer extends ObservablePlugin {
   RemoteReaderServer getReader(String name) throws KeypleReaderNotFoundException;
 
   /**
-   * This method must be invoked to terminates the remote ticketing service associated to the
-   * provided remote reader name and returns to the client the provided user output data.
+   * Must be invoked to terminates the remote ticketing service associated to the provided remote
+   * reader name and returns to the client the provided user output data.
    *
    * @param remoteReaderName The remote reader name.
    * @param userOutputData The object containing user output data.

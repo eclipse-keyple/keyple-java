@@ -56,7 +56,7 @@ final class ServerPushEventStrategy {
   /**
    * (package-private)<br>
    * Sets the duration associated to the strategy.<br>
-   * This method must be invoked by the factory during the initialization process.
+   * Must be invoked by the factory during the initialization process.
    *
    * @param durationInSeconds The duration in seconds (must be {@code >= 0})
    * @return the current instance
