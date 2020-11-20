@@ -86,11 +86,10 @@ public class PoAuthentication_Stub {
     logger.info("=============== UseCase Calypso #4: Po Authentication ==================");
     logger.info("= PO Reader  NAME = {}", poReader.getName());
     logger.info("= SAM Reader  NAME = {}", samReader.getName());
-
-    // Check if a PO is present in the reader
-    if (!poReader.isCardPresent()) {
-      logger.error("No PO is present in the reader");
-    }
+    logger.info(
+        "= SAM Reader  NAME = {}, SERIAL NUMBER = {}",
+        samReader.getName(),
+        ByteArrayUtil.toHex(calypsoSam.getSerialNumber()));
     logger.info("= ##### 1st PO exchange: AID based selection with reading of Environment file.");
 
     CalypsoPo calypsoPo = selectPo(poReader);

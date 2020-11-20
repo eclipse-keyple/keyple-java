@@ -85,6 +85,11 @@ class CardSelectionConfig {
   }
 
   static CalypsoPo selectPo(Reader poReader) {
+    // Check if a PO is present in the reader
+    if (!poReader.isCardPresent()) {
+      throw new IllegalStateException("No PO is present in the reader " + poReader.getName());
+    }
+
     // Prepare a Calypso PO selection
     CardSelection cardSelection = CardSelectionConfig.getPoCardSelection();
 
