@@ -81,7 +81,7 @@ public class PoAuthentication_Stub {
 
     CalypsoSam calypsoSam = selectSam(samReader);
 
-    CardResource<CalypsoSam> samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
+    CalypsoPo calypsoPo = selectPo(poReader);
 
     logger.info("=============== UseCase Calypso #4: Po Authentication ==================");
     logger.info("= PO Reader  NAME = {}", poReader.getName());
@@ -92,9 +92,6 @@ public class PoAuthentication_Stub {
         ByteArrayUtil.toHex(calypsoSam.getSerialNumber()));
     logger.info("= ##### 1st PO exchange: AID based selection with reading of Environment file.");
 
-    CalypsoPo calypsoPo = selectPo(poReader);
-
-    logger.info("The selection of the PO has succeeded.");
 
     // All data collected from the PO are available in CalypsoPo
     // Get the Environment and Holder data
@@ -108,6 +105,8 @@ public class PoAuthentication_Stub {
     // Go on with the reading of the first record of the EventLog file
     logger.info(
         "= ##### 2nd PO exchange: open and close a secure session to perform authentication.");
+
+    CardResource<CalypsoSam> samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
 
     PoTransaction poTransaction =
         new PoTransaction(

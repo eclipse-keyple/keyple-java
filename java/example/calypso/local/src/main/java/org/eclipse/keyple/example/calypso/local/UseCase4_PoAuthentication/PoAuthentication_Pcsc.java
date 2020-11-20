@@ -77,6 +77,8 @@ public class PoAuthentication_Pcsc {
 
     CalypsoSam calypsoSam = selectSam(samReader);
 
+    CalypsoPo calypsoPo = selectPo(poReader);
+
     // display basic information about the readers and SAM
     logger.info("=============== UseCase Calypso #4: Po Authentication ==================");
     logger.info("= PO Reader  NAME = {}", poReader.getName());
@@ -85,10 +87,6 @@ public class PoAuthentication_Pcsc {
         samReader.getName(),
         ByteArrayUtil.toHex(calypsoSam.getSerialNumber()));
     logger.info("= ##### 1st PO exchange: AID based selection with reading of Environment file.");
-
-    CalypsoPo calypsoPo = selectPo(poReader);
-
-    logger.info("The selection of the PO has succeeded.");
 
     // All data collected from the PO are available in CalypsoPo
     // Get the Environment and Holder data
