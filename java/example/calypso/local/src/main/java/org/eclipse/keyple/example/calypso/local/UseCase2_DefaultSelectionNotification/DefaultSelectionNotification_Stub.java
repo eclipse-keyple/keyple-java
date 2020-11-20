@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  *       </ul>
  * </ul>
  */
-public class DefaultSelectionNotification_Stub {
+class DefaultSelectionNotification_Stub {
   private static final Logger logger =
       LoggerFactory.getLogger(DefaultSelectionNotification_Stub.class);
 
@@ -83,7 +83,7 @@ public class DefaultSelectionNotification_Stub {
     /*
      * Prepare a Calypso PO selection
      */
-    CardSelection cardSelection = ReaderConfig.getCardSelection();
+    CardSelection cardSelection = CardSelectionConfig.getCardSelection();
     /*
      * Provide the Reader with the selection operation to be processed when a PO is inserted.
      */
@@ -94,7 +94,7 @@ public class DefaultSelectionNotification_Stub {
             ObservableReader.PollingMode.REPEATING);
 
     /* Set a CardSelectionConfig that contains the ticketing logic for the reader */
-    ((ObservableReader) poReader).addObserver(ReaderConfig.getObserver());
+    ((ObservableReader) poReader).addObserver(new CardEventObserver());
 
     logger.info(
         "= #### Wait for a PO. The default AID based selection with reading of Environment");

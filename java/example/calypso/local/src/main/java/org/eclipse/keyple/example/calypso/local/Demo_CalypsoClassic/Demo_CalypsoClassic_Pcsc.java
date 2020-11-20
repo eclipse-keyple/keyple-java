@@ -21,7 +21,6 @@ import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleException;
 import org.eclipse.keyple.core.service.util.ContactCardCommonProtocols;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
-import org.eclipse.keyple.example.calypso.local.Demo_CalypsoClassic.PoReaderConfig.PoReaderObserver;
 import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
 import org.eclipse.keyple.example.calypso.local.common.PcscReaderUtils;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
@@ -36,7 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * <ol>
  *   <li>Setting up a sam reader configuration and adding an observer method ({@link
- *       PoReaderConfig#getObserver()#update})
+ *       CardEventObserver()#update})
  *   <li>Starting a card operation when a PO presence is notified (processSeMatch
  *       operateSeTransaction)
  *   <li>Opening a logical channel with the SAM (C1 SAM is expected) see ({@link
@@ -141,17 +140,17 @@ public class Demo_CalypsoClassic_Pcsc {
         ContactCardCommonProtocols.ISO_7816_3.name());
 
     /* Setting up the reader observer on the po Reader */
-    PoReaderObserver poReaderObserver = PoReaderConfig.getObserver();
+    CardEventObserver poEventObserver = new CardEventObserver();
 
-    poReaderObserver.setSamReader(samReader);
+    poEventObserver.setSamReader(samReader);
 
     /* Set terminal as Observer of the first reader */
-    ((ObservableReader) poReader).addObserver(poReaderObserver);
+    ((ObservableReader) poReader).addObserver(poEventObserver);
 
     /* Set the default selection operation */
     ((ObservableReader) poReader)
         .setDefaultSelectionRequest(
-            PoReaderConfig.getPoCardSelection().getSelectionOperation(),
+            CardSelectionConfig.getPoCardSelection().getSelectionOperation(),
             ObservableReader.NotificationMode.MATCHED_ONLY,
             ObservableReader.PollingMode.REPEATING);
 
