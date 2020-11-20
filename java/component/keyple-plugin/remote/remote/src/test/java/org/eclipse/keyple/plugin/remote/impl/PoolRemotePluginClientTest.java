@@ -52,11 +52,7 @@ public class PoolRemotePluginClientTest {
   @Test
   public void factory_withSyncEndpoint_shouldCreate_PluginWith_SyncNode() {
     SmartCardService.getInstance()
-        .registerPlugin(
-            PoolRemotePluginClientFactory.builder()
-                .withSyncNode(syncEndpoint)
-                .usingTimeout(10)
-                .build());
+        .registerPlugin(PoolRemotePluginClientFactory.builder().withSyncNode(syncEndpoint).build());
     assertThat(PoolRemotePluginClientUtils.getRemotePlugin()).isNotNull();
 
     // unregister plugin
@@ -85,11 +81,7 @@ public class PoolRemotePluginClientTest {
     syncEndpoint = new MockSyncEndpoint();
     remotePoolPlugin =
         (PoolRemotePluginClientImpl)
-            PoolRemotePluginClientFactory.builder()
-                .withSyncNode(syncEndpoint)
-                .usingDefaultTimeout()
-                .build()
-                .getPlugin();
+            PoolRemotePluginClientFactory.builder().withSyncNode(syncEndpoint).build().getPlugin();
     remoteReader = remotePoolPlugin.allocateReader(groupReference);
     assertThat(remotePoolPlugin.getReader(remoteReader.getName())).isNotNull();
   }
@@ -100,11 +92,7 @@ public class PoolRemotePluginClientTest {
         new MockSyncEndpoint().setException(new KeypleAllocationNoReaderException("msg"));
     remotePoolPlugin =
         (PoolRemotePluginClientImpl)
-            PoolRemotePluginClientFactory.builder()
-                .withSyncNode(syncEndpoint)
-                .usingDefaultTimeout()
-                .build()
-                .getPlugin();
+            PoolRemotePluginClientFactory.builder().withSyncNode(syncEndpoint).build().getPlugin();
     remotePoolPlugin.allocateReader(groupReference);
   }
 
@@ -113,11 +101,7 @@ public class PoolRemotePluginClientTest {
     syncEndpoint = new MockSyncEndpoint();
     remotePoolPlugin =
         (PoolRemotePluginClientImpl)
-            PoolRemotePluginClientFactory.builder()
-                .withSyncNode(syncEndpoint)
-                .usingDefaultTimeout()
-                .build()
-                .getPlugin();
+            PoolRemotePluginClientFactory.builder().withSyncNode(syncEndpoint).build().getPlugin();
     remotePoolPlugin.register();
     remoteReader = remotePoolPlugin.allocateReader(groupReference);
     remotePoolPlugin.releaseReader(remoteReader);
@@ -129,11 +113,7 @@ public class PoolRemotePluginClientTest {
     syncEndpoint = new MockSyncEndpoint().setException(new KeypleReaderNotFoundException("msg"));
     remotePoolPlugin =
         (PoolRemotePluginClientImpl)
-            PoolRemotePluginClientFactory.builder()
-                .withSyncNode(syncEndpoint)
-                .usingDefaultTimeout()
-                .build()
-                .getPlugin();
+            PoolRemotePluginClientFactory.builder().withSyncNode(syncEndpoint).build().getPlugin();
     remoteReader = remotePoolPlugin.allocateReader(groupReference);
     remotePoolPlugin.releaseReader(remoteReader);
   }
@@ -147,11 +127,7 @@ public class PoolRemotePluginClientTest {
     syncEndpoint = new MockSyncEndpoint().setException(new KeypleReaderNotFoundException("msg"));
     remotePoolPlugin =
         (PoolRemotePluginClientImpl)
-            PoolRemotePluginClientFactory.builder()
-                .withSyncNode(syncEndpoint)
-                .usingDefaultTimeout()
-                .build()
-                .getPlugin();
+            PoolRemotePluginClientFactory.builder().withSyncNode(syncEndpoint).build().getPlugin();
     remotePoolPlugin.releaseReader(reader);
   }
 
@@ -160,11 +136,7 @@ public class PoolRemotePluginClientTest {
     syncEndpoint = new MockSyncEndpoint();
     remotePoolPlugin =
         (PoolRemotePluginClientImpl)
-            PoolRemotePluginClientFactory.builder()
-                .withSyncNode(syncEndpoint)
-                .usingDefaultTimeout()
-                .build()
-                .getPlugin();
+            PoolRemotePluginClientFactory.builder().withSyncNode(syncEndpoint).build().getPlugin();
     SortedSet groupReferences = remotePoolPlugin.getReaderGroupReferences();
     assertThat(groupReferences).containsExactly(groupReference);
   }
@@ -174,11 +146,7 @@ public class PoolRemotePluginClientTest {
     syncEndpoint = new MockSyncEndpoint().setException(new KeyplePluginNotFoundException("hsm"));
     remotePoolPlugin =
         (PoolRemotePluginClientImpl)
-            PoolRemotePluginClientFactory.builder()
-                .withSyncNode(syncEndpoint)
-                .usingDefaultTimeout()
-                .build()
-                .getPlugin();
+            PoolRemotePluginClientFactory.builder().withSyncNode(syncEndpoint).build().getPlugin();
     remotePoolPlugin.getReaderGroupReferences();
   }
 

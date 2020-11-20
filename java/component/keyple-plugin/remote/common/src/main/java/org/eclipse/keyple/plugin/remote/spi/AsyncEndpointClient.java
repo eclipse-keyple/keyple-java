@@ -15,34 +15,34 @@ import org.eclipse.keyple.plugin.remote.AsyncNodeClient;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 
 /**
- * <b>Async Endpoint Client</b> endpoint API to be implemented by the user.
+ * SPI of the <b>client endpoint</b> using an <b>asynchronous</b> network protocol.
  *
- * <p>This interface must be implemented by a user client endpoint if you want to use a full duplex
+ * <p>You must provide an implementation of this interface if you plan to use a full duplex
  * communication protocol, such as Web Sockets for example.
  *
- * <p>This endpoint must interact with a {@link AsyncNodeClient} locally and with a {@link
- * AsyncEndpointServer} endpoint remotely.
+ * <p>This endpoint interacts locally with a {@link AsyncNodeClient} node and remotely with a {@link
+ * AsyncEndpointServer} endpoint.
  *
  * @since 1.0
  */
 public interface AsyncEndpointClient {
 
   /**
-   * This method is called by {@link AsyncNodeClient} to open a communication session with the
-   * server.<br>
+   * This method is invoked by the {@link AsyncNodeClient} node to open a communication session with
+   * the server.<br>
    * Following the opening of the session you must :
    *
    * <ul>
    *   <li>Associate the session with the provided <b>sessionId</b> in order to be able to retrieve
    *       the session later.
-   *   <li>Retrieve the node {@link AsyncNodeClient} using one of the following <b>client</b>
+   *   <li>Retrieve the {@link AsyncNodeClient} node using one of the following <b>client</b>
    *       utility methods, depending on your use case :
    *       <ul>
    *         <li>{@code LocalServiceClientUtils.getAsyncNode()}
    *         <li>{@code RemotePluginClientUtils.getAsyncNode()}
-   *         <li>{@code RemotePoolClientUtils.getAsyncNode()}
+   *         <li>{@code PoolRemotePluginClientUtils.getAsyncNode()}
    *       </ul>
-   *   <li>Call the method {@link AsyncNodeClient#onOpen(String)} on the node.
+   *   <li>Invoke the method {@link AsyncNodeClient#onOpen(String)} on the node.
    * </ul>
    *
    * @param sessionId The session id.
@@ -51,8 +51,8 @@ public interface AsyncEndpointClient {
   void openSession(String sessionId);
 
   /**
-   * This method is called by {@link AsyncNodeClient} to send a {@link MessageDto} to the server.
-   * <br>
+   * This method is invoked by the {@link AsyncNodeClient} node to send a {@link MessageDto} to the
+   * server. <br>
    * You have to :
    *
    * <ul>
@@ -67,18 +67,18 @@ public interface AsyncEndpointClient {
   void sendMessage(MessageDto msg);
 
   /**
-   * This method is called by {@link AsyncNodeClient} to close a communication session with the
-   * server identified by the provided <b>sessionId</b>.<br>
+   * This method is invoked by the {@link AsyncNodeClient} node to close a communication session
+   * with the server identified by the provided <b>sessionId</b>.<br>
    * Following the closing of the session you must :
    *
    * <ul>
    *   <li>Unregister the session associated to the provided <b>sessionId</b>.
-   *   <li>Retrieve the node {@link AsyncNodeClient} using the right <b>client</b> utility methods,
+   *   <li>Retrieve the {@link AsyncNodeClient} node using the right <b>client</b> utility methods,
    *       depending on your use case :
    *       <ul>
    *         <li>{@code LocalServiceClientUtils.getAsyncNode()}
-   *         <li>{@code RemoteClientUtils.getAsyncNode()}
-   *         <li>{@code RemotePoolClientUtils.getAsyncNode()}
+   *         <li>{@code RemotePluginClientUtils.getAsyncNode()}
+   *         <li>{@code PoolRemotePluginClientUtils.getAsyncNode()}
    *       </ul>
    *   <li>Call the method {@link AsyncNodeClient#onClose(String)} on the node.
    * </ul>

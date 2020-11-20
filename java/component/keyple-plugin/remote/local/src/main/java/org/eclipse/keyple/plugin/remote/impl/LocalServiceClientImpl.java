@@ -24,7 +24,7 @@ import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.LocalServiceClient;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.RemoteServiceParameters;
-import org.eclipse.keyple.plugin.remote.exception.KeypleDoNotPropagateEventException;
+import org.eclipse.keyple.plugin.remote.spi.DoNotPropagateEventException;
 import org.eclipse.keyple.plugin.remote.spi.ObservableReaderEventFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -186,7 +186,7 @@ final class LocalServiceClientImpl extends AbstractLocalService
     try {
       // Get the user input data from the event filter
       userData = eventFilter.beforePropagation(event);
-    } catch (KeypleDoNotPropagateEventException e) {
+    } catch (DoNotPropagateEventException e) {
       // do not throw event
       logger.info(
           "The propagation of the reader event ["

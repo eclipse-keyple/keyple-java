@@ -48,11 +48,7 @@ final class ObservableRemoteReaderServerImpl extends AbstractRemoteReaderServer
     this.masterReader = masterReader;
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public void notifyObservers(ReaderEvent event) {
     if (masterReader != null) {
@@ -62,11 +58,7 @@ final class ObservableRemoteReaderServerImpl extends AbstractRemoteReaderServer
     }
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public void addObserver(ReaderObserver observer) {
     Assert.getInstance().notNull(observer, "observer");
@@ -77,11 +69,7 @@ final class ObservableRemoteReaderServerImpl extends AbstractRemoteReaderServer
     }
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public void removeObserver(ReaderObserver observer) {
     Assert.getInstance().notNull(observer, "observer");
@@ -92,11 +80,7 @@ final class ObservableRemoteReaderServerImpl extends AbstractRemoteReaderServer
     }
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public void clearObservers() {
     if (masterReader != null) {
@@ -106,11 +90,7 @@ final class ObservableRemoteReaderServerImpl extends AbstractRemoteReaderServer
     }
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public int countObservers() {
     if (masterReader != null) {
@@ -120,31 +100,19 @@ final class ObservableRemoteReaderServerImpl extends AbstractRemoteReaderServer
     }
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public void startCardDetection(PollingMode pollingMode) {
     reader.startCardDetection(pollingMode);
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public void stopCardDetection() {
     reader.stopCardDetection();
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public void setDefaultSelectionRequest(
       AbstractDefaultSelectionsRequest defaultSelectionsRequest,
@@ -152,11 +120,7 @@ final class ObservableRemoteReaderServerImpl extends AbstractRemoteReaderServer
     reader.setDefaultSelectionRequest(defaultSelectionsRequest, notificationMode);
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public void setDefaultSelectionRequest(
       AbstractDefaultSelectionsRequest defaultSelectionsRequest,
@@ -165,21 +129,13 @@ final class ObservableRemoteReaderServerImpl extends AbstractRemoteReaderServer
     reader.setDefaultSelectionRequest(defaultSelectionsRequest, notificationMode, pollingMode);
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public void finalizeCardProcessing() {
     reader.finalizeCardProcessing();
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public boolean isContactless() {
     return reader.isContactless();

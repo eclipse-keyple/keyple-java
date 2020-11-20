@@ -14,16 +14,13 @@ package org.eclipse.keyple.plugin.remote.impl;
 import java.util.Arrays;
 import java.util.UUID;
 import org.eclipse.keyple.plugin.remote.MessageDto;
-import org.eclipse.keyple.plugin.remote.exception.KeypleRemoteCommunicationException;
-import org.eclipse.keyple.plugin.remote.exception.KeypleTimeoutException;
+import org.eclipse.keyple.plugin.remote.NodeCommunicationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * (package-private)<br>
  * Abstract Node.
- *
- * @since 1.0
  */
 abstract class AbstractNode {
 
@@ -61,43 +58,43 @@ abstract class AbstractNode {
   }
 
   /**
+   * (package-private)<br>
    * Open a new session on the endpoint (for internal use only).
    *
    * @param sessionId The session id (must be not empty).
-   * @since 1.0
    */
   abstract void openSession(String sessionId);
 
   /**
+   * (package-private)<br>
    * Send a request and return a response (for internal use only).
    *
    * @param msg The message to send (must be not null).
    * @return null if there is no response.
-   * @since 1.0
    */
   abstract MessageDto sendRequest(MessageDto msg);
 
   /**
+   * (package-private)<br>
    * Send a message (for internal use only).
    *
    * @param msg The message to send (must be not null).
-   * @since 1.0
    */
   abstract void sendMessage(MessageDto msg);
 
   /**
+   * (package-private)<br>
    * Close the session having the provided session id (for internal use only).
    *
    * @param sessionId The session id (must be not empty).
-   * @since 1.0
    */
   abstract void closeSession(String sessionId);
 
   /**
+   * (package-private)<br>
    * Close the session silently (without throwing exceptions)
    *
    * @param sessionId The session id (must be not empty).
-   * @since 1.0
    */
   void closeSessionSilently(String sessionId) {
     try {
@@ -112,10 +109,10 @@ abstract class AbstractNode {
   }
 
   /**
-   * (protected)<br>
+   * (package-private)<br>
    * The session manager state enum.
    */
-  protected enum SessionManagerState {
+  enum SessionManagerState {
     INITIALIZED, //
     OPEN_SESSION_BEGIN, //
     OPEN_SESSION_END, //
@@ -131,25 +128,25 @@ abstract class AbstractNode {
   }
 
   /**
-   * (protected)<br>
+   * (package-private)<br>
    * The inner session manager abstract class.<br>
    * There is one manager by session id.
    */
-  protected abstract class AbstractSessionManager {
+  abstract class AbstractSessionManager {
 
-    protected final String sessionId;
+    final String sessionId;
 
-    protected volatile SessionManagerState state;
-    protected volatile MessageDto response;
-    protected volatile Throwable error;
+    volatile SessionManagerState state;
+    volatile MessageDto response;
+    volatile Throwable error;
 
     /**
-     * (protected)<br>
+     * (package-private)<br>
      * Constructor
      *
      * @param sessionId The session id to manage.
      */
-    protected AbstractSessionManager(String sessionId) {
+    AbstractSessionManager(String sessionId) {
       this.sessionId = sessionId;
       this.state = SessionManagerState.INITIALIZED;
       this.response = null;
@@ -157,14 +154,13 @@ abstract class AbstractNode {
     }
 
     /**
-     * (protected)<br>
+     * (package-private)<br>
      * Check if the current state is equal to the target state, else wait until a timeout or to be
      * wake up by another thread.<br>
      *
      * @param targetStates The target states.
-     * @throws KeypleTimeoutException if a timeout occurs.
      */
-    protected void waitForState(SessionManagerState... targetStates) {
+    void waitForState(SessionManagerState... targetStates) {
       for (SessionManagerState targetState : targetStates) {
         if (state == targetState) {
           return;
@@ -190,22 +186,22 @@ abstract class AbstractNode {
     }
 
     /**
-     * (protected)<br>
+     * (package-private)<br>
      * Check if an external error was received from the endpoint or the handler, regardless to the
      * current state, and then request the cancelling of the session and throws an exception.
      *
-     * @throws KeypleRemoteCommunicationException with the original cause if an error exists.
+     * @throws NodeCommunicationException with the original cause if an error exists.
      */
-    protected abstract void checkIfExternalErrorOccurred();
+    abstract void checkIfExternalErrorOccurred();
 
     /**
-     * (protected)<br>
+     * (package-private)<br>
      * Check if the current state is one of the provided target states.
      *
      * @param targetStates The target states to test.
      * @throws IllegalStateException if the current state does not match any of the states provided.
      */
-    protected void checkState(SessionManagerState... targetStates) {
+    void checkState(SessionManagerState... targetStates) {
       for (SessionManagerState targetState : targetStates) {
         if (state == targetState) {
           return;
@@ -221,16 +217,16 @@ abstract class AbstractNode {
     }
 
     /**
-     * (private)<br>
+     * (package-private)<br>
      * The timeout case : request the cancelling of the session and throws an exception.
      *
-     * @throws KeypleTimeoutException The thrown exception.
+     * @throws NodeCommunicationException the thrown exception.
      */
-    private void timeoutOccurred() {
+    void timeoutOccurred() {
       state = SessionManagerState.ABORTED_SESSION;
       logger.error(
           "Timeout occurs for the task associated with the node's session [" + sessionId + "]");
-      throw new KeypleTimeoutException(
+      throw new NodeCommunicationException(
           "Timeout occurs for the task associated with the node's session [" + sessionId + "]");
     }
   }

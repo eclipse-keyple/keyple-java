@@ -25,8 +25,6 @@ import org.slf4j.LoggerFactory;
 /**
  * (package-private)<br>
  * Sync Node Client implementation.
- *
- * @since 1.0
  */
 final class SyncNodeClientImpl extends AbstractNode implements SyncNodeClient {
 
@@ -42,7 +40,7 @@ final class SyncNodeClientImpl extends AbstractNode implements SyncNodeClient {
    * @param endpoint The user client sync endpoint (must be not null).
    * @param pluginObservationStrategy The server push event strategy associated to the plugin
    *     observation (null if must not be activate).<br>
-   *     This parameter can be used only for <b>Remote Client Plugin</b> use case.
+   *     This parameter can be used only for <b>Remote Plugin Client</b> use case.
    * @param readerObservationStrategy The server push event strategy associated to the reader
    *     observation (null if must not be activate).<br>
    */
@@ -115,7 +113,7 @@ final class SyncNodeClientImpl extends AbstractNode implements SyncNodeClient {
   /**
    * (private)<br>
    * Event Observer inner class.<br>
-   * This class can be used only for <b>Remote Client Plugin</b> use case.
+   * This class can be used only for <b>Remote Plugin Client</b> use case.
    */
   private class EventObserver {
 

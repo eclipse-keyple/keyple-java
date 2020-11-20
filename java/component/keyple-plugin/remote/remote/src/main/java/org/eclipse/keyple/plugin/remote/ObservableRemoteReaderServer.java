@@ -14,9 +14,7 @@ package org.eclipse.keyple.plugin.remote;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 
 /**
- * <b>Observable Remote Reader Server</b> API.
- *
- * <p>This reader must be used in the use case of the <b>Remote Plugin Server</b>.
+ * API of the <b>Observable Remote Reader Server</b> provided by the <b>Remote Plugin Server</b>.
  *
  * <p>This reader behaves like an {@link ObservableReader} but exposes additional services inherited
  * from {@link RemoteReaderServer}.

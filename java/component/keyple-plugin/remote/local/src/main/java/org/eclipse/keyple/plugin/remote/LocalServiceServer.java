@@ -12,19 +12,19 @@
 package org.eclipse.keyple.plugin.remote;
 
 /**
- * <b>Local Service Server</b> API.
+ * API of the <b>Local Service Server</b> associated to the <b>Remote Plugin Client</b> and
+ * <b>Observable Remote Plugin Client</b>.
  *
- * <p>This service must be used in the use case of the <b>Remote Client Plugin</b>.
- *
- * <p>It must be started by a <b>server</b> application that is installed on a terminal with local
- * access to the pool cards reader :
+ * <p>This service must be started by the application installed on a <b>Server</b> having local
+ * access to the smart card reader but wishes to delegate all or part of the ticketing processing to
+ * a remote application :
  *
  * <ul>
- *   <li>To start the service, use the factory {link LocalServiceServerFactory}.
- *   <li>To access the service, there is no method because this service is only used internally by
- *       Keyple.
- *   <li>To stop the service, there is nothing special to do because the service is a standard java
- *       singleton instance.
+ *   <li>To <b>start</b> the service, use the factory {link LocalServiceServerFactory}.
+ *   <li>To <b>access</b> the service, there is no method because this service is only used
+ *       internally by Keyple.
+ *   <li>To <b>stop</b> the service, there is nothing special to do because the service is a
+ *       standard java singleton instance.
  * </ul>
  *
  * @since 1.0

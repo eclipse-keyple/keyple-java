@@ -76,8 +76,7 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
     // test
     service =
         (PoolLocalServiceServerImpl)
-            new PoolLocalServiceServerFactory()
-                .builder()
+            PoolLocalServiceServerFactory.builder()
                 .withAsyncNode(asyncServer)
                 .withPoolPlugins(poolPluginMock.getName())
                 .getService();
@@ -91,8 +90,7 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
     // test
     service =
         (PoolLocalServiceServerImpl)
-            new PoolLocalServiceServerFactory()
-                .builder()
+            PoolLocalServiceServerFactory.builder()
                 .withSyncNode()
                 .withPoolPlugins(poolPluginMock.getName())
                 .getService();
@@ -106,8 +104,7 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
     // test
     service =
         (PoolLocalServiceServerImpl)
-            new PoolLocalServiceServerFactory()
-                .builder()
+            PoolLocalServiceServerFactory.builder()
                 .withAsyncNode(null)
                 .withPoolPlugins(poolPluginMock.getName())
                 .getService();
@@ -118,8 +115,7 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
     // test
     service =
         (PoolLocalServiceServerImpl)
-            new PoolLocalServiceServerFactory()
-                .builder()
+            PoolLocalServiceServerFactory.builder()
                 .withAsyncNode(null)
                 .withPoolPlugins()
                 .getService();
@@ -146,8 +142,7 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
     // test
     service =
         (PoolLocalServiceServerImpl)
-            new PoolLocalServiceServerFactory()
-                .builder()
+            PoolLocalServiceServerFactory.builder()
                 .withAsyncNode(null)
                 .withPoolPlugins(poolPluginMock.getName(), readerMockName)
                 .getService();
@@ -261,8 +256,7 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
 
     service =
         (PoolLocalServiceServerImpl)
-            new PoolLocalServiceServerFactory()
-                .builder()
+            PoolLocalServiceServerFactory.builder()
                 .withAsyncNode(asyncServer)
                 .withPoolPlugins(poolPluginMock.getName())
                 .getService();

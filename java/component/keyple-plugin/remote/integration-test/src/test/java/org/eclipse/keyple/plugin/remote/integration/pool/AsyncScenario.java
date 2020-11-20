@@ -42,8 +42,7 @@ public class AsyncScenario extends BaseScenario {
     StubAsyncEndpointClient clientEndpoint = new StubAsyncEndpointClient(serverEndpoint);
 
     poolLocalServiceServer =
-        new PoolLocalServiceServerFactory()
-            .builder()
+        PoolLocalServiceServerFactory.builder()
             .withAsyncNode(serverEndpoint)
             .withPoolPlugins(localPoolPlugin.getName())
             .getService();

@@ -15,8 +15,7 @@ import java.util.*;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remote.AsyncNodeClient;
 import org.eclipse.keyple.plugin.remote.MessageDto;
-import org.eclipse.keyple.plugin.remote.exception.KeypleRemoteCommunicationException;
-import org.eclipse.keyple.plugin.remote.exception.KeypleTimeoutException;
+import org.eclipse.keyple.plugin.remote.NodeCommunicationException;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +23,6 @@ import org.slf4j.LoggerFactory;
 /**
  * (package-private)<br>
  * Async Node Client implementation.
- *
- * @since 1.0
  */
 final class AsyncNodeClientImpl extends AbstractNode implements AsyncNodeClient {
 
@@ -175,19 +172,16 @@ final class AsyncNodeClientImpl extends AbstractNode implements AsyncNodeClient 
 
     /** {@inheritDoc} */
     @Override
-    protected void checkIfExternalErrorOccurred() {
+    void checkIfExternalErrorOccurred() {
       if (state == SessionManagerState.EXTERNAL_ERROR_OCCURRED) {
         state = SessionManagerState.ABORTED_SESSION;
-        throw new KeypleRemoteCommunicationException(error.getMessage(), error);
+        throw new NodeCommunicationException(error.getMessage(), error);
       }
     }
 
     /**
      * (private)<br>
      * Called by the handler to open the session by calling the endpoint and awaiting the result.
-     *
-     * @throws KeypleTimeoutException if a timeout occurs.
-     * @throws RuntimeException if an error occurs.
      */
     private synchronized void openSession() {
       state = SessionManagerState.OPEN_SESSION_BEGIN;
@@ -213,8 +207,6 @@ final class AsyncNodeClientImpl extends AbstractNode implements AsyncNodeClient 
      *
      * @param msg The message to send.
      * @return The response.
-     * @throws KeypleTimeoutException if a timeout occurs.
-     * @throws RuntimeException if an error occurs.
      */
     private synchronized MessageDto sendRequest(MessageDto msg) {
       checkIfExternalErrorOccurred();
@@ -267,9 +259,6 @@ final class AsyncNodeClientImpl extends AbstractNode implements AsyncNodeClient 
      * (private)<br>
      * Called by the handler or by the node to close the current session by calling the endpoint and
      * awaiting the result.
-     *
-     * @throws KeypleTimeoutException if a timeout occurs.
-     * @throws RuntimeException if an error occurs.
      */
     private synchronized void closeSession() {
       checkIfExternalErrorOccurred();

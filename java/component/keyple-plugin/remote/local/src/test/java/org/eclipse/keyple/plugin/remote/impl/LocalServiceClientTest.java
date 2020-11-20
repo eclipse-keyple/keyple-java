@@ -31,8 +31,8 @@ import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.LocalServiceClient;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.RemoteServiceParameters;
-import org.eclipse.keyple.plugin.remote.exception.KeypleDoNotPropagateEventException;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
+import org.eclipse.keyple.plugin.remote.spi.DoNotPropagateEventException;
 import org.eclipse.keyple.plugin.remote.spi.ObservableReaderEventFilter;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.junit.After;
@@ -103,8 +103,7 @@ public class LocalServiceClientTest extends BaseLocalTest {
   public void buildService_withSyncNode_withoutObservation() {
     // test
     LocalServiceClient service =
-        new LocalServiceClientFactory()
-            .builder()
+        LocalServiceClientFactory.builder()
             .withSyncNode(syncClientEndpoint)
             .withoutReaderObservation()
             .getService();
@@ -117,8 +116,7 @@ public class LocalServiceClientTest extends BaseLocalTest {
   public void buildService_withAsyncNode_withoutReaderObservation() {
     // test
     LocalServiceClient service =
-        new LocalServiceClientFactory()
-            .builder()
+        LocalServiceClientFactory.builder()
             .withAsyncNode(asyncClient)
             .usingDefaultTimeout()
             .withoutReaderObservation()
@@ -133,8 +131,7 @@ public class LocalServiceClientTest extends BaseLocalTest {
   public void executeService_withNullParam_throwException() {
     syncClientEndpoint = new SyncEndpointClientMock(1);
     final LocalServiceClient localServiceClient =
-        new LocalServiceClientFactory()
-            .builder()
+        LocalServiceClientFactory.builder()
             .withSyncNode(syncClientEndpoint)
             .withoutReaderObservation()
             .getService();
@@ -146,8 +143,7 @@ public class LocalServiceClientTest extends BaseLocalTest {
   public void executeService_withNullOutputData_throwException() {
     syncClientEndpoint = new SyncEndpointClientMock(1);
     LocalServiceClient localServiceClient =
-        new LocalServiceClientFactory()
-            .builder()
+        LocalServiceClientFactory.builder()
             .withSyncNode(syncClientEndpoint)
             .withoutReaderObservation()
             .getService();
@@ -163,8 +159,7 @@ public class LocalServiceClientTest extends BaseLocalTest {
   public void executeService_activateObservation_withoutFilter_throwException() {
     // init
     syncClientEndpoint = new SyncEndpointClientMock(1);
-    new LocalServiceClientFactory()
-        .builder()
+    LocalServiceClientFactory.builder()
         .withSyncNode(syncClientEndpoint)
         .withReaderObservation(null)
         .getService();
@@ -175,8 +170,7 @@ public class LocalServiceClientTest extends BaseLocalTest {
     // init
     syncClientEndpoint = new SyncEndpointClientMock(1);
     LocalServiceClient localServiceClient =
-        new LocalServiceClientFactory()
-            .builder()
+        LocalServiceClientFactory.builder()
             .withSyncNode(syncClientEndpoint)
             .withReaderObservation(eventFilter)
             .getService();
@@ -197,8 +191,7 @@ public class LocalServiceClientTest extends BaseLocalTest {
     // init
     syncClientEndpoint = new SyncEndpointClientMock(1);
     LocalServiceClient localServiceClient =
-        new LocalServiceClientFactory()
-            .builder()
+        LocalServiceClientFactory.builder()
             .withSyncNode(syncClientEndpoint)
             .withReaderObservation(eventFilter)
             .getService();
@@ -217,8 +210,7 @@ public class LocalServiceClientTest extends BaseLocalTest {
     // init
     syncClientEndpoint = new SyncEndpointClientMock(2);
     LocalServiceClient localServiceClient =
-        new LocalServiceClientFactory()
-            .builder() //
+        LocalServiceClientFactory.builder() //
             .withSyncNode(syncClientEndpoint) //
             .withoutReaderObservation() //
             .getService();
@@ -226,7 +218,7 @@ public class LocalServiceClientTest extends BaseLocalTest {
     RemoteServiceParameters params =
         RemoteServiceParameters.builder(serviceId, readerMocked) //
             .withUserInputData(inputData) //
-            .withInitialSeContext(matchingCard) //
+            .withInitialCardContent(matchingCard) //
             .build();
 
     // test
@@ -257,8 +249,7 @@ public class LocalServiceClientTest extends BaseLocalTest {
     syncClientEndpoint = new SyncEndpointClientMock(2);
     LocalServiceClientImpl localClientService =
         (LocalServiceClientImpl)
-            new LocalServiceClientFactory()
-                .builder() //
+            LocalServiceClientFactory.builder() //
                 .withSyncNode(syncClientEndpoint) //
                 .withReaderObservation(new MyEventFilter(false)) //
                 .getService();
@@ -276,8 +267,7 @@ public class LocalServiceClientTest extends BaseLocalTest {
     syncClientEndpoint = new SyncEndpointClientMock(2);
     LocalServiceClientImpl localClientService =
         (LocalServiceClientImpl)
-            new LocalServiceClientFactory()
-                .builder() //
+            LocalServiceClientFactory.builder() //
                 .withSyncNode(syncClientEndpoint) //
                 .withReaderObservation(new MyEventFilter(true)) //
                 .getService();
@@ -391,7 +381,7 @@ public class LocalServiceClientTest extends BaseLocalTest {
       if (propagateEvent) {
         return inputData;
       } else {
-        throw new KeypleDoNotPropagateEventException("do not propagate event");
+        throw new DoNotPropagateEventException("do not propagate event");
       }
     }
 

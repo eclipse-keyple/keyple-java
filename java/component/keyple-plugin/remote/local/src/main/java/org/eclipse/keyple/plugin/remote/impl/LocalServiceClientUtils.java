@@ -15,50 +15,51 @@ import org.eclipse.keyple.plugin.remote.AsyncNodeClient;
 import org.eclipse.keyple.plugin.remote.LocalServiceClient;
 
 /**
- * Utility class associated to a {@link LocalServiceClient}
+ * Utility class of the {@link LocalServiceClient}.
  *
  * @since 1.0
  */
-public class LocalServiceClientUtils {
+public final class LocalServiceClientUtils {
 
   /**
-   * Get the Local Service Client
+   * Gets the service having the default name.
    *
    * @return a not null reference
    * @throws IllegalStateException if the service is not initialized.
    * @since 1.0
    */
   public static LocalServiceClient getLocalService() {
-    return getClientService();
+    return getServiceImpl();
   }
 
   /**
-   * Get the async node associated to the Local Service Client.
+   * Gets the {@link AsyncNodeClient} node associated to the service having the default name.
    *
    * @return a not null reference
-   * @throws IllegalStateException if the service is not initialized or is not bounded to an async
-   *     node.
+   * @throws IllegalStateException if the service is not initialized or is not configured with a
+   *     {@link AsyncNodeClient} node.
    * @since 1.0
    */
   public static AsyncNodeClient getAsyncNode() {
-    LocalServiceClientImpl service = getClientService();
+    LocalServiceClientImpl service = getServiceImpl();
     if (service.node instanceof AsyncNodeClient) {
       return (AsyncNodeClient) service.node;
     }
-    throw new IllegalStateException("The Local Service is not bounded to an async node");
+    throw new IllegalStateException(
+        "The LocalServiceClient is not configured with a AsyncNodeClient");
   }
 
   /**
    * (private)<br>
-   * Get the Local Service Client implementation
+   * Gets the service implementation.
    *
    * @return a not null reference
    * @throws IllegalStateException if the service is not initialized.
    */
-  private static LocalServiceClientImpl getClientService() {
+  private static LocalServiceClientImpl getServiceImpl() {
     LocalServiceClientImpl service = LocalServiceClientImpl.getInstance();
     if (service == null) {
-      throw new IllegalStateException("The Local Client Service is not initialized");
+      throw new IllegalStateException("The LocalServiceClient is not initialized");
     }
     return service;
   }

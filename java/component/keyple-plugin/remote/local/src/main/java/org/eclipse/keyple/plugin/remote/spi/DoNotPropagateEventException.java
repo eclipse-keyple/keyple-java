@@ -9,15 +9,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.plugin.remote.exception;
+package org.eclipse.keyple.plugin.remote.spi;
 
-import org.eclipse.keyple.core.service.exception.KeypleException;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
 
-/** The exception {@code KeypleTimeoutException} indicates that a communication timeout occurs. */
-public class KeypleTimeoutException extends KeypleException {
+/**
+ * This exception is thrown to indicate to stop the propagation of an event to the remote node.
+ *
+ * <p>You must thrown this exception during the invocation of the method {@link
+ * ObservableReaderEventFilter#beforePropagation(ReaderEvent)}.
+ *
+ * @since 1.0
+ */
+public class DoNotPropagateEventException extends RuntimeException {
 
-  /** @param message the message to identify the exception context */
-  public KeypleTimeoutException(String message) {
+  /**
+   * @param message The message to identify the exception context.
+   * @since 1.0
+   */
+  public DoNotPropagateEventException(String message) {
     super(message);
   }
 }

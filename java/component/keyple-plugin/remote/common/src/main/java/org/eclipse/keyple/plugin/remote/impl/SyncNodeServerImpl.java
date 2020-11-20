@@ -17,15 +17,12 @@ import java.util.*;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.SyncNodeServer;
-import org.eclipse.keyple.plugin.remote.exception.KeypleTimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * (package-private)<br>
  * Sync Node Server implementation.
- *
- * @since 1.0
  */
 final class SyncNodeServerImpl extends AbstractNode implements SyncNodeServer {
 
@@ -104,7 +101,6 @@ final class SyncNodeServerImpl extends AbstractNode implements SyncNodeServer {
    *
    * @param msg The message to process (must be not null).
    * @return a nullable list or which contains at most one element.
-   * @throws KeypleTimeoutException if a timeout occurs.
    */
   private List<MessageDto> processOnRequest(MessageDto msg) {
     SessionManager manager = sessionManagers.get(msg.getSessionId());
@@ -221,7 +217,7 @@ final class SyncNodeServerImpl extends AbstractNode implements SyncNodeServer {
 
     /** {@inheritDoc} */
     @Override
-    protected void checkIfExternalErrorOccurred() {
+    void checkIfExternalErrorOccurred() {
       // NOP
     }
 
@@ -231,7 +227,6 @@ final class SyncNodeServerImpl extends AbstractNode implements SyncNodeServer {
      *
      * @param msg The message to process.
      * @return a not null reference on a message to return to the client.
-     * @throws KeypleTimeoutException if a timeout occurs.
      */
     private synchronized MessageDto onRequest(MessageDto msg) {
       checkState(SessionManagerState.INITIALIZED, SessionManagerState.SEND_REQUEST_BEGIN);
@@ -254,7 +249,6 @@ final class SyncNodeServerImpl extends AbstractNode implements SyncNodeServer {
      *
      * @param msg The message to send.
      * @return The response.
-     * @throws KeypleTimeoutException if a timeout occurs.
      */
     private synchronized MessageDto sendRequest(MessageDto msg) {
       postMessageAndNotify(msg, SessionManagerState.SEND_REQUEST_BEGIN);
@@ -360,11 +354,11 @@ final class SyncNodeServerImpl extends AbstractNode implements SyncNodeServer {
 
     /**
      * (private)<br>
-     * Gets the client registered strategy or register it in case of first client call.
+     * Gets the client registered strategy or register it in case of first client invocation.
      *
      * @param msg The client message containing all client info (node id, strategy, ...)
      * @return a not null {@link ServerPushEventStrategy}
-     * @throws IllegalArgumentException in case of first client call with bad arguments.
+     * @throws IllegalArgumentException in case of first client invocation with bad arguments.
      */
     private ServerPushEventStrategy getStrategy(MessageDto msg) {
 

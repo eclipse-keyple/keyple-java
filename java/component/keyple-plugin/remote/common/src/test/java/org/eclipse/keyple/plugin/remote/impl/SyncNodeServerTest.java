@@ -18,7 +18,7 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.plugin.remote.MessageDto;
-import org.eclipse.keyple.plugin.remote.exception.KeypleTimeoutException;
+import org.eclipse.keyple.plugin.remote.NodeCommunicationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -386,15 +386,15 @@ public class SyncNodeServerTest extends AbstractSyncNodeTest {
     assertThat(responses).containsExactly(msg2);
   }
 
-  @Test(expected = KeypleTimeoutException.class)
+  @Test(expected = NodeCommunicationException.class)
   public void
-      onRequest_whenActionIsTxAndNoPendingServerTaskAndNoServerTimeoutAndClientTimeout_shouldTransmitMessageToHandlerAndThrowKTE() {
+      onRequest_whenActionIsTxAndNoPendingServerTaskAndNoServerTimeoutAndClientTimeout_shouldTransmitMessageToHandlerAndThrowNCE() {
     node = new SyncNodeServerImpl(handler, 1);
     node.onRequest(msg);
   }
 
-  @Test(expected = KeypleTimeoutException.class)
-  public void onRequest_whenActionIsTxAndNoPendingServerTaskAndServerTimeout_shouldThrowKTE() {
+  @Test(expected = NodeCommunicationException.class)
+  public void onRequest_whenActionIsTxAndNoPendingServerTaskAndServerTimeout_shouldThrowNCE() {
     node = new SyncNodeServerImpl(handler, 1);
     Thread serverTask = scheduleSendRequest(msg2);
     node.onRequest(msg);
@@ -416,9 +416,9 @@ public class SyncNodeServerTest extends AbstractSyncNodeTest {
     assertThat(responses).containsExactly(msg4);
   }
 
-  @Test(expected = KeypleTimeoutException.class)
+  @Test(expected = NodeCommunicationException.class)
   public void
-      onRequest_whenActionIsTxAndPendingServerTaskAndClientTimeout_shouldTransmitMessageToPendingTaskAndThrowKTE() {
+      onRequest_whenActionIsTxAndPendingServerTaskAndClientTimeout_shouldTransmitMessageToPendingTaskAndThrowNCE() {
     node = new SyncNodeServerImpl(handler, 1);
     scheduleSendRequest(msg2);
     node.onRequest(msg);
@@ -433,9 +433,8 @@ public class SyncNodeServerTest extends AbstractSyncNodeTest {
     node.onRequest(msg);
   }
 
-  @Test(expected = KeypleTimeoutException.class)
-  public void
-      sendRequest_whenNoPendingClientTaskAndClientTimeout_shouldThrowKeypleTimeoutException() {
+  @Test(expected = NodeCommunicationException.class)
+  public void sendRequest_whenNoPendingClientTaskAndClientTimeout_shouldThrowNCE() {
     node = new SyncNodeServerImpl(handler, 1);
     node.onRequest(msg);
     node.sendRequest(msg2);
@@ -447,9 +446,9 @@ public class SyncNodeServerTest extends AbstractSyncNodeTest {
     node.sendRequest(msg);
   }
 
-  @Test(expected = KeypleTimeoutException.class)
+  @Test(expected = NodeCommunicationException.class)
   public void
-      sendRequest_whenPendingClientTaskAndServerTimeout_shouldTransmitMessageToPendingTaskAndThrowKeypleTimeoutException() {
+      sendRequest_whenPendingClientTaskAndServerTimeout_shouldTransmitMessageToPendingTaskAndThrowNCE() {
     node = new SyncNodeServerImpl(handler, 1);
     Thread clientTask = callOnRequestFromAnotherThread(msg);
     await().atMost(5, TimeUnit.SECONDS).until(threadHasStateTimedWaiting(clientTask));
@@ -533,9 +532,8 @@ public class SyncNodeServerTest extends AbstractSyncNodeTest {
     assertThat(events).isEmpty();
   }
 
-  @Test(expected = KeypleTimeoutException.class)
-  public void
-      sendMessage_whenNoPendingClientTaskAndClientTimeout_shouldThrowKeypleTimeoutException() {
+  @Test(expected = NodeCommunicationException.class)
+  public void sendMessage_whenNoPendingClientTaskAndClientTimeout_shouldThrowNCE() {
     node = new SyncNodeServerImpl(handler, 1);
     node.onRequest(msg);
     node.sendMessage(msg2);

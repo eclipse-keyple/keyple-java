@@ -12,9 +12,9 @@
 package org.eclipse.keyple.plugin.remote.integration.common.app;
 
 import org.eclipse.keyple.core.service.event.ReaderEvent;
-import org.eclipse.keyple.plugin.remote.exception.KeypleDoNotPropagateEventException;
 import org.eclipse.keyple.plugin.remote.integration.common.model.TransactionResult;
 import org.eclipse.keyple.plugin.remote.integration.common.model.UserInput;
+import org.eclipse.keyple.plugin.remote.spi.DoNotPropagateEventException;
 import org.eclipse.keyple.plugin.remote.spi.ObservableReaderEventFilter;
 
 public class ReaderEventFilter implements ObservableReaderEventFilter {
@@ -32,7 +32,7 @@ public class ReaderEventFilter implements ObservableReaderEventFilter {
   }
 
   @Override
-  public Object beforePropagation(ReaderEvent event) throws KeypleDoNotPropagateEventException {
+  public Object beforePropagation(ReaderEvent event) throws DoNotPropagateEventException {
     switch (event.getEventType()) {
       case CARD_MATCHED:
         return new UserInput().setUserId(user.getUserId());
@@ -40,7 +40,7 @@ public class ReaderEventFilter implements ObservableReaderEventFilter {
         // return null;//send null to server
       case CARD_INSERTED:
       default:
-        throw new KeypleDoNotPropagateEventException("only SE_MATCHED are propagated");
+        throw new DoNotPropagateEventException("only SE_MATCHED are propagated");
     }
   }
 

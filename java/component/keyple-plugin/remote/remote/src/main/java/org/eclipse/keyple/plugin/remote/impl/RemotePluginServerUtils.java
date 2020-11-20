@@ -17,14 +17,18 @@ import org.eclipse.keyple.plugin.remote.AsyncNodeServer;
 import org.eclipse.keyple.plugin.remote.RemotePluginServer;
 import org.eclipse.keyple.plugin.remote.SyncNodeServer;
 
-/** Use this class to access the registered {@link RemotePluginServer} */
-public class RemotePluginServerUtils {
+/**
+ * Utility class of the {@link RemotePluginServer}
+ *
+ * @since 1.0
+ */
+public final class RemotePluginServerUtils {
 
   /**
-   * Access the registered RemotePluginServer
+   * Gets the plugin having the default name.
    *
-   * @return a registered instance of the RemotePluginServer
-   * @throws KeyplePluginNotFoundException if no RemotePluginServer is registered
+   * @return a not null reference
+   * @throws KeyplePluginNotFoundException if the plugin is not registered.
    * @since 1.0
    */
   public static RemotePluginServer getRemotePlugin() {
@@ -33,22 +37,38 @@ public class RemotePluginServerUtils {
   }
 
   /**
-   * Retrieve the async node used in the RemotePluginServer
+   * Gets the {@link AsyncNodeServer} node associated to the plugin having the default name.
    *
-   * @return non nullable instance of AsyncNodeServer
+   * @return a not null reference
+   * @throws KeyplePluginNotFoundException if the plugin is not registered.
+   * @throws IllegalStateException if the plugin is not configured with a {@link AsyncNodeServer}
+   *     node.
    * @since 1.0
    */
   public static AsyncNodeServer getAsyncNode() {
-    return (AsyncNodeServer) ((RemotePluginServerImpl) getRemotePlugin()).node;
+    RemotePluginServerImpl plugin = (RemotePluginServerImpl) getRemotePlugin();
+    if (plugin.node instanceof AsyncNodeServer) {
+      return (AsyncNodeServer) plugin.node;
+    }
+    throw new IllegalStateException(
+        "The RemotePluginServer is not configured with a AsyncNodeServer");
   }
 
   /**
-   * Retrieve the sync node used in the RemotePluginServer
+   * Gets the {@link SyncNodeServer} node associated to the plugin having the default name.
    *
-   * @return non nullable instance of SyncNodeServer
+   * @return a not null reference
+   * @throws KeyplePluginNotFoundException if the plugin is not registered.
+   * @throws IllegalStateException if the plugin is not configured with a {@link SyncNodeServer}
+   *     node.
    * @since 1.0
    */
   public static SyncNodeServer getSyncNode() {
-    return (SyncNodeServer) ((RemotePluginServerImpl) getRemotePlugin()).node;
+    RemotePluginServerImpl plugin = (RemotePluginServerImpl) getRemotePlugin();
+    if (plugin.node instanceof SyncNodeServer) {
+      return (SyncNodeServer) plugin.node;
+    }
+    throw new IllegalStateException(
+        "The RemotePluginServer is not configured with a SyncNodeServer");
   }
 }

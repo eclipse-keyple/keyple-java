@@ -299,7 +299,7 @@ public abstract class BaseScenario {
     TransactionResult output =
         localService.executeRemoteService(
             RemoteServiceParameters.builder(SERVICE_ID_1, localReader)
-                .withInitialSeContext(calypsoPo)
+                .withInitialCardContent(calypsoPo)
                 .withUserInputData(user1)
                 .build(),
             TransactionResult.class);

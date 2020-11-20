@@ -12,7 +12,7 @@
 package org.eclipse.keyple.plugin.remote.integration.service;
 
 import java.util.UUID;
-import org.eclipse.keyple.plugin.remote.exception.KeypleTimeoutException;
+import org.eclipse.keyple.plugin.remote.NodeCommunicationException;
 import org.eclipse.keyple.plugin.remote.impl.LocalServiceClientFactory;
 import org.eclipse.keyple.plugin.remote.integration.common.app.ReaderEventFilter;
 import org.eclipse.keyple.plugin.remote.integration.common.endpoint.StubNetworkConnectionException;
@@ -86,8 +86,7 @@ public class AsyncScenario extends BaseScenario {
   public void execute_localselection_remoteTransaction_successful() {
 
     localService =
-        new LocalServiceClientFactory()
-            .builder()
+        LocalServiceClientFactory.builder()
             .withAsyncNode(clientEndpoint)
             .usingDefaultTimeout()
             .withoutReaderObservation()
@@ -102,8 +101,7 @@ public class AsyncScenario extends BaseScenario {
   public void execute_remoteselection_remoteTransaction_successful() {
 
     localService =
-        new LocalServiceClientFactory()
-            .builder()
+        LocalServiceClientFactory.builder()
             .withAsyncNode(clientEndpoint)
             .usingDefaultTimeout()
             .withoutReaderObservation()
@@ -119,8 +117,7 @@ public class AsyncScenario extends BaseScenario {
   public void execute_multiclient_remoteselection_remoteTransaction_successful() {
 
     localService =
-        new LocalServiceClientFactory()
-            .builder()
+        LocalServiceClientFactory.builder()
             .withAsyncNode(clientEndpoint)
             .usingDefaultTimeout()
             .withoutReaderObservation()
@@ -134,8 +131,7 @@ public class AsyncScenario extends BaseScenario {
   @Override
   public void execute_transaction_closeSession_card_error() {
     localService =
-        new LocalServiceClientFactory()
-            .builder()
+        LocalServiceClientFactory.builder()
             .withAsyncNode(clientEndpoint)
             .usingDefaultTimeout()
             .withoutReaderObservation()
@@ -151,8 +147,7 @@ public class AsyncScenario extends BaseScenario {
     clientEndpoint = new StubAsyncEndpointClient(serverEndpoint, true);
 
     localService =
-        new LocalServiceClientFactory()
-            .builder()
+        LocalServiceClientFactory.builder()
             .withAsyncNode(clientEndpoint)
             .usingDefaultTimeout()
             .withoutReaderObservation()
@@ -161,13 +156,12 @@ public class AsyncScenario extends BaseScenario {
     // throw exception
   }
 
-  @Test(expected = KeypleTimeoutException.class)
+  @Test(expected = NodeCommunicationException.class)
   @Override
   public void execute_transaction_client_network_error() {
     serverEndpoint.setSimulateConnectionError(true);
     localService =
-        new LocalServiceClientFactory()
-            .builder()
+        LocalServiceClientFactory.builder()
             .withAsyncNode(clientEndpoint)
             .usingTimeout(2)
             .withoutReaderObservation()
@@ -181,8 +175,7 @@ public class AsyncScenario extends BaseScenario {
   @Override
   public void execute_transaction_slowSe_success() {
     localService =
-        new LocalServiceClientFactory()
-            .builder()
+        LocalServiceClientFactory.builder()
             .withAsyncNode(clientEndpoint)
             .usingDefaultTimeout()
             .withoutReaderObservation()
@@ -197,8 +190,7 @@ public class AsyncScenario extends BaseScenario {
     final ReaderEventFilter eventFilter = new ReaderEventFilter();
 
     localService =
-        new LocalServiceClientFactory()
-            .builder()
+        LocalServiceClientFactory.builder()
             .withAsyncNode(clientEndpoint)
             .usingDefaultTimeout()
             .withReaderObservation(eventFilter)
@@ -215,8 +207,7 @@ public class AsyncScenario extends BaseScenario {
     final ReaderEventFilter eventFilter = new ReaderEventFilter();
 
     localService =
-        new LocalServiceClientFactory()
-            .builder()
+        LocalServiceClientFactory.builder()
             .withAsyncNode(clientEndpoint)
             .usingDefaultTimeout()
             .withReaderObservation(eventFilter)

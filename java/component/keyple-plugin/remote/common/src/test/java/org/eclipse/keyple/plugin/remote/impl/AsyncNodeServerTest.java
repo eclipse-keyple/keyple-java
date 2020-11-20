@@ -17,9 +17,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.plugin.remote.MessageDto;
-import org.eclipse.keyple.plugin.remote.exception.KeypleClosedSessionException;
-import org.eclipse.keyple.plugin.remote.exception.KeypleRemoteCommunicationException;
-import org.eclipse.keyple.plugin.remote.exception.KeypleTimeoutException;
+import org.eclipse.keyple.plugin.remote.NodeCommunicationException;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
 import org.junit.Before;
 import org.junit.Test;
@@ -99,7 +97,7 @@ public class AsyncNodeServerTest extends AbstractAsyncNodeTest {
   }
 
   void doEndpointToThrowException() {
-    doThrow(new KeypleRemoteCommunicationException("TEST")).when(endpoint).sendMessage(msg);
+    doThrow(new NodeCommunicationException("TEST")).when(endpoint).sendMessage(msg);
   }
 
   void initSession() {
@@ -134,8 +132,8 @@ public class AsyncNodeServerTest extends AbstractAsyncNodeTest {
     assertThat(result).isEqualToComparingFieldByField(response);
   }
 
-  @Test(expected = KeypleTimeoutException.class)
-  public void sendRequest_whenTimeout_shouldThrowKeypleTimeoutException() {
+  @Test(expected = NodeCommunicationException.class)
+  public void sendRequest_whenTimeout_shouldThrowNCE() {
     initSession();
     node.sendRequest(msg);
   }
@@ -147,8 +145,8 @@ public class AsyncNodeServerTest extends AbstractAsyncNodeTest {
     node.sendRequest(msg);
   }
 
-  @Test(expected = KeypleClosedSessionException.class)
-  public void sendRequest_whenSessionIdIsUnknown_shouldThrowKCSE() {
+  @Test(expected = IllegalStateException.class)
+  public void sendRequest_whenSessionIdIsUnknown_shouldThrowISE() {
     node.sendRequest(msg);
   }
 
@@ -167,8 +165,8 @@ public class AsyncNodeServerTest extends AbstractAsyncNodeTest {
     node.sendMessage(msg);
   }
 
-  @Test(expected = KeypleClosedSessionException.class)
-  public void sendMessage_whenSessionIdIsUnknown_shouldThrowKCSE() {
+  @Test(expected = IllegalStateException.class)
+  public void sendMessage_whenSessionIdIsUnknown_shouldThrowISE() {
     node.sendMessage(msg);
   }
 

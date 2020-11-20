@@ -23,7 +23,7 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.MessageDto;
-import org.eclipse.keyple.plugin.remote.exception.KeypleTimeoutException;
+import org.eclipse.keyple.plugin.remote.NodeCommunicationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -75,8 +75,8 @@ public class RemoteReaderImplTest {
     assertThat(cardResponseReturned).isEqualToComparingFieldByField(cardResponse);
   }
 
-  @Test(expected = KeypleTimeoutException.class)
-  public void processCardRequest_whenNodeTimeout_shouldThrowKTE() {
+  @Test(expected = NodeCommunicationException.class)
+  public void processCardRequest_whenNodeTimeout_shouldThrowNCE() {
 
     // init response
     mockTimeout();
@@ -135,8 +135,8 @@ public class RemoteReaderImplTest {
     assertThat(cardResponsesReturned).hasSameElementsAs(cardResponses);
   }
 
-  @Test(expected = KeypleTimeoutException.class)
-  public void processCardRequests_whenNodeTimeout_shouldThrowKTE() {
+  @Test(expected = NodeCommunicationException.class)
+  public void processCardRequests_whenNodeTimeout_shouldThrowNCE() {
 
     // init response
     mockTimeout();
@@ -189,8 +189,8 @@ public class RemoteReaderImplTest {
     assertThat(result).isTrue();
   }
 
-  @Test(expected = KeypleTimeoutException.class)
-  public void isSePresent_whenNodeTimeout_shouldThrowKTE() {
+  @Test(expected = NodeCommunicationException.class)
+  public void isSePresent_whenNodeTimeout_shouldThrowNCE() {
     // init
     mockTimeout();
     // execute
@@ -225,8 +225,8 @@ public class RemoteReaderImplTest {
     assertThat(result).isTrue();
   }
 
-  @Test(expected = KeypleTimeoutException.class)
-  public void isReaderContactless_whenNodeTimeout_shouldThrowKTE() {
+  @Test(expected = NodeCommunicationException.class)
+  public void isReaderContactless_whenNodeTimeout_shouldThrowNCE() {
     // init
     mockTimeout();
     // execute
@@ -257,8 +257,8 @@ public class RemoteReaderImplTest {
     reader.releaseChannel();
   }
 
-  @Test(expected = KeypleTimeoutException.class)
-  public void releaseChannel_whenNodeTimeout_shouldThrowKTE() {
+  @Test(expected = NodeCommunicationException.class)
+  public void releaseChannel_whenNodeTimeout_shouldThrowNCE() {
     // init
     mockTimeout();
     // execute
@@ -290,7 +290,7 @@ public class RemoteReaderImplTest {
   }
 
   private void mockTimeout() {
-    doThrow(new KeypleTimeoutException("test")).when(node).sendRequest(any(MessageDto.class));
+    doThrow(new NodeCommunicationException("test")).when(node).sendRequest(any(MessageDto.class));
   }
 
   private void mockError() {

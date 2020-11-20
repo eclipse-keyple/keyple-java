@@ -16,19 +16,20 @@ import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.SyncNodeClient;
 
 /**
- * <b>Sync Endpoint Client</b> endpoint API to be implemented by the user.
+ * SPI of the <b>client endpoint</b> using a <b>synchronous</b> network protocol.
  *
- * <p>This interface must be implemented by a user client endpoint if you want to use a
- * Client-Server communication protocol, such as standard HTTP for example.
+ * <p>You must provide an implementation of this interface if you plan to use a Client-Server
+ * communication protocol, such as standard HTTP for example.
  *
- * <p>This endpoint must interact only with a remote controller.
+ * <p>This endpoint interacts only with a remote server controller.
  *
  * @since 1.0
  */
 public interface SyncEndpointClient {
 
   /**
-   * This method is called by {@link SyncNodeClient} to send a {@link MessageDto} to the server.<br>
+   * This method is invoked by the {@link SyncNodeClient} node to send a {@link MessageDto} to the
+   * server.<br>
    * You have to serialize and send the provided {@link MessageDto} to the server, then retry the
    * response which is a list of {@link MessageDto}.
    *

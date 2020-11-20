@@ -17,7 +17,7 @@ import static org.mockito.Mockito.mock;
 
 import java.util.concurrent.Callable;
 import org.eclipse.keyple.plugin.remote.MessageDto;
-import org.eclipse.keyple.plugin.remote.exception.KeypleRemoteCommunicationException;
+import org.eclipse.keyple.plugin.remote.NodeCommunicationException;
 
 public abstract class AbstractNodeTest {
 
@@ -44,9 +44,7 @@ public abstract class AbstractNodeTest {
   }
 
   void setHandlerError() {
-    doThrow(new KeypleRemoteCommunicationException("TEST"))
-        .when(handler)
-        .onMessage(any(MessageDto.class));
+    doThrow(new NodeCommunicationException("TEST")).when(handler).onMessage(any(MessageDto.class));
   }
 
   Callable<Boolean> threadHasStateTimedWaiting(final Thread thread) {

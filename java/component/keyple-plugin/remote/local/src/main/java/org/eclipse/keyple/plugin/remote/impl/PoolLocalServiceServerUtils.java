@@ -16,56 +16,57 @@ import org.eclipse.keyple.plugin.remote.PoolLocalServiceServer;
 import org.eclipse.keyple.plugin.remote.SyncNodeServer;
 
 /**
- * Utility class associated to a {@link PoolLocalServiceServer}
+ * Utility class of the {@link PoolLocalServiceServer}.
  *
  * @since 1.0
  */
 public final class PoolLocalServiceServerUtils {
 
   /**
-   * Get the async node associated to the Local Pool Server Service.
+   * Gets the {@link AsyncNodeServer} node associated to the service having the default name.
    *
    * @return a not null reference
-   * @throws IllegalStateException if the service is not initialized or is not bounded to an async
-   *     node.
+   * @throws IllegalStateException if the service is not initialized or is not configured with a
+   *     {@link AsyncNodeServer} node.
    * @since 1.0
    */
   public static AsyncNodeServer getAsyncNode() {
-    PoolLocalServiceServerImpl service = getPoolLocalServiceServer();
+    PoolLocalServiceServerImpl service = getServiceImpl();
     if (service.node instanceof AsyncNodeServer) {
       return (AsyncNodeServer) service.node;
     }
     throw new IllegalStateException(
-        "The Local Pool Server Service is not bounded to an async node");
+        "The PoolLocalServiceServer is not configured with a AsyncNodeServer");
   }
 
   /**
-   * Get the sync node associated to the Local Pool Server Service.
+   * Gets the {@link SyncNodeServer} node associated to the service having the default name.
    *
    * @return a not null reference
-   * @throws IllegalStateException if the service is not initialized or is not bounded to a sync
-   *     node.
+   * @throws IllegalStateException if the service is not initialized or is not configured with a
+   *     {@link SyncNodeServer} node.
    * @since 1.0
    */
   public static SyncNodeServer getSyncNode() {
-    PoolLocalServiceServerImpl service = getPoolLocalServiceServer();
+    PoolLocalServiceServerImpl service = getServiceImpl();
     if (service.node instanceof SyncNodeServer) {
       return (SyncNodeServer) service.node;
     }
-    throw new IllegalStateException("The Local Pool Server Service is not bounded to an sync node");
+    throw new IllegalStateException(
+        "The PoolLocalServiceServer is not configured with a SyncNodeServer");
   }
 
   /**
    * (private)<br>
-   * Get the Local Pool Server Service implementation
+   * Gets the service implementation.
    *
    * @return a not null reference
    * @throws IllegalStateException if the service is not initialized.
    */
-  private static PoolLocalServiceServerImpl getPoolLocalServiceServer() {
+  private static PoolLocalServiceServerImpl getServiceImpl() {
     PoolLocalServiceServerImpl service = PoolLocalServiceServerImpl.getInstance();
     if (service == null) {
-      throw new IllegalStateException("The Local Pool Server Service is not initialized");
+      throw new IllegalStateException("The PoolLocalServiceServer is not initialized");
     }
     return service;
   }

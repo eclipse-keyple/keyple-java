@@ -17,8 +17,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.plugin.remote.MessageDto;
-import org.eclipse.keyple.plugin.remote.exception.KeypleRemoteCommunicationException;
-import org.eclipse.keyple.plugin.remote.exception.KeypleTimeoutException;
+import org.eclipse.keyple.plugin.remote.NodeCommunicationException;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
 import org.junit.Before;
 import org.junit.Test;
@@ -187,15 +186,13 @@ public class AsyncNodeClientTest extends AbstractAsyncNodeTest {
   void doEndpointToThrowException(
       boolean whenOpenSession, boolean whenSendMessage, boolean whenCloseSession) {
     if (whenOpenSession) {
-      doThrow(new KeypleRemoteCommunicationException("TEST")).when(endpoint).openSession(sessionId);
+      doThrow(new NodeCommunicationException("TEST")).when(endpoint).openSession(sessionId);
     }
     if (whenSendMessage) {
-      doThrow(new KeypleRemoteCommunicationException("TEST")).when(endpoint).sendMessage(msg);
+      doThrow(new NodeCommunicationException("TEST")).when(endpoint).sendMessage(msg);
     }
     if (whenCloseSession) {
-      doThrow(new KeypleRemoteCommunicationException("TEST"))
-          .when(endpoint)
-          .closeSession(sessionId);
+      doThrow(new NodeCommunicationException("TEST")).when(endpoint).closeSession(sessionId);
     }
   }
 
@@ -215,8 +212,8 @@ public class AsyncNodeClientTest extends AbstractAsyncNodeTest {
     verifyZeroInteractions(handler);
   }
 
-  @Test(expected = KeypleTimeoutException.class)
-  public void openSession_whenTimeout_shouldThrowKeypleTimeoutException() {
+  @Test(expected = NodeCommunicationException.class)
+  public void openSession_whenTimeout_shouldThrowNCE() {
     doEndpointToReturnAnswer(false, false, true);
     node.openSession(sessionId);
   }
@@ -281,8 +278,8 @@ public class AsyncNodeClientTest extends AbstractAsyncNodeTest {
     assertThat(result).isEqualToComparingFieldByField(response);
   }
 
-  @Test(expected = KeypleTimeoutException.class)
-  public void sendRequest_whenTimeout_shouldThrowKeypleTimeoutException() {
+  @Test(expected = NodeCommunicationException.class)
+  public void sendRequest_whenTimeout_shouldThrowNCE() {
     doEndpointToReturnAnswer(true, false, true);
     openSessionInSafeMode();
     node.sendRequest(msg);
@@ -461,8 +458,8 @@ public class AsyncNodeClientTest extends AbstractAsyncNodeTest {
     verifyZeroInteractions(handler);
   }
 
-  @Test(expected = KeypleTimeoutException.class)
-  public void closeSession_whenTimeout_shouldThrowKeypleTimeoutException() {
+  @Test(expected = NodeCommunicationException.class)
+  public void closeSession_whenTimeout_shouldThrowNCE() {
     doEndpointToReturnAnswer(true, true, false);
     openSessionInSafeMode();
     node.closeSession(sessionId);

@@ -16,28 +16,40 @@ import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.plugin.remote.AsyncNodeClient;
 import org.eclipse.keyple.plugin.remote.PoolRemotePluginClient;
 
-/** Use this class to access the registered {@link PoolRemotePluginClient} */
-public class PoolRemotePluginClientUtils {
+/**
+ * Utility class of the {@link PoolRemotePluginClient}.
+ *
+ * @since 1.0
+ */
+public final class PoolRemotePluginClientUtils {
 
   /**
-   * Retrieve the async node used in the PoolRemotePluginClient
+   * Gets the plugin having the default name.
    *
-   * @return non nullable instance of AsyncNodeClient
-   * @since 1.0
-   */
-  public static AsyncNodeClient getAsyncNode() {
-    return (AsyncNodeClient) ((PoolRemotePluginClientImpl) getRemotePlugin()).node;
-  }
-
-  /**
-   * Access the registered PoolRemotePluginClient
-   *
-   * @return a registered instance of the PoolRemotePluginClient
-   * @throws KeyplePluginNotFoundException if no PoolRemotePluginClient is registered
+   * @return a not null reference
+   * @throws KeyplePluginNotFoundException if the plugin is not registered.
    * @since 1.0
    */
   public static PoolRemotePluginClient getRemotePlugin() {
     return (PoolRemotePluginClient)
         SmartCardService.getInstance().getPlugin(PoolRemotePluginClientFactory.DEFAULT_PLUGIN_NAME);
+  }
+
+  /**
+   * Gets the {@link AsyncNodeClient} node associated to the plugin having the default name.
+   *
+   * @return a not null reference
+   * @throws KeyplePluginNotFoundException if the plugin is not registered.
+   * @throws IllegalStateException if the plugin is not configured with a {@link AsyncNodeClient}
+   *     node.
+   * @since 1.0
+   */
+  public static AsyncNodeClient getAsyncNode() {
+    PoolRemotePluginClientImpl plugin = (PoolRemotePluginClientImpl) getRemotePlugin();
+    if (plugin.node instanceof AsyncNodeClient) {
+      return (AsyncNodeClient) plugin.node;
+    }
+    throw new IllegalStateException(
+        "The PoolRemotePluginClient is not configured with a AsyncNodeClient");
   }
 }
