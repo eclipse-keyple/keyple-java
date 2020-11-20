@@ -87,12 +87,12 @@ public class DefaultSelectionNotification_Pcsc {
     // Provide the Reader with the selection operation to be processed when a card is inserted.
     ((ObservableReader) reader)
         .setDefaultSelectionRequest(
-            ReaderConfig.getDefaultSelection().getSelectionOperation(),
+            CardSelectionConfig.getDefaultSelection().getSelectionOperation(),
             ObservableReader.NotificationMode.MATCHED_ONLY,
             ObservableReader.PollingMode.REPEATING);
 
     // Set the current class as Observer of the first reader
-    ((ObservableReader) reader).addObserver(ReaderConfig.getObserver());
+    ((ObservableReader) reader).addObserver(new CardEventObserver());
 
     logger.info(
         "= #### Wait for a card. The default AID based selection to be processed as soon as the card is detected.");

@@ -91,7 +91,7 @@ public class Demo_CardProtocolDetection_Pcsc {
     logger.info("PO Reader  : {}", poReader.getName());
 
     // create an observer class to handle the card operations
-    ReaderObserver observer = ReaderConfig.getObserver();
+    ReaderObserver observer = new CardEventObserver();
 
     // configure reader
     ((PcscReader) poReader).setContactless(false).setIsoProtocol(PcscReader.IsoProtocol.T1);
@@ -110,7 +110,7 @@ public class Demo_CardProtocolDetection_Pcsc {
     // Set Default selection
     ((ObservableReader) poReader)
         .setDefaultSelectionRequest(
-            ReaderConfig.getDefaultSelection().getSelectionOperation(),
+            CardSelectionConfig.getDefaultSelection().getSelectionOperation(),
             ObservableReader.NotificationMode.ALWAYS,
             ObservableReader.PollingMode.REPEATING);
 
