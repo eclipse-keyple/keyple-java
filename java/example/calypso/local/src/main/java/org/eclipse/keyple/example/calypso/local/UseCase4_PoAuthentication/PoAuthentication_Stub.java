@@ -100,9 +100,8 @@ public class PoAuthentication_Stub {
 
     String environmentAndHolder =
         ByteArrayUtil.toHex(efEnvironmentAndHolder.getData().getContent());
-    logger.info("File Environment and Holder: {}", environmentAndHolder);
 
-    // Go on with the reading of the first record of the EventLog file
+    logger.info("File Environment and Holder: {}", environmentAndHolder);
     logger.info(
         "= ##### 2nd PO exchange: open and close a secure session to perform authentication.");
 
