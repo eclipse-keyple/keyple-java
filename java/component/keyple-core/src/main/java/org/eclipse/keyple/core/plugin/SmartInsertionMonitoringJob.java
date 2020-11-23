@@ -9,21 +9,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.plugin.reader;
+package org.eclipse.keyple.core.plugin;
 
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Detect the card removal thanks to the method {@link
- * WaitForCardRemovalBlocking#waitForCardAbsentNative()}. This method is invoked in another thread
+ * Detect the card insertion thanks to the method {@link
+ * WaitForCardInsertionBlocking#waitForCardPresent()}. This method is invoked in another thread.
  *
- * <p>This job should be used by readers who have the ability to natively detect the disappearance
- * of the card during a communication session with an ES (between two APDU exchanges).
+ * <p>The job waits indefinitely for the waitForCardPresent method to return.
  *
- * <p>PC/SC readers have this capability.
- *
- * <p>If the card is removed during processing, then an internal CARD_REMOVED event is triggered.
+ * <p>When a card is present, an internal CARD_INSERTED event is fired.
  *
  * <p>If a communication problem with the reader occurs (KeypleReaderIOException) an internal
  * STOP_DETECT event is fired.
@@ -32,13 +30,13 @@ import org.slf4j.LoggerFactory;
  * the application level through the {@link
  * org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler} mechanism.
  */
-class SmartRemovalMonitoringJob extends AbstractMonitoringJob {
+class SmartInsertionMonitoringJob extends AbstractMonitoringJob {
 
-  private static final Logger logger = LoggerFactory.getLogger(SmartRemovalMonitoringJob.class);
+  private static final Logger logger = LoggerFactory.getLogger(SmartInsertionMonitoringJob.class);
 
-  private final WaitForCardRemovalBlocking reader;
+  private final WaitForCardInsertionBlocking reader;
 
-  public SmartRemovalMonitoringJob(WaitForCardRemovalBlocking reader) {
+  public SmartInsertionMonitoringJob(WaitForCardInsertionBlocking reader) {
     this.reader = reader;
   }
 
@@ -46,19 +44,28 @@ class SmartRemovalMonitoringJob extends AbstractMonitoringJob {
   @Override
   Runnable getMonitoringJob(final AbstractObservableState state) {
     /*
-     * Invoke the method WaitForCardRemovalBlocking#waitForCardAbsentNative() in another thread
+     * Invoke the method WaitForCardInsertionBlocking#waitForCardPresent() in another thread
      */
     return new Runnable() {
       @Override
       public void run() {
         try {
-          if (reader.waitForCardAbsentNative()) {
-            // timeout is already managed within the task
-            state.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_REMOVED);
-          } else {
+          boolean isCardFound = false;
+          while (!isCardFound && !Thread.currentThread().isInterrupted()) {
             if (logger.isTraceEnabled()) {
-              logger.trace(
-                  "[{}] waitForCardAbsentNative => return false, task interrupted",
+              logger.trace("[{}] Invoke waitForCardPresent asynchronously", reader.getName());
+            }
+
+            boolean isCardPresent = reader.waitForCardPresent();
+
+            try {
+              if (isCardPresent) {
+                state.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_INSERTED);
+                isCardFound = true;
+              }
+            } catch (KeypleReaderIOException e) {
+              logger.warn(
+                  "[{}] waitForCardPresent => Error while processing card insertion event",
                   reader.getName());
             }
           }
@@ -75,6 +82,9 @@ class SmartRemovalMonitoringJob extends AbstractMonitoringJob {
   /** (package-private)<br> */
   @Override
   void stop() {
-    reader.stopWaitForCardRemoval();
+    if (logger.isTraceEnabled()) {
+      logger.trace("[{}] stopWaitForCard on reader", reader.getName());
+    }
+    reader.stopWaitForCard();
   }
 }

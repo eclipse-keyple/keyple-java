@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.plugin.reader;
+package org.eclipse.keyple.core.plugin;
 
 import java.util.List;
 import org.eclipse.keyple.core.card.message.CardRequest;
@@ -62,7 +62,7 @@ public abstract class AbstractReader implements ProxyReader {
 
     this.name = name;
     this.pluginName = pluginName;
-    this.isRegistered = false;
+    this.isRegistered = true;
     if (logger.isDebugEnabled()) {
       this.before = System.nanoTime();
     }
@@ -236,18 +236,24 @@ public abstract class AbstractReader implements ProxyReader {
           String.format("This reader, %s, is not registered", getName()));
   }
 
-  /** {@inheritDoc} */
-  @Override
-  public void register() {
-    if (isRegistered)
-      throw new IllegalStateException(
-          String.format("This reader, %s, is already registered", getName()));
+  /**
+   * (package-private)<br>
+   * Change the reader status to registered
+   *
+   * @since 1.0
+   */
+  void register() {
     isRegistered = true;
   }
 
-  /** {@inheritDoc} */
-  @Override
-  public void unregister() {
+  /**
+   * (package-private)<br>
+   * Change the reader status to unregistered
+   *
+   * @throws IllegalStateException is thrown when plugin is already unregistered.
+   * @since 1.0
+   */
+  void unregister() {
     checkStatus();
     isRegistered = false;
   }

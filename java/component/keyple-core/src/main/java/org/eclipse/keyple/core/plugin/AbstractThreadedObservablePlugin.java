@@ -13,7 +13,6 @@ package org.eclipse.keyple.core.plugin;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
-import org.eclipse.keyple.core.plugin.reader.AbstractReader;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.event.ObservablePlugin;
 import org.eclipse.keyple.core.service.event.PluginEvent;
@@ -202,7 +201,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
      */
     private void addReader(String readerName) {
       Reader reader = fetchNativeReader(readerName);
-      reader.register();
+      ((AbstractReader) reader).register();
       readers.put(reader.getName(), reader);
       if (logger.isTraceEnabled()) {
         logger.trace(
@@ -217,7 +216,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
      * Removes a reader from the list of known readers (by the plugin)
      */
     private void removeReader(Reader reader) {
-      reader.unregister();
+      ((AbstractReader) reader).unregister();
       readers.remove(reader.getName());
       if (logger.isTraceEnabled()) {
         logger.trace(

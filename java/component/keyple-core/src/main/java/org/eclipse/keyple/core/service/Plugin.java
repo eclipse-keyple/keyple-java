@@ -16,7 +16,15 @@ import java.util.Set;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 
 /** Card readers plugin interface. */
-public interface Plugin extends ProxyElement {
+public interface Plugin {
+
+  /**
+   * Gets the name of the plugin
+   *
+   * @return A not empty string.
+   * @since 0.9
+   */
+  String getName();
 
   /**
    * Gets the list of names of all readers
@@ -44,20 +52,4 @@ public interface Plugin extends ProxyElement {
    * @throws IllegalStateException is called when plugin is no longer registered
    */
   Reader getReader(String name);
-
-  /**
-   * Change the plugin status to registered
-   *
-   * @throws IllegalStateException is thrown when plugin is already registered.
-   * @since 1.0
-   */
-  void register();
-
-  /**
-   * Change the plugin status to unregistered
-   *
-   * @throws IllegalStateException is thrown when plugin is already unregistered.
-   * @since 1.0
-   */
-  void unregister();
 }

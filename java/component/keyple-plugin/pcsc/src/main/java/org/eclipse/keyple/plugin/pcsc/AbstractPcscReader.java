@@ -19,9 +19,10 @@ import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
-import org.eclipse.keyple.core.plugin.reader.AbstractObservableLocalReader;
-import org.eclipse.keyple.core.plugin.reader.WaitForCardRemovalBlocking;
-import org.eclipse.keyple.core.plugin.reader.WaitForCardRemovalDuringProcessing;
+import org.eclipse.keyple.core.plugin.AbstractObservableLocalReader;
+import org.eclipse.keyple.core.plugin.WaitForCardInsertionBlocking;
+import org.eclipse.keyple.core.plugin.WaitForCardRemovalBlocking;
+import org.eclipse.keyple.core.plugin.WaitForCardRemovalDuringProcessing;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
@@ -36,12 +37,10 @@ import org.slf4j.LoggerFactory;
  * Package private class implementing the {@link Reader} interface for PC/SC based readers.
  *
  * <p>A PC/SC reader is observable ({@link AbstractObservableLocalReader}), autonomous to detect the
- * insertion and removal of cards ({@link
- * org.eclipse.keyple.core.plugin.reader.WaitForCardInsertionBlocking} {@link
- * org.eclipse.keyple.core.plugin.reader.WaitForCardRemovalBlocking}), able to detect the removal of
- * a card prior an attempt to communicate with it ({@link
- * org.eclipse.keyple.core.plugin.reader.WaitForCardRemovalDuringProcessing} and has specific
- * settings ({@link PcscReader}.
+ * insertion and removal of cards ({@link WaitForCardInsertionBlocking} {@link
+ * WaitForCardRemovalBlocking}), able to detect the removal of a card prior an attempt to
+ * communicate with it ({@link WaitForCardRemovalDuringProcessing} and has specific settings ({@link
+ * PcscReader}.
  *
  * <p>However, due to some problems in the implementation of smartcard.io in macOS, the detection of
  * card insertion is done differently on this platform. This is why there are two specific

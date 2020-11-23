@@ -9,13 +9,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.plugin.reader;
+package org.eclipse.keyple.core.plugin;
 
 /**
- * Interface to be implemented by readers that require an active process to detect the card
- * insertion. They provide a method sa
+ * Interface to be implemented by readers that have a fully integrated management of card
+ * communications for card removal detection.
  *
- * <p>A typical example of readers conforming to this mode of operation are terminals embedding a
- * slave RF communication module.
+ * <p>A typical example of readers conforming to this mode of operation are Android-based NFC
+ * readers.
  */
-public interface WaitForCardInsertionNonBlocking extends ObservableReaderNotifier {}
+public interface WaitForCardRemovalAutonomous extends ObservableReaderNotifier {}

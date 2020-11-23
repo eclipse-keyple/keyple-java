@@ -12,10 +12,10 @@
 package org.eclipse.keyple.plugin.stub;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.eclipse.keyple.core.plugin.reader.AbstractObservableLocalReader;
-import org.eclipse.keyple.core.plugin.reader.WaitForCardInsertionBlocking;
-import org.eclipse.keyple.core.plugin.reader.WaitForCardRemovalBlocking;
-import org.eclipse.keyple.core.plugin.reader.WaitForCardRemovalDuringProcessing;
+import org.eclipse.keyple.core.plugin.AbstractObservableLocalReader;
+import org.eclipse.keyple.core.plugin.WaitForCardInsertionBlocking;
+import org.eclipse.keyple.core.plugin.WaitForCardRemovalBlocking;
+import org.eclipse.keyple.core.plugin.WaitForCardRemovalDuringProcessing;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;

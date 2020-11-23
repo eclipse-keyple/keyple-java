@@ -9,16 +9,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.plugin.reader;
+package org.eclipse.keyple.core.plugin;
 
 /**
- * This class adds to AbstractObservableLocalReader methods to allow the plugin implementation to
+ * This class adds to AbstractObservableLocalReader methods to allow the reader implementation to
  * call back the core when card insertion and removal events occur.
  *
  * @since 1.0
  */
 public abstract class AbstractObservableLocalAutonomousReader
     extends AbstractObservableLocalReader {
+
   /**
    * (protected)<br>
    * {@inheritDoc}

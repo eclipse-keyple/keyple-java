@@ -12,7 +12,7 @@
 package org.eclipse.keyple.plugin.pcsc;
 
 import javax.smartcardio.CardTerminal;
-import org.eclipse.keyple.core.plugin.reader.WaitForCardInsertionNonBlocking;
+import org.eclipse.keyple.core.plugin.WaitForCardInsertionNonBlocking;
 import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 
 /**

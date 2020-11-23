@@ -21,7 +21,14 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 
-/** Observable plugin. These plugin can report when a reader is added or removed. */
+/**
+ * This class define the common API for all plugins.
+ *
+ * <p>It includes methods: <br>
+ * for readers management: initializes and manages the list of connected readers, allows to retrieve
+ * them all or individually by their names, <br>
+ * for the plugin registration cycle: register, unregister and check registration.
+ */
 public abstract class AbstractPlugin implements Plugin {
 
   /** The name of the plugin */
@@ -45,7 +52,7 @@ public abstract class AbstractPlugin implements Plugin {
    */
   protected AbstractPlugin(String name) {
     this.name = name;
-    this.isRegistered = false;
+    this.isRegistered = true;
   }
 
   /** @return the name of the plugin */
@@ -81,14 +88,14 @@ public abstract class AbstractPlugin implements Plugin {
 
   /**
    * Init connected native readers (from third party library) and returns a map of corresponding
-   * {@link Reader} whith their name as key.
+   * {@link Reader} with their name as key.
    *
    * <p>{@link Reader} are new instances.
    *
    * <p>this method is called once when the plugin is registered.
    *
    * @return the map of AbstractReader objects.
-   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
+   * @throws KeypleReaderIOException if the communication with the reader has failed
    */
   protected abstract Map<String, Reader> initNativeReaders();
 
@@ -121,28 +128,32 @@ public abstract class AbstractPlugin implements Plugin {
           String.format("This plugin, %s, is not registered", getName()));
   }
 
-  /** {@inheritDoc} */
-  @Override
+  /**
+   * Change the plugin status to registered
+   *
+   * @since 1.0
+   */
   public void register() {
-    if (isRegistered)
-      throw new IllegalStateException(
-          String.format("This plugin, %s, is already registered", getName()));
     isRegistered = true;
     readers.putAll(initNativeReaders());
     final Collection<Reader> _readers = readers.values();
     for (Reader seReader : _readers) {
-      seReader.register();
+      ((AbstractReader) seReader).register();
     }
   }
 
-  /** {@inheritDoc} */
-  @Override
+  /**
+   * Change the plugin status to unregistered
+   *
+   * @throws IllegalStateException is thrown when plugin is already unregistered.
+   * @since 1.0
+   */
   public void unregister() {
     checkStatus();
     isRegistered = false;
     for (String key : readers.keySet()) {
       final Reader seReader = readers.remove(key);
-      seReader.unregister();
+      ((AbstractReader) seReader).unregister();
     }
   }
 }

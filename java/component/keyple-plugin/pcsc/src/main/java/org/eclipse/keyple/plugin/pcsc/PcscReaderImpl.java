@@ -13,7 +13,7 @@ package org.eclipse.keyple.plugin.pcsc;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.smartcardio.*;
-import org.eclipse.keyple.core.plugin.reader.WaitForCardInsertionBlocking;
+import org.eclipse.keyple.core.plugin.WaitForCardInsertionBlocking;
 import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.slf4j.Logger;

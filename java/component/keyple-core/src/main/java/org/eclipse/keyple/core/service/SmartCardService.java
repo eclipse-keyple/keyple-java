@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import org.eclipse.keyple.core.plugin.AbstractPlugin;
 import org.eclipse.keyple.core.service.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
 import org.slf4j.Logger;
@@ -72,8 +73,12 @@ public final class SmartCardService {
             "Plugin has already been registered to the platform : " + pluginName);
       } else {
         Plugin pluginInstance = pluginFactory.getPlugin();
-        logger.info("Registering a new Plugin to the platform : {}", pluginName);
-        pluginInstance.register();
+        if (pluginInstance instanceof AbstractPlugin) {
+          logger.info("Registering a new Plugin to the platform : {}", pluginName);
+          ((AbstractPlugin) pluginInstance).register();
+        } else {
+          logger.info("No registration needed for pool plugin : {}", pluginName);
+        }
         this.plugins.put(pluginName, pluginInstance);
         return pluginInstance;
       }
@@ -90,8 +95,12 @@ public final class SmartCardService {
     synchronized (MONITOR) {
       final Plugin removedPlugin = plugins.remove(pluginName);
       if (removedPlugin != null) {
-        removedPlugin.unregister();
-        logger.info("Unregistering a plugin from the platform : {}", removedPlugin.getName());
+        if (removedPlugin instanceof AbstractPlugin) {
+          ((AbstractPlugin) removedPlugin).unregister();
+          logger.info("Unregistering a plugin from the platform : {}", removedPlugin.getName());
+        } else {
+          logger.info("Unregistration not needed for pool plugin : {}", pluginName);
+        }
       } else {
         throw new IllegalStateException(
             String.format("This plugin, %s, is not registered", pluginName));

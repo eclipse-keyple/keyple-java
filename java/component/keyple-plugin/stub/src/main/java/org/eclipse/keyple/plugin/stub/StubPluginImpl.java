@@ -74,7 +74,6 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
         // if no observer, no monitoring thread is started, then it needs to be added and registered
         // manually
         readers.put(readerName, stubReader);
-        stubReader.register();
       } else {
         // wait until readers contains readerName
         while (!Thread.currentThread().isInterrupted() && !readers.keySet().contains(readerName)) {
@@ -107,7 +106,6 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
           // registered
           // manually
           readers.put(readerName, stubReader);
-          stubReader.register();
         }
       } else {
         // wait until readers contains readerName
@@ -145,7 +143,6 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
       if (this.countObservers() == 0) {
         Reader reader = readers.get(readerName);
         readers.remove(readerName);
-        reader.unregister();
       } else {
         // wait until readers not contain readerName
         while (!Thread.currentThread().isInterrupted() && readers.keySet().contains(readerName)) {
@@ -180,7 +177,6 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
         for (String readerName : readerNames) {
           Reader reader = readers.get(readerName);
           readers.remove(readerName);
-          reader.unregister();
         }
       } else {
         // wait until readers not contain readerName
