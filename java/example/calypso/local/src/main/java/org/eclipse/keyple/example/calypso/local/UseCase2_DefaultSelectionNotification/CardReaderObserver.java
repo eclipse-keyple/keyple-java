@@ -24,14 +24,13 @@ import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
-import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class ReaderObserver implements ObservableReader.ReaderObserver, ReaderObservationExceptionHandler {
-  private final Logger logger = LoggerFactory.getLogger(ReaderObserver.class);
+class CardReaderObserver implements ObservableReader.ReaderObserver {
+  private final Logger logger = LoggerFactory.getLogger(CardReaderObserver.class);
 
   /**
    * Method invoked in the case of a reader event
@@ -125,15 +124,5 @@ class ReaderObserver implements ObservableReader.ReaderObserver, ReaderObservati
       default:
         break;
     }
-  }
-
-  @Override
-  public void onReaderObservationError(String pluginName, String readerName, Throwable throwable) {
-    logger.error("An unexpected reader error occurred: {}:{}", pluginName, readerName, throwable);
-    /*
-    synchronized (waitForEnd) {
-      waitForEnd.notify();
-    }
-    */
   }
 }

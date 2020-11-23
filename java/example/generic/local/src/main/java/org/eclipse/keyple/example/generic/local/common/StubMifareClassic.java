@@ -9,18 +9,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.generic.pc.common;
+package org.eclipse.keyple.example.generic.local.common;
 
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.stub.StubSmartCard;
 
-/** Simple contactless card Stub (no command) */
-public class StubSmartCard2 extends StubSmartCard {
+/** Simple contact card Stub (no command) */
+public class StubMifareClassic extends StubSmartCard {
 
-  static final String cardProtocol = "ISO_14443_4";
-  final String ATR_HEX = "3B8E800180318066409089120802830190000B";
+  static final String cardProtocol = "MIFARE_CLASSIC";
+  final String ATR_HEX = "3B8F8001804F0CA000000306030001000000006A";
 
-  public StubSmartCard2() {}
+  public StubMifareClassic() {
+    /* Get data */
+    addHexCommand("FFCA 000000", "112233449000");
+  }
 
   @Override
   public byte[] getATR() {

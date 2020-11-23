@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.generic.pc.UseCase3_SequentialMultiSelection;
+package org.eclipse.keyple.example.generic.local.UseCase3_SequentialMultiSelection;
 
 import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.card.selection.CardSelection;
@@ -19,8 +19,8 @@ import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.example.generic.pc.common.GenericCardSelectionRequest;
-import org.eclipse.keyple.example.generic.pc.common.PcscReaderUtilities;
+import org.eclipse.keyple.example.generic.local.common.GenericCardSelectionRequest;
+import org.eclipse.keyple.example.generic.local.common.PcscReaderUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.slf4j.Logger;
@@ -32,19 +32,6 @@ import org.slf4j.LoggerFactory;
  */
 public class SequentialMultiSelection_Pcsc {
   private static final Logger logger = LoggerFactory.getLogger(SequentialMultiSelection_Pcsc.class);
-
-  private static void doAndAnalyseSelection(Reader reader, CardSelection cardSelection, int index) {
-    SelectionsResult selectionsResult = cardSelection.processExplicitSelection(reader);
-    if (selectionsResult.hasActiveSelection()) {
-      AbstractSmartCard smartCard = selectionsResult.getActiveSmartCard();
-      logger.info("The card matched the selection {}.", index);
-      String atr = smartCard.hasAtr() ? ByteArrayUtil.toHex(smartCard.getAtrBytes()) : "no ATR";
-      String fci = smartCard.hasFci() ? ByteArrayUtil.toHex(smartCard.getFciBytes()) : "no FCI";
-      logger.info("Selection status for case {}: \n\t\tATR: {}\n\t\tFCI: {}", index, atr, fci);
-    } else {
-      logger.info("The selection did not match for case {}.", index);
-    }
-  }
 
   public static void main(String[] args) {
 
@@ -117,5 +104,18 @@ public class SequentialMultiSelection_Pcsc {
     doAndAnalyseSelection(reader, cardSelection, 2);
 
     System.exit(0);
+  }
+
+  private static void doAndAnalyseSelection(Reader reader, CardSelection cardSelection, int index) {
+    SelectionsResult selectionsResult = cardSelection.processExplicitSelection(reader);
+    if (selectionsResult.hasActiveSelection()) {
+      AbstractSmartCard smartCard = selectionsResult.getActiveSmartCard();
+      logger.info("The card matched the selection {}.", index);
+      String atr = smartCard.hasAtr() ? ByteArrayUtil.toHex(smartCard.getAtrBytes()) : "no ATR";
+      String fci = smartCard.hasFci() ? ByteArrayUtil.toHex(smartCard.getFciBytes()) : "no FCI";
+      logger.info("Selection status for case {}: \n\t\tATR: {}\n\t\tFCI: {}", index, atr, fci);
+    } else {
+      logger.info("The selection did not match for case {}.", index);
+    }
   }
 }

@@ -55,8 +55,6 @@ import org.slf4j.LoggerFactory;
  */
 public class Rev1Selection_Pcsc {
   private static final Logger logger = LoggerFactory.getLogger(Rev1Selection_Pcsc.class);
-  static final String PO_ATR_REGEX = ".*";
-  static final String PO_DF_RT_PATH = "2000";
 
   public static void main(String[] args) {
 

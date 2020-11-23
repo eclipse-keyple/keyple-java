@@ -23,8 +23,6 @@ public final class CalypsoUtils {
 
   private static final Logger logger = LoggerFactory.getLogger(CalypsoUtils.class);
 
-  private CalypsoUtils() {}
-
   /**
    * Define the security parameters to provide when creating {@link
    * org.eclipse.keyple.calypso.transaction.PoTransaction}

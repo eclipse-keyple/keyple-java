@@ -138,7 +138,6 @@ public class StoredValue_SimpleReload_Pcsc {
 
     System.exit(0);
   }
-
   /**
    * Help method for formatting a JSON data string
    *

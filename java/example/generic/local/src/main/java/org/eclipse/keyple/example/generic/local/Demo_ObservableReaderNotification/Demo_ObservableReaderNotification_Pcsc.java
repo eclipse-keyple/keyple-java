@@ -9,13 +9,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.generic.pc.Demo_ObservableReaderNotification;
+package org.eclipse.keyple.example.generic.local.Demo_ObservableReaderNotification;
 
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservablePlugin;
 import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.PluginObservationExceptionHandler;
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +25,6 @@ import org.slf4j.LoggerFactory;
 public class Demo_ObservableReaderNotification_Pcsc {
   private static final Logger logger =
       LoggerFactory.getLogger(Demo_ObservableReaderNotification_Pcsc.class);
-  public static final Object waitBeforeEnd = new Object();
 
   public static void main(String[] args) throws Exception {
 
@@ -31,11 +32,13 @@ public class Demo_ObservableReaderNotification_Pcsc {
     final SmartCardService smartCardService = SmartCardService.getInstance();
     final Plugin plugin;
 
-    ReaderObserver readerObserver = new ReaderObserver();
-    PluginObserver pluginObserver = new PluginObserver(readerObserver);
+    /* Create a Exception Handler for plugin and reader observation */
+    ExceptionHandlerImpl exceptionHandlerImpl = new ExceptionHandlerImpl();
 
     // Assign PcscPlugin to the SmartCardService
-    plugin = smartCardService.registerPlugin(new PcscPluginFactory(pluginObserver, readerObserver));
+    plugin =
+        smartCardService.registerPlugin(
+            new PcscPluginFactory(exceptionHandlerImpl, exceptionHandlerImpl));
 
     /*
      * We add an observer to each plugin (only one in this example) the readers observers will
@@ -48,18 +51,47 @@ public class Demo_ObservableReaderNotification_Pcsc {
     }
 
     logger.info("Add observer PLUGINNAME = {}", plugin.getName());
-    ((ObservablePlugin) plugin).addObserver(pluginObserver);
+    ((ObservablePlugin) plugin).addObserver(new PluginObserver());
 
     logger.info("Wait for reader or card insertion/removal");
 
     // Wait indefinitely. CTRL-C to exit.
-    synchronized (waitBeforeEnd) {
-      waitBeforeEnd.wait();
+    synchronized (waitForEnd) {
+      waitForEnd.wait();
     }
 
     // unregister plugin
     smartCardService.unregisterPlugin(plugin.getName());
 
     logger.info("Exit program.");
+  }
+
+  /**
+   * This object is used to freeze the main thread while card operations are handle through the
+   * observers callbacks. A call to the notify() method would end the program (not demonstrated
+   * here).
+   */
+  private static final Object waitForEnd = new Object();
+
+  private static class ExceptionHandlerImpl
+      implements PluginObservationExceptionHandler, ReaderObservationExceptionHandler {
+    final Logger logger = LoggerFactory.getLogger(ExceptionHandlerImpl.class);
+
+    @Override
+    public void onPluginObservationError(String pluginName, Throwable throwable) {
+      logger.error("An unexpected plugin error occurred: {}", pluginName, throwable);
+      synchronized (waitForEnd) {
+        waitForEnd.notifyAll();
+      }
+    }
+
+    @Override
+    public void onReaderObservationError(
+        String pluginName, String readerName, Throwable throwable) {
+      logger.error("An unexpected reader error occurred: {}:{}", pluginName, readerName, throwable);
+      synchronized (waitForEnd) {
+        waitForEnd.notifyAll();
+      }
+    }
   }
 }

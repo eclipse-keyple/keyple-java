@@ -9,16 +9,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.generic.pc.UseCase2_DefaultSelectionNotification;
+package org.eclipse.keyple.example.generic.local.UseCase2_DefaultSelectionNotification;
 
 import org.eclipse.keyple.core.card.selection.CardSelection;
 import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
-import org.eclipse.keyple.example.generic.pc.common.GenericCardSelectionRequest;
+import org.eclipse.keyple.example.generic.local.common.GenericCardSelectionRequest;
 
 class CardSelectionConfig {
 
   private static CardSelection cardSelection;
+
+  private static String cardAid = "A0000004040125090101";
 
   static CardSelection getDefaultSelection() {
     if (cardSelection != null) {
@@ -38,10 +40,7 @@ class CardSelectionConfig {
         new GenericCardSelectionRequest(
             CardSelector.builder()
                 .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-                .aidSelector(
-                    CardSelector.AidSelector.builder()
-                        .aidToSelect(DefaultSelectionNotification_Pcsc.cardAid)
-                        .build())
+                .aidSelector(CardSelector.AidSelector.builder().aidToSelect(cardAid).build())
                 .build());
 
     // Add the selection case to the current selection (we could have added other cases here)

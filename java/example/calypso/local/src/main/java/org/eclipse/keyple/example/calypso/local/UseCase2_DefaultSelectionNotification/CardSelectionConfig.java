@@ -18,7 +18,7 @@ import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
 
 class CardSelectionConfig {
 
-  static CardSelection cardSelection;
+  private static CardSelection cardSelection;
 
   static CardSelection getCardSelection() {
     if (cardSelection != null) {

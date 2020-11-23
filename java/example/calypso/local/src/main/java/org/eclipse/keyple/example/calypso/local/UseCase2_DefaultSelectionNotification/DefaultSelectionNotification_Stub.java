@@ -16,6 +16,7 @@ import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.example.calypso.local.common.StubCalypsoClassic;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubPluginFactory;
@@ -48,7 +49,7 @@ import org.slf4j.LoggerFactory;
  *       </ul>
  * </ul>
  */
-class DefaultSelectionNotification_Stub {
+public class DefaultSelectionNotification_Stub {
   private static final Logger logger =
       LoggerFactory.getLogger(DefaultSelectionNotification_Stub.class);
 
@@ -61,7 +62,8 @@ class DefaultSelectionNotification_Stub {
 
     /* Register Stub plugin in the platform */
     Plugin stubPlugin =
-        smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME, null, null));
+        smartCardService.registerPlugin(
+            new StubPluginFactory(STUB_PLUGIN_NAME, null, new ExceptionHandlerImpl()));
 
     /* Plug the PO stub reader. */
     ((StubPlugin) stubPlugin).plugStubReader("poReader", true);
@@ -94,7 +96,7 @@ class DefaultSelectionNotification_Stub {
             ObservableReader.PollingMode.REPEATING);
 
     /* Set a CardSelectionConfig that contains the ticketing logic for the reader */
-    ((ObservableReader) poReader).addObserver(new ReaderObserver());
+    ((ObservableReader) poReader).addObserver(new CardReaderObserver());
 
     logger.info(
         "= #### Wait for a PO. The default AID based selection with reading of Environment");
@@ -116,5 +118,15 @@ class DefaultSelectionNotification_Stub {
     ((StubReader) poReader).removeCard();
 
     System.exit(0);
+  }
+
+  private static class ExceptionHandlerImpl implements ReaderObservationExceptionHandler {
+    final Logger logger = LoggerFactory.getLogger(ExceptionHandlerImpl.class);
+
+    @Override
+    public void onReaderObservationError(
+        String pluginName, String readerName, Throwable throwable) {
+      logger.error("An unexpected reader error occurred: {}:{}", pluginName, readerName, throwable);
+    }
   }
 }

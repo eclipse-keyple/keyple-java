@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.generic.pc.UseCase1_ExplicitSelectionAid;
+package org.eclipse.keyple.example.generic.local.UseCase1_ExplicitSelectionAid;
 
 import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.card.selection.CardSelection;
@@ -19,8 +19,8 @@ import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.example.generic.pc.common.GenericCardSelectionRequest;
-import org.eclipse.keyple.example.generic.pc.common.PcscReaderUtilities;
+import org.eclipse.keyple.example.generic.local.common.GenericCardSelectionRequest;
+import org.eclipse.keyple.example.generic.local.common.PcscReaderUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.slf4j.Logger;

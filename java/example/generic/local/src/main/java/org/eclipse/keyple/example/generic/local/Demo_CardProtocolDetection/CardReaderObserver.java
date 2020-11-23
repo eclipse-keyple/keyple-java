@@ -9,21 +9,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.generic.pc.Demo_CardProtocolDetection;
+package org.eclipse.keyple.example.generic.local.Demo_CardProtocolDetection;
 
-import static org.eclipse.keyple.example.generic.pc.Demo_CardProtocolDetection.CardSelectionConfig.getDefaultSelection;
+import static org.eclipse.keyple.example.generic.local.Demo_CardProtocolDetection.CardSelectionConfig.getDefaultSelection;
 
 import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.card.selection.CardSelection;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
-import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class ReaderObserver implements ObservableReader.ReaderObserver, ReaderObservationExceptionHandler {
+class CardReaderObserver implements ObservableReader.ReaderObserver {
 
-  private static final Logger logger = LoggerFactory.getLogger(ReaderObserver.class);
+  private static final Logger logger = LoggerFactory.getLogger(CardReaderObserver.class);
 
   /**
    * Implementation of the {@link ObservableReader.ReaderObserver#update(ReaderEvent)} method. <br>
@@ -54,18 +53,8 @@ class ReaderObserver implements ObservableReader.ReaderObserver, ReaderObservati
         logger.warn("Unexpected card removal event");
         break;
       case UNREGISTERED:
-        logger.error("Unexpected error: the reader is no more registered in the SmartcardService.");
+        logger.error("Unexpected error: the reader is no more registered in the SmartCardService.");
         break;
     }
-  }
-
-  @Override
-  public void onReaderObservationError(String pluginName, String readerName, Throwable throwable) {
-    logger.error("An unexpected reader error occurred: {}:{}", pluginName, readerName, throwable);
-    /*
-    synchronized (waitForEnd) {
-      waitForEnd.notify();
-    }
-    */
   }
 }
