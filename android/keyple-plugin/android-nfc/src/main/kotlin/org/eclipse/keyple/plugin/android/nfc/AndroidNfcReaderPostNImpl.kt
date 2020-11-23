@@ -14,7 +14,7 @@ package org.eclipse.keyple.plugin.android.nfc
 import android.annotation.TargetApi
 import android.app.Activity
 import android.os.Build
-import org.eclipse.keyple.core.plugin.reader.WaitForCardRemovalBlocking
+import org.eclipse.keyple.core.plugin.WaitForCardRemovalBlocking
 import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler
 import timber.log.Timber
 

@@ -12,7 +12,7 @@
 package org.eclipse.keyple.plugin.android.nfc
 
 import android.app.Activity
-import org.eclipse.keyple.core.plugin.reader.WaitForCardRemovalNonBlocking
+import org.eclipse.keyple.core.plugin.WaitForCardRemovalNonBlocking
 import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler
 
 /**
