@@ -16,9 +16,7 @@ import java.util.Map;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remote.AsyncNodeServer;
 import org.eclipse.keyple.plugin.remote.MessageDto;
-import org.eclipse.keyple.plugin.remote.exception.KeypleClosedSessionException;
-import org.eclipse.keyple.plugin.remote.exception.KeypleRemoteCommunicationException;
-import org.eclipse.keyple.plugin.remote.exception.KeypleTimeoutException;
+import org.eclipse.keyple.plugin.remote.NodeCommunicationException;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,8 +24,6 @@ import org.slf4j.LoggerFactory;
 /**
  * (package-private)<br>
  * Async Node Server implementation.
- *
- * @since 1.0
  */
 final class AsyncNodeServerImpl extends AbstractNode implements AsyncNodeServer {
 
@@ -85,12 +81,12 @@ final class AsyncNodeServerImpl extends AbstractNode implements AsyncNodeServer 
    *
    * @param sessionId The session id (must be not empty).
    * @return a not null reference.
-   * @throws KeypleClosedSessionException if the session is not found.
+   * @throws IllegalStateException if the session is not found.
    */
   private SessionManager getManagerForHandler(String sessionId) {
     SessionManager manager = sessionManagers.get(sessionId);
     if (manager == null) {
-      throw new KeypleClosedSessionException("The node's session [" + sessionId + "] is closed.");
+      throw new IllegalStateException("The node's session [" + sessionId + "] is closed.");
     }
     return manager;
   }
@@ -150,10 +146,10 @@ final class AsyncNodeServerImpl extends AbstractNode implements AsyncNodeServer 
 
     /** {@inheritDoc} */
     @Override
-    protected void checkIfExternalErrorOccurred() {
+    void checkIfExternalErrorOccurred() {
       if (state == SessionManagerState.EXTERNAL_ERROR_OCCURRED) {
         state = SessionManagerState.ABORTED_SESSION;
-        throw new KeypleRemoteCommunicationException(error.getMessage(), error);
+        throw new NodeCommunicationException(error.getMessage(), error);
       }
     }
 
@@ -187,8 +183,6 @@ final class AsyncNodeServerImpl extends AbstractNode implements AsyncNodeServer 
      *
      * @param msg The message to send.
      * @return The response.
-     * @throws KeypleTimeoutException if a timeout occurs.
-     * @throws RuntimeException if an endpoint error occurs.
      */
     private synchronized MessageDto sendRequest(MessageDto msg) {
       checkIfExternalErrorOccurred();
@@ -204,7 +198,6 @@ final class AsyncNodeServerImpl extends AbstractNode implements AsyncNodeServer 
      * Called by the handler to send a message to the endpoint.
      *
      * @param msg The message to send.
-     * @throws RuntimeException if an endpoint error occurs.
      */
     private synchronized void sendMessage(MessageDto msg) {
       checkIfExternalErrorOccurred();

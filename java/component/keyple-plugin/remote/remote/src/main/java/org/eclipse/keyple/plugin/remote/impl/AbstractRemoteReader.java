@@ -62,11 +62,7 @@ abstract class AbstractRemoteReader extends AbstractReader {
     this.clientNodeId = clientNodeId;
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   protected List<CardSelectionResponse> processCardSelectionRequests(
       List<CardSelectionRequest> cardSelectionRequests,
@@ -93,11 +89,7 @@ abstract class AbstractRemoteReader extends AbstractReader {
             response.getBody(), new TypeToken<ArrayList<CardSelectionResponse>>() {}.getType());
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   protected CardResponse processCardRequest(
       CardRequest cardRequest, ChannelControl channelControl) {
@@ -115,11 +107,7 @@ abstract class AbstractRemoteReader extends AbstractReader {
     return KeypleJsonParser.getParser().fromJson(response.getBody(), CardResponse.class);
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public boolean isCardPresent() {
 
@@ -130,44 +118,28 @@ abstract class AbstractRemoteReader extends AbstractReader {
     return KeypleJsonParser.getParser().fromJson(response.getBody(), Boolean.class);
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public void releaseChannel() {
     // Send the message as a request even if no return is expected
     sendRequest(MessageDto.Action.RELEASE_CHANNEL, null);
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public void activateProtocol(String readerProtocolName, String applicationProtocolName) {
     throw new UnsupportedOperationException(
         "activateProtocol method is not implemented in plugin remote, use it only locally");
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public void deactivateProtocol(String readerProtocolName) {
     throw new UnsupportedOperationException(
         "activateProtocol method is not implemented in plugin remote, use it only locally");
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public boolean isContactless() {
     MessageDto response = sendRequest(MessageDto.Action.IS_READER_CONTACTLESS, null);
@@ -177,7 +149,7 @@ abstract class AbstractRemoteReader extends AbstractReader {
   }
 
   /**
-   * (private)<br>
+   * (package-private)<br>
    * <li>Build the message using the provided action and body.
    * <li>Send it as a request.
    * <li>If an error is contained in the response, then throw an exception.
@@ -186,7 +158,7 @@ abstract class AbstractRemoteReader extends AbstractReader {
    * @param body The body (optional).
    * @return a not null reference.
    */
-  protected MessageDto sendRequest(MessageDto.Action action, JsonObject body) {
+  MessageDto sendRequest(MessageDto.Action action, JsonObject body) {
 
     // Build the message
     MessageDto message =

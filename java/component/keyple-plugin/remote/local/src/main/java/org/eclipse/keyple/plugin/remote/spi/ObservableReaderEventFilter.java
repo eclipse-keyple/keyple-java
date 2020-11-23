@@ -12,42 +12,54 @@
 package org.eclipse.keyple.plugin.remote.spi;
 
 import org.eclipse.keyple.core.service.event.ReaderEvent;
-import org.eclipse.keyple.plugin.remote.exception.KeypleDoNotPropagateEventException;
 
 /**
- * Observable Reader Reader Event Filter<br>
- * This interface should be implemented by the user in the use case of the Remote Server Plugin when
- * the reader observation is activated.
+ * SPI of the <b>local filter</b> associated to an <b>observable reader event</b>.
+ *
+ * <p>You must provide an implementation of this interface if you use a {@link
+ * org.eclipse.keyple.plugin.remote.LocalServiceClient} and you plan to observe remotely the local
+ * reader.
  *
  * @since 1.0
  */
 public interface ObservableReaderEventFilter {
 
   /**
-   * Execute any process before the event is sent to the server
+   * Is invoked when a reader event occurs, before propagating it to the server.
    *
-   * @param event that will be propagated
-   * @return nullable data that will be sent to the server.
-   * @throws KeypleDoNotPropagateEventException if event should not be propagated to server
+   * <p>Then, you have the possibility to :
+   *
+   * <ul>
+   *   <li>execute a specific treatment,
+   *   <li>return if necessary a DTO to be transmitted to the remote service,
+   *   <li>stop the propagation of the event by throwing the exception {@link
+   *       DoNotPropagateEventException}.
+   * </ul>
+   *
+   * @param event The reader event.
+   * @return The user input data of the remote service or <b>null</b> if you don't have any data to
+   *     transmit to the server.
+   * @throws DoNotPropagateEventException if you want to stop the propagation of the event.
    * @since 1.0
    */
-  Object beforePropagation(ReaderEvent event) throws KeypleDoNotPropagateEventException;
+  Object beforePropagation(ReaderEvent event);
 
   /**
-   * Return the class of the user output data.<br>
-   * This method is used internally to deserialize the user output data before to call the method
-   * {@link ObservableReaderEventFilter#afterPropagation(Object)}.
+   * Must return the class of the user output data expected at the output of the remote service.
    *
-   * @return null if there is no user output data to deserialize.
+   * <p>Is invoked in order to deserialize the user output data before to invoke the method {@link
+   * #afterPropagation(Object)}.
+   *
+   * @return <b>null</b> if there is no user output data to deserialize.
    * @since 1.0
    */
   Class<? extends Object> getUserOutputDataClass();
 
   /**
-   * Retrieve the output from the event global processing
+   * Is invoked at the end of the processing of the remote service to deliver the result.
    *
    * @param userOutputData The user output data previously deserialized using the method {@link
-   *     ObservableReaderEventFilter#getUserOutputDataClass()}
+   *     #getUserOutputDataClass()}, or <b>null</b> if there is no data.
    * @since 1.0
    */
   void afterPropagation(Object userOutputData);

@@ -24,7 +24,10 @@ import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.PoolRemotePluginClient;
 
-/** Implementation of the {@link PoolRemotePluginClient} */
+/**
+ * (package-private)<br>
+ * Implementation of the {@link PoolRemotePluginClient}
+ */
 final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
     implements PoolRemotePluginClient {
 
@@ -39,11 +42,7 @@ final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
     super(name);
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public SortedSet<String> getReaderGroupReferences() {
     String sessionId = generateSessionId();
@@ -73,11 +72,7 @@ final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
     }
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public Reader allocateReader(String groupReference) {
     String sessionId = generateSessionId();
@@ -114,11 +109,7 @@ final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
     }
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public void releaseReader(Reader reader) {
     Assert.getInstance().notNull(reader, "reader");
@@ -151,11 +142,7 @@ final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
     }
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public Reader getReader(String name) {
     Assert.getInstance().notNull(name, "reader name");
@@ -167,8 +154,9 @@ final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
   }
 
   /**
-   * (package-private)<br>
-   * Not used in this plugin
+   * {@inheritDoc}
+   *
+   * <p>Not used in this plugin
    */
   @Override
   void onMessage(MessageDto msg) {
@@ -176,12 +164,9 @@ final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
     throw new UnsupportedOperationException("onMessage method is not supported by this plugin");
   }
 
-  /**
-   * (package-private)<br>
-   * Initialize the readers map
-   */
+  /** {@inheritDoc} */
   @Override
-  protected Map<String, Reader> initNativeReaders() throws KeypleReaderIOException {
+  Map<String, Reader> initNativeReaders() throws KeypleReaderIOException {
     return new HashMap<String, Reader>();
   }
 }

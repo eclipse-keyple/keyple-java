@@ -14,16 +14,17 @@ package org.eclipse.keyple.plugin.remote;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
 
 /**
- * <b>Async Node Client</b> API.
+ * API of the <b>Node</b> associated to a <b>client endpoint</b> using an <b>asynchronous</b>
+ * network protocol.
  *
- * <p>This kind of node should be bind on the client's side if you want to use a full duplex
+ * <p>You must bind this kind of node on the client's side if you plan to use a full duplex
  * communication protocol, such as Web Sockets for example.
  *
- * <p>Then, you should provide an implementation of the {@link AsyncEndpointClient} interface in
- * order to interact with this node.
+ * <p>Then, you should provide an implementation of the {@link AsyncEndpointClient} SPI in order to
+ * interact with this node.
  *
  * <p>Keyple provides its own implementations of this interface and manages their lifecycle.<br>
- * This kind of node can be bind to a all <b>client</b> Remote plugins and services :
+ * This kind of node can be bind to a all <b>client</b> remote plugins and local services :
  *
  * <ul>
  *   <li>{@code LocalServiceClient}
@@ -46,8 +47,8 @@ import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
 public interface AsyncNodeClient {
 
   /**
-   * This method should be called by the {@link AsyncEndpointClient} endpoint following the opening
-   * of a new communication session with the server.
+   * Must be invoked by the {@link AsyncEndpointClient} endpoint following the opening of a new
+   * communication session with the server.
    *
    * @param sessionId The session id previously transmitted to the {@link AsyncEndpointClient}
    *     endpoint to open a session.
@@ -56,8 +57,8 @@ public interface AsyncNodeClient {
   void onOpen(String sessionId);
 
   /**
-   * This method should be called by the {@link AsyncEndpointClient} endpoint following the
-   * reception and deserialization of a {@link MessageDto} from the server.
+   * Must be invoked by the {@link AsyncEndpointClient} endpoint following the reception and
+   * deserialization of a {@link MessageDto} from the server.
    *
    * @param msg The message to process.
    * @since 1.0
@@ -65,8 +66,8 @@ public interface AsyncNodeClient {
   void onMessage(MessageDto msg);
 
   /**
-   * This method should be called by the {@link AsyncEndpointClient} endpoint following the closing
-   * of a communication session with the server.
+   * Must be invoked by the {@link AsyncEndpointClient} endpoint following the closing of a
+   * communication session with the server.
    *
    * @param sessionId The session id registered during the session opening process.
    * @since 1.0
@@ -74,8 +75,8 @@ public interface AsyncNodeClient {
   void onClose(String sessionId);
 
   /**
-   * This method should be called by the {@link AsyncEndpointClient} endpoint if a technical error
-   * occurs when sending a message to the server.
+   * Must be invoked by the {@link AsyncEndpointClient} endpoint if a technical error occurs when
+   * sending a message to the server.
    *
    * @param sessionId The session id registered during the session opening process.
    * @param error The unexpected error.

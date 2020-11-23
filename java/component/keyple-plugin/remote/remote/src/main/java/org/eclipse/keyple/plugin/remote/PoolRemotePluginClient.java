@@ -18,20 +18,18 @@ import org.eclipse.keyple.plugin.remote.impl.PoolRemotePluginClientFactory;
 import org.eclipse.keyple.plugin.remote.impl.PoolRemotePluginClientUtils;
 
 /**
- * <b>Pool Remote Plugin Client</b> API.
+ * API of the <b>Pool Remote Plugin Client</b> associated to the <b>Pool Local Service Server</b>.
  *
- * <p>This plugin must be used in the use case of the <b> Pool Remote Plugin Client</b>.
- *
- * <p>It must be register by a <b>client</b> application installed on the terminal not having local
- * access to the pool cards reader and that wishes to control the card remotely :
+ * <p>This plugin must be registered by the application installed on a <b>Client</b> not having
+ * local access to the pool of smart card readers and that wishes to control the reader remotely :
  *
  * <ul>
- *   <li>To <b>register</b> the plugin, use the Keyple service method {@link
+ *   <li>To <b>register</b> the plugin, use the method {@link
  *       SmartCardService#registerPlugin(PluginFactory)} using the factory {@link
  *       PoolRemotePluginClientFactory}.
- *   <li>To access the plugin, use the following utility method {@link
- *       PoolRemotePluginClientUtils#getRemotePlugin()}
- *   <li>To <b>unregister</b> the plugin, use the Keyple service method {@link
+ *   <li>To <b>access</b> the plugin, use the utility method {@link
+ *       PoolRemotePluginClientUtils#getRemotePlugin()}.
+ *   <li>To <b>unregister</b> the plugin, use the method {@link
  *       SmartCardService#unregisterPlugin(String)} using the plugin name.
  * </ul>
  *

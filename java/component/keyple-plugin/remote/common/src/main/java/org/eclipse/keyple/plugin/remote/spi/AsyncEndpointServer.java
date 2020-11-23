@@ -15,9 +15,9 @@ import org.eclipse.keyple.plugin.remote.AsyncNodeServer;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 
 /**
- * <b>Async Endpoint Server</b> endpoint API to be implemented by the user.
+ * SPI of the <b>server endpoint</b> using an <b>asynchronous</b> network protocol.
  *
- * <p>This interface must be implemented by a user server endpoint if you want to use a full duplex
+ * <p>You must provide an implementation of this interface if you plan to use a full duplex
  * communication protocol, such as Web Sockets for example.
  *
  * <p>Following the receive of a message from the client, the endpoint must :
@@ -26,28 +26,27 @@ import org.eclipse.keyple.plugin.remote.MessageDto;
  *   <li>Associate the session with the the accessible <b>sessionId</b> value using the method
  *       {@link MessageDto#getSessionId()} on the received message in order to be able to retrieve
  *       the session later.
- *   <li>Retrieve the node {@link AsyncNodeServer} using one of the following <b>server</b> utility
+ *   <li>Retrieve the {@link AsyncNodeServer} node using one of the following <b>server</b> utility
  *       methods, depending on your use case :
  *       <ul>
  *         <li>{@code RemotePluginServerUtils.getAsyncNode()}
  *         <li>{@code LocalServiceServerUtils.getAsyncNode()}
  *         <li>{@code PoolLocalServiceServerUtils.getAsyncNode()}
  *       </ul>
- *   <li>Call the method {@link AsyncNodeServer#onMessage(MessageDto)} on the node.
- *   <li>Call the method {@link AsyncNodeServer#onClose(String)} on the node after the session
+ *   <li>Invoke the method {@link AsyncNodeServer#onMessage(MessageDto)} on the node.
+ *   <li>Invoke the method {@link AsyncNodeServer#onClose(String)} on the node after the session
  *       closing.
  * </ul>
  *
- * <p>This endpoint must interact with a {@link AsyncNodeServer} locally and with a {@link
- * AsyncEndpointClient} endpoint remotely.
+ * <p>This endpoint interacts locally with a {@link AsyncNodeServer} node and remotely with a {@link
+ * AsyncEndpointClient} endpoint.
  *
  * @since 1.0
  */
 public interface AsyncEndpointServer {
 
   /**
-   * This method is called by {@link AsyncNodeServer} to send a {@link MessageDto} to the client.
-   * <br>
+   * Is invoked by the {@link AsyncNodeServer} node to send a {@link MessageDto} to the client. <br>
    * You have to :
    *
    * <ul>

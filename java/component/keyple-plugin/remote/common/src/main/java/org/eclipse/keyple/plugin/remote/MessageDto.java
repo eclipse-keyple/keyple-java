@@ -12,13 +12,17 @@
 package org.eclipse.keyple.plugin.remote;
 
 /**
- * This POJO object contains data exchanged between **Local** and **Remote** components.
+ * This POJO contains data exchanged between <b>Local</b> and <b>Remote</b> components.
  *
- * <p>It is built and processed by the plugin and you don't need to modified it.
+ * <p>It is built and processed by the plugin and you don't have to modify it.
  *
  * <p>You only need to transfer it via the network by serializing and deserializing it on your own.
- * <br>
- * However, you can extend it or encapsulate it in a personal object if you need to transport other
+ *
+ * <p>However, it is necessary in some contexts to access certain information such as the
+ * <b>sessionId</b> in the case of asynchronous communication or the <b>serverNodeId</b> in the case
+ * of synchronous communication with several server instances.
+ *
+ * <p>Note that you can extend it or encapsulate it in another object if you need to transport other
  * technical information related to the network infrastructure for example.
  *
  * @since 1.0

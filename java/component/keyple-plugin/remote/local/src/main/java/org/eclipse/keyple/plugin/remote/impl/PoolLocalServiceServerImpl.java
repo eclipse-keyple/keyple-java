@@ -25,7 +25,7 @@ import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.PoolLocalServiceServer;
 
 /**
- * * (package-private)<br>
+ * (package-private)<br>
  * Implementation of the {@link PoolLocalServiceServer}. This object is a singleton created by the
  * {@link PoolLocalServiceServerFactory}
  */
@@ -61,6 +61,7 @@ final class PoolLocalServiceServerImpl extends AbstractLocalService
     return uniqueInstance;
   }
 
+  /** {@inheritDoc} */
   @Override
   void onMessage(MessageDto msg) {
     MessageDto response;
@@ -104,6 +105,7 @@ final class PoolLocalServiceServerImpl extends AbstractLocalService
   }
 
   /**
+   * (private)<br>
    * Retrieve a pool plugin that contains a specific groupReference
    *
    * @param groupReference non nullable instance of a group instance
@@ -125,6 +127,7 @@ final class PoolLocalServiceServerImpl extends AbstractLocalService
   }
 
   /**
+   * (private)<br>
    * Concatenate group references of all registered pool plugins.
    *
    * @return non nullable instance of a group references, can be empty
@@ -140,6 +143,7 @@ final class PoolLocalServiceServerImpl extends AbstractLocalService
   }
 
   /**
+   * (private)<br>
    * Release reader with given reader name
    *
    * @param readerName non nullable value of a reader name
@@ -158,12 +162,12 @@ final class PoolLocalServiceServerImpl extends AbstractLocalService
   }
 
   /**
+   * (private)<br>
    * Find a reader among all pool plugins associated to this service
    *
    * @param localReaderName name of the reader to be found
    * @return a not null instance of a reader
    * @throws KeypleReaderNotFoundException if no reader is found with this name
-   * @since 1.0
    */
   private ProxyReader findReader(String localReaderName) {
     for (String poolPluginName : poolPluginNames) {

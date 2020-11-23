@@ -20,14 +20,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This factory must be used to initialize a {@link LocalServiceClient}
+ * Factory class of the {@link LocalServiceClient}.
  *
  * @since 1.0
  */
-public class LocalServiceClientFactory {
+public final class LocalServiceClientFactory {
 
   private static final Logger logger = LoggerFactory.getLogger(LocalServiceClientFactory.class);
   private static final int DEFAULT_TIMEOUT = 5;
+
+  /**
+   * (private)<br>
+   * Constructor
+   */
+  private LocalServiceClientFactory() {}
 
   /**
    * Init the builder
@@ -35,13 +41,13 @@ public class LocalServiceClientFactory {
    * @return next configuration step
    * @since 1.0
    */
-  public NodeStep builder() {
+  public static NodeStep builder() {
     return new Step();
   }
 
   public interface BuilderStep {
     /**
-     * Build the service
+     * Builds and gets the service.
      *
      * @return singleton instance of the service
      * @since 1.0
@@ -49,10 +55,32 @@ public class LocalServiceClientFactory {
     LocalServiceClient getService();
   }
 
+  public interface NodeStep {
+    /**
+     * Configures the service with a {@link org.eclipse.keyple.plugin.remote.AsyncNodeClient} node.
+     *
+     * @param endpoint The {@link AsyncEndpointClient} network endpoint to use.
+     * @return next configuration step
+     * @since 1.0
+     */
+    TimeoutStep withAsyncNode(AsyncEndpointClient endpoint);
+
+    /**
+     * Configures the service with a {@link org.eclipse.keyple.plugin.remote.SyncNodeClient} node.
+     *
+     * @param endpoint The {@link SyncEndpointClient} network endpoint to use.
+     * @return next configuration step
+     * @since 1.0
+     */
+    ReaderStep withSyncNode(SyncEndpointClient endpoint);
+  }
+
   public interface TimeoutStep {
     /**
-     * Use the default timeout of 5 seconds. This timeout defines how long the client waits for a
-     * server order before cancelling the global transaction.
+     * Sets the default timeout of 5 seconds.
+     *
+     * <p>This timeout defines how long the async client waits for a server order before cancelling
+     * the global transaction.
      *
      * @return next configuration step
      * @since 1.0
@@ -60,8 +88,10 @@ public class LocalServiceClientFactory {
     ReaderStep usingDefaultTimeout();
 
     /**
-     * Configure the service with a custom timeout. This timeout defines how long the client waits
-     * for a server order before cancelling the global transaction.
+     * Sets the provided timeout.
+     *
+     * <p>This timeout defines how long the async client waits for a server order before cancelling
+     * the global transaction.
      *
      * @param timeoutInSeconds timeout in seconds
      * @return next configuration step
@@ -70,38 +100,18 @@ public class LocalServiceClientFactory {
     ReaderStep usingTimeout(int timeoutInSeconds);
   }
 
-  public interface NodeStep {
-    /**
-     * Configure the service with an async Client
-     *
-     * @param asyncClient non nullable instance of an async client
-     * @return next configuration step
-     * @since 1.0
-     */
-    TimeoutStep withAsyncNode(AsyncEndpointClient asyncClient);
-
-    /**
-     * Configure the service with a sync Client
-     *
-     * @param syncClient non nullable instance of a sync client
-     * @return next configuration step
-     * @since 1.0
-     */
-    ReaderStep withSyncNode(SyncEndpointClient syncClient);
-  }
-
   public interface ReaderStep {
     /**
-     * Configure the service to observe the local reader
+     * Activates the observation of the local reader events.
      *
-     * @param eventFilter non-nullable event filter
+     * @param eventFilter The {@link ObservableReaderEventFilter} event filter to use.
      * @return next configuration step
      * @since 1.0
      */
     BuilderStep withReaderObservation(ObservableReaderEventFilter eventFilter);
 
     /**
-     * Configure the service without observation
+     * Do not activates the observation of the local reader events.
      *
      * @return next configuration step
      * @since 1.0
@@ -119,6 +129,7 @@ public class LocalServiceClientFactory {
 
     private Step() {}
 
+    /** {@inheritDoc} */
     @Override
     public TimeoutStep withAsyncNode(AsyncEndpointClient endpoint) {
       Assert.getInstance().notNull(endpoint, "endpoint");
@@ -126,6 +137,7 @@ public class LocalServiceClientFactory {
       return this;
     }
 
+    /** {@inheritDoc} */
     @Override
     public ReaderStep withSyncNode(SyncEndpointClient endpoint) {
       Assert.getInstance().notNull(endpoint, "endpoint");
@@ -133,12 +145,14 @@ public class LocalServiceClientFactory {
       return this;
     }
 
+    /** {@inheritDoc} */
     @Override
     public BuilderStep withoutReaderObservation() {
       this.withReaderObservation = false;
       return this;
     }
 
+    /** {@inheritDoc} */
     @Override
     public BuilderStep withReaderObservation(ObservableReaderEventFilter eventFilter) {
       Assert.getInstance().notNull(eventFilter, "eventFilter");
@@ -147,6 +161,7 @@ public class LocalServiceClientFactory {
       return this;
     }
 
+    /** {@inheritDoc} */
     @Override
     public LocalServiceClient getService() {
 
@@ -157,24 +172,26 @@ public class LocalServiceClientFactory {
       // bind the service to the node
       if (asyncEndpoint != null) {
         logger.info(
-            "Create a new LocalServiceClientImpl with a async client and params withReaderObservation:{}",
+            "Create a new LocalServiceClientImpl with a AsyncNodeClient and withReaderObservation={}",
             withReaderObservation);
         service.bindAsyncNodeClient(asyncEndpoint, timeoutInSec);
       } else {
         logger.info(
-            "Create a new LocalServiceClientImpl with a sync client and params withReaderObservation:{}",
+            "Create a new LocalServiceClientImpl with a SyncNodeClient and withReaderObservation={}",
             withReaderObservation);
         service.bindSyncNodeClient(syncEndpoint, null, null);
       }
       return service;
     }
 
+    /** {@inheritDoc} */
     @Override
     public ReaderStep usingDefaultTimeout() {
       timeoutInSec = DEFAULT_TIMEOUT;
       return this;
     }
 
+    /** {@inheritDoc} */
     @Override
     public ReaderStep usingTimeout(int timeoutInSeconds) {
       timeoutInSec = timeoutInSeconds;

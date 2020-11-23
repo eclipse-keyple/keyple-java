@@ -15,12 +15,11 @@ import org.eclipse.keyple.plugin.remote.impl.LocalServiceClientFactory;
 import org.eclipse.keyple.plugin.remote.impl.LocalServiceClientUtils;
 
 /**
- * <b>Local Client Service</b> API.
+ * API of the <b>Local Service Client</b> associated to the <b>Remote Plugin Server</b>.
  *
- * <p>This service must be used in the use case of the <b>Remote Server Plugin</b>.
- *
- * <p>It must be started by a <b>client</b> application that is installed on a terminal with local
- * access to the card reader :
+ * <p>This service must be started by the application installed on a <b>Client</b> having local
+ * access to the smart card reader but wishes to delegate all or part of the ticketing processing to
+ * a remote application :
  *
  * <ul>
  *   <li>To <b>start</b> the service, use the factory {@link LocalServiceClientFactory}.
@@ -35,16 +34,16 @@ import org.eclipse.keyple.plugin.remote.impl.LocalServiceClientUtils;
 public interface LocalServiceClient {
 
   /**
-   * This method allows you to connect a local card reader to a remote server and execute a specific
-   * ticketing service from the server.<br>
-   * The service is identify by the <b>serviceId</b> parameter.
+   * Allows you to connect a local card reader to a remote server and execute a specific ticketing
+   * service from the server.
+   *
+   * <p>The service is identify by the <b>serviceId</b> parameter.
    *
    * @param parameters The service parameters (serviceId, ...) (see {@link RemoteServiceParameters}
-   *     documentation for all possible parameters)
-   * @param classOfT The actual class of the expected user output data.
+   *     documentation for all possible parameters).
+   * @param classOfT The class of the expected user output data.
    * @param <T> The generic type of the expected user output data.
    * @return a new instance of <b>T</b>.
-   * @throws RuntimeException if an unexpected error occurs.
    * @since 1.0
    */
   <T> T executeRemoteService(RemoteServiceParameters parameters, Class<T> classOfT);

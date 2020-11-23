@@ -40,8 +40,7 @@ public class SyncScenario extends BaseScenario {
     SyncEndpointClient clientEndpoint = new StubSyncEndpointClient();
 
     poolLocalServiceServer =
-        new PoolLocalServiceServerFactory()
-            .builder()
+        PoolLocalServiceServerFactory.builder()
             .withSyncNode()
             .withPoolPlugins(localPoolPlugin.getName())
             .getService();
@@ -50,10 +49,7 @@ public class SyncScenario extends BaseScenario {
         (PoolRemotePluginClient)
             SmartCardService.getInstance()
                 .registerPlugin(
-                    PoolRemotePluginClientFactory.builder()
-                        .withSyncNode(clientEndpoint)
-                        .usingDefaultTimeout()
-                        .build());
+                    PoolRemotePluginClientFactory.builder().withSyncNode(clientEndpoint).build());
   }
 
   @Test

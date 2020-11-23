@@ -16,26 +16,20 @@ import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservablePlugin;
 
 /**
- * <b>Observable Remote Plugin Client</b> API.
+ * API of the <b>Observable Remote Plugin Client</b> associated to the <b>Local Service Server</b>.
  *
- * <p>This plugin must be used in the use case of the <b>Remote Plugin Client</b> configured <b>with
- * plugin observation</b>.
+ * <p>This plugin must be used when you intend to observe remotely the plugin events.
  *
- * <p>It must be register by a <b>client</b> application installed on the terminal not having local
- * access to the card reader and that wishes to control the remotely :
+ * <p>It must be registered by the application installed on a <b>Client</b> not having local access
+ * to the smart card reader and that wishes to control the reader remotely :
  *
  * <ul>
- *   <li>To <b>register</b> the plugin, use the Keyple service method {@link
+ *   <li>To <b>register</b> the plugin, use the method {@link
  *       SmartCardService#registerPlugin(PluginFactory)} using the factory {link
- *       RemoteClientPluginFactory} and <b>activate the plugin observation</b>.
- *   <li>To access the plugin, use one of the following utility methods :
- *       <ul>
- *         <li>For <b>Async</b> node configuration : {link
- *             RemoteClientUtils#getAsyncObservablePlugin()}
- *         <li>For <b>Sync</b> node configuration : {link
- *             RemoteClientUtils#getSyncObservablePlugin()}
- *       </ul>
- *   <li>To <b>unregister</b> the plugin, use the Keyple service method {@link
+ *       RemotePluginClientFactory} and <b>activate the plugin observation</b>.
+ *   <li>To <b>access</b> the plugin, use the utility method {link
+ *       RemotePluginClientUtils#getObservableRemotePlugin()}.
+ *   <li>To <b>unregister</b> the plugin, use the method {@link
  *       SmartCardService#unregisterPlugin(String)} using the plugin name.
  * </ul>
  *

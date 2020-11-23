@@ -14,13 +14,14 @@ package org.eclipse.keyple.plugin.remote;
 import java.util.List;
 
 /**
- * <b>Sync Node Server</b> API.
+ * API of the <b>Node</b> associated to a <b>server endpoint</b> using a <b>synchronous</b> network
+ * protocol.
  *
- * <p>This kind of node must be bind on the server's side if you want to use a Client-Server
+ * <p>You must bind this kind of node on the server's side if you plan to use a Client-Server
  * communication protocol, such as standard HTTP for example.
  *
  * <p>Keyple provides its own implementations of this interface and manages their lifecycle.<br>
- * This kind of node can be bind to a all <b>server</b> Remote plugins and services :
+ * This kind of node can be bind to a all <b>server</b> remote plugins and local services :
  *
  * <ul>
  *   <li>{@code RemotePluginServer}
@@ -43,9 +44,9 @@ import java.util.List;
 public interface SyncNodeServer {
 
   /**
-   * This method must be called by the server controller endpoint following the reception and
-   * deserialization of a {@link MessageDto} from the client. Following the receive of a request,
-   * the controller must :
+   * Must be invoked by the server controller endpoint following the reception and deserialization
+   * of a {@link MessageDto} from the client. Following the receive of a request, the controller
+   * must :
    *
    * <ul>
    *   <li>Retrieve the node {@link SyncNodeServer} using one of the following utility methods,
@@ -55,7 +56,7 @@ public interface SyncNodeServer {
    *         <li>{@code LocalServiceServerUtils.getSyncNode()}
    *         <li>{@code PoolLocalServiceServerUtils.getSyncNode()}
    *       </ul>
-   *   <li>Call this method on the node.
+   *   <li>Invoke this method on the node.
    *   <li>Serialize the result en return it to the client.
    * </ul>
    *

@@ -75,8 +75,7 @@ public class SyncScenario extends BaseScenario {
   public void execute_localselection_remoteTransaction_successful() {
 
     localService =
-        new LocalServiceClientFactory()
-            .builder()
+        LocalServiceClientFactory.builder()
             .withSyncNode(clientSyncEndpoint)
             .withoutReaderObservation()
             .getService();
@@ -90,8 +89,7 @@ public class SyncScenario extends BaseScenario {
   public void execute_remoteselection_remoteTransaction_successful() {
 
     localService =
-        new LocalServiceClientFactory()
-            .builder()
+        LocalServiceClientFactory.builder()
             .withSyncNode(clientSyncEndpoint)
             .withoutReaderObservation()
             .getService();
@@ -105,8 +103,7 @@ public class SyncScenario extends BaseScenario {
   public void execute_multiclient_remoteselection_remoteTransaction_successful() {
 
     localService =
-        new LocalServiceClientFactory()
-            .builder()
+        LocalServiceClientFactory.builder()
             .withSyncNode(clientSyncEndpoint)
             .withoutReaderObservation()
             .getService();
@@ -119,8 +116,7 @@ public class SyncScenario extends BaseScenario {
   @Test
   public void execute_transaction_closeSession_card_error() {
     localService =
-        new LocalServiceClientFactory()
-            .builder()
+        LocalServiceClientFactory.builder()
             .withSyncNode(clientSyncEndpoint)
             .withoutReaderObservation()
             .getService();
@@ -135,8 +131,7 @@ public class SyncScenario extends BaseScenario {
     clientSyncEndpoint = new StubSyncEndpointClient(true);
 
     localService =
-        new LocalServiceClientFactory()
-            .builder()
+        LocalServiceClientFactory.builder()
             .withSyncNode(clientSyncEndpoint)
             .withoutReaderObservation()
             .getService();
@@ -156,8 +151,7 @@ public class SyncScenario extends BaseScenario {
   @Test
   public void execute_transaction_slowSe_success() {
     localService =
-        new LocalServiceClientFactory()
-            .builder()
+        LocalServiceClientFactory.builder()
             .withSyncNode(clientSyncEndpoint)
             .withoutReaderObservation()
             .getService();
@@ -171,8 +165,7 @@ public class SyncScenario extends BaseScenario {
     final ReaderEventFilter eventFilter = new ReaderEventFilter();
 
     localService =
-        new LocalServiceClientFactory()
-            .builder()
+        LocalServiceClientFactory.builder()
             .withSyncNode(clientSyncEndpoint)
             .withReaderObservation(eventFilter)
             .getService();
@@ -187,8 +180,7 @@ public class SyncScenario extends BaseScenario {
     final ReaderEventFilter eventFilter = new ReaderEventFilter();
 
     localService =
-        new LocalServiceClientFactory()
-            .builder()
+        LocalServiceClientFactory.builder()
             .withSyncNode(clientSyncEndpoint)
             .withReaderObservation(eventFilter)
             .getService();

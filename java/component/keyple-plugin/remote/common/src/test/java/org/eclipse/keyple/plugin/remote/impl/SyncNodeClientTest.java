@@ -20,7 +20,7 @@ import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.plugin.remote.MessageDto;
-import org.eclipse.keyple.plugin.remote.exception.KeypleRemoteCommunicationException;
+import org.eclipse.keyple.plugin.remote.NodeCommunicationException;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,7 +58,7 @@ public class SyncNodeClientTest extends AbstractSyncNodeTest {
     @Override
     void onMessage(MessageDto msg) {
       isError = true;
-      throw new KeypleRemoteCommunicationException("Handler error mocked");
+      throw new NodeCommunicationException("Handler error mocked");
     }
   }
 
@@ -98,7 +98,7 @@ public class SyncNodeClientTest extends AbstractSyncNodeTest {
     public List<MessageDto> sendRequest(MessageDto msg) {
       cpt++;
       if (cpt >= 2 && cpt <= 3) {
-        throw new KeypleRemoteCommunicationException("Endpoint error mocked");
+        throw new NodeCommunicationException("Endpoint error mocked");
       }
       messages.add(msg);
       return responses;

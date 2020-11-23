@@ -37,15 +37,14 @@ abstract class AbstractLocalService extends AbstractMessageHandler {
   private static final Logger logger = LoggerFactory.getLogger(AbstractLocalService.class);
 
   /**
-   * (protected)<br>
+   * (package-private)<br>
    * Find a local reader among all plugins
    *
    * @param localReaderName name of the reader to be found
    * @return a not null instance
    * @throws KeypleReaderNotFoundException if no reader is found with this name
-   * @since 1.0
    */
-  protected ProxyReader findLocalReader(String localReaderName) {
+  ProxyReader findLocalReader(String localReaderName) {
 
     if (logger.isTraceEnabled()) {
       logger.trace(
@@ -69,14 +68,14 @@ abstract class AbstractLocalService extends AbstractMessageHandler {
   }
 
   /**
-   * (protected)<br>
+   * (package-private)<br>
    * Execute a keypleMessageDto on the local localReader, returns the response embedded on a
    * keypleMessageDto ready to be sent back.
    *
    * @param msg The message to process (must be not null).
    * @return a not null reference
    */
-  protected MessageDto executeLocally(ProxyReader localReader, MessageDto msg) {
+  MessageDto executeLocally(ProxyReader localReader, MessageDto msg) {
     return new LocalReaderExecutor(localReader, msg).execute();
   }
 

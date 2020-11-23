@@ -62,11 +62,7 @@ final class ObservableRemoteReaderImpl extends AbstractRemoteReader
     this.eventNotificationPool = eventNotificationPool;
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public void notifyObservers(final ReaderEvent event) {
     if (logger.isTraceEnabled()) {
@@ -91,11 +87,7 @@ final class ObservableRemoteReaderImpl extends AbstractRemoteReader
     }
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public void addObserver(ReaderObserver observer) {
     Assert.getInstance().notNull(observer, "Reader Observer");
@@ -106,11 +98,7 @@ final class ObservableRemoteReaderImpl extends AbstractRemoteReader
     }
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public void removeObserver(ReaderObserver observer) {
     Assert.getInstance().notNull(observer, "Reader Observer");
@@ -120,11 +108,7 @@ final class ObservableRemoteReaderImpl extends AbstractRemoteReader
     }
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public void clearObservers() {
     observers.clear();
@@ -133,21 +117,13 @@ final class ObservableRemoteReaderImpl extends AbstractRemoteReader
     }
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public int countObservers() {
     return observers.size();
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public void startCardDetection(PollingMode pollingMode) {
     Assert.getInstance().notNull(pollingMode, "Polling Mode");
@@ -158,21 +134,13 @@ final class ObservableRemoteReaderImpl extends AbstractRemoteReader
     sendRequest(MessageDto.Action.START_CARD_DETECTION, body);
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public void stopCardDetection() {
     sendRequest(MessageDto.Action.STOP_CARD_DETECTION, null);
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public void setDefaultSelectionRequest(
       AbstractDefaultSelectionsRequest defaultSelectionsRequest,
@@ -180,11 +148,7 @@ final class ObservableRemoteReaderImpl extends AbstractRemoteReader
     setDefaultSelectionRequest(defaultSelectionsRequest, notificationMode, null);
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public void setDefaultSelectionRequest(
       AbstractDefaultSelectionsRequest defaultSelectionsRequest,
@@ -210,11 +174,7 @@ final class ObservableRemoteReaderImpl extends AbstractRemoteReader
     sendRequest(MessageDto.Action.SET_DEFAULT_SELECTION, body);
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public void finalizeCardProcessing() {
     sendRequest(MessageDto.Action.FINALIZE_CARD_PROCESSING, null);

@@ -18,21 +18,15 @@ import org.eclipse.keyple.plugin.remote.*;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * (package-private)<br>
  * Abstract Message Handler.
- *
- * @since 1.0
  */
 abstract class AbstractMessageHandler {
 
-  private static final Logger logger = LoggerFactory.getLogger(AbstractMessageHandler.class);
-
   /**
-   * (private)<br>
+   * (private-private)<br>
    * The bounded node.
    */
   AbstractNode node;
@@ -45,46 +39,46 @@ abstract class AbstractMessageHandler {
 
   /**
    * (package-private)<br>
-   * This method processes an incoming message.<br>
-   * It should be called by a node following the reception of a {@link MessageDto}.
+   * Processes an incoming message.<br>
+   * It should be invoked by a node following the reception of a {@link MessageDto}.
    *
    * @param msg The message to process.
    */
   abstract void onMessage(MessageDto msg);
 
   /**
-   * This method builds and bind a {@link AsyncNodeClient} with the handler.<br>
-   * It must be called by the factory during the initialization phase.
+   * (package-private)<br>
+   * Builds and bind a {@link AsyncNodeClient} with the handler.<br>
+   * It must be invoked by the factory during the initialization phase.
    *
    * @param endpoint The {@link AsyncEndpointClient} endpoint.
    * @param timeoutInSecond Time to wait for the server to transmit a request.
-   * @since 1.0
    */
   void bindAsyncNodeClient(AsyncEndpointClient endpoint, int timeoutInSecond) {
     node = new AsyncNodeClientImpl(this, endpoint, timeoutInSecond);
   }
 
   /**
-   * This method builds and bind a {@link AsyncNodeServer} with the handler.<br>
-   * It must be called by the factory during the initialization phase.
+   * (package-private)<br>
+   * Builds and bind a {@link AsyncNodeServer} with the handler.<br>
+   * It must be invoked by the factory during the initialization phase.
    *
    * @param endpoint The {@link AsyncEndpointServer} endpoint.
-   * @since 1.0
    */
   void bindAsyncNodeServer(AsyncEndpointServer endpoint) {
     node = new AsyncNodeServerImpl(this, endpoint, 20);
   }
 
   /**
-   * This method builds and bind a {@link SyncNodeClient} with the handler.<br>
-   * It must be called by the factory during the initialization phase.
+   * (package-private)<br>
+   * Builds and bind a {@link SyncNodeClient} with the handler.<br>
+   * It must be invoked by the factory during the initialization phase.
    *
    * @param endpoint The {@link SyncEndpointClient} endpoint.
    * @param pluginObservationStrategy The {@link ServerPushEventStrategy} associated to the plugin
    *     (null if observation is not activated).
    * @param readerObservationStrategy The {@link ServerPushEventStrategy} associated to the reader
    *     (null if observation is not activated).
-   * @since 1.0
    */
   void bindSyncNodeClient(
       SyncEndpointClient endpoint,
@@ -96,10 +90,9 @@ abstract class AbstractMessageHandler {
   }
 
   /**
-   * This method builds and bind a {@link SyncNodeServer} with the handler.<br>
-   * It must be called by the factory during the initialization phase.
-   *
-   * @since 1.0
+   * (package-private)<br>
+   * Builds and bind a {@link SyncNodeServer} with the handler.<br>
+   * It must be invoked by the factory during the initialization phase.
    */
   void bindSyncNodeServer() {
     node = new SyncNodeServerImpl(this, 20);

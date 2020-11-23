@@ -41,7 +41,7 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
 
   private final ExecutorService eventNotificationPool;
 
-  /* The observers of this object */
+  /** The observers of this object */
   private final List<PluginObserver> observers;
 
   /**
@@ -51,7 +51,7 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
    * <ul>
    *   <li>Instantiates a new RemotePluginServer.
    *   <li>Retrieve the current readers list.
-   *   <li>Initialize the list of readers calling the abstract method initNativeReaders.
+   *   <li>Initialize the list of readers invoking the abstract method initNativeReaders.
    *   <li>When readers initialisation failed, a KeypleReaderException is thrown.
    * </ul>
    *
@@ -64,21 +64,13 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
     this.observers = new ArrayList<PluginObserver>();
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
-  protected ConcurrentMap<String, Reader> initNativeReaders() throws KeypleReaderIOException {
+  ConcurrentMap<String, Reader> initNativeReaders() throws KeypleReaderIOException {
     return new ConcurrentHashMap<String, Reader>();
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   void onMessage(MessageDto message) {
     switch (MessageDto.Action.valueOf(message.getAction())) {
@@ -121,11 +113,7 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
     }
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public void terminateService(String remoteReaderName, Object userOutputData) {
 
@@ -177,11 +165,7 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
     node.sendMessage(message);
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public RemoteReaderServer getReader(String name) throws KeypleReaderNotFoundException {
     Assert.getInstance().notNull(name, "reader name");
@@ -192,11 +176,7 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
     return seReader;
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public void addObserver(PluginObserver observer) {
     Assert.getInstance().notNull(observer, "Plugin Observer");
@@ -206,11 +186,7 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
     }
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public void removeObserver(PluginObserver observer) {
     Assert.getInstance().notNull(observer, "Plugin Observer");
@@ -220,11 +196,7 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
     }
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public void clearObservers() {
     observers.clear();
@@ -233,11 +205,7 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
     }
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public int countObservers() {
     return observers.size();
@@ -269,6 +237,7 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
    * @return non null instance of AbstractRemoteReaderServer
    */
   private AbstractRemoteReaderServer createMasterReader(MessageDto message) {
+
     final JsonObject body =
         KeypleJsonParser.getParser().fromJson(message.getBody(), JsonObject.class);
     final String serviceId = body.get("serviceId").getAsString();
@@ -313,6 +282,7 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
    * @return non null instance of a ObservableRemoteReaderServerImpl
    */
   private ObservableRemoteReaderServerImpl createSlaveReader(MessageDto message) {
+
     final ObservableRemoteReaderServerImpl observableRemoteReaderServer =
         (ObservableRemoteReaderServerImpl) getReader(message.getRemoteReaderName());
     final JsonObject body =

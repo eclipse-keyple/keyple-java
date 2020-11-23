@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This factory must be used to initialize a {@link PoolLocalServiceServer}
+ * Factory class of the {@link PoolLocalServiceServer}.
  *
  * @since 1.0
  */
@@ -30,18 +30,24 @@ public final class PoolLocalServiceServerFactory {
   private static final Logger logger = LoggerFactory.getLogger(PoolLocalServiceServerFactory.class);
 
   /**
+   * (private)<br>
+   * Constructor
+   */
+  private PoolLocalServiceServerFactory() {}
+
+  /**
    * Init the builder
    *
    * @return next configuration step
    * @since 1.0
    */
-  public PoolLocalServiceServerFactory.NodeStep builder() {
+  public static NodeStep builder() {
     return new PoolLocalServiceServerFactory.Step();
   }
 
   public interface BuilderStep {
     /**
-     * Build the service
+     * Builds and gets the service.
      *
      * @return singleton instance of the service
      * @since 1.0
@@ -51,16 +57,16 @@ public final class PoolLocalServiceServerFactory {
 
   public interface NodeStep {
     /**
-     * Configure the service with an async server
+     * Configures the service with a {@link org.eclipse.keyple.plugin.remote.AsyncNodeServer} node.
      *
-     * @param endpoint non nullable instance of an async client
+     * @param endpoint The {@link AsyncEndpointServer} network endpoint to use.
      * @return next configuration step
      * @since 1.0
      */
     PluginStep withAsyncNode(AsyncEndpointServer endpoint);
 
     /**
-     * Configure the service with a sync server
+     * Configures the service with a {@link org.eclipse.keyple.plugin.remote.SyncNodeServer} node.
      *
      * @return next configuration step
      * @since 1.0
@@ -69,11 +75,10 @@ public final class PoolLocalServiceServerFactory {
   }
 
   public interface PluginStep {
-
     /**
-     * Configure the service with one or more {@link ReaderPoolPlugin} plugin(s).
+     * Configures the service with one or more {@link ReaderPoolPlugin} plugin(s).
      *
-     * @param poolPluginNames one or more reader plugin names of ReaderPoolPlugin
+     * @param poolPluginNames One or more plugin names of PoolPlugin
      * @return next configuration step
      */
     BuilderStep withPoolPlugins(String... poolPluginNames);
@@ -86,6 +91,7 @@ public final class PoolLocalServiceServerFactory {
 
     private Step() {}
 
+    /** {@inheritDoc} */
     @Override
     public PluginStep withAsyncNode(AsyncEndpointServer endpoint) {
       Assert.getInstance().notNull(endpoint, "endpoint");
@@ -93,11 +99,13 @@ public final class PoolLocalServiceServerFactory {
       return this;
     }
 
+    /** {@inheritDoc} */
     @Override
     public PluginStep withSyncNode() {
       return this;
     }
 
+    /** {@inheritDoc} */
     @Override
     public BuilderStep withPoolPlugins(String... poolPluginNames) {
       Assert.getInstance().notNull(poolPluginNames, "poolPluginNames");
@@ -115,16 +123,17 @@ public final class PoolLocalServiceServerFactory {
       return this;
     }
 
+    /** {@inheritDoc} */
     @Override
     public PoolLocalServiceServer getService() {
       PoolLocalServiceServerImpl poolLocalServiceServerImpl =
           PoolLocalServiceServerImpl.createInstance(poolPluginNames);
       if (asyncEndpoint != null) {
         poolLocalServiceServerImpl.bindAsyncNodeServer(asyncEndpoint);
-        logger.info("Create a new PoolLocalServiceServer with a async server");
+        logger.info("Create a new PoolLocalServiceServer with a AsyncNodeServer");
       } else {
         poolLocalServiceServerImpl.bindSyncNodeServer();
-        logger.info("Create a new PoolLocalServiceServer with a sync server");
+        logger.info("Create a new PoolLocalServiceServer with a SyncNodeServer");
       }
 
       return poolLocalServiceServerImpl;

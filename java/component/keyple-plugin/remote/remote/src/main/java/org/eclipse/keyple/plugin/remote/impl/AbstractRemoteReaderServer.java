@@ -51,11 +51,7 @@ abstract class AbstractRemoteReaderServer implements RemoteReaderServer, ProxyRe
     this.initialCardContentJson = initialCardContentJson;
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public List<CardSelectionResponse> transmitCardSelectionRequests(
       List<CardSelectionRequest> cardSelectionRequests,
@@ -65,31 +61,19 @@ abstract class AbstractRemoteReaderServer implements RemoteReaderServer, ProxyRe
         cardSelectionRequests, multiSelectionProcessing, channelControl);
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public CardResponse transmitCardRequest(CardRequest cardRequest, ChannelControl channelControl) {
     return reader.transmitCardRequest(cardRequest, channelControl);
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public String getServiceId() {
     return serviceId;
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public <T> T getUserInputData(Class<T> classOfT) {
     Assert.getInstance().notNull(classOfT, "classOfT");
@@ -98,11 +82,7 @@ abstract class AbstractRemoteReaderServer implements RemoteReaderServer, ProxyRe
         : null;
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public <T extends AbstractSmartCard> T getInitialCardContent(Class<T> classOfT) {
     Assert.getInstance().notNull(classOfT, "classOfT");
@@ -111,21 +91,13 @@ abstract class AbstractRemoteReaderServer implements RemoteReaderServer, ProxyRe
         : null;
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public boolean isCardPresent() {
     return reader.isCardPresent();
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public String getName() {
     return reader.getName();
@@ -149,53 +121,39 @@ abstract class AbstractRemoteReaderServer implements RemoteReaderServer, ProxyRe
     return reader.getClientNodeId();
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public void releaseChannel() {
     reader.releaseChannel();
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public void activateProtocol(String readerProtocolName, String applicationProtocolName) {
     throw new UnsupportedOperationException(
         "activateProtocol method is not implemented in plugin remote, use it only locally");
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public void deactivateProtocol(String readerProtocolName) {
     throw new UnsupportedOperationException(
         "deactivateProtocol method is not implemented in plugin remote, use it only locally");
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public boolean isContactless() {
     return reader.isContactless();
   }
 
+  /** {@inheritDoc} */
   @Override
   public void register() {
     reader.register();
   }
 
+  /** {@inheritDoc} */
   @Override
   public void unregister() {
     reader.unregister();

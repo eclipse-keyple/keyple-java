@@ -1,6 +1,6 @@
 @startuml
 title
-    Keyple Remote Plugin - Internal API - 1.0.0 (13/11/2020)
+    Keyple Remote Plugin - Internal API - 1.0.0 (16/11/2020)
 end title
 
 ' == THEME ==
@@ -208,6 +208,7 @@ package "org.eclipse.keyple.plugin.remote.impl" as packImpl {
             ~ String getSessionId ()
             ~ String getClientNodeId ()
             ~ String getLocalReaderName()
+            ~ MessageDto sendRequest(MessageDto.Action action,\n    JsonObject body)
         }
         ~class "**final** RemoteReaderImpl" as RemoteReaderImpl extends AbstractRemoteReader {
             ~ RemoteReaderImpl (\n    String pluginName,\n    String localReaderName,\n    AbstractNode node,\n    String sessionId,\n    String clientNodeId)

@@ -16,20 +16,20 @@ import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.util.Assert;
 
 /**
- * This POJO class contains parameters of the method {@link
+ * This POJO contains the <b>parameters</b> of the method {@link
  * LocalServiceClient#executeRemoteService(RemoteServiceParameters, Class)} :
  *
  * <ul>
  *   <li><b>serviceId</b> : The ticketing service id. It will permit to indicate to the server which
- *       ticketing service to execute (Materialization, Validation, Control, ...). This field is
+ *       ticketing service to execute (Materialization, Validation, Control, etc...). This field is
  *       free and is for the user's use only.
- *   <li><b>localReader</b> : The local reader to manage by the server.
- *   <li><b>userInputData</b> (optional) : An object with the user input data if you want to
- *       transmit data during the call to the remote ticketing service.
- *   <li><b>initialCardContent</b> (optional) : An initial Card content inside an {@link
- *       AbstractSmartCard} to send to the server ticketing service. For Calypso ticketing
- *       application, this object will be a <b>CalypsoPo</b> or a <b>CalypsoSam</b>, depending on
- *       the context.
+ *   <li><b>localReader</b> : The local reader to manage remotely from the server.
+ *   <li><b>userInputData</b> (optional) : A DTO containing the user input data if you want to
+ *       transmit data to the remote ticketing service.
+ *   <li><b>initialCardContent</b> (optional) : An {@link AbstractSmartCard} containing the initial
+ *       smart card content to transmit to the remote ticketing service. For example, for Calypso
+ *       ticketing application, this object will be a <b>CalypsoPo</b> or a <b>CalypsoSam</b>,
+ *       depending on the context.
  * </ul>
  *
  * @since 1.0
@@ -43,8 +43,8 @@ public class RemoteServiceParameters {
 
   private RemoteServiceParameters(Builder builder) {
 
-    Assert.getInstance() //
-        .notEmpty(builder.serviceId, "serviceId") //
+    Assert.getInstance()
+        .notEmpty(builder.serviceId, "serviceId")
         .notNull(builder.localReader, "localReader");
 
     serviceId = builder.serviceId;
@@ -57,9 +57,9 @@ public class RemoteServiceParameters {
    * Gets a new builder.
    *
    * @param serviceId The ticketing service id. It will permit to indicate to the server which
-   *     ticketing service to execute (Materialization, Validation, Control,...). This field is free
-   *     and is for the user's use only.
-   * @param localReader The local reader to manage by the server.
+   *     ticketing service to execute (Materialization, Validation, Control, etc...). This field is
+   *     free and is for the user's use only.
+   * @param localReader The local reader to manage remotely from the server.
    * @return a new builder instance.
    * @since 1.0
    */
@@ -81,7 +81,7 @@ public class RemoteServiceParameters {
     }
 
     /**
-     * Add user input data to send to the server ticketing service.
+     * Add a DTO containing user input data to transmit to the remote ticketing service.
      *
      * @param userInputData The object containing the user input data.
      * @return the builder instance
@@ -93,22 +93,23 @@ public class RemoteServiceParameters {
     }
 
     /**
-     * Add an initial Card content inside an AbstractSmartCard to send to the server ticketing
-     * service.<br>
-     * For Calypso ticketing application, this object will be a <b>CalypsoPo</b> or a
-     * <b>CalypsoSam</b>, depending on the context.
+     * Add an {@link AbstractSmartCard} containing the initial smart card content to transmit to the
+     * remote ticketing service.
      *
-     * @param initialCardContent The initial card content.
+     * <p>For example, for Calypso ticketing application, this object will be a <b>CalypsoPo</b> or
+     * a <b>CalypsoSam</b>, depending on the context.
+     *
+     * @param initialCardContent The initial smart card content.
      * @return the builder instance
      * @since 1.0
      */
-    public Builder withInitialSeContext(AbstractSmartCard initialCardContent) {
+    public Builder withInitialCardContent(AbstractSmartCard initialCardContent) {
       this.initialCardContent = initialCardContent;
       return this;
     }
 
     /**
-     * Build a new RemoteServiceParameters.
+     * Builds the object.
      *
      * @return a new instance
      * @since 1.0
@@ -149,7 +150,7 @@ public class RemoteServiceParameters {
   }
 
   /**
-   * Gets the initial content.
+   * Gets the initial smart card content.
    *
    * @return a nullable reference.
    * @since 1.0

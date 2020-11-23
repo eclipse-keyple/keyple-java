@@ -15,18 +15,16 @@ import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.service.Reader;
 
 /**
- * <b>Remote Reader Server</b> API.
+ * API of the <b>Remote Reader Server</b> provided by the <b>Remote Plugin Server</b>.
  *
- * <p>This reader must be used in the use case of the <b>Remote Plugin Server</b>.
- *
- * <p>This reader behaves like an {@link Reader} but exposes additional services.
+ * <p>This reader behaves like a {@link Reader} but exposes additional services.
  *
  * @since 1.0
  */
 public interface RemoteReaderServer extends Reader {
 
   /**
-   * Gets the id of the remote service to execute on the server's side.
+   * Gets the id of the remote service to execute on the server side.
    *
    * @return a not empty string.
    * @since 1.0
@@ -34,21 +32,21 @@ public interface RemoteReaderServer extends Reader {
   String getServiceId();
 
   /**
-   * Gets the user input data if they are set.
+   * Gets the user input data if it is set.
    *
-   * @param classOfT The type expected of user input data.
-   * @param <T> The type expected of initial card content
-   * @return a nullable reference if there is no user input data.
+   * @param classOfT The expected user input data type.
+   * @param <T> The expected user input data type.
+   * @return <b>null</b> if there is no user input data.
    * @since 1.0
    */
   <T> T getUserInputData(Class<T> classOfT);
 
   /**
-   * Gets the initial card content if is set.
+   * Gets the initial content of the smart card if it is set.
    *
-   * @param classOfT The type expected of initial card content
-   * @param <T> The type expected of initial card content
-   * @return a nullable reference if there is no initial card content.
+   * @param classOfT The expected smart card type.
+   * @param <T> The expected smart card type.
+   * @return <b>null</b> if there is no initial card content.
    * @since 1.0
    */
   <T extends AbstractSmartCard> T getInitialCardContent(Class<T> classOfT);

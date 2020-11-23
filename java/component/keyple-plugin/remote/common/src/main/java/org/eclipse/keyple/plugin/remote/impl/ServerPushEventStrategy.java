@@ -17,15 +17,14 @@ package org.eclipse.keyple.plugin.remote.impl;
  *
  * <p>This internal class indicates the strategy to adopt in a client-server communication to allow
  * the client to receive events from the server.
- *
- * @since 1.0
  */
-class ServerPushEventStrategy {
+final class ServerPushEventStrategy {
 
   private final Type type;
   private int duration;
 
   /**
+   * (package-private)<br>
    * Create a new instance with a initial duration set to 0.
    *
    * @param type The strategy type to set.
@@ -35,7 +34,10 @@ class ServerPushEventStrategy {
     this.duration = 0;
   }
 
-  /** The strategy type enum. */
+  /**
+   * (package-private)<br>
+   * The strategy type enum.
+   */
   enum Type {
     POLLING,
     LONG_POLLING
@@ -52,12 +54,12 @@ class ServerPushEventStrategy {
   }
 
   /**
+   * (package-private)<br>
    * Sets the duration associated to the strategy.<br>
-   * This method must be called by the factory during the initialization process.
+   * Must be invoked by the factory during the initialization process.
    *
    * @param durationInSeconds The duration in seconds (must be {@code >= 0})
    * @return the current instance
-   * @since 1.0
    */
   ServerPushEventStrategy setDuration(int durationInSeconds) {
     this.duration = durationInSeconds;

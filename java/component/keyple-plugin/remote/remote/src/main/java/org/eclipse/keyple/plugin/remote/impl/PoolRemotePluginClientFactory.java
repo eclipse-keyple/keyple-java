@@ -15,7 +15,6 @@ import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.PluginFactory;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.util.Assert;
-import org.eclipse.keyple.plugin.remote.AsyncNodeServer;
 import org.eclipse.keyple.plugin.remote.PoolRemotePluginClient;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
@@ -23,21 +22,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <b>Pool Remote Plugin Client</b> Factory
+ * Factory class of the {@link PoolRemotePluginClient}.
  *
- * <p>This factory must be used in the use case of the <b>Pool Remote Plugin Client</b>.
- *
- * <p>To register a Pool Remote Plugin Client, use the method {@link
- * SmartCardService#registerPlugin(PluginFactory)} fed in with an instance of this factory. Invoke
- * the {@link #builder()} method to create and configure a factory instance.
- *
- * <p>Plugin name is defined by default in the factory. Access the Remote Pool Client Plugin with
- * the {@link PoolRemotePluginClientUtils#getRemotePlugin()} ()}.
+ * @since 1.0
  */
-public class PoolRemotePluginClientFactory implements PluginFactory {
+public final class PoolRemotePluginClientFactory implements PluginFactory {
 
   private static final Logger logger = LoggerFactory.getLogger(PoolRemotePluginClientFactory.class);
-  /** default name of the PoolRemotePluginClient : {@value} */
+
   static final String DEFAULT_PLUGIN_NAME = "DefaultPoolRemotePluginClient";
 
   private static final int DEFAULT_TIMEOUT = 5;
@@ -45,18 +37,8 @@ public class PoolRemotePluginClientFactory implements PluginFactory {
   private final PoolRemotePluginClient plugin;
 
   /**
-   * Create a builder process for this factory
-   *
-   * @return next configuration step
-   * @since 1.0
-   */
-  public static NodeStep builder() {
-    return new Builder();
-  }
-
-  /**
    * (private)<br>
-   * constructor
+   * Constructor
    *
    * @param plugin instance created from the builder process
    */
@@ -65,20 +47,22 @@ public class PoolRemotePluginClientFactory implements PluginFactory {
   }
 
   /**
-   * {@inheritDoc}
+   * Init the builder
    *
+   * @return next configuration step
    * @since 1.0
    */
+  public static NodeStep builder() {
+    return new Builder();
+  }
+
+  /** {@inheritDoc} */
   @Override
   public String getPluginName() {
     return plugin.getName();
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
+  /** {@inheritDoc} */
   @Override
   public Plugin getPlugin() {
     return plugin;
@@ -86,29 +70,30 @@ public class PoolRemotePluginClientFactory implements PluginFactory {
 
   public interface NodeStep {
     /**
-     * Configure the plugin with an async server endpoint. Retrieve the created {@link
-     * AsyncNodeServer} with the method {@code PoolRemotePluginClientUtils.getAsyncNode()}
+     * Configures the plugin with a {@link org.eclipse.keyple.plugin.remote.AsyncNodeClient} node.
      *
-     * @param asyncEndpoint non nullable instance of an async server endpoint
+     * @param endpoint The {@link AsyncEndpointClient} network endpoint to use.
      * @return next configuration step
      * @since 1.0
      */
-    TimeoutStep withAsyncNode(AsyncEndpointClient asyncEndpoint);
+    TimeoutStep withAsyncNode(AsyncEndpointClient endpoint);
 
     /**
-     * Configure the plugin to be used with a sync node.
+     * Configures the plugin with a {@link org.eclipse.keyple.plugin.remote.SyncNodeClient} node.
      *
-     * @param syncEndpoint non nullable instance of an sync client endpoint*
+     * @param endpoint The {@link SyncEndpointClient} network endpoint to use.
      * @return next configuration step
      * @since 1.0
      */
-    TimeoutStep withSyncNode(SyncEndpointClient syncEndpoint);
+    BuilderStep withSyncNode(SyncEndpointClient endpoint);
   }
 
   public interface TimeoutStep {
     /**
-     * Use the default timeout of 5 seconds. This timeout defines how long the client waits for a
-     * server order before cancelling the global transaction.
+     * Sets the default timeout of 5 seconds.
+     *
+     * <p>This timeout defines how long the async client waits for a server order before cancelling
+     * the global transaction.
      *
      * @return next configuration step
      * @since 1.0
@@ -116,8 +101,10 @@ public class PoolRemotePluginClientFactory implements PluginFactory {
     BuilderStep usingDefaultTimeout();
 
     /**
-     * Configure the service with a custom timeout. This timeout defines how long the client waits
-     * for a server order before cancelling the global transaction.
+     * Sets the provided timeout.
+     *
+     * <p>This timeout defines how long the async client waits for a server order before cancelling
+     * the global transaction.
      *
      * @param timeoutInSeconds timeout in seconds
      * @return next configuration step
@@ -140,73 +127,53 @@ public class PoolRemotePluginClientFactory implements PluginFactory {
   }
 
   /** The builder pattern to create the factory instance. */
-  public static class Builder implements NodeStep, BuilderStep, TimeoutStep {
+  private static class Builder implements NodeStep, BuilderStep, TimeoutStep {
 
     private AsyncEndpointClient asyncEndpoint;
     private SyncEndpointClient syncEndpoint;
     private int timeoutInSec;
 
-    /**
-     * {@inheritDoc}
-     *
-     * @since 1.0
-     */
+    /** {@inheritDoc} */
     @Override
-    public TimeoutStep withAsyncNode(AsyncEndpointClient asyncEndpoint) {
-      Assert.getInstance().notNull(asyncEndpoint, "asyncEndpoint");
-      this.asyncEndpoint = asyncEndpoint;
+    public TimeoutStep withAsyncNode(AsyncEndpointClient endpoint) {
+      Assert.getInstance().notNull(endpoint, "endpoint");
+      this.asyncEndpoint = endpoint;
       return this;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @since 1.0
-     */
+    /** {@inheritDoc} */
     @Override
-    public TimeoutStep withSyncNode(SyncEndpointClient syncEndpoint) {
-      Assert.getInstance().notNull(syncEndpoint, "syncEndpoint");
-      this.syncEndpoint = syncEndpoint;
+    public BuilderStep withSyncNode(SyncEndpointClient endpoint) {
+      Assert.getInstance().notNull(endpoint, "endpoint");
+      this.syncEndpoint = endpoint;
       return this;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @since 1.0
-     */
+    /** {@inheritDoc} */
     @Override
     public BuilderStep usingDefaultTimeout() {
       timeoutInSec = DEFAULT_TIMEOUT;
       return this;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @since 1.0
-     */
+    /** {@inheritDoc} */
     @Override
     public BuilderStep usingTimeout(int timeoutInSeconds) {
       timeoutInSec = timeoutInSeconds;
       return this;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @since 1.0
-     */
+    /** {@inheritDoc} */
     @Override
     public PoolRemotePluginClientFactory build() {
 
       PoolRemotePluginClientImpl plugin = new PoolRemotePluginClientImpl(DEFAULT_PLUGIN_NAME);
 
       if (asyncEndpoint != null) {
-        logger.info("Create a new PoolRemotePluginClient with a async client endpoint");
+        logger.info("Create a new PoolRemotePluginClient with a AsyncNodeClient");
         plugin.bindAsyncNodeClient(asyncEndpoint, timeoutInSec);
       } else {
-        logger.info("Create a new PoolRemotePluginClient with a sync client endpoint");
+        logger.info("Create a new PoolRemotePluginClient with a SyncNodeClient");
         plugin.bindSyncNodeClient(syncEndpoint, null, null);
       }
 
