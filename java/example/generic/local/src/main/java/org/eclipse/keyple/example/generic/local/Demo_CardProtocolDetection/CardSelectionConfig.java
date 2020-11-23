@@ -9,14 +9,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.generic.pc.Demo_CardProtocolDetection;
+package org.eclipse.keyple.example.generic.local.Demo_CardProtocolDetection;
 
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.core.card.selection.CardSelection;
 import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
-import org.eclipse.keyple.example.generic.pc.common.GenericCardSelectionRequest;
+import org.eclipse.keyple.example.generic.local.common.GenericCardSelectionRequest;
 
 class CardSelectionConfig {
 

@@ -9,15 +9,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.generic.pc.Demo_ObservableReaderNotification;
+package org.eclipse.keyple.example.generic.local.Demo_ObservableReaderNotification;
 
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservablePlugin;
 import org.eclipse.keyple.core.service.event.ObservableReader;
-import org.eclipse.keyple.example.generic.pc.common.StubSmartCard1;
-import org.eclipse.keyple.example.generic.pc.common.StubSmartCard2;
+import org.eclipse.keyple.core.service.event.PluginObservationExceptionHandler;
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
+import org.eclipse.keyple.example.generic.local.common.StubSmartCard1;
+import org.eclipse.keyple.example.generic.local.common.StubSmartCard2;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubPluginFactory;
 import org.eclipse.keyple.plugin.stub.StubReader;
@@ -38,13 +40,13 @@ public class Demo_ObservableReaderNotification_Stub {
     final String READER1_NAME = "Reader1";
     final String READER2_NAME = "Reader2";
 
-    ReaderObserver readerObserver = new ReaderObserver();
-    PluginObserver pluginObserver = new PluginObserver(readerObserver);
+    /* Create a Exception Handler for plugin and reader observation */
+    ExceptionHandlerImpl exceptionHandler = new ExceptionHandlerImpl();
 
     // Register Stub plugin in the platform
     Plugin plugin =
         smartCardService.registerPlugin(
-            new StubPluginFactory(STUB_PLUGIN_NAME, pluginObserver, null));
+            new StubPluginFactory(STUB_PLUGIN_NAME, exceptionHandler, exceptionHandler));
 
     // Set observers
     logger.info("Set plugin observer.");
@@ -54,7 +56,7 @@ public class Demo_ObservableReaderNotification_Stub {
     }
 
     logger.info("Add observer PLUGINNAME = {}", plugin.getName());
-    ((ObservablePlugin) plugin).addObserver(pluginObserver);
+    ((ObservablePlugin) plugin).addObserver(new PluginObserver());
     logger.info("Wait a little to see the \"no reader available message\".");
     Thread.sleep(200);
 
@@ -118,7 +120,27 @@ public class Demo_ObservableReaderNotification_Stub {
     ((StubPlugin) plugin).unplugStubReader(READER2_NAME, true);
 
     logger.info("END.");
+    // unregister plugin
+    smartCardService.unregisterPlugin(plugin.getName());
+
+    logger.info("Exit program.");
 
     System.exit(0);
+  }
+
+  private static class ExceptionHandlerImpl
+      implements PluginObservationExceptionHandler, ReaderObservationExceptionHandler {
+    final Logger logger = LoggerFactory.getLogger(ExceptionHandlerImpl.class);
+
+    @Override
+    public void onPluginObservationError(String pluginName, Throwable throwable) {
+      logger.error("An unexpected plugin error occurred: {}", pluginName, throwable);
+    }
+
+    @Override
+    public void onReaderObservationError(
+        String pluginName, String readerName, Throwable throwable) {
+      logger.error("An unexpected reader error occurred: {}:{}", pluginName, readerName, throwable);
+    }
   }
 }

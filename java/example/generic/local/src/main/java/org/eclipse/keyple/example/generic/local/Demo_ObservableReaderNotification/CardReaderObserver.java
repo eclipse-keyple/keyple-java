@@ -9,16 +9,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.generic.pc.Demo_ObservableReaderNotification;
+package org.eclipse.keyple.example.generic.local.Demo_ObservableReaderNotification;
 
 import org.eclipse.keyple.core.service.event.ObservableReader;
-import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class ReaderObserver implements ObservableReader.ReaderObserver, ReaderObservationExceptionHandler {
+class CardReaderObserver implements ObservableReader.ReaderObserver {
 
-  private static final Logger logger = LoggerFactory.getLogger(ReaderObserver.class);
+  private static final Logger logger = LoggerFactory.getLogger(CardReaderObserver.class);
 
   @Override
   public void update(org.eclipse.keyple.core.service.event.ReaderEvent event) {
@@ -44,16 +43,5 @@ class ReaderObserver implements ObservableReader.ReaderObserver, ReaderObservati
          */
         break;
     }
-  }
-
-  @Override
-  public void onReaderObservationError(String pluginName, String readerName, Throwable e) {
-    logger.error("An unexpected reader error occurred: {}:{}", pluginName, readerName, e);
-    // exit
-    /*
-    synchronized (waitBeforeEnd) {
-      waitBeforeEnd.notify();
-    }
-    */
   }
 }

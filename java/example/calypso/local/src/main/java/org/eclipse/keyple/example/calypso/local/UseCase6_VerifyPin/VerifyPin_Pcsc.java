@@ -47,11 +47,8 @@ import org.slf4j.LoggerFactory;
  */
 public class VerifyPin_Pcsc {
   private static final Logger logger = LoggerFactory.getLogger(VerifyPin_Pcsc.class);
-  private static Reader poReader;
-  private static CalypsoPo calypsoPo;
 
   public static void main(String[] args) {
-
     // Get the instance of the SmartCardService (Singleton pattern)
     SmartCardService smartCardService = SmartCardService.getInstance();
 
@@ -60,7 +57,7 @@ public class VerifyPin_Pcsc {
     Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory(null, null));
 
     // Get and configure the PO reader
-    poReader = plugin.getReader(PcscReaderUtils.getContactlessReaderName());
+    Reader poReader = plugin.getReader(PcscReaderUtils.getContactlessReaderName());
     ((PcscReader) poReader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     // Get and configure the SAM reader
@@ -97,7 +94,8 @@ public class VerifyPin_Pcsc {
 
     // Actual PO communication: operate through a single request the Calypso PO selection
     // and the file read
-    calypsoPo = (CalypsoPo) cardSelection.processExplicitSelection(poReader).getActiveSmartCard();
+    CalypsoPo calypsoPo =
+        (CalypsoPo) cardSelection.processExplicitSelection(poReader).getActiveSmartCard();
 
     // Security settings
     PoSecuritySettings poSecuritySettings =

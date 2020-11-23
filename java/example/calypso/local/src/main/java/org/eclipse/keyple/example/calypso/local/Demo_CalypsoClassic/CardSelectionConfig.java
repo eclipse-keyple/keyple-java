@@ -23,7 +23,7 @@ import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
 
 /** Po Reader Configuration class */
 class CardSelectionConfig {
-  static CardSelection poCardSelection;
+  private static CardSelection poCardSelection;
   /**
    * Return the card selection object
    *

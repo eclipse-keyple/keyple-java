@@ -9,21 +9,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.generic.pc.common;
+package org.eclipse.keyple.example.generic.local.common;
 
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.stub.StubSmartCard;
 
 /** Simple contact card Stub (no command) */
-public class StubMifareClassic extends StubSmartCard {
+public class StubSmartCard1 extends StubSmartCard {
 
-  static final String cardProtocol = "MIFARE_CLASSIC";
-  final String ATR_HEX = "3B8F8001804F0CA000000306030001000000006A";
+  static final String cardProtocol = "PROTOCOL_ISO7816_3";
+  final String ATR_HEX = "3B3F9600805A0080C120000012345678829000"; // serial number : 12345678
 
-  public StubMifareClassic() {
-    /* Get data */
-    addHexCommand("FFCA 000000", "112233449000");
-  }
+  public StubSmartCard1() {}
 
   @Override
   public byte[] getATR() {

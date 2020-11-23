@@ -9,21 +9,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.generic.pc.UseCase2_DefaultSelectionNotification;
+package org.eclipse.keyple.example.generic.local.UseCase2_DefaultSelectionNotification;
 
-import static org.eclipse.keyple.example.generic.pc.UseCase2_DefaultSelectionNotification.CardSelectionConfig.getDefaultSelection;
+import static org.eclipse.keyple.example.generic.local.UseCase2_DefaultSelectionNotification.CardSelectionConfig.getDefaultSelection;
 
 import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
-import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class ReaderObserver implements ObservableReader.ReaderObserver, ReaderObservationExceptionHandler {
+class CardReaderObserver implements ObservableReader.ReaderObserver {
 
-  private static final Logger logger = LoggerFactory.getLogger(ReaderObserver.class);
+  private static final Logger logger = LoggerFactory.getLogger(CardReaderObserver.class);
 
   /**
    * Method invoked in the case of a reader event
@@ -72,15 +71,5 @@ class ReaderObserver implements ObservableReader.ReaderObserver, ReaderObservati
 
       ((ObservableReader) (event.getReader())).finalizeCardProcessing();
     }
-  }
-
-  @Override
-  public void onReaderObservationError(String pluginName, String readerName, Throwable throwable) {
-    logger.error("An unexpected reader error occurred: {}:{}", pluginName, readerName, throwable);
-    /*
-    synchronized (waitForEnd) {
-      waitForEnd.notify();
-    }
-    */
   }
 }

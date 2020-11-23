@@ -15,6 +15,7 @@ import org.eclipse.keyple.core.card.selection.CardSelection;
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.example.calypso.local.common.PcscReaderUtils;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
@@ -49,20 +50,15 @@ public class DefaultSelectionNotification_Pcsc {
   private static final Logger logger =
       LoggerFactory.getLogger(DefaultSelectionNotification_Pcsc.class);
 
-  // This object is used to freeze the main thread while card operations are handle through the
-  // observers callbacks. A call to the notify() method would end the program (not demonstrated
-  // here).
-  private static final Object waitForEnd = new Object();
-
-  public DefaultSelectionNotification_Pcsc() throws InterruptedException {
+  /** main program entry */
+  public static void main(String[] args) throws InterruptedException {
     // Get the instance of the SmartCardService (Singleton pattern)
     SmartCardService smartCardService = SmartCardService.getInstance();
 
-    ReaderObserver readerObserver = new ReaderObserver();
-
     // Register the PcscPlugin with SmartCardService, get the corresponding generic Plugin in
     // return
-    Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory(null, readerObserver));
+    Plugin plugin =
+        smartCardService.registerPlugin(new PcscPluginFactory(null, new ExceptionHandlerImpl()));
 
     // Get and configure the PO reader
     PcscReader poReader = (PcscReader) plugin.getReader(PcscReaderUtils.getContactlessReaderName());
@@ -81,7 +77,7 @@ public class DefaultSelectionNotification_Pcsc {
         ObservableReader.PollingMode.REPEATING);
 
     // Set the current class as Observer of the first reader
-    poReader.addObserver(readerObserver);
+    poReader.addObserver(new CardReaderObserver());
 
     logger.info(
         "= #### Wait for a PO. The default AID based selection with reading of Environment");
@@ -91,11 +87,27 @@ public class DefaultSelectionNotification_Pcsc {
     synchronized (waitForEnd) {
       waitForEnd.wait();
     }
+    // unregister plugin
+    smartCardService.unregisterPlugin(plugin.getName());
+
+    logger.info("Exit program.");
   }
 
-  /** main program entry */
-  public static void main(String[] args) throws InterruptedException {
-    // Create the observable object to handle the PO processing
-    new DefaultSelectionNotification_Pcsc();
+  // This object is used to freeze the main thread while card operations are handle through the
+  // observers callbacks. A call to the notify() method would end the program (not demonstrated
+  // here).
+  private static final Object waitForEnd = new Object();
+
+  private static class ExceptionHandlerImpl implements ReaderObservationExceptionHandler {
+    final Logger logger = LoggerFactory.getLogger(ExceptionHandlerImpl.class);
+
+    @Override
+    public void onReaderObservationError(
+        String pluginName, String readerName, Throwable throwable) {
+      logger.error("An unexpected reader error occurred: {}:{}", pluginName, readerName, throwable);
+      synchronized (waitForEnd) {
+        waitForEnd.notifyAll();
+      }
+    }
   }
 }

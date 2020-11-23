@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  *
  * <ol>
  *   <li>Setting up a sam reader configuration and adding an observer method ({@link
- *       ReaderObserver#update})
+ *       CardReaderObserver#update})
  *   <li>Starting a card operation when a PO presence is notified (processSeMatch
  *       operateSeTransaction)
  *   <li>Opening a logical channel with the SAM (C1 SAM is expected) see ({@link
@@ -87,7 +87,7 @@ public class Demo_CalypsoClassic_Stub {
     }
 
     /* Setting up the observer on the PO Reader */
-    ReaderObserver poEventObserver = new ReaderObserver();
+    CardReaderObserver poEventObserver = new CardReaderObserver();
 
     /* Assign readers to the Hoplink transaction engine */
     poEventObserver.setSamReader(samReader);
@@ -109,7 +109,10 @@ public class Demo_CalypsoClassic_Stub {
     poReader.removeCard();
     samReader.removeCard();
 
-    logger.info("END.");
+    // unregister plugin
+    smartCardService.unregisterPlugin(plugin.getName());
+
+    logger.info("Exit program.");
 
     System.exit(0);
   }

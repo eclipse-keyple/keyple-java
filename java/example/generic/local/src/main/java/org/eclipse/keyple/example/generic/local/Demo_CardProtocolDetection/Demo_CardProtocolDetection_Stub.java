@@ -9,20 +9,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.generic.pc.Demo_CardProtocolDetection;
+package org.eclipse.keyple.example.generic.local.Demo_CardProtocolDetection;
 
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.PluginObservationExceptionHandler;
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
-import org.eclipse.keyple.example.generic.pc.common.StubMifareClassic;
-import org.eclipse.keyple.example.generic.pc.common.StubMifareDesfire;
-import org.eclipse.keyple.example.generic.pc.common.StubMifareUL;
+import org.eclipse.keyple.example.generic.local.common.StubMifareClassic;
+import org.eclipse.keyple.example.generic.local.common.StubMifareDesfire;
+import org.eclipse.keyple.example.generic.local.common.StubMifareUL;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubPluginFactory;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.plugin.stub.StubSupportedProtocols;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This code demonstrates the multi-protocols capability of the Keyple SmartCardService
@@ -38,9 +42,8 @@ import org.eclipse.keyple.plugin.stub.StubSupportedProtocols;
  */
 public class Demo_CardProtocolDetection_Stub {
 
-  public Demo_CardProtocolDetection_Stub() {
-    super();
-  }
+  private static final Logger logger =
+      LoggerFactory.getLogger(Demo_CardProtocolDetection_Stub.class);
 
   /**
    * Application entry
@@ -56,22 +59,25 @@ public class Demo_CardProtocolDetection_Stub {
     SmartCardService smartCardService = SmartCardService.getInstance();
 
     final String STUB_PLUGIN_NAME = "stub1";
+    /* Create a Exception Handler for plugin and reader observation */
+    ExceptionHandlerImpl exceptionHandler = new ExceptionHandlerImpl();
 
     // Register Stub plugin in the platform
-    Plugin stubPlugin =
-        smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME, null, null));
+    Plugin plugin =
+        smartCardService.registerPlugin(
+            new StubPluginFactory(STUB_PLUGIN_NAME, exceptionHandler, exceptionHandler));
 
     // create an observer class to handle the card operations
     org.eclipse.keyple.core.service.event.ObservableReader.ReaderObserver observer =
-        new ReaderObserver();
+        new CardReaderObserver();
 
     // Plug PO reader.
-    ((StubPlugin) stubPlugin).plugStubReader("poReader", true);
+    ((StubPlugin) plugin).plugStubReader("poReader", true);
 
     Thread.sleep(200);
 
     StubReader poReader = null;
-    poReader = (StubReader) (stubPlugin.getReader("poReader"));
+    poReader = (StubReader) (plugin.getReader("poReader"));
 
     /* Activate protocols */
     poReader.activateProtocol(
@@ -115,6 +121,25 @@ public class Demo_CardProtocolDetection_Stub {
 
     Thread.sleep(100);
 
-    System.exit(0);
+    // unregister plugin
+    smartCardService.unregisterPlugin(plugin.getName());
+
+    logger.info("Exit program.");
+  }
+
+  private static class ExceptionHandlerImpl
+      implements PluginObservationExceptionHandler, ReaderObservationExceptionHandler {
+    final Logger logger = LoggerFactory.getLogger(ExceptionHandlerImpl.class);
+
+    @Override
+    public void onPluginObservationError(String pluginName, Throwable throwable) {
+      logger.error("An unexpected plugin error occurred: {}", pluginName, throwable);
+    }
+
+    @Override
+    public void onReaderObservationError(
+        String pluginName, String readerName, Throwable throwable) {
+      logger.error("An unexpected reader error occurred: {}:{}", pluginName, readerName, throwable);
+    }
   }
 }

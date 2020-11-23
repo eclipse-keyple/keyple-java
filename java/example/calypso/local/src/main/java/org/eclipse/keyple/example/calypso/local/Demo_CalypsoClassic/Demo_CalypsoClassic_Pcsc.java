@@ -34,8 +34,8 @@ import org.slf4j.LoggerFactory;
  * This Calypso demonstration code consists in:
  *
  * <ol>
- *   <li>Setting up a sam reader configuration and adding an observer method ({@link ReaderObserver
- *       ()#update})
+ *   <li>Setting up a sam reader configuration and adding an observer method ({@link
+ *       CardReaderObserver ()#update})
  *   <li>Starting a card operation when a PO presence is notified (processSeMatch
  *       operateSeTransaction)
  *   <li>Opening a logical channel with the SAM (C1 SAM is expected) see ({@link
@@ -58,31 +58,9 @@ import org.slf4j.LoggerFactory;
  * <p>Read the doc of each methods for further details.
  */
 public class Demo_CalypsoClassic_Pcsc {
-  private static Logger logger = LoggerFactory.getLogger(Demo_CalypsoClassic_Pcsc.class);
+  private static final Logger logger = LoggerFactory.getLogger(Demo_CalypsoClassic_Pcsc.class);
 
   private static Plugin plugin;
-
-  static class ExceptionHandlerImpl
-      implements PluginObservationExceptionHandler, ReaderObservationExceptionHandler {
-    final Logger logger = LoggerFactory.getLogger(ExceptionHandlerImpl.class);
-
-    @Override
-    public void onPluginObservationError(String pluginName, Throwable throwable) {
-      logger.error("An unexpected plugin error occurred: {}", pluginName, throwable);
-      synchronized (waitForEnd) {
-        waitForEnd.notifyAll();
-      }
-    }
-
-    @Override
-    public void onReaderObservationError(
-        String pluginName, String readerName, Throwable throwable) {
-      logger.error("An unexpected reader error occurred: {}:{}", pluginName, readerName, throwable);
-      synchronized (waitForEnd) {
-        waitForEnd.notifyAll();
-      }
-    }
-  }
 
   /**
    * main program entry
@@ -96,10 +74,13 @@ public class Demo_CalypsoClassic_Pcsc {
     /* Get the instance of the SmartCardService (Singleton pattern) */
     SmartCardService smartCardService = SmartCardService.getInstance();
 
+    /* Create a Exception Handler for plugin and reader observation */
     ExceptionHandlerImpl exceptionHandlerImpl = new ExceptionHandlerImpl();
 
     /* Assign PcscPlugin to the SmartCardService */
-    plugin = smartCardService.registerPlugin(new PcscPluginFactory(null, exceptionHandlerImpl));
+    plugin =
+        smartCardService.registerPlugin(
+            new PcscPluginFactory(exceptionHandlerImpl, exceptionHandlerImpl));
 
     Reader poReader = initPoReader();
 
@@ -110,7 +91,7 @@ public class Demo_CalypsoClassic_Pcsc {
     }
 
     /* Setting up the reader observer on the po Reader */
-    ReaderObserver poEventObserver = new ReaderObserver();
+    CardReaderObserver poEventObserver = new CardReaderObserver();
 
     poEventObserver.setSamReader(samReader);
 
@@ -128,6 +109,10 @@ public class Demo_CalypsoClassic_Pcsc {
     synchronized (waitForEnd) {
       waitForEnd.wait();
     }
+    // unregister plugin
+    smartCardService.unregisterPlugin(plugin.getName());
+
+    logger.info("Exit program.");
   }
 
   private static Reader initPoReader() {
@@ -188,5 +173,27 @@ public class Demo_CalypsoClassic_Pcsc {
    * observers callbacks. A call to the notify() method would end the program (not demonstrated
    * here).
    */
-  static final Object waitForEnd = new Object();
+  private static final Object waitForEnd = new Object();
+
+  private static class ExceptionHandlerImpl
+      implements PluginObservationExceptionHandler, ReaderObservationExceptionHandler {
+    final Logger logger = LoggerFactory.getLogger(ExceptionHandlerImpl.class);
+
+    @Override
+    public void onPluginObservationError(String pluginName, Throwable throwable) {
+      logger.error("An unexpected plugin error occurred: {}", pluginName, throwable);
+      synchronized (waitForEnd) {
+        waitForEnd.notifyAll();
+      }
+    }
+
+    @Override
+    public void onReaderObservationError(
+        String pluginName, String readerName, Throwable throwable) {
+      logger.error("An unexpected reader error occurred: {}:{}", pluginName, readerName, throwable);
+      synchronized (waitForEnd) {
+        waitForEnd.notifyAll();
+      }
+    }
+  }
 }

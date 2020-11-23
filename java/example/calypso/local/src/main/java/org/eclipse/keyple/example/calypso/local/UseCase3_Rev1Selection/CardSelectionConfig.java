@@ -21,6 +21,9 @@ import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
 
 class CardSelectionConfig {
 
+  private static final String PO_ATR_REGEX = ".*";
+  private static final String PO_DF_RT_PATH = "2000";
+
   static CardSelection getPoCardSelection() {
     // Select the first application matching the selection.
     CardSelection cardSelection = new CardSelection();
@@ -31,12 +34,12 @@ class CardSelectionConfig {
         new PoSelectionRequest(
             PoSelector.builder()
                 .cardProtocol(ContactlessCardCommonProtocols.INNOVATRON_B_PRIME_CARD.name())
-                .atrFilter(new CardSelector.AtrFilter(Rev1Selection_Pcsc.PO_ATR_REGEX))
+                .atrFilter(new CardSelector.AtrFilter(PO_ATR_REGEX))
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
 
     // Prepare the selection of the DF RT.
-    poSelectionRequest.prepareSelectFile(ByteArrayUtil.fromHex(Rev1Selection_Pcsc.PO_DF_RT_PATH));
+    poSelectionRequest.prepareSelectFile(ByteArrayUtil.fromHex(PO_DF_RT_PATH));
 
     // Prepare the reading order.
     poSelectionRequest.prepareReadRecordFile(

@@ -9,26 +9,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.generic.pc.Demo_ObservableReaderNotification;
+package org.eclipse.keyple.example.generic.local.Demo_ObservableReaderNotification;
 
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservablePlugin;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.PluginEvent;
-import org.eclipse.keyple.core.service.event.PluginObservationExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class PluginObserver implements ObservablePlugin.PluginObserver, PluginObservationExceptionHandler {
+class PluginObserver implements ObservablePlugin.PluginObserver {
 
   private static final Logger logger = LoggerFactory.getLogger(PluginObserver.class);
-
-  ReaderObserver eventObserver;
-
-  PluginObserver(ReaderObserver eventObserver) {
-    this.eventObserver = eventObserver;
-  }
 
   @Override
   public void update(PluginEvent event) {
@@ -55,7 +48,7 @@ class PluginObserver implements ObservablePlugin.PluginObserver, PluginObservati
           if (reader instanceof ObservableReader) {
 
             logger.info("Add observer READERNAME = {}", reader.getName());
-            ((ObservableReader) reader).addObserver(eventObserver);
+            ((ObservableReader) reader).addObserver(new CardReaderObserver());
             ((ObservableReader) reader).startCardDetection(ObservableReader.PollingMode.REPEATING);
           }
           break;
@@ -78,16 +71,5 @@ class PluginObserver implements ObservablePlugin.PluginObserver, PluginObservati
           break;
       }
     }
-  }
-
-  @Override
-  public void onPluginObservationError(String pluginName, Throwable e) {
-    logger.error("An unexpected plugin error occurred: {}", pluginName, e);
-    // exit
-    /*
-    synchronized (waitBeforeEnd) {
-      waitBeforeEnd.notify();
-    }
-    */
   }
 }

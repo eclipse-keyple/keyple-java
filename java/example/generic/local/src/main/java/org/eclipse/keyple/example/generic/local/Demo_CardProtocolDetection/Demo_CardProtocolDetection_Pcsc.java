@@ -9,19 +9,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.generic.pc.Demo_CardProtocolDetection;
+package org.eclipse.keyple.example.generic.local.Demo_CardProtocolDetection;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.concurrent.atomic.AtomicBoolean;
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleException;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
-import org.eclipse.keyple.example.generic.pc.common.PcscReaderUtilities;
+import org.eclipse.keyple.example.generic.local.common.PcscReaderUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.eclipse.keyple.plugin.pcsc.PcscSupportedContactlessProtocols;
@@ -47,12 +44,6 @@ public class Demo_CardProtocolDetection_Pcsc {
   private static final Logger logger =
       LoggerFactory.getLogger(Demo_CardProtocolDetection_Pcsc.class);
 
-  private static final AtomicBoolean waitForEnd = new AtomicBoolean();
-
-  public Demo_CardProtocolDetection_Pcsc() {
-    super();
-  }
-
   /**
    * Application entry
    *
@@ -60,16 +51,14 @@ public class Demo_CardProtocolDetection_Pcsc {
    * @throws IllegalArgumentException in case of a bad argument
    * @throws KeypleException if a reader error occurs
    */
-  public static void main(String[] args) {
+  public static void main(String[] args) throws InterruptedException {
     // get the SmartCardService instance
     SmartCardService smartCardService = SmartCardService.getInstance();
 
-    // create an observer class to handle the card operations
-    ReaderObserver eventObserver = new ReaderObserver();
-
     // Register the PcscPlugin with SmartCardService, get the corresponding generic Plugin in
     // return
-    Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory(null, eventObserver));
+    Plugin plugin =
+        smartCardService.registerPlugin(new PcscPluginFactory(null, new ExceptionHandlerImpl()));
 
     // Get and configure the PO reader
     Reader poReader = plugin.getReader(PcscReaderUtilities.getContactlessReaderName());
@@ -89,7 +78,7 @@ public class Demo_CardProtocolDetection_Pcsc {
     poReader.activateProtocol(PcscSupportedContactlessProtocols.MEMORY_ST25.name(), "MEMORY_ST25");
 
     // Set terminal as Observer of the first reader
-    ((ObservableReader) poReader).addObserver(eventObserver);
+    ((ObservableReader) poReader).addObserver(new CardReaderObserver());
 
     // Set Default selection
     ((ObservableReader) poReader)
@@ -98,20 +87,33 @@ public class Demo_CardProtocolDetection_Pcsc {
             ObservableReader.NotificationMode.ALWAYS,
             ObservableReader.PollingMode.REPEATING);
 
-    // wait for Enter key to exit.
-    logger.info("Press Enter to exit");
-    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    waitForEnd.set(true);
-    while (waitForEnd.get()) {
-      int c = 0;
-      try {
-        c = br.read();
-      } catch (IOException e) {
-        logger.error("IO Exception: {}", e.getMessage());
-      }
-      if (c == 0x0A) {
-        logger.info("Exiting...");
-        System.exit(0);
+    // Wait indefinitely. CTRL-C to exit.
+    synchronized (waitForEnd) {
+      waitForEnd.wait();
+    }
+
+    // unregister plugin
+    smartCardService.unregisterPlugin(plugin.getName());
+
+    logger.info("Exit program.");
+  }
+
+  /**
+   * This object is used to freeze the main thread while card operations are handle through the
+   * observers callbacks. A call to the notify() method would end the program (not demonstrated
+   * here).
+   */
+  private static final Object waitForEnd = new Object();
+
+  private static class ExceptionHandlerImpl implements ReaderObservationExceptionHandler {
+    final Logger logger = LoggerFactory.getLogger(ExceptionHandlerImpl.class);
+
+    @Override
+    public void onReaderObservationError(
+        String pluginName, String readerName, Throwable throwable) {
+      logger.error("An unexpected reader error occurred: {}:{}", pluginName, readerName, throwable);
+      synchronized (waitForEnd) {
+        waitForEnd.notifyAll();
       }
     }
   }
