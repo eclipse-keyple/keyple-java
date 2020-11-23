@@ -12,16 +12,16 @@
 package org.eclipse.keyple.example.generic.pc.Demo_ObservableReaderNotification;
 
 import org.eclipse.keyple.core.service.event.ObservableReader;
-import org.eclipse.keyple.core.service.event.ReaderEvent;
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class CardEventObserver implements ObservableReader.ReaderObserver {
+class ReaderObserver implements ObservableReader.ReaderObserver, ReaderObservationExceptionHandler {
 
-  private static final Logger logger = LoggerFactory.getLogger(CardEventObserver.class);
+  private static final Logger logger = LoggerFactory.getLogger(ReaderObserver.class);
 
   @Override
-  public void update(ReaderEvent event) {
+  public void update(org.eclipse.keyple.core.service.event.ReaderEvent event) {
     /* just log the event */
     logger.info(
         "Event: PLUGINNAME = {}, READERNAME = {}, EVENT = {}",
@@ -44,5 +44,16 @@ class CardEventObserver implements ObservableReader.ReaderObserver {
          */
         break;
     }
+  }
+
+  @Override
+  public void onReaderObservationError(String pluginName, String readerName, Throwable e) {
+    logger.error("An unexpected reader error occurred: {}:{}", pluginName, readerName, e);
+    // exit
+    /*
+    synchronized (waitBeforeEnd) {
+      waitBeforeEnd.notify();
+    }
+    */
   }
 }

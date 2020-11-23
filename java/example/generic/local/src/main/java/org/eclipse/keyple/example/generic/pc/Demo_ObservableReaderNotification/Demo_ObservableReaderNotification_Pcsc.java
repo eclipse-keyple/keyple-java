@@ -12,9 +12,10 @@
 package org.eclipse.keyple.example.generic.pc.Demo_ObservableReaderNotification;
 
 import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
-import org.eclipse.keyple.core.service.event.PluginObservationExceptionHandler;
-import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
+import org.eclipse.keyple.core.service.event.ObservablePlugin;
+import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,42 +25,30 @@ public class Demo_ObservableReaderNotification_Pcsc {
       LoggerFactory.getLogger(Demo_ObservableReaderNotification_Pcsc.class);
   public static final Object waitBeforeEnd = new Object();
 
-  static class ExceptionHandlerImpl
-      implements PluginObservationExceptionHandler, ReaderObservationExceptionHandler {
-
-    @Override
-    public void onPluginObservationError(String pluginName, Throwable e) {
-      logger.error("An unexpected plugin error occurred: {}", pluginName, e);
-      // exit
-      synchronized (waitBeforeEnd) {
-        waitBeforeEnd.notify();
-      }
-    }
-
-    @Override
-    public void onReaderObservationError(String pluginName, String readerName, Throwable e) {
-      logger.error("An unexpected reader error occurred: {}:{}", pluginName, readerName, e);
-      // exit
-      synchronized (waitBeforeEnd) {
-        waitBeforeEnd.notify();
-      }
-    }
-  }
-
   public static void main(String[] args) throws Exception {
 
     // Get the instance of the SmartCardService (Singleton pattern)
     final SmartCardService smartCardService = SmartCardService.getInstance();
     final Plugin plugin;
 
-    ExceptionHandlerImpl exceptionHandler = new ExceptionHandlerImpl();
+    ReaderObserver readerObserver = new ReaderObserver();
+    PluginObserver pluginObserver = new PluginObserver(readerObserver);
 
     // Assign PcscPlugin to the SmartCardService
-    plugin =
-        smartCardService.registerPlugin(new PcscPluginFactory(exceptionHandler, exceptionHandler));
+    plugin = smartCardService.registerPlugin(new PcscPluginFactory(pluginObserver, readerObserver));
 
-    // /* Set observers *//**/
-    ReaderEventObserver.initObservers();
+    /*
+     * We add an observer to each plugin (only one in this example) the readers observers will
+     * be added dynamically upon plugin notification (see SpecificPluginObserver.update)
+     */
+
+    /* start detection for all already present readers */
+    for (Reader reader : plugin.getReaders().values()) {
+      ((ObservableReader) reader).startCardDetection(ObservableReader.PollingMode.REPEATING);
+    }
+
+    logger.info("Add observer PLUGINNAME = {}", plugin.getName());
+    ((ObservablePlugin) plugin).addObserver(pluginObserver);
 
     logger.info("Wait for reader or card insertion/removal");
 

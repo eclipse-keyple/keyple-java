@@ -12,7 +12,10 @@
 package org.eclipse.keyple.example.generic.pc.Demo_ObservableReaderNotification;
 
 import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.ObservablePlugin;
+import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.example.generic.pc.common.StubSmartCard1;
 import org.eclipse.keyple.example.generic.pc.common.StubSmartCard2;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
@@ -35,30 +38,39 @@ public class Demo_ObservableReaderNotification_Stub {
     final String READER1_NAME = "Reader1";
     final String READER2_NAME = "Reader2";
 
+    ReaderObserver readerObserver = new ReaderObserver();
+    PluginObserver pluginObserver = new PluginObserver(readerObserver);
+
     // Register Stub plugin in the platform
-    Plugin stubPlugin =
-        smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME, null, null));
+    Plugin plugin =
+        smartCardService.registerPlugin(
+            new StubPluginFactory(STUB_PLUGIN_NAME, pluginObserver, null));
 
     // Set observers
     logger.info("Set plugin observer.");
-    ReaderEventObserver.initObservers();
+    /* start detection for all already present readers */
+    for (Reader reader : plugin.getReaders().values()) {
+      ((ObservableReader) reader).startCardDetection(ObservableReader.PollingMode.REPEATING);
+    }
 
+    logger.info("Add observer PLUGINNAME = {}", plugin.getName());
+    ((ObservablePlugin) plugin).addObserver(pluginObserver);
     logger.info("Wait a little to see the \"no reader available message\".");
     Thread.sleep(200);
 
     logger.info("Plug reader 1.");
-    ((StubPlugin) stubPlugin).plugStubReader(READER1_NAME, true);
+    ((StubPlugin) plugin).plugStubReader(READER1_NAME, true);
 
     Thread.sleep(100);
 
     logger.info("Plug reader 2.");
-    ((StubPlugin) stubPlugin).plugStubReader(READER2_NAME, true);
+    ((StubPlugin) plugin).plugStubReader(READER2_NAME, true);
 
     Thread.sleep(1000);
 
-    StubReader reader1 = (StubReader) (stubPlugin.getReader(READER1_NAME));
+    StubReader reader1 = (StubReader) (plugin.getReader(READER1_NAME));
 
-    StubReader reader2 = (StubReader) (stubPlugin.getReader(READER2_NAME));
+    StubReader reader2 = (StubReader) (plugin.getReader(READER2_NAME));
 
     // Create 'virtual' Hoplink and SAM card
     StubSmartCard se1 = new StubSmartCard1();
@@ -85,25 +97,25 @@ public class Demo_ObservableReaderNotification_Stub {
     Thread.sleep(100);
 
     logger.info("Plug reader 1 again (twice).");
-    ((StubPlugin) stubPlugin).plugStubReader(READER1_NAME, true);
+    ((StubPlugin) plugin).plugStubReader(READER1_NAME, true);
 
     logger.info("Unplug reader 1.");
-    ((StubPlugin) stubPlugin).unplugStubReader(READER1_NAME, true);
+    ((StubPlugin) plugin).unplugStubReader(READER1_NAME, true);
 
     Thread.sleep(100);
 
     logger.info("Plug reader 1 again.");
-    ((StubPlugin) stubPlugin).plugStubReader(READER1_NAME, true);
+    ((StubPlugin) plugin).plugStubReader(READER1_NAME, true);
 
     Thread.sleep(100);
 
     logger.info("Unplug reader 1.");
-    ((StubPlugin) stubPlugin).unplugStubReader(READER1_NAME, true);
+    ((StubPlugin) plugin).unplugStubReader(READER1_NAME, true);
 
     Thread.sleep(100);
 
     logger.info("Unplug reader 2.");
-    ((StubPlugin) stubPlugin).unplugStubReader(READER2_NAME, true);
+    ((StubPlugin) plugin).unplugStubReader(READER2_NAME, true);
 
     logger.info("END.");
 

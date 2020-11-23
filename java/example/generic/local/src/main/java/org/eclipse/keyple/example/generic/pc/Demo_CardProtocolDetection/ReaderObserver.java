@@ -17,12 +17,13 @@ import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.card.selection.CardSelection;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class CardEventObserver implements ObservableReader.ReaderObserver {
+class ReaderObserver implements ObservableReader.ReaderObserver, ReaderObservationExceptionHandler {
 
-  private static final Logger logger = LoggerFactory.getLogger(CardEventObserver.class);
+  private static final Logger logger = LoggerFactory.getLogger(ReaderObserver.class);
 
   /**
    * Implementation of the {@link ObservableReader.ReaderObserver#update(ReaderEvent)} method. <br>
@@ -56,5 +57,15 @@ class CardEventObserver implements ObservableReader.ReaderObserver {
         logger.error("Unexpected error: the reader is no more registered in the SmartcardService.");
         break;
     }
+  }
+
+  @Override
+  public void onReaderObservationError(String pluginName, String readerName, Throwable throwable) {
+    logger.error("An unexpected reader error occurred: {}:{}", pluginName, readerName, throwable);
+    /*
+    synchronized (waitForEnd) {
+      waitForEnd.notify();
+    }
+    */
   }
 }

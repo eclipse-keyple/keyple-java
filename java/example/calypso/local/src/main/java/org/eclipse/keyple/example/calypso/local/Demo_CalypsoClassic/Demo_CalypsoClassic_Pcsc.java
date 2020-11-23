@@ -34,8 +34,8 @@ import org.slf4j.LoggerFactory;
  * This Calypso demonstration code consists in:
  *
  * <ol>
- *   <li>Setting up a sam reader configuration and adding an observer method ({@link
- *       CardEventObserver()#update})
+ *   <li>Setting up a sam reader configuration and adding an observer method ({@link ReaderObserver
+ *       ()#update})
  *   <li>Starting a card operation when a PO presence is notified (processSeMatch
  *       operateSeTransaction)
  *   <li>Opening a logical channel with the SAM (C1 SAM is expected) see ({@link
@@ -99,7 +99,7 @@ public class Demo_CalypsoClassic_Pcsc {
     ExceptionHandlerImpl exceptionHandlerImpl = new ExceptionHandlerImpl();
 
     /* Assign PcscPlugin to the SmartCardService */
-    plugin = smartCardService.registerPlugin(new PcscPluginFactory());
+    plugin = smartCardService.registerPlugin(new PcscPluginFactory(null, exceptionHandlerImpl));
 
     Reader poReader = initPoReader();
 
@@ -110,7 +110,7 @@ public class Demo_CalypsoClassic_Pcsc {
     }
 
     /* Setting up the reader observer on the po Reader */
-    CardEventObserver poEventObserver = new CardEventObserver();
+    ReaderObserver poEventObserver = new ReaderObserver();
 
     poEventObserver.setSamReader(samReader);
 
@@ -188,5 +188,5 @@ public class Demo_CalypsoClassic_Pcsc {
    * observers callbacks. A call to the notify() method would end the program (not demonstrated
    * here).
    */
-  private static final Object waitForEnd = new Object();
+  static final Object waitForEnd = new Object();
 }
