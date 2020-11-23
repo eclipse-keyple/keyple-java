@@ -36,7 +36,7 @@ import org.slf4j.profiler.Profiler;
  * Definition of the ticketing logic within the {@link ObservableReader.ReaderObserver#update}
  * method
  */
-class CardEventObserver implements ObservableReader.ReaderObserver {
+class ReaderObserver implements ObservableReader.ReaderObserver {
   Logger logger = LoggerFactory.getLogger(CardSelectionConfig.class);
 
   /* reference to the sam reader and sam resource to operate the transaction */

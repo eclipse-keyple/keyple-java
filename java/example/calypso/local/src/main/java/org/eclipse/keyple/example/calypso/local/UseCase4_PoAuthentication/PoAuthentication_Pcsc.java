@@ -69,7 +69,7 @@ public class PoAuthentication_Pcsc {
 
     // Register the PcscPlugin with SmartCardService, get the corresponding generic Plugin in
     // return
-    plugin = (PcscPlugin) smartCardService.registerPlugin(new PcscPluginFactory());
+    plugin = (PcscPlugin) smartCardService.registerPlugin(new PcscPluginFactory(null, null));
 
     Reader poReader = initPoReader();
 

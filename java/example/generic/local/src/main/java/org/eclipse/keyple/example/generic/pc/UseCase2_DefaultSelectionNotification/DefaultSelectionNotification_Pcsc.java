@@ -55,26 +55,15 @@ public class DefaultSelectionNotification_Pcsc {
    */
   private static final Object waitForEnd = new Object();
 
-  class ExceptionHandlerImpl implements ReaderObservationExceptionHandler {
-
-    @Override
-    public void onReaderObservationError(String pluginName, String readerName, Throwable e) {
-      logger.error("An unexpected error occurred: {}:{}", pluginName, readerName, e);
-      synchronized (waitForEnd) {
-        waitForEnd.notifyAll();
-      }
-    }
-  }
-
   public DefaultSelectionNotification_Pcsc() throws InterruptedException {
     // Get the instance of the SmartCardService (Singleton pattern)
     SmartCardService smartCardService = SmartCardService.getInstance();
 
-    ExceptionHandlerImpl errorHandler = new ExceptionHandlerImpl();
+    ReaderObserver eventObserver = new ReaderObserver();
 
     // Register the PcscPlugin with SmartCardService, get the corresponding generic Plugin in
     // return
-    Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory(null, errorHandler));
+    Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory(null, eventObserver));
 
     // Get and configure the PO reader
     Reader reader = plugin.getReader(PcscReaderUtilities.getContactlessReaderName());
@@ -92,7 +81,7 @@ public class DefaultSelectionNotification_Pcsc {
             ObservableReader.PollingMode.REPEATING);
 
     // Set the current class as Observer of the first reader
-    ((ObservableReader) reader).addObserver(new CardEventObserver());
+    ((ObservableReader) reader).addObserver(eventObserver);
 
     logger.info(
         "= #### Wait for a card. The default AID based selection to be processed as soon as the card is detected.");

@@ -19,7 +19,6 @@ import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservableReader;
-import org.eclipse.keyple.core.service.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.service.exception.KeypleException;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.generic.pc.common.PcscReaderUtilities;
@@ -54,19 +53,6 @@ public class Demo_CardProtocolDetection_Pcsc {
     super();
   }
 
-  static class ExceptionHandlerImpl implements ReaderObservationExceptionHandler {
-    final Logger logger = LoggerFactory.getLogger(ExceptionHandlerImpl.class);
-
-    @Override
-    public void onReaderObservationError(
-        String pluginName, String readerName, Throwable throwable) {
-      logger.error("An unexpected reader error occurred: {}:{}", pluginName, readerName, throwable);
-      synchronized (waitForEnd) {
-        waitForEnd.set(false);
-      }
-    }
-  }
-
   /**
    * Application entry
    *
@@ -78,20 +64,18 @@ public class Demo_CardProtocolDetection_Pcsc {
     // get the SmartCardService instance
     SmartCardService smartCardService = SmartCardService.getInstance();
 
-    ExceptionHandlerImpl exceptionHandler = new ExceptionHandlerImpl();
+    // create an observer class to handle the card operations
+    ReaderObserver eventObserver = new ReaderObserver();
 
     // Register the PcscPlugin with SmartCardService, get the corresponding generic Plugin in
     // return
-    Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory(null, exceptionHandler));
+    Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory(null, eventObserver));
 
     // Get and configure the PO reader
     Reader poReader = plugin.getReader(PcscReaderUtilities.getContactlessReaderName());
     ((PcscReader) poReader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     logger.info("PO Reader  : {}", poReader.getName());
-
-    // create an observer class to handle the card operations
-    ReaderObserver observer = new CardEventObserver();
 
     // configure reader
     ((PcscReader) poReader).setContactless(false).setIsoProtocol(PcscReader.IsoProtocol.T1);
@@ -105,7 +89,7 @@ public class Demo_CardProtocolDetection_Pcsc {
     poReader.activateProtocol(PcscSupportedContactlessProtocols.MEMORY_ST25.name(), "MEMORY_ST25");
 
     // Set terminal as Observer of the first reader
-    ((ObservableReader) poReader).addObserver(observer);
+    ((ObservableReader) poReader).addObserver(eventObserver);
 
     // Set Default selection
     ((ObservableReader) poReader)

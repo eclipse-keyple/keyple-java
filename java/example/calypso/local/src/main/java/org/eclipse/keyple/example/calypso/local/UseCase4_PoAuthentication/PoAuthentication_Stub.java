@@ -73,7 +73,9 @@ public class PoAuthentication_Stub {
     final String STUB_PLUGIN_NAME = "stub1";
 
     // Register Stub plugin in the platform
-    plugin = (StubPlugin) smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
+    plugin =
+        (StubPlugin)
+            smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME, null, null));
 
     Reader poReader = initPoReader();
 

@@ -94,7 +94,7 @@ class DefaultSelectionNotification_Stub {
             ObservableReader.PollingMode.REPEATING);
 
     /* Set a CardSelectionConfig that contains the ticketing logic for the reader */
-    ((ObservableReader) poReader).addObserver(new CardEventObserver());
+    ((ObservableReader) poReader).addObserver(new ReaderObserver());
 
     logger.info(
         "= #### Wait for a PO. The default AID based selection with reading of Environment");
