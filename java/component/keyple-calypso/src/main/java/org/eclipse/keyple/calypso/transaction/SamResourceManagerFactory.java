@@ -12,7 +12,7 @@
 package org.eclipse.keyple.calypso.transaction;
 
 import org.eclipse.keyple.core.service.Plugin;
-import org.eclipse.keyple.core.service.ReaderPoolPlugin;
+import org.eclipse.keyple.core.service.PoolPlugin;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 
 /** Factory that builds a SamResourceManager depending on the plugin used */
@@ -50,22 +50,22 @@ public abstract class SamResourceManagerFactory {
   /**
    * Instantiate a new SamResourceManager.
    *
-   * <p>The samReaderPlugin is used to retrieve the available SAM in the ReaderPoolPlugin.
+   * <p>The samReaderPlugin is used to retrieve the available SAM in the PoolPlugin.
    *
    * <p>Setup a plugin observer if the reader plugin is observable.
    *
-   * @param samReaderPoolPlugin the plugin through which SAM readers are accessible
+   * @param samPoolPlugin the plugin through which SAM readers are accessible
    * @param maxBlockingTime the maximum duration for which the allocateSamResource method will
    *     attempt to allocate a new reader by retrying (in milliseconds).
    * @param sleepTime the duration to wait between two retries
    * @return SamResourceManager working with a pool plugin
    */
   public static SamResourceManager instantiate(
-      ReaderPoolPlugin samReaderPoolPlugin, int maxBlockingTime, int sleepTime) {
-    return new SamResourceManagerPool(samReaderPoolPlugin, maxBlockingTime, sleepTime);
+      PoolPlugin samPoolPlugin, int maxBlockingTime, int sleepTime) {
+    return new SamResourceManagerPool(samPoolPlugin, maxBlockingTime, sleepTime);
   }
 
-  public static SamResourceManager instantiate(ReaderPoolPlugin samReaderPoolPlugin) {
-    return new SamResourceManagerPool(samReaderPoolPlugin, MAX_BLOCKING_TIME, DEFAULT_SLEEP_TIME);
+  public static SamResourceManager instantiate(PoolPlugin samPoolPlugin) {
+    return new SamResourceManagerPool(samPoolPlugin, MAX_BLOCKING_TIME, DEFAULT_SLEEP_TIME);
   }
 }

@@ -16,15 +16,15 @@ import org.eclipse.keyple.core.service.exception.KeypleAllocationNoReaderExcepti
 import org.eclipse.keyple.core.service.exception.KeypleAllocationReaderException;
 
 /**
- * The ReaderPoolPlugin interface provides methods to handle the access to an undefined number of
- * Reader resources.
+ * The PoolPlugin interface provides methods to handle the access to an undefined number of Reader
+ * resources.
  *
  * <p>It is typically used to define a Plugin built on top of an HSM interface that can allocate a
  * large number of virtual reader slots.
  *
- * <p>A ReaderPoolPlugin can't be observable.
+ * <p>A PoolPlugin can't be observable.
  */
-public interface ReaderPoolPlugin extends Plugin {
+public interface PoolPlugin extends Plugin {
   /**
    * Gets a list of group references that will be used as an argument to allocateReader.
    *
