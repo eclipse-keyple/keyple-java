@@ -9,14 +9,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.plugin.reader;
+package org.eclipse.keyple.core.plugin;
 
-import org.eclipse.keyple.core.card.message.ApduResponse;
-import org.eclipse.keyple.core.card.selection.CardSelector;
+public class BlankAbstractLocalReader extends AbstractLocalReader {
 
-public class BlankSmartSelectionReader extends AbstractLocalReader implements SmartSelectionReader {
-
-  public BlankSmartSelectionReader(String pluginName, String readerName) {
+  public BlankAbstractLocalReader(String pluginName, String readerName) {
     super(pluginName, readerName);
   }
 
@@ -42,6 +39,11 @@ public class BlankSmartSelectionReader extends AbstractLocalReader implements Sm
   }
 
   @Override
+  protected boolean isCurrentProtocol(String readerProtocolName) {
+    return false;
+  }
+
+  @Override
   public byte[] transmitApdu(byte[] apduIn) {
     return new byte[0];
   }
@@ -51,19 +53,6 @@ public class BlankSmartSelectionReader extends AbstractLocalReader implements Sm
 
   @Override
   protected void deactivateReaderProtocol(String readerProtocolName) {}
-
-  @Override
-  public ApduResponse openChannelForAid(CardSelector.AidSelector aidSelector) {
-    return null;
-  }
-
-  @Override
-  public void closeLogicalChannel() {}
-
-  @Override
-  protected boolean isCurrentProtocol(String readerProtocolName) {
-    return false;
-  }
 
   @Override
   public boolean isContactless() {

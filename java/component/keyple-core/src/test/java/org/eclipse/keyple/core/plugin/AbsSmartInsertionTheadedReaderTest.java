@@ -9,9 +9,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.plugin.reader;
+package org.eclipse.keyple.core.plugin;
 
-import static org.eclipse.keyple.core.plugin.reader.AbstractObservableState.MonitoringState.*;
+import static org.eclipse.keyple.core.plugin.AbstractObservableState.MonitoringState.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;

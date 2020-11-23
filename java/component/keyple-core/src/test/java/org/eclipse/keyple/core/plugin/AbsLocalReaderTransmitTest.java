@@ -9,11 +9,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.plugin.reader;
+package org.eclipse.keyple.core.plugin;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
-import static org.eclipse.keyple.core.plugin.reader.AbsLocalReaderSelectionTest.ATR;
+import static org.eclipse.keyple.core.plugin.AbsLocalReaderSelectionTest.ATR;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;

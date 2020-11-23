@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.service.event;
 
-import static org.eclipse.keyple.core.plugin.reader.AbsObservableLocalReaderTest.getNotMatchingResponses;
+import static org.eclipse.keyple.core.plugin.AbsObservableLocalReaderTest.getNotMatchingResponses;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
@@ -22,8 +22,8 @@ import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.card.message.ChannelControl;
 import org.eclipse.keyple.core.card.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
-import org.eclipse.keyple.core.plugin.reader.AbsObservableLocalReaderTest;
-import org.eclipse.keyple.core.plugin.reader.BlankObservableLocalReader;
+import org.eclipse.keyple.core.plugin.AbsObservableLocalReaderTest;
+import org.eclipse.keyple.core.plugin.BlankObservableLocalReader;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.junit.Assert;
 import org.junit.Test;

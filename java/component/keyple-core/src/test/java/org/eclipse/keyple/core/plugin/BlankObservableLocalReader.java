@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.plugin.reader;
+package org.eclipse.keyple.core.plugin;
 
 import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
