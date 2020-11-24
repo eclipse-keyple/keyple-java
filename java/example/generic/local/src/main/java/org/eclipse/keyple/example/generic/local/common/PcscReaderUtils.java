@@ -23,13 +23,13 @@ import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 
-public final class PcscReaderUtilities {
+public final class PcscReaderUtils {
   private static Properties properties;
 
   static {
     properties = new Properties();
     InputStream inputStream =
-        PcscReaderUtilities.class.getClassLoader().getResourceAsStream("config.properties");
+        PcscReaderUtils.class.getClassLoader().getResourceAsStream("config.properties");
     try {
       properties.load(inputStream);
       inputStream.close();
@@ -42,7 +42,7 @@ public final class PcscReaderUtilities {
    * (private)<br>
    * Constructor
    */
-  private PcscReaderUtilities() {}
+  private PcscReaderUtils() {}
 
   /**
    * Sets the properties file for reader settings<br>

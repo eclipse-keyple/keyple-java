@@ -18,10 +18,16 @@ import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.generic.local.common.GenericCardSelectionRequest;
 
+/** Card Selection Configuration */
 class CardSelectionConfig {
 
   private static CardSelection cardSelection;
 
+  /**
+   * Define a default card selection configuration for multiple protocols
+   *
+   * @return card selection object
+   */
   static CardSelection getDefaultSelection() {
     if (cardSelection != null) {
       return cardSelection;

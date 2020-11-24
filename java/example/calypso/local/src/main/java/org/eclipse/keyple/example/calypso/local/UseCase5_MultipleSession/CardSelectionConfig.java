@@ -21,8 +21,14 @@ import org.eclipse.keyple.core.card.selection.CardSelection;
 import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
 
+/** Card Selection Configuration */
 class CardSelectionConfig {
 
+  /**
+   * Define the card selection configuration for the Calypso PO
+   *
+   * @return card selection object
+   */
   static CardSelection getPoCardSelection() {
     // Prepare a Calypso PO selection
     CardSelection cardSelection = new CardSelection();
@@ -51,6 +57,11 @@ class CardSelectionConfig {
     return cardSelection;
   }
 
+  /**
+   * Define the card selection configuration for the Calypso SAM
+   *
+   * @return card selection object
+   */
   static CardSelection getSamCardSelection() {
     // Create a SAM resource after selecting the SAM
     CardSelection samSelection = new CardSelection();

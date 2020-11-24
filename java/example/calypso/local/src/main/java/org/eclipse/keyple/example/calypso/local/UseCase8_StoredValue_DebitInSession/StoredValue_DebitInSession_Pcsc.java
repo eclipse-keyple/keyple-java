@@ -93,7 +93,7 @@ public class StoredValue_DebitInSession_Pcsc {
 
     CalypsoPo calypsoPo =
         (CalypsoPo)
-            CardSelectionConfig.getCardSelection()
+            CardSelectionConfig.getPoCardSelection()
                 .processExplicitSelection(poReader)
                 .getActiveSmartCard();
 

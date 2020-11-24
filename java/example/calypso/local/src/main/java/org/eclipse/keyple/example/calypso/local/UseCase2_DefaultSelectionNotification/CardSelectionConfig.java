@@ -16,10 +16,16 @@ import org.eclipse.keyple.core.card.selection.CardSelection;
 import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
 
+/** Card Selection Configuration */
 class CardSelectionConfig {
 
   private static CardSelection cardSelection;
 
+  /**
+   * Define the card selection configuration for the Calypso PO
+   *
+   * @return card selection object
+   */
   static CardSelection getCardSelection() {
     if (cardSelection != null) {
       return cardSelection;

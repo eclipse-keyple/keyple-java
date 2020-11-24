@@ -21,13 +21,14 @@ import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
 
-/** Po Reader Configuration class */
+/** Card Selection Configuration */
 class CardSelectionConfig {
   private static CardSelection poCardSelection;
+
   /**
-   * Return the card selection object
+   * Define the card selection configuration for the Calypso PO
    *
-   * @return card selection configuration
+   * @return card selection object
    */
   static CardSelection getPoDefaultCardSelection() {
     if (poCardSelection != null) {
@@ -99,6 +100,13 @@ class CardSelectionConfig {
     return poCardSelection;
   }
 
+  /**
+   * Operate the SAM selection
+   *
+   * @param samReader the reader where to operate the SAM selection
+   * @return a CalypsoSam object if the selection succeed
+   * @throws IllegalStateException if the selection fails
+   */
   static CalypsoSam selectSam(Reader samReader) {
     // Create a SAM resource after selecting the SAM
     CardSelection samSelection = new CardSelection();

@@ -16,12 +16,18 @@ import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.generic.local.common.GenericCardSelectionRequest;
 
+/** Card Selection Configuration */
 class CardSelectionConfig {
 
   private static CardSelection cardSelection;
 
   private static String cardAid = "A0000004040125090101";
 
+  /**
+   * Define a default card selection configuration for ISO_14443_4 protocol
+   *
+   * @return card selection object
+   */
   static CardSelection getDefaultSelection() {
     if (cardSelection != null) {
       return cardSelection;

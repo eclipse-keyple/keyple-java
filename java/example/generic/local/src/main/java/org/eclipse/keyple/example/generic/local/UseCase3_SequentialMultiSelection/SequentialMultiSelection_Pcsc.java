@@ -20,7 +20,7 @@ import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.generic.local.common.GenericCardSelectionRequest;
-import org.eclipse.keyple.example.generic.local.common.PcscReaderUtilities;
+import org.eclipse.keyple.example.generic.local.common.PcscReaderUtils;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.slf4j.Logger;
@@ -43,7 +43,7 @@ public class SequentialMultiSelection_Pcsc {
     Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory(null, null));
 
     // Get and configure the PO reader
-    Reader reader = plugin.getReader(PcscReaderUtilities.getContactlessReaderName());
+    Reader reader = plugin.getReader(PcscReaderUtils.getContactlessReaderName());
     ((PcscReader) reader).setContactless(true);
     ((PcscReader) reader).setIsoProtocol(PcscReader.IsoProtocol.T1);
 

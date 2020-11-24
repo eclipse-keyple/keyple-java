@@ -96,7 +96,7 @@ public class StoredValue_SimpleReload_Pcsc {
     // and the file read
     CalypsoPo calypsoPo =
         (CalypsoPo)
-            CardSelectionConfig.getCardSelection()
+            CardSelectionConfig.getPoCardSelection()
                 .processExplicitSelection(poReader)
                 .getActiveSmartCard(); // Security settings
 
