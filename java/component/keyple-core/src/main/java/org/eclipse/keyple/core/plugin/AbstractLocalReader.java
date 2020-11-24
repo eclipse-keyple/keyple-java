@@ -553,15 +553,18 @@ public abstract class AbstractLocalReader extends AbstractReader {
     ApduResponse fciResponse;
 
     if (this instanceof SmartSelectionReader) {
+      byte[] dfName = aidSelector.getAidToSelect();
+      byte isoControlMask =
+          (byte)
+              (aidSelector.getFileOccurrence().getIsoBitMask()
+                  | aidSelector.getFileControlInformation().getIsoBitMask());
+      byte[] selectionDataBytes =
+          ((SmartSelectionReader) this).openChannelForAid(dfName, isoControlMask);
+      if (selectionDataBytes == null) {
+        throw new KeypleReaderIOException("The card is unable to provide a new logical channel");
+      }
       fciResponse =
-          new ApduResponse(
-              ((SmartSelectionReader) this)
-                  .openChannelForAid(
-                      aidSelector.getAidToSelect(),
-                      (byte)
-                          (aidSelector.getFileOccurrence().getIsoBitMask()
-                              | aidSelector.getFileControlInformation().getIsoBitMask())),
-              aidSelector.getSuccessfulSelectionStatusCodes());
+          new ApduResponse(selectionDataBytes, aidSelector.getSuccessfulSelectionStatusCodes());
     } else {
       fciResponse = processExplicitAidSelection(aidSelector);
     }

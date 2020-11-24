@@ -57,11 +57,12 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
      * Open a logical channel by selecting the application
      * @param dfName A byte array containing the DF name or null if a basic opening is wanted.
      * @param isoControlMask The selection bits defined by the ISO selection command and expected by the OMAPI as P2 parameter.
-     * @return a byte array containing the FCI data resulting from the application selection
+     * @return A byte array containing the response to the OMAPI openLogicalChannel process or null if the Secure Element is unable to
+     *         provide a new logical channel
      * @throws KeypleReaderIOException if the communication with the reader or the card has failed
      */
     @Throws(KeypleReaderIOException::class)
-    override fun openChannelForAid(dfName: ByteArray?, isoControlMask: Byte): ByteArray {
+    override fun openChannelForAid(dfName: ByteArray?, isoControlMask: Byte): ByteArray? {
         if (dfName == null) { try {
                 openChannel = session?.openBasicChannel(null)
             } catch (e: IOException) {
@@ -98,7 +99,7 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
             }
         }
         /* get the FCI and build an ApduResponse */
-        return openChannel!!.selectResponse!!
+        return openChannel!!.selectResponse
     }
 
     override fun isPhysicalChannelOpen(): Boolean {
