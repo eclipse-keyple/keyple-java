@@ -57,8 +57,8 @@ import org.slf4j.LoggerFactory;
  *       </ul>
  * </ul>
  */
-public class PoAuthentication_Pcsc {
-  private static final Logger logger = LoggerFactory.getLogger(PoAuthentication_Pcsc.class);
+public class Main_PoAuthentication_Pcsc {
+  private static final Logger logger = LoggerFactory.getLogger(Main_PoAuthentication_Pcsc.class);
 
   private static PcscPlugin plugin;
 

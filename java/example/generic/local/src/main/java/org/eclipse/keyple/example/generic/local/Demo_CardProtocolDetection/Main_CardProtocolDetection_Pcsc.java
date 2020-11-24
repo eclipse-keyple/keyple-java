@@ -40,9 +40,9 @@ import org.slf4j.LoggerFactory;
  * The program spends most of its time waiting for a Enter key before exit. The actual card
  * processing is mainly event driven through the observability.
  */
-public class Demo_CardProtocolDetection_Pcsc {
+public class Main_CardProtocolDetection_Pcsc {
   private static final Logger logger =
-      LoggerFactory.getLogger(Demo_CardProtocolDetection_Pcsc.class);
+      LoggerFactory.getLogger(Main_CardProtocolDetection_Pcsc.class);
 
   /**
    * Application entry

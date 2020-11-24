@@ -57,8 +57,8 @@ import org.slf4j.LoggerFactory;
  *
  * <p>Read the doc of each methods for further details.
  */
-public class Demo_CalypsoClassic_Pcsc {
-  private static final Logger logger = LoggerFactory.getLogger(Demo_CalypsoClassic_Pcsc.class);
+public class Main_CalypsoClassic_Pcsc {
+  private static final Logger logger = LoggerFactory.getLogger(Main_CalypsoClassic_Pcsc.class);
 
   private static Plugin plugin;
 
@@ -93,6 +93,7 @@ public class Demo_CalypsoClassic_Pcsc {
     /* Setting up the reader observer on the po Reader */
     CardReaderObserver poEventObserver = new CardReaderObserver();
 
+    /* TODO */
     poEventObserver.setSamReader(samReader);
 
     /* Set terminal as Observer of the first reader */
@@ -109,7 +110,7 @@ public class Demo_CalypsoClassic_Pcsc {
     synchronized (waitForEnd) {
       waitForEnd.wait();
     }
-    // unregister plugin
+    /* unregister plugin */
     smartCardService.unregisterPlugin(plugin.getName());
 
     logger.info("Exit program.");

@@ -12,49 +12,49 @@ ext {
     keyple_v = project.hasProperty("keyple_version") ? keyple_version : '+'
 }
 
-mainClassName = 'org.eclipse.keyple.example.generic.local.Demo_CardProtocolDetection.Demo_CardProtocolDetection_Pcsc'
+mainClassName = 'org.eclipse.keyple.example.generic.local.Demo_CardProtocolDetection.Main_CardProtocolDetection_Pcsc'
 
 /*
  * Local generic example
  */
 
 task('run_generic_Demo_CardProtocolDetection_Pcsc', dependsOn: 'classes', type: JavaExec, group:'keyple') {
-    main = 'org.eclipse.keyple.example.generic.local.Demo_CardProtocolDetection.Demo_CardProtocolDetection_Pcsc'
+    main = 'org.eclipse.keyple.example.generic.local.Demo_CardProtocolDetection.Main_CardProtocolDetection_Pcsc'
     classpath = sourceSets.main.runtimeClasspath
 }
 
 task('run_generic_Demo_CardProtocolDetection_Stub', dependsOn: 'classes', type: JavaExec, group:'keyple') {
-    main = 'org.eclipse.keyple.example.generic.local.Demo_CardProtocolDetection.Demo_CardProtocolDetection_Stub'
+    main = 'org.eclipse.keyple.example.generic.local.Demo_CardProtocolDetection.Main_CardProtocolDetection_Stub'
     classpath = sourceSets.main.runtimeClasspath
 }
 
 task('run_generic_Demo_ObservableReaderNotification_Pcsc', dependsOn: 'classes', type: JavaExec, group:'keyple') {
-    main = 'org.eclipse.keyple.example.generic.local.Demo_ObservableReaderNotification.Demo_ObservableReaderNotification_Pcsc'
+    main = 'org.eclipse.keyple.example.generic.local.Demo_ObservableReaderNotification.Main_ObservableReaderNotification_Pcsc'
     classpath = sourceSets.main.runtimeClasspath
 }
 
 task('run_generic_Demo_ObservableReaderNotification_Stub', dependsOn: 'classes', type: JavaExec, group:'keyple') {
-    main = 'org.eclipse.keyple.example.generic.local.Demo_ObservableReaderNotification.Demo_ObservableReaderNotification_Stub'
+    main = 'org.eclipse.keyple.example.generic.local.Demo_ObservableReaderNotification.Main_ObservableReaderNotification_Stub'
     classpath = sourceSets.main.runtimeClasspath
 }
 
 task('run_generic_UseCase1_ExplicitSelectionAid_Pcsc', dependsOn: 'classes', type: JavaExec, group:'keyple') {
-    main = 'org.eclipse.keyple.example.generic.local.UseCase1_ExplicitSelectionAid.ExplicitSelectionAid_Pcsc'
+    main = 'org.eclipse.keyple.example.generic.local.UseCase1_ExplicitSelectionAid.Main_ExplicitSelectionAid_Pcsc'
     classpath = sourceSets.main.runtimeClasspath
 }
 
 task('run_generic_UseCase2_DefaultSelectionNotification_Pcsc', dependsOn: 'classes', type: JavaExec, group:'keyple') {
-    main = 'org.eclipse.keyple.example.generic.local.UseCase2_DefaultSelectionNotification.DefaultSelectionNotification_Pcsc'
+    main = 'org.eclipse.keyple.example.generic.local.UseCase2_DefaultSelectionNotification.Main_DefaultSelectionNotification_Pcsc'
     classpath = sourceSets.main.runtimeClasspath
 }
 
 task('run_generic_UseCase3_SequentialMultiSelection_Pcsc', dependsOn: 'classes', type: JavaExec, group:'keyple') {
-    main = 'org.eclipse.keyple.example.generic.local.UseCase3_SequentialMultiSelection.SequentialMultiSelection_Pcsc'
+    main = 'org.eclipse.keyple.example.generic.local.UseCase3_SequentialMultiSelection.Main_SequentialMultiSelection_Pcsc'
     classpath = sourceSets.main.runtimeClasspath
 }
 
 task('run_generic_UseCase4_GroupedMultiSelection_Pcsc', dependsOn: 'classes', type: JavaExec, group:'keyple') {
-    main = 'org.eclipse.keyple.example.generic.local.UseCase4_GroupedMultiSelection.GroupedMultiSelection_Pcsc'
+    main = 'org.eclipse.keyple.example.generic.local.UseCase4_GroupedMultiSelection.Main_GroupedMultiSelection_Pcsc'
     classpath = sourceSets.main.runtimeClasspath
 }
 

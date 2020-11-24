@@ -28,12 +28,12 @@ Those examples make use of the Keyple Core library. They demonstrate how to obse
 * Five launchers working out of the box on a PC platform
 
   * Plugin and reader observability [`Demo_ObservableReaderNotification`]
-    * Real mode with PC/SC readers (Secure Elements required [Calypso and/or others]) [`Demo_ObservableReaderNotification_Pcsc.java`]
-    * Simulation mode (virtual Secure Elements included) [`Demo_ObservableReaderNotification_Stub.java`]
+    * Real mode with PC/SC readers (Secure Elements required [Calypso and/or others]) [`Main_ObservableReaderNotification_Pcsc.java`]
+    * Simulation mode (virtual Secure Elements included) [`Main_ObservableReaderNotification_Stub.java`]
   * PO type detection through the use of the protocol flag mechanism [`Demo_SeProtocolDetection`]
-    * Real mode with PC/SC readers (Secure Elements required [Calypso and/or others]) [`Demo_SeProtocolDetection_Pcsc.java`]
-    * Simulation mode (virtual Secure Elements included) [`Demo_SeProtocolDetection_Stub.java`]
-  * Use case multiple select: illustrates the possibility of selecting multiple SE applications using the same AID prefix and P2 standard values to select the first or next occurrence. [`UseCase_Generic4_SequentialMultiSelection.java`]
+    * Real mode with PC/SC readers (Secure Elements required [Calypso and/or others]) [`Main_SeProtocolDetection_Pcsc.java`]
+    * Simulation mode (virtual Secure Elements included) [`Main_SeProtocolDetection_Stub.java`]
+  * Use case multiple select: illustrates the possibility of selecting multiple SE applications using the same AID prefix and P2 standard values to select the first or next occurrence. [`UseCase4_SequentialMultiSelection`]
   
 Available packages in details:
 --
@@ -49,16 +49,15 @@ Available packages in details:
 |`GenericCardSelectionRequest.java`|This class provides a generic card selection request.|
 |`PcscReaderUtils.java`|This class provides utilities for Pcsc configuration processing|
 
-
   - `org.eclipse.keyple.example.generic.local.*`
 
 |File|Description|
 |:---|---|
-|`Demo_CardProtocolDetection.Demo_CardProtocolDetection_Pcsc.java`|Main class for the protocol detection example (PC/SC)|
-|`Demo_CardProtocolDetection.Demo_CardrotocolDetection_Stub.java`|Main class for the protocol detection example (stub)|
-|`Demo_ObservableReaderNotification.Demo_ObservableReaderNotification_Pcsc.java`|Main class for the plugin/reader observability example (PC/SC)|
-|`Demo_ObservableReaderNotification.Demo_ObservableReaderNotification_Stub.java`|Main class for the plugin/reader observability example (stub)|
-|`UseCase1_ExplicitSelectionAid.ExplicitSelectionAid.java`|Operate an explicit Selection Aid (PC/SC)|
-|`UseCase2_DefaultSelectionNotification.DefaultSelectionNotification_Pcsc.java`|Configure a default Selection Notification (PC/SC)|
-|`UseCase3_SequentialMultiSelection.SequentialMultiSelection_Pcsc.java`|Illustrates the use of the select next mechanism|
-|`UseCase4_GroupedMultiSelection.GroupedMultiSelection_Pcsc.java`|Illustrates the use of the select next mechanism|
+|`Demo_CardProtocolDetection.Main_CardProtocolDetection_Pcsc.java`|Main class for the protocol detection example (PC/SC)|
+|`Demo_CardProtocolDetection.Main_CardrotocolDetection_Stub.java`|Main class for the protocol detection example (stub)|
+|`Demo_ObservableReaderNotification.Main_ObservableReaderNotification_Pcsc.java`|Main class for the plugin/reader observability example (PC/SC)|
+|`Demo_ObservableReaderNotification.Main_ObservableReaderNotification_Stub.java`|Main class for the plugin/reader observability example (stub)|
+|`UseCase1_ExplicitSelectionAid.Main_ExplicitSelectionAid.java`|Operate an explicit Selection Aid (PC/SC)|
+|`UseCase2_DefaultSelectionNotification.Main_DefaultSelectionNotification_Pcsc.java`|Configure a default Selection Notification (PC/SC)|
+|`UseCase3_SequentialMultiSelection.Main_SequentialMultiSelection_Pcsc.java`|Illustrates the use of the select next mechanism|
+|`UseCase4_GroupedMultiSelection.Main_GroupedMultiSelection_Pcsc.java`|Illustrates the use of the select next mechanism|

@@ -15,7 +15,7 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.stub.StubSmartCard;
 
 /** Simple contact card Stub (no command) */
-public class StubMifareUL extends StubSmartCard {
+public final class StubMifareUL extends StubSmartCard {
 
   static final String cardProtocol = "MIFARE_ULTRA_LIGHT";
   final String ATR_HEX = "3B8F8001804F0CA0000003060300030000000068";

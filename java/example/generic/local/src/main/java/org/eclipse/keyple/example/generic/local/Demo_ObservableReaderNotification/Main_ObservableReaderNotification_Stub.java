@@ -27,9 +27,9 @@ import org.eclipse.keyple.plugin.stub.StubSmartCard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Demo_ObservableReaderNotification_Stub {
+public class Main_ObservableReaderNotification_Stub {
   private static final Logger logger =
-      LoggerFactory.getLogger(Demo_ObservableReaderNotification_Stub.class);
+      LoggerFactory.getLogger(Main_ObservableReaderNotification_Stub.class);
 
   public static void main(String[] args) throws Exception {
 

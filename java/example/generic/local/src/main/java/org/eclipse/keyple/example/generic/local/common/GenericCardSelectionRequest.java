@@ -17,7 +17,7 @@ import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.card.selection.CardSelector;
 
 /** Create a new class extending AbstractCardSelectionRequest */
-public class GenericCardSelectionRequest extends AbstractCardSelectionRequest {
+public final class GenericCardSelectionRequest extends AbstractCardSelectionRequest {
   public GenericCardSelectionRequest(CardSelector cardSelector) {
     super(cardSelector);
   }

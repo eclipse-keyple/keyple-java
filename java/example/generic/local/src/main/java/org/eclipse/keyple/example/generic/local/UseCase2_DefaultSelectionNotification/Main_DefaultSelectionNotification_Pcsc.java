@@ -45,9 +45,9 @@ import org.slf4j.LoggerFactory;
  *       </ul>
  * </ul>
  */
-public class DefaultSelectionNotification_Pcsc {
+public class Main_DefaultSelectionNotification_Pcsc {
   private static final Logger logger =
-      LoggerFactory.getLogger(DefaultSelectionNotification_Pcsc.class);
+      LoggerFactory.getLogger(Main_DefaultSelectionNotification_Pcsc.class);
   /**
    * This object is used to freeze the main thread while card operations are handle through the
    * observers callbacks. A call to the notify() method would end the program (not demonstrated

@@ -11,8 +11,8 @@ As Keyple is not tight to Calypso protocol, both generic and Calypso examples ar
 - Calypso examples are available in this subproject : [Calypso examples](/java/example/calypso/)
 - Generic examples are available in this subproject : [Generic examples](/java/example/generic/)
 
-Also, some Android examples are provided: [Android examples](/java/example/calypso/android).
- 
+Also, some Android examples are provided: [Android examples](/java/example/generic/android).
+
 Each folder provides a dedicated `readme.md` file with specific information.
 
 Build

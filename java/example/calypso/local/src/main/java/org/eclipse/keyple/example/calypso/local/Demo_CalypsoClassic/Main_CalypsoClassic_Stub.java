@@ -53,9 +53,9 @@ import org.slf4j.LoggerFactory;
  *
  * <p>Read the doc of each methods for further details.
  */
-public class Demo_CalypsoClassic_Stub {
+public class Main_CalypsoClassic_Stub {
 
-  private static Logger logger = LoggerFactory.getLogger(Demo_CalypsoClassic_Stub.class);
+  private static Logger logger = LoggerFactory.getLogger(Main_CalypsoClassic_Stub.class);
   private static Plugin plugin;
   /**
    * main program entry
