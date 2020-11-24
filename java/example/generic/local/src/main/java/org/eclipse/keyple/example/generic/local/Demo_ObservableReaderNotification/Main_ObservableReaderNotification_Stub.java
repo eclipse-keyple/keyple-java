@@ -130,7 +130,6 @@ public class Main_ObservableReaderNotification_Stub {
 
   private static class ExceptionHandlerImpl
       implements PluginObservationExceptionHandler, ReaderObservationExceptionHandler {
-    final Logger logger = LoggerFactory.getLogger(ExceptionHandlerImpl.class);
 
     @Override
     public void onPluginObservationError(String pluginName, Throwable throwable) {

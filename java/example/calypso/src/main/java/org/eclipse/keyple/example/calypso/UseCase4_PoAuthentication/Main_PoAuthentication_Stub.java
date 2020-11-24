@@ -25,7 +25,6 @@ import org.eclipse.keyple.example.calypso.common.CalypsoClassicInfo;
 import org.eclipse.keyple.example.calypso.common.CalypsoUtils;
 import org.eclipse.keyple.example.calypso.common.StubCalypsoClassic;
 import org.eclipse.keyple.example.calypso.common.StubSamCalypsoClassic;
-import org.eclipse.keyple.example.calypso.local.common.*;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubPluginFactory;
 import org.eclipse.keyple.plugin.stub.StubReader;

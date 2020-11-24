@@ -106,8 +106,6 @@ public class Main_CardProtocolDetection_Pcsc {
   private static final Object waitForEnd = new Object();
 
   private static class ExceptionHandlerImpl implements ReaderObservationExceptionHandler {
-    final Logger logger = LoggerFactory.getLogger(ExceptionHandlerImpl.class);
-
     @Override
     public void onReaderObservationError(
         String pluginName, String readerName, Throwable throwable) {

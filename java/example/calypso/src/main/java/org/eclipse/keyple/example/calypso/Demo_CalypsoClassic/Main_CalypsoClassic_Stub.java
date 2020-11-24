@@ -56,6 +56,7 @@ import org.slf4j.LoggerFactory;
 public class Main_CalypsoClassic_Stub {
 
   private static Logger logger = LoggerFactory.getLogger(Main_CalypsoClassic_Stub.class);
+
   private static Plugin plugin;
   /**
    * main program entry
@@ -74,8 +75,7 @@ public class Main_CalypsoClassic_Stub {
     final String STUB_PLUGIN_NAME = "stub1";
 
     /* Register Stub plugin in the platform */
-    Plugin stubPlugin =
-        smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME, null, null));
+    plugin = smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME, null, null));
 
     StubReader poReader = initPoReader();
 

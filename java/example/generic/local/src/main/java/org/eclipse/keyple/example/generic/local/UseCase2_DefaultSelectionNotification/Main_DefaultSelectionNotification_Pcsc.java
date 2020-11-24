@@ -48,12 +48,6 @@ import org.slf4j.LoggerFactory;
 public class Main_DefaultSelectionNotification_Pcsc {
   private static final Logger logger =
       LoggerFactory.getLogger(Main_DefaultSelectionNotification_Pcsc.class);
-  /**
-   * This object is used to freeze the main thread while card operations are handle through the
-   * observers callbacks. A call to the notify() method would end the program (not demonstrated
-   * here).
-   */
-  private static final Object waitForEnd = new Object();
 
   /** main program entry */
   public static void main(String[] args) throws InterruptedException, KeypleException {
@@ -97,9 +91,14 @@ public class Main_DefaultSelectionNotification_Pcsc {
     logger.info("Exit program.");
   }
 
-  private static class ExceptionHandlerImpl implements ReaderObservationExceptionHandler {
-    final Logger logger = LoggerFactory.getLogger(ExceptionHandlerImpl.class);
+  /**
+   * This object is used to freeze the main thread while card operations are handle through the
+   * observers callbacks. A call to the notify() method would end the program (not demonstrated
+   * here).
+   */
+  private static final Object waitForEnd = new Object();
 
+  private static class ExceptionHandlerImpl implements ReaderObservationExceptionHandler {
     @Override
     public void onReaderObservationError(
         String pluginName, String readerName, Throwable throwable) {
