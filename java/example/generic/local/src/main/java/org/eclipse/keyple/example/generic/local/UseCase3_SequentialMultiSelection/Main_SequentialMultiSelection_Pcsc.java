@@ -31,7 +31,8 @@ import org.slf4j.LoggerFactory;
  * mechanism
  */
 public class Main_SequentialMultiSelection_Pcsc {
-  private static final Logger logger = LoggerFactory.getLogger(Main_SequentialMultiSelection_Pcsc.class);
+  private static final Logger logger =
+      LoggerFactory.getLogger(Main_SequentialMultiSelection_Pcsc.class);
 
   public static void main(String[] args) {
 
