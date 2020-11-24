@@ -50,7 +50,8 @@ import org.slf4j.LoggerFactory;
  * </ul>
  */
 public class Main_ExplicitSelectionAid_Pcsc {
-  private static final Logger logger = LoggerFactory.getLogger(Main_ExplicitSelectionAid_Pcsc.class);
+  private static final Logger logger =
+      LoggerFactory.getLogger(Main_ExplicitSelectionAid_Pcsc.class);
 
   public static void main(String[] args) {
 

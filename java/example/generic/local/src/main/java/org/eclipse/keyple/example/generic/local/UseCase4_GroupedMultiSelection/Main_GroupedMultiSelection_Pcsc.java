@@ -34,7 +34,8 @@ import org.slf4j.LoggerFactory;
  */
 public class Main_GroupedMultiSelection_Pcsc {
 
-  private static final Logger logger = LoggerFactory.getLogger(Main_GroupedMultiSelection_Pcsc.class);
+  private static final Logger logger =
+      LoggerFactory.getLogger(Main_GroupedMultiSelection_Pcsc.class);
 
   public static void main(String[] args) {
 

@@ -51,7 +51,8 @@ import org.slf4j.LoggerFactory;
  * </ul>
  */
 public class Main_ExplicitSelectionAid_Stub {
-  private static final Logger logger = LoggerFactory.getLogger(Main_ExplicitSelectionAid_Stub.class);
+  private static final Logger logger =
+      LoggerFactory.getLogger(Main_ExplicitSelectionAid_Stub.class);
 
   public static void main(String[] args) {
 

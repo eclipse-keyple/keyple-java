@@ -44,7 +44,8 @@ import org.slf4j.LoggerFactory;
  * Both logs (reload and debit) are read.
  */
 public class Main_StoredValue_SimpleReload_Pcsc {
-  private static final Logger logger = LoggerFactory.getLogger(Main_StoredValue_SimpleReload_Pcsc.class);
+  private static final Logger logger =
+      LoggerFactory.getLogger(Main_StoredValue_SimpleReload_Pcsc.class);
 
   /**
    * Main program entry
