@@ -20,20 +20,17 @@ package org.eclipse.keyple.core.plugin;
 public abstract class AbstractObservableLocalAutonomousReader
     extends AbstractObservableLocalReader {
 
-  /**
-   * (protected)<br>
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   protected AbstractObservableLocalAutonomousReader(String pluginName, String readerName) {
     super(pluginName, readerName);
   }
 
   /**
-   * This method must be called when a card is inserted to.
+   * This method must be called when a card is inserted.
    *
    * @since 1.0
    */
-  protected void onCardInserted() {
+  protected final void onCardInserted() {
     onEvent(InternalEvent.CARD_INSERTED);
   }
 
@@ -42,7 +39,7 @@ public abstract class AbstractObservableLocalAutonomousReader
    *
    * @since 1.0
    */
-  protected void onCardRemoved() {
+  protected final void onCardRemoved() {
     onEvent(InternalEvent.CARD_REMOVED);
   }
 }

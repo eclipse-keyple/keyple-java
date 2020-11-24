@@ -11,9 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.plugin;
 
-import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.card.message.ProxyReader;
-import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 
 /**
@@ -25,11 +23,16 @@ public interface SmartSelectionReader extends ProxyReader {
   /**
    * Opens a logical channel for the provided AID
    *
-   * @param aidSelector the selection data
-   * @return an ApduResponse containing the card answer to selection
+   * <p>The <b>dfName</b> is provided as a byte array. It can be set to null to activate the basic
+   * channel opening defined by the OMAPI. <br>
+   * The bit mask indicates the ISO defined condition to retrieve the selection data.
+   *
+   * @param dfName A byte array or null
+   * @param isoControlMask bit mask from
+   * @return A byte array containing the card answer to selection
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    */
-  ApduResponse openChannelForAid(CardSelector.AidSelector aidSelector);
+  byte[] openChannelForAid(byte[] dfName, byte isoControlMask);
 
   /** Closes the logical channel explicitly. */
   void closeLogicalChannel();

@@ -129,10 +129,13 @@ public abstract class AbstractPlugin implements Plugin {
   }
 
   /**
+   * (internal usage only)<br>
    * Change the plugin status to registered
    *
    * @since 1.0
+   * @deprecated
    */
+  @Deprecated
   public void register() {
     isRegistered = true;
     readers.putAll(initNativeReaders());
@@ -143,11 +146,14 @@ public abstract class AbstractPlugin implements Plugin {
   }
 
   /**
+   * (internal usage only)<br>
    * Change the plugin status to unregistered
    *
    * @throws IllegalStateException is thrown when plugin is already unregistered.
    * @since 1.0
+   * @deprecated
    */
+  @Deprecated
   public void unregister() {
     checkStatus();
     isRegistered = false;

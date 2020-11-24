@@ -553,7 +553,15 @@ public abstract class AbstractLocalReader extends AbstractReader {
     ApduResponse fciResponse;
 
     if (this instanceof SmartSelectionReader) {
-      fciResponse = ((SmartSelectionReader) this).openChannelForAid(aidSelector);
+      fciResponse =
+          new ApduResponse(
+              ((SmartSelectionReader) this)
+                  .openChannelForAid(
+                      aidSelector.getAidToSelect(),
+                      (byte)
+                          (aidSelector.getFileOccurrence().getIsoBitMask()
+                              | aidSelector.getFileControlInformation().getIsoBitMask())),
+              aidSelector.getSuccessfulSelectionStatusCodes());
     } else {
       fciResponse = processExplicitAidSelection(aidSelector);
     }

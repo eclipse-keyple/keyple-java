@@ -11,9 +11,6 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.plugin;
 
-import org.eclipse.keyple.core.card.message.ApduResponse;
-import org.eclipse.keyple.core.card.selection.CardSelector;
-
 public class BlankSmartSelectionReader extends AbstractLocalReader implements SmartSelectionReader {
 
   public BlankSmartSelectionReader(String pluginName, String readerName) {
@@ -53,8 +50,8 @@ public class BlankSmartSelectionReader extends AbstractLocalReader implements Sm
   protected void deactivateReaderProtocol(String readerProtocolName) {}
 
   @Override
-  public ApduResponse openChannelForAid(CardSelector.AidSelector aidSelector) {
-    return null;
+  public byte[] openChannelForAid(byte[] dfName, byte isoControlMask) {
+    return new byte[0];
   }
 
   @Override

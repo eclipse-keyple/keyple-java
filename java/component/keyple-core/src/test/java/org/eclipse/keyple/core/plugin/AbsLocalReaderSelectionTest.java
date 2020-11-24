@@ -13,12 +13,12 @@ package org.eclipse.keyple.core.plugin;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyByte;
 import static org.mockito.Mockito.when;
 
 import java.util.*;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.card.message.ApduRequest;
-import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.card.message.CardRequest;
 import org.eclipse.keyple.core.card.message.CardSelectionRequest;
 import org.eclipse.keyple.core.card.message.CardSelectionResponse;
@@ -180,8 +180,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     // use a SmartSelectionReader object
     BlankSmartSelectionReader r = getSmartSpy(PLUGIN_NAME, READER_NAME);
 
-    when(r.openChannelForAid(any(CardSelector.AidSelector.class)))
-        .thenReturn(new ApduResponse(RESP_SUCCESS, STATUS_CODE_LIST));
+    when(r.openChannelForAid(any(byte[].class), anyByte())).thenReturn(RESP_SUCCESS);
     when(r.getATR()).thenReturn(ByteArrayUtil.fromHex(ATR));
     when(r.transmitApdu(any(byte[].class))).thenReturn(RESP_SUCCESS);
 

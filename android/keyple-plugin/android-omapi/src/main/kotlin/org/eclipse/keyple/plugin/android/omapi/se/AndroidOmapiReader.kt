@@ -17,9 +17,6 @@ import android.se.omapi.Session
 import androidx.annotation.RequiresApi
 import java.io.IOException
 import java.util.NoSuchElementException
-import kotlin.experimental.or
-import org.eclipse.keyple.core.card.message.ApduResponse
-import org.eclipse.keyple.core.card.selection.CardSelector
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiReader
@@ -58,21 +55,21 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
 
     /**
      * Open a logical channel by selecting the application
-     * @param aidSelector the selection parameters
-     * @return a ApduResponse built from the FCI data resulting from the application selection
+     * @param dfName A byte array containing the DF name or null if a basic opening is wanted.
+     * @param isoControlMask The selection bits defined by the ISO selection command and expected by the OMAPI as P2 parameter.
+     * @return a byte array containing the FCI data resulting from the application selection
      * @throws KeypleReaderIOException if the communication with the reader or the card has failed
      */
     @Throws(KeypleReaderIOException::class)
-    override fun openChannelForAid(aidSelector: CardSelector.AidSelector): ApduResponse {
-        if (aidSelector.aidToSelect == null) {
-            try {
+    override fun openChannelForAid(dfName: ByteArray?, isoControlMask: Byte): ByteArray {
+        if (dfName == null) { try {
                 openChannel = session?.openBasicChannel(null)
             } catch (e: IOException) {
                 Timber.e(e, "IOException")
                 throw KeypleReaderIOException("IOException while opening basic channel.")
             } catch (e: SecurityException) {
                 Timber.e(e, "SecurityException")
-                throw KeypleReaderIOException("Error while opening basic channel, SE_SELECTOR = " + aidSelector.toString(), e.cause)
+                throw KeypleReaderIOException("Error while opening basic channel, DFNAME = " + ByteArrayUtil.toHex(dfName), e.cause)
             }
 
             if (openChannel == null) {
@@ -80,21 +77,20 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
             }
         } else {
             Timber.i("[%s] openLogicalChannel => Select Application with AID = %s",
-                    this.name, ByteArrayUtil.toHex(aidSelector.aidToSelect))
+                    this.name, ByteArrayUtil.toHex(dfName))
             try {
                 openChannel =
-                        session?.openLogicalChannel(aidSelector.aidToSelect,
-                        aidSelector.fileOccurrence.isoBitMask or aidSelector.fileControlInformation.isoBitMask)
+                        session?.openLogicalChannel(dfName, isoControlMask)
             } catch (e: IOException) {
                 Timber.e(e, "IOException")
                 throw KeypleReaderIOException("IOException while opening logical channel.")
             } catch (e: NoSuchElementException) {
                 Timber.e(e, "NoSuchElementException")
                 throw java.lang.IllegalArgumentException(
-                        "NoSuchElementException: " + ByteArrayUtil.toHex(aidSelector.aidToSelect), e)
+                        "NoSuchElementException: " + ByteArrayUtil.toHex(dfName), e)
             } catch (e: SecurityException) {
                 Timber.e(e, "SecurityException")
-                throw KeypleReaderIOException("SecurityException while opening logical channel, aid :" + ByteArrayUtil.toHex(aidSelector.aidToSelect), e.cause)
+                throw KeypleReaderIOException("SecurityException while opening logical channel, aid :" + ByteArrayUtil.toHex(dfName), e.cause)
             }
 
             if (openChannel == null) {
@@ -102,7 +98,7 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
             }
         }
         /* get the FCI and build an ApduResponse */
-        return ApduResponse(openChannel?.selectResponse, aidSelector.successfulSelectionStatusCodes)
+        return openChannel!!.selectResponse!!
     }
 
     override fun isPhysicalChannelOpen(): Boolean {
