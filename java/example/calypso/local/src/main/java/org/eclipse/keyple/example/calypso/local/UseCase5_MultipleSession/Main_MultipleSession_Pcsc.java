@@ -64,8 +64,8 @@ import org.slf4j.LoggerFactory;
  *       </ul>
  * </ul>
  */
-public class MultipleSession_Pcsc {
-  private static final Logger logger = LoggerFactory.getLogger(MultipleSession_Pcsc.class);
+public class Main_MultipleSession_Pcsc {
+  private static final Logger logger = LoggerFactory.getLogger(Main_MultipleSession_Pcsc.class);
 
   public static void main(String[] args) {
 

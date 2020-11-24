@@ -15,7 +15,7 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.stub.StubSmartCard;
 
 /** Simple contact card Stub (no command) */
-public class StubSmartCard1 extends StubSmartCard {
+public final class StubSmartCard1 extends StubSmartCard {
 
   static final String cardProtocol = "PROTOCOL_ISO7816_3";
   final String ATR_HEX = "3B3F9600805A0080C120000012345678829000"; // serial number : 12345678

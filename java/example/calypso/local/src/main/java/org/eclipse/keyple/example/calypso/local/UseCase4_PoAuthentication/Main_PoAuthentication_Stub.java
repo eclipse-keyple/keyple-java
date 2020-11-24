@@ -60,8 +60,8 @@ import org.slf4j.LoggerFactory;
  *       </ul>
  * </ul>
  */
-public class PoAuthentication_Stub {
-  private static final Logger logger = LoggerFactory.getLogger(PoAuthentication_Stub.class);
+public class Main_PoAuthentication_Stub {
+  private static final Logger logger = LoggerFactory.getLogger(Main_PoAuthentication_Stub.class);
 
   private static StubPlugin plugin;
 

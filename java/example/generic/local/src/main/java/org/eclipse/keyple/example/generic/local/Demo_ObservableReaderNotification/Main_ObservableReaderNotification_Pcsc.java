@@ -22,21 +22,20 @@ import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Demo_ObservableReaderNotification_Pcsc {
+public class Main_ObservableReaderNotification_Pcsc {
   private static final Logger logger =
-      LoggerFactory.getLogger(Demo_ObservableReaderNotification_Pcsc.class);
+      LoggerFactory.getLogger(Main_ObservableReaderNotification_Pcsc.class);
 
   public static void main(String[] args) throws Exception {
 
     // Get the instance of the SmartCardService (Singleton pattern)
     final SmartCardService smartCardService = SmartCardService.getInstance();
-    final Plugin plugin;
 
     /* Create a Exception Handler for plugin and reader observation */
     ExceptionHandlerImpl exceptionHandlerImpl = new ExceptionHandlerImpl();
 
     // Assign PcscPlugin to the SmartCardService
-    plugin =
+    final Plugin plugin =
         smartCardService.registerPlugin(
             new PcscPluginFactory(exceptionHandlerImpl, exceptionHandlerImpl));
 

@@ -15,7 +15,7 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.stub.StubSmartCard;
 
 /** Simple contactless card Stub (no command) */
-public class StubSmartCard2 extends StubSmartCard {
+public final class StubSmartCard2 extends StubSmartCard {
 
   static final String cardProtocol = "ISO_14443_4";
   final String ATR_HEX = "3B8E800180318066409089120802830190000B";

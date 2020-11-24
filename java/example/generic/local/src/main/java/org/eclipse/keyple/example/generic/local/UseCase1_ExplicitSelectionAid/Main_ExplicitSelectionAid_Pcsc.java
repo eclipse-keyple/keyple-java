@@ -46,8 +46,8 @@ import org.slf4j.LoggerFactory;
  *       </ul>
  * </ul>
  */
-public class ExplicitSelectionAid_Pcsc {
-  private static final Logger logger = LoggerFactory.getLogger(ExplicitSelectionAid_Pcsc.class);
+public class Main_ExplicitSelectionAid_Pcsc {
+  private static final Logger logger = LoggerFactory.getLogger(Main_ExplicitSelectionAid_Pcsc.class);
   private static final String cardAid = "A000000291A000000191"; /* Here a Hoplink AID */
 
   public static void main(String[] args) {

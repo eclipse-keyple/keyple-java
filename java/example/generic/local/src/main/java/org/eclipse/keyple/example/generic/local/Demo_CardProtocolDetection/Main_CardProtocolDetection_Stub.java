@@ -40,10 +40,10 @@ import org.slf4j.LoggerFactory;
  *   <li>executes a simple Hoplink reading when a Hoplink card is identified
  * </ul>
  */
-public class Demo_CardProtocolDetection_Stub {
+public class Main_CardProtocolDetection_Stub {
 
   private static final Logger logger =
-      LoggerFactory.getLogger(Demo_CardProtocolDetection_Stub.class);
+      LoggerFactory.getLogger(Main_CardProtocolDetection_Stub.class);
 
   /**
    * Application entry

@@ -1,5 +1,5 @@
 /* **************************************************************************************
- * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information
  * regarding copyright ownership.
@@ -13,19 +13,22 @@ package org.eclipse.keyple.example.calypso.local.UseCase2_DefaultSelectionNotifi
 
 import org.eclipse.keyple.core.card.selection.CardSelection;
 import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
-import org.eclipse.keyple.example.calypso.local.common.PcscReaderUtils;
-import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
-import org.eclipse.keyple.plugin.pcsc.PcscReader;
+import org.eclipse.keyple.example.calypso.local.common.StubCalypsoClassic;
+import org.eclipse.keyple.plugin.stub.StubPlugin;
+import org.eclipse.keyple.plugin.stub.StubPluginFactory;
+import org.eclipse.keyple.plugin.stub.StubReader;
+import org.eclipse.keyple.plugin.stub.StubSmartCard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  *
  *
- * <h1>Use Case ‘Calypso 2’ – Default Selection Notification (PC/SC)</h1>
+ * <h1>Use Case ‘Calypso 2’ – Default Selection Notification (Stub)</h1>
  *
  * <ul>
  *   <li>
@@ -46,57 +49,76 @@ import org.slf4j.LoggerFactory;
  *       </ul>
  * </ul>
  */
-public class DefaultSelectionNotification_Pcsc {
+public class Main_DefaultSelectionNotification_Stub {
   private static final Logger logger =
-      LoggerFactory.getLogger(DefaultSelectionNotification_Pcsc.class);
+      LoggerFactory.getLogger(Main_DefaultSelectionNotification_Stub.class);
 
   /** main program entry */
   public static void main(String[] args) throws InterruptedException {
-    // Get the instance of the SmartCardService (Singleton pattern)
+    /* Get the instance of the SmartCardService (Singleton pattern) */
     SmartCardService smartCardService = SmartCardService.getInstance();
 
-    // Register the PcscPlugin with SmartCardService, get the corresponding generic Plugin in
-    // return
-    Plugin plugin =
-        smartCardService.registerPlugin(new PcscPluginFactory(null, new ExceptionHandlerImpl()));
+    final String STUB_PLUGIN_NAME = "stub1";
 
-    // Get and configure the PO reader
-    PcscReader poReader = (PcscReader) plugin.getReader(PcscReaderUtils.getContactlessReaderName());
-    poReader.setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
+    /* Register Stub plugin in the platform */
+    Plugin stubPlugin =
+        smartCardService.registerPlugin(
+            new StubPluginFactory(STUB_PLUGIN_NAME, null, new ExceptionHandlerImpl()));
+
+    /* Plug the PO stub reader. */
+    ((StubPlugin) stubPlugin).plugStubReader("poReader", true);
+
+    /*
+     * Get a PO reader ready to work with Calypso PO.
+     */
+    Reader poReader = stubPlugin.getReader("poReader");
+
+    /* Check if the reader exists */
+    if (poReader == null) {
+      throw new IllegalStateException("Bad PO reader setup");
+    }
 
     logger.info(
         "=============== UseCase Calypso #2: AID based default selection ===================");
     logger.info("= PO Reader  NAME = {}", poReader.getName());
 
+    /*
+     * Prepare a Calypso PO selection
+     */
     CardSelection cardSelection = CardSelectionConfig.getCardSelection();
+    /*
+     * Provide the Reader with the selection operation to be processed when a PO is inserted.
+     */
+    ((ObservableReader) poReader)
+        .setDefaultSelectionRequest(
+            cardSelection.getSelectionOperation(),
+            ObservableReader.NotificationMode.MATCHED_ONLY,
+            ObservableReader.PollingMode.REPEATING);
 
-    // Provide the Reader with the selection operation to be processed when a PO is inserted.
-    poReader.setDefaultSelectionRequest(
-        cardSelection.getSelectionOperation(),
-        ObservableReader.NotificationMode.MATCHED_ONLY,
-        ObservableReader.PollingMode.REPEATING);
-
-    // Set the current class as Observer of the first reader
-    poReader.addObserver(new CardReaderObserver());
+    /* Set a CardSelectionConfig that contains the ticketing logic for the reader */
+    ((ObservableReader) poReader).addObserver(new CardReaderObserver());
 
     logger.info(
         "= #### Wait for a PO. The default AID based selection with reading of Environment");
     logger.info("= #### file is ready to be processed as soon as the PO is detected.");
 
-    // Wait for ever (exit with CTRL-C)
-    synchronized (waitForEnd) {
-      waitForEnd.wait();
-    }
-    // unregister plugin
-    smartCardService.unregisterPlugin(plugin.getName());
+    /* Create 'virtual' Calypso PO */
+    StubSmartCard calypsoStubCard = new StubCalypsoClassic();
 
-    logger.info("Exit program.");
+    /* Wait a while. */
+    Thread.sleep(100);
+
+    logger.info("Insert stub PO.");
+    ((StubReader) poReader).insertCard(calypsoStubCard);
+
+    /* Wait a while. */
+    Thread.sleep(1000);
+
+    logger.info("Remove stub PO.");
+    ((StubReader) poReader).removeCard();
+
+    System.exit(0);
   }
-
-  // This object is used to freeze the main thread while card operations are handle through the
-  // observers callbacks. A call to the notify() method would end the program (not demonstrated
-  // here).
-  private static final Object waitForEnd = new Object();
 
   private static class ExceptionHandlerImpl implements ReaderObservationExceptionHandler {
     final Logger logger = LoggerFactory.getLogger(ExceptionHandlerImpl.class);
@@ -105,9 +127,6 @@ public class DefaultSelectionNotification_Pcsc {
     public void onReaderObservationError(
         String pluginName, String readerName, Throwable throwable) {
       logger.error("An unexpected reader error occurred: {}:{}", pluginName, readerName, throwable);
-      synchronized (waitForEnd) {
-        waitForEnd.notifyAll();
-      }
     }
   }
 }

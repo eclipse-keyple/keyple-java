@@ -15,7 +15,7 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.stub.StubSmartCard;
 
 /** Simple contact card Stub (no command) */
-public class StubMifareDesfire extends StubSmartCard {
+public final class StubMifareDesfire extends StubSmartCard {
 
   static final String cardProtocol = "MIFARE_DESFIRE";
   final String ATR_HEX = "3B8180018080";

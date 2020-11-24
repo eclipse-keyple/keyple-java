@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.calypso.local.UseCase7_StoredValue_SimpleReload;
+package org.eclipse.keyple.example.calypso.local.UseCase8_StoredValue_DebitInSession;
 
 import static org.eclipse.keyple.calypso.transaction.PoTransaction.SvSettings;
 
@@ -19,14 +19,16 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.CalypsoSam;
+import org.eclipse.keyple.calypso.transaction.ElementaryFile;
 import org.eclipse.keyple.calypso.transaction.PoSecuritySettings;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.core.card.selection.CardResource;
-import org.eclipse.keyple.core.card.selection.CardSelection;
 import org.eclipse.keyple.core.card.selection.SelectionsResult;
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
 import org.eclipse.keyple.example.calypso.local.common.PcscReaderUtils;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
@@ -36,15 +38,14 @@ import org.slf4j.LoggerFactory;
 /**
  *
  *
- * <h1>Use Case ‘Calypso 7’ – Stored Value Simple Reload (PC/SC)</h1>
+ * <h1>Use Case ‘Calypso 8’ – Stored Value Debit in Session (PC/SC)</h1>
  *
  * <br>
- * This example illustrates an out of secure session SV reload (the code wouldn't be very different
- * different with a secure session.).<br>
- * Both logs (reload and debit) are read.
+ * This example illustrates an SV debit within a secure session.<br>
  */
-public class StoredValue_SimpleReload_Pcsc {
-  private static final Logger logger = LoggerFactory.getLogger(StoredValue_SimpleReload_Pcsc.class);
+public class Main_StoredValue_DebitInSession_Pcsc {
+  private static final Logger logger =
+      LoggerFactory.getLogger(Main_StoredValue_DebitInSession_Pcsc.class);
 
   /**
    * Main program entry
@@ -70,12 +71,12 @@ public class StoredValue_SimpleReload_Pcsc {
     Reader samReader = plugin.getReader(PcscReaderUtils.getContactReaderName());
     ((PcscReader) samReader).setContactless(false).setIsoProtocol(PcscReader.IsoProtocol.T0);
 
-    CardSelection samSelection = CardSelectionConfig.getSamCardSelection();
-
     if (samReader.isCardPresent()) {
       throw new IllegalStateException("No SAM is present in the reader " + samReader.getName());
     }
-    SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
+
+    SelectionsResult selectionsResult =
+        CardSelectionConfig.getSamCardSelection().processExplicitSelection(samReader);
 
     if (!selectionsResult.hasActiveSelection()) {
       throw new IllegalStateException("Unable to open a logical channel for SAM!");
@@ -86,58 +87,77 @@ public class StoredValue_SimpleReload_Pcsc {
     CardResource<CalypsoSam> samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
 
     // display basic information about the readers and SAM
-    logger.info("=============== UseCase Calypso #7: Stored Value Simple Reload =====");
+    logger.info("=============== UseCase Calypso #8: Stored Value Debit in Session ==");
     logger.info("= PO Reader  NAME = {}", poReader.getName());
     logger.info("= SAM Reader  NAME = {}", samResource.getReader().getName());
 
-    logger.info("= ##### 1st PO exchange: AID based selection with reading of Environment file.");
-
-    // Actual PO communication: operate through a single request the Calypso PO selection
-    // and the file read
     CalypsoPo calypsoPo =
         (CalypsoPo)
             CardSelectionConfig.getPoCardSelection()
                 .processExplicitSelection(poReader)
-                .getActiveSmartCard(); // Security settings
+                .getActiveSmartCard();
 
-    // Keep the default setting for SV logs reading (only the reload log will be read here)
+    // Security settings
+    // Both Reload and Debit SV logs are requested
     PoSecuritySettings poSecuritySettings =
-        new PoSecuritySettings.PoSecuritySettingsBuilder(samResource).build();
+        new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)
+            .svGetLogReadMode(SvSettings.LogRead.ALL)
+            .build();
 
     // Create the PO resource
     CardResource<CalypsoPo> poResource;
     poResource = new CardResource<CalypsoPo>(poReader, calypsoPo);
 
-    // Create a secured PoTransaction
     PoTransaction poTransaction = new PoTransaction(poResource, poSecuritySettings);
 
-    // Prepare the command to retrieve the SV status with the two debit and reload logs.
-    poTransaction.prepareSvGet(SvSettings.Operation.RELOAD, SvSettings.Action.DO);
+    // Read the EventLog file at the Session Opening
+    poTransaction.prepareReadRecordFile(
+        CalypsoClassicInfo.SFI_EventLog, CalypsoClassicInfo.RECORD_NUMBER_1);
 
-    // Execute the command
+    // Open a secure session (DEBIT level) and execute the prepared command
+    poTransaction.processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT);
+
+    // Get and display the EventLog data
+    ElementaryFile efEventLog = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
+
+    String eventLog = ByteArrayUtil.toHex(efEventLog.getData().getContent());
+    logger.info("File Event log: {}", eventLog);
+
+    // Prepare a SV Debit (this command could also have been placed before processOpening
+    // since it is not followed by any other command)
+    poTransaction.prepareSvGet(SvSettings.Operation.DEBIT, SvSettings.Action.DO);
+
+    // Execute the prepared command
     poTransaction.processPoCommands();
 
     // Display the current SV status
-    logger.info("Current SV status (SV Get for RELOAD):");
+    logger.info("Current SV status (SV Get for DEBIT):");
     logger.info(". Balance = {}", calypsoPo.getSvBalance());
     logger.info(". Last Transaction Number = {}", calypsoPo.getSvLastTNum());
 
-    // To easily display the content of the log, we use here the toString method which
+    // To easily display the content of the logs, we use here the toString method which
     // exports the data in JSON format.
     String loadLogRecordJson = prettyPrintJson(calypsoPo.getSvLoadLogRecord().toString());
-    logger.info(". Debit log record = {}", loadLogRecordJson);
+    String debitLogRecordJson = prettyPrintJson(calypsoPo.getSvDebitLogLastRecord().toString());
+    logger.info(". Load log record = {}", loadLogRecordJson);
+    logger.info(". Debit log record = {}", debitLogRecordJson);
 
-    // Reload with 2 units
-    poTransaction.prepareSvReload(2);
+    // Prepare an SV Debit of 2 units
+    poTransaction.prepareSvDebit(2);
 
-    // Execute the command and close the communication after
+    // Prepare to append a new record to EventLog. Just increment the first byte.
+    byte[] log = efEventLog.getData().getContent();
+    log[0] = (byte) (log[0] + 1);
+    poTransaction.prepareAppendRecord(CalypsoClassicInfo.SFI_EventLog, log);
+
+    // Execute the 2 prepared commands, close the secure session, verify the SV signature
+    // and close the communication after
     poTransaction.prepareReleasePoChannel();
-    poTransaction.processPoCommands();
-
-    logger.info("The balance of the PO has been recharged by 2 units");
+    poTransaction.processClosing();
 
     System.exit(0);
   }
+
   /**
    * Help method for formatting a JSON data string
    *
