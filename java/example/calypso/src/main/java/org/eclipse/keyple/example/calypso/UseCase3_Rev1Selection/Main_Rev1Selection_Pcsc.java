@@ -56,6 +56,7 @@ import org.slf4j.LoggerFactory;
 public class Main_Rev1Selection_Pcsc {
   private static final Logger logger = LoggerFactory.getLogger(Main_Rev1Selection_Pcsc.class);
 
+  /** main program entry */
   public static void main(String[] args) {
 
     // Get the instance of the SmartCardService (Singleton pattern)
@@ -114,7 +115,7 @@ public class Main_Rev1Selection_Pcsc {
 
     // Prepare the reading order and keep the associated parser for later use once the
     // transaction has been processed. We provide the expected record length since the REV1
-    // PO need it. TODO Check if we need to specify the expected length (29 bytes here)
+    // PO need it.
     poTransaction.prepareReadRecordFile(
         CalypsoClassicInfo.SFI_EventLog, CalypsoClassicInfo.RECORD_NUMBER_1);
 

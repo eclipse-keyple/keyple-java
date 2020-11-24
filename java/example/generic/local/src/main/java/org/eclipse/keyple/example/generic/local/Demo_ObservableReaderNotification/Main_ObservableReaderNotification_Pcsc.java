@@ -74,7 +74,6 @@ public class Main_ObservableReaderNotification_Pcsc {
 
   private static class ExceptionHandlerImpl
       implements PluginObservationExceptionHandler, ReaderObservationExceptionHandler {
-    final Logger logger = LoggerFactory.getLogger(ExceptionHandlerImpl.class);
 
     @Override
     public void onPluginObservationError(String pluginName, Throwable throwable) {

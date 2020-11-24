@@ -13,7 +13,7 @@ package org.eclipse.keyple.example.generic.local.Demo_CardProtocolDetection;
 
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.SmartCardService;
-import org.eclipse.keyple.core.service.event.PluginObservationExceptionHandler;
+import org.eclipse.keyple.core.service.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
@@ -65,11 +65,7 @@ public class Main_CardProtocolDetection_Stub {
     // Register Stub plugin in the platform
     Plugin plugin =
         smartCardService.registerPlugin(
-            new StubPluginFactory(STUB_PLUGIN_NAME, exceptionHandler, exceptionHandler));
-
-    // create an observer class to handle the card operations
-    org.eclipse.keyple.core.service.event.ObservableReader.ReaderObserver observer =
-        new CardReaderObserver();
+            new StubPluginFactory(STUB_PLUGIN_NAME, null, exceptionHandler));
 
     // Plug PO reader.
     ((StubPlugin) plugin).plugStubReader("poReader", true);
@@ -85,6 +81,9 @@ public class Main_CardProtocolDetection_Stub {
         ContactlessCardCommonProtocols.ISO_14443_4.name());
     poReader.activateProtocol(StubSupportedProtocols.MIFARE_CLASSIC.name(), "MIFARE_CLASSIC");
     poReader.activateProtocol(StubSupportedProtocols.MEMORY_ST25.name(), "MEMORY_ST25");
+
+    // create an observer class to handle the card operations
+    ReaderObserver observer = new CardReaderObserver();
 
     // Set terminal as Observer of the first reader
     poReader.addObserver(observer);
@@ -127,15 +126,7 @@ public class Main_CardProtocolDetection_Stub {
     logger.info("Exit program.");
   }
 
-  private static class ExceptionHandlerImpl
-      implements PluginObservationExceptionHandler, ReaderObservationExceptionHandler {
-    final Logger logger = LoggerFactory.getLogger(ExceptionHandlerImpl.class);
-
-    @Override
-    public void onPluginObservationError(String pluginName, Throwable throwable) {
-      logger.error("An unexpected plugin error occurred: {}", pluginName, throwable);
-    }
-
+  private static class ExceptionHandlerImpl implements ReaderObservationExceptionHandler {
     @Override
     public void onReaderObservationError(
         String pluginName, String readerName, Throwable throwable) {

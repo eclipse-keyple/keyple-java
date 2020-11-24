@@ -16,9 +16,7 @@ import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.service.event.ObservableReader;
-import org.eclipse.keyple.core.service.event.PluginObservationExceptionHandler;
 import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
-import org.eclipse.keyple.core.service.exception.KeypleException;
 import org.eclipse.keyple.core.service.util.ContactCardCommonProtocols;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.calypso.common.CalypsoClassicInfo;
@@ -62,13 +60,7 @@ public class Main_CalypsoClassic_Pcsc {
 
   private static Plugin plugin;
 
-  /**
-   * main program entry
-   *
-   * @param args the program arguments
-   * @throws KeypleException setParameter exception
-   * @throws InterruptedException thread exception
-   */
+  /** main program entry */
   public static void main(String[] args) throws InterruptedException {
 
     /* Get the instance of the SmartCardService (Singleton pattern) */
@@ -78,9 +70,7 @@ public class Main_CalypsoClassic_Pcsc {
     ExceptionHandlerImpl exceptionHandlerImpl = new ExceptionHandlerImpl();
 
     /* Assign PcscPlugin to the SmartCardService */
-    plugin =
-        smartCardService.registerPlugin(
-            new PcscPluginFactory(exceptionHandlerImpl, exceptionHandlerImpl));
+    plugin = smartCardService.registerPlugin(new PcscPluginFactory(null, exceptionHandlerImpl));
 
     Reader poReader = initPoReader();
 
@@ -93,9 +83,6 @@ public class Main_CalypsoClassic_Pcsc {
     /* Setting up the reader observer on the po Reader */
     CardReaderObserver poEventObserver = new CardReaderObserver();
 
-    /* TODO */
-    poEventObserver.setSamReader(samReader);
-
     /* Set terminal as Observer of the first reader */
     ((ObservableReader) poReader).addObserver(poEventObserver);
 
@@ -105,6 +92,9 @@ public class Main_CalypsoClassic_Pcsc {
             CardSelectionConfig.getPoDefaultCardSelection().getSelectionOperation(),
             ObservableReader.NotificationMode.MATCHED_ONLY,
             ObservableReader.PollingMode.REPEATING);
+
+    /* specify the Sam Reader to enable a PO Authenticated Session */
+    poEventObserver.setSamReader(samReader);
 
     /* Wait for ever (exit with CTRL-C) */
     synchronized (waitForEnd) {
@@ -118,7 +108,7 @@ public class Main_CalypsoClassic_Pcsc {
 
   private static Reader initPoReader() {
     /*
-     * Get PO and SAM readers. Apply regulars expressions to reader names to select PO / SAM
+     * Apply regulars expressions to reader names to select PO / SAM
      * readers. Use the getReader helper method from the transaction engine.
      */
     Reader poReader = plugin.getReader(PcscReaderUtils.getContactlessReaderName());
@@ -176,17 +166,7 @@ public class Main_CalypsoClassic_Pcsc {
    */
   private static final Object waitForEnd = new Object();
 
-  private static class ExceptionHandlerImpl
-      implements PluginObservationExceptionHandler, ReaderObservationExceptionHandler {
-    final Logger logger = LoggerFactory.getLogger(ExceptionHandlerImpl.class);
-
-    @Override
-    public void onPluginObservationError(String pluginName, Throwable throwable) {
-      logger.error("An unexpected plugin error occurred: {}", pluginName, throwable);
-      synchronized (waitForEnd) {
-        waitForEnd.notifyAll();
-      }
-    }
+  private static class ExceptionHandlerImpl implements ReaderObservationExceptionHandler {
 
     @Override
     public void onReaderObservationError(

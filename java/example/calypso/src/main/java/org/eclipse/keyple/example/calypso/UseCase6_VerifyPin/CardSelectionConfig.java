@@ -32,6 +32,7 @@ class CardSelectionConfig {
    * @return card selection object
    */
   static CardSelection getPoCardSelection() {
+    /*Return PO card selection if already defined */
     if (poCardSelection != null) {
       return poCardSelection;
     }

@@ -121,8 +121,6 @@ public class Main_DefaultSelectionNotification_Stub {
   }
 
   private static class ExceptionHandlerImpl implements ReaderObservationExceptionHandler {
-    final Logger logger = LoggerFactory.getLogger(ExceptionHandlerImpl.class);
-
     @Override
     public void onReaderObservationError(
         String pluginName, String readerName, Throwable throwable) {

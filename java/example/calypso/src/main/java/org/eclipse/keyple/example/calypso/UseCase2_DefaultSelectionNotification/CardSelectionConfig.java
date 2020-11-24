@@ -27,6 +27,7 @@ class CardSelectionConfig {
    * @return card selection object
    */
   static CardSelection getCardSelection() {
+    /*Return card selection if already defined */
     if (cardSelection != null) {
       return cardSelection;
     }
