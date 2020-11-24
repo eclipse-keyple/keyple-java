@@ -1,6 +1,6 @@
 @startuml
 title
-    Keyple Remote Plugin - Internal API - 1.0.0 (16/11/2020)
+    Keyple Remote Plugin - Internal API - 1.0.0 (23/11/2020)
 end title
 
 ' == THEME ==
@@ -113,7 +113,7 @@ package "org.eclipse.keyple.plugin.remote.impl" as packImpl {
     }
 
     ' Server Push Event Strategy
-    ~class ServerPushEventStrategy {
+    ~class "**final** ServerPushEventStrategy" as ServerPushEventStrategy {
         --
         ~ServerPushEventStrategy (Type type)
         ..
@@ -127,12 +127,12 @@ package "org.eclipse.keyple.plugin.remote.impl" as packImpl {
     }
 
     ' Factories
-    +class "Factory classes..." as Factories {
+    +class "**final** Factory classes..." as Factories {
         ...
     }
 
     ' Utilities
-    +class "Utility classes..." as Utilities {
+    +class "**final** Utility classes..." as Utilities {
         ...
     }
 

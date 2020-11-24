@@ -1,6 +1,6 @@
 @startuml
 title
-    Keyple Remote Plugin - Keyple Core API - 1.0.0 (06/11/2020)
+    Keyple Remote Plugin - Keyple Core API - 1.0.0 (24/11/2020)
 end title
 
 ' == THEME ==
@@ -45,56 +45,64 @@ hide <<grey>> stereotype
 
 ' == CONTENT ==
 
-package "org.eclipse.keyple.core.service" as packService {
+package "org.eclipse.keyple.core" as packCore {
 
-    +interface PluginFactory {
-        ...
-    }
-    +interface Plugin {
-        ...
-    }
-    +interface PoolPlugin extends Plugin {
-        ...
-    }
-    +interface Reader {
-        ...
-    }
-
-    package event {
-        +interface ObservablePlugin extends Plugin {
-            ...
-        }
-        +interface ObservableReader extends Reader {
-            ...
-        }
-        +interface ReaderObserver {
+    package "card.message" as packMessage {
+        +interface ProxyReader {
             ...
         }
     }
 
-    package message {
-        +interface ProxyReader extends Reader {
-            ...
-        }
-    }
+    package service {
 
-    package plugin.reader {
-        +abstract AbstractReader implements ProxyReader {
+        +interface PluginFactory {
             ...
         }
-        +interface ObservableReaderNotifier extends ObservableReader {
+        +interface Plugin {
             ...
         }
+        +interface PoolPlugin extends Plugin {
+            ...
+        }
+        +interface Reader {
+            ...
+        }
+
+        package event {
+            +interface ObservablePlugin extends Plugin {
+                ...
+            }
+            +interface ObservableReader extends Reader {
+                ...
+            }
+            +interface ReaderObserver {
+                ...
+            }
+        }
+
+        package plugin {
+            +abstract AbstractReader implements ProxyReader {
+                ...
+            }
+            +interface ObservableReaderNotifier extends ObservableReader {
+                ...
+            }
+        }
+
     }
 }
 
 ' Associations
+Reader <|-- ProxyReader
 ObservableReader +-- ReaderObserver #C_LINK
 
 ' == STYLE ==
 
-package packService #C_GREY1 {}
-package event #C_GREY2 {}
+package packCore #C_GREY1 {}
+package packMessage #C_GREY2 {}
+package service #C_GREY2 {}
+package event #C_GREY3 {}
+package plugin #C_GREY3 {}
 
 interface PluginFactory <<grey>> #E59866
 interface Plugin <<grey>> #E59866
