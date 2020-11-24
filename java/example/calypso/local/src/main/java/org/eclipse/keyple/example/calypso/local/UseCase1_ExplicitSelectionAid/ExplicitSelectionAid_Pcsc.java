@@ -77,7 +77,7 @@ public class ExplicitSelectionAid_Pcsc {
     logger.info("= #### 1st PO exchange: AID based selection with reading of Environment file.");
 
     // Prepare a Calypso PO selection
-    CardSelection cardSelection = CardSelectionConfig.getCardSelection();
+    CardSelection cardSelection = CardSelectionConfig.getPoCardSelection();
 
     // Actual PO communication: operate through a single request the Calypso PO selection
     // and the file read

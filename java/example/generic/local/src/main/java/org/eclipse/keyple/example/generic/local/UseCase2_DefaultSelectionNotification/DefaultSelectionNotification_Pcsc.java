@@ -17,7 +17,7 @@ import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleException;
-import org.eclipse.keyple.example.generic.local.common.PcscReaderUtilities;
+import org.eclipse.keyple.example.generic.local.common.PcscReaderUtils;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.slf4j.Logger;
@@ -66,7 +66,7 @@ public class DefaultSelectionNotification_Pcsc {
         smartCardService.registerPlugin(new PcscPluginFactory(null, new ExceptionHandlerImpl()));
 
     // Get and configure the PO reader
-    Reader reader = plugin.getReader(PcscReaderUtilities.getContactlessReaderName());
+    Reader reader = plugin.getReader(PcscReaderUtils.getContactlessReaderName());
     ((PcscReader) reader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     logger.info(

@@ -19,11 +19,17 @@ import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.local.common.CalypsoClassicInfo;
 
+/** Card Selection Configuration */
 class CardSelectionConfig {
 
   private static final String PO_ATR_REGEX = ".*";
   private static final String PO_DF_RT_PATH = "2000";
 
+  /**
+   * Define the card selection configuration for the Calypso PO
+   *
+   * @return card selection object
+   */
   static CardSelection getPoCardSelection() {
     // Select the first application matching the selection.
     CardSelection cardSelection = new CardSelection();
