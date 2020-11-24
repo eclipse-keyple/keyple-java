@@ -35,7 +35,7 @@ class CardReaderObserver implements ObservableReader.ReaderObserver {
     logger.info("New reader event: {}", event.getReaderName());
     switch (event.getEventType()) {
       case CARD_INSERTED:
-        logger.warn("Unexpected card insertion event");
+        logger.trace("Unexpected card insertion event");
         break;
       case CARD_MATCHED:
         CardSelection cardSelection = getDefaultSelection();
@@ -50,7 +50,7 @@ class CardReaderObserver implements ObservableReader.ReaderObserver {
         }
         break;
       case CARD_REMOVED:
-        logger.warn("Unexpected card removal event");
+        logger.trace("Card removal event");
         break;
       case UNREGISTERED:
         logger.error("Unexpected error: the reader is no more registered in the SmartCardService.");

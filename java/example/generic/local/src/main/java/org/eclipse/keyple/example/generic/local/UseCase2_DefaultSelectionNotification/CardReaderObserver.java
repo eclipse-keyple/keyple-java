@@ -59,7 +59,7 @@ class CardReaderObserver implements ObservableReader.ReaderObserver {
             "CARD_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.");
         break;
       case CARD_REMOVED:
-        logger.info("There is no PO inserted anymore. Return to the waiting state...");
+        logger.trace("There is no PO inserted anymore. Return to the waiting state...");
         break;
       default:
         break;

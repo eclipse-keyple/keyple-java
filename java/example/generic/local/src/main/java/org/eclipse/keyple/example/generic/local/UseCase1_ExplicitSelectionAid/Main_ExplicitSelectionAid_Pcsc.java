@@ -97,11 +97,13 @@ public class Main_ExplicitSelectionAid_Pcsc {
 
     // Actual card communication: operate through a single request the card selection
     SelectionsResult selectionsResult = cardSelection.processExplicitSelection(reader);
+
     if (!selectionsResult.hasActiveSelection()) {
-      logger.info("The selection of the application " + cardAid + " failed.");
+      logger.warn("The selection of the application " + cardAid + " failed.");
     }
     AbstractSmartCard smartCard = selectionsResult.getActiveSmartCard();
     logger.info("The selection of the card has succeeded.");
+
     if (smartCard.hasFci()) {
       String fci = ByteArrayUtil.toHex(smartCard.getFciBytes());
       logger.info("Application FCI = {}", fci);

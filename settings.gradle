@@ -24,7 +24,7 @@ project(':java:component:keyple-plugin:pcsc').name = "keyple-plugin-pcsc"
 include ':java:component:keyple-plugin:stub'
 project(':java:component:keyple-plugin:stub').name = "keyple-plugin-stub"
 
-include ':java:example'
+
 include ':java:example:calypso'
-include ':java:example:calypso:local'
 include ':java:example:generic:local'
+include ':java:example:generic:remote'

@@ -25,14 +25,14 @@ Those examples make use of the Keyple Core library. They demonstrate how to obse
     * Plugins and readers monitoring
     * PO selection
 
-* Five launchers working out of the box on a PC platform
+* Five launchers working out of the box on a java platform
 
   * Plugin and reader observability [`Demo_ObservableReaderNotification`]
     * Real mode with PC/SC readers (Secure Elements required [Calypso and/or others]) [`Main_ObservableReaderNotification_Pcsc.java`]
     * Simulation mode (virtual Secure Elements included) [`Main_ObservableReaderNotification_Stub.java`]
-  * PO type detection through the use of the protocol flag mechanism [`Demo_SeProtocolDetection`]
-    * Real mode with PC/SC readers (Secure Elements required [Calypso and/or others]) [`Main_SeProtocolDetection_Pcsc.java`]
-    * Simulation mode (virtual Secure Elements included) [`Main_SeProtocolDetection_Stub.java`]
+  * PO type detection through the use of the protocol flag mechanism [`Demo_CardProtocolDetection`] 
+    * Real mode with PC/SC readers (Secure Elements required [Calypso and/or others]) [`Main_CardProtocolDetection_Pcsc.java`]
+    * Simulation mode (virtual Secure Elements included) [`Main_CardProtocolDetection_Stub.java`]
   * Use case multiple select: illustrates the possibility of selecting multiple SE applications using the same AID prefix and P2 standard values to select the first or next occurrence. [`UseCase4_SequentialMultiSelection`]
   
 Available packages in details:

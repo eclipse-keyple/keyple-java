@@ -98,19 +98,6 @@ public class Main_ObservableReaderNotification_Stub {
 
     Thread.sleep(100);
 
-    logger.info("Plug reader 1 again (twice).");
-    ((StubPlugin) plugin).plugStubReader(READER1_NAME, true);
-
-    logger.info("Unplug reader 1.");
-    ((StubPlugin) plugin).unplugStubReader(READER1_NAME, true);
-
-    Thread.sleep(100);
-
-    logger.info("Plug reader 1 again.");
-    ((StubPlugin) plugin).plugStubReader(READER1_NAME, true);
-
-    Thread.sleep(100);
-
     logger.info("Unplug reader 1.");
     ((StubPlugin) plugin).unplugStubReader(READER1_NAME, true);
 

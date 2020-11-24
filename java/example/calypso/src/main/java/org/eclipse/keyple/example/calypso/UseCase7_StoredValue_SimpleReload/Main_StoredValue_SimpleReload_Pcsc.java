@@ -73,9 +73,10 @@ public class Main_StoredValue_SimpleReload_Pcsc {
 
     CardSelection samSelection = CardSelectionConfig.getSamCardSelection();
 
-    if (samReader.isCardPresent()) {
+    if (!samReader.isCardPresent()) {
       throw new IllegalStateException("No SAM is present in the reader " + samReader.getName());
     }
+
     SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
 
     if (!selectionsResult.hasActiveSelection()) {

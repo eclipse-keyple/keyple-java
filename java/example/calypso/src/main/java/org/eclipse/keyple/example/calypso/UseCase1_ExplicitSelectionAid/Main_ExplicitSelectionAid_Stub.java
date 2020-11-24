@@ -18,13 +18,11 @@ import org.eclipse.keyple.core.card.selection.CardResource;
 import org.eclipse.keyple.core.card.selection.CardSelection;
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.common.CalypsoClassicInfo;
 import org.eclipse.keyple.example.calypso.common.StubCalypsoClassic;
-import org.eclipse.keyple.plugin.stub.StubPlugin;
-import org.eclipse.keyple.plugin.stub.StubPluginFactory;
-import org.eclipse.keyple.plugin.stub.StubReader;
-import org.eclipse.keyple.plugin.stub.StubSmartCard;
+import org.eclipse.keyple.plugin.stub.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,6 +68,11 @@ public class Main_ExplicitSelectionAid_Stub {
 
     // Get a PO reader ready to work with Calypso PO.
     StubReader poReader = (StubReader) (stubPlugin.getReader("poReader"));
+
+    /* Activate ISO_14443_4 Protocol */
+    poReader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // Check if the reader exists
     if (poReader == null) {
