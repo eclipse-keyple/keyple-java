@@ -11,7 +11,7 @@ Those examples make use of the Keyple Calypso library. They demonstrate how to s
   * Explicit application selection
   
 
-Ten launchers can be run independently
+Multiple launchers can be run independently
 
   * Classic Calypso Transaction (use of PoSecure session) : [Demo_CalypsoClassic](/java/example/calypso/pc/src/main/java/org/eclipse/keyple/example/calypso/Demo_CalypsoClassic)
     * Real mode with PC/SC readers (Calypso Secure Elements required [_PO and SAM_])
@@ -61,8 +61,8 @@ Available packages in details:
 |`Demo_CalypsoClassic.Main_CalypsoClassic_Stub.java`|Contains the main class for the Calypso basic without the need of hardware readers|
 |`UseCase1_ExplicitSelectionAid.Main_ExplicitSelectionAid_Pcsc.java`|Explicit Selection with a PC/SC reader|
 |`UseCase1_ExplicitSelectionAid.Main_ExplicitSelectionAid_Stub.java`|Explicit Selection with a Stub reader (stub SE and reader)|
-|`UseCase2_DefaultSelectionAid.Main_DefaultSelectionAid_Pcsc.java`|Default Selection with a PC/SC reader|
-|`UseCase2_DefaultSelectionAid.Main_DefaultSelectionAid_Stub.java`|Default Selection with a Stub reader (stub SE and reader)|
+|`UseCase2_DefaultSelectionNotification.Main_DefaultSelectionNotification_Pcsc.java`|Default Selection with a PC/SC reader|
+|`UseCase2_DefaultSelectionNotification.Main_DefaultSelectionNotification_Stub.java`|Default Selection with a Stub reader (stub SE and reader)|
 |`UseCase3_Rev1Selection.Main_Rev1Selection_Pcsc.java`|B' Selection with a PC/SC reader|
 |`UseCase4_PoAuthentication.Main_PoAuthentication_Pcsc.java`|Execute a Calypso Transaction with a PC/SC reader|
 |`UseCase4_PoAuthentication.Main_PoAuthentication_Stub.java`|Execute a Calypso Transaction with a Stub reader|

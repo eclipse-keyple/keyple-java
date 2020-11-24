@@ -71,7 +71,7 @@ public class Main_StoredValue_DebitInSession_Pcsc {
     Reader samReader = plugin.getReader(PcscReaderUtils.getContactReaderName());
     ((PcscReader) samReader).setContactless(false).setIsoProtocol(PcscReader.IsoProtocol.T0);
 
-    if (samReader.isCardPresent()) {
+    if (!samReader.isCardPresent()) {
       throw new IllegalStateException("No SAM is present in the reader " + samReader.getName());
     }
 

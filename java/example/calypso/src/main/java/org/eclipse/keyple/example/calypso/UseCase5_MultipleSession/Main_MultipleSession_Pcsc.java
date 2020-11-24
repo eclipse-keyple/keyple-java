@@ -87,7 +87,7 @@ public class Main_MultipleSession_Pcsc {
     // Create a SAM resource after selecting the SAM
     CardSelection samSelection = CardSelectionConfig.getSamCardSelection();
 
-    if (samReader.isCardPresent()) {
+    if (!samReader.isCardPresent()) {
       throw new IllegalStateException("No SAM is present in the reader " + samReader.getName());
     }
 
