@@ -1,0 +1,119 @@
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "com.diffplug.spotless:spotless-plugin-gradle:3.14.0"
+    }
+}
+
+plugins {
+    id 'java'
+    id 'application'
+
+}
+
+group 'org.eclipse.keyple'
+
+sourceCompatibility = 1.6
+
+ext {
+    //if a property keyple_version is specified, this version will be taken, else the '+' latest version will be taken
+    keyple_v = project.hasProperty("keyple_version") ? keyple_version : '+'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    
+    //to import keyple snapshots
+    maven {url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    
+}
+
+/*
+ * Local calypso example
+ */
+
+mainClassName = 'org.eclipse.keyple.example.generic.Demo_CardProtocolDetection.Main_CardProtocolDetection_Pcsc'
+
+
+task('run_calypso_Demo_CalypsoClassic_Pcsc', dependsOn: 'classes', type: JavaExec, group:'keyple') {
+    main = 'org.eclipse.keyple.example.calypso.Demo_CalypsoClassic.Main_CalypsoClassic_Pcsc'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task('run_calypso_Demo_CalypsoClassic_Stub', dependsOn: 'classes', type: JavaExec, group:'keyple') {
+    main = 'org.eclipse.keyple.example.calypso.Demo_CalypsoClassic.Main_CalypsoClassic_Stub'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task('run_calypso_UseCase1_ExplicitSelectionAid_Pcsc', dependsOn: 'classes', type: JavaExec, group:'keyple') {
+    main = 'org.eclipse.keyple.example.calypso.UseCase1_ExplicitSelectionAid.Main_ExplicitSelectionAid_Pcsc'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task('run_calypso_UseCase1_ExplicitSelectionAid_Stub', dependsOn: 'classes', type: JavaExec, group:'keyple') {
+    main = 'org.eclipse.keyple.example.calypso.UseCase1_ExplicitSelectionAid.Main_ExplicitSelectionAid_Stub'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task('run_calypso_UseCase2_DefaultSelectionNotification_Pcsc', dependsOn: 'classes', type: JavaExec, group:'keyple') {
+    main = 'org.eclipse.keyple.example.calypso.UseCase2_DefaultSelectionNotification.Main_DefaultSelectionNotification_Pcsc'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task('run_calypso_UseCase2_DefaultSelectionNotification_Stub', dependsOn: 'classes', type: JavaExec, group:'keyple') {
+    main = 'org.eclipse.keyple.example.calypso.UseCase2_DefaultSelectionNotification.Main_DefaultSelectionNotification_Stub'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task('run_calypso_UseCase3_Rev1Selection_Pcsc', dependsOn: 'classes', type: JavaExec, group:'keyple') {
+    main = 'org.eclipse.keyple.example.calypso.UseCase3_Rev1Selection.Main_Rev1Selection_Pcsc'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task('run_calypso_UseCase4_PoAuthentication_Pcsc', dependsOn: 'classes', type: JavaExec, group:'keyple') {
+    main = 'org.eclipse.keyple.example.calypso.UseCase4_PoAuthentication.Main_PoAuthentication_Pcsc'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task('run_calypso_UseCase4_PoAuthentication_Stub', dependsOn: 'classes', type: JavaExec, group:'keyple') {
+    main = 'org.eclipse.keyple.example.calypso.UseCase4_PoAuthentication.Main_PoAuthentication_Stub'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task('run_calypso_UseCase5_MultipleSession_Pcsc', dependsOn: 'classes', type: JavaExec, group:'keyple') {
+    main = 'org.eclipse.keyple.example.calypso.UseCase5_MultipleSession.Main_MultipleSession_Pcsc'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task('run_calypso_UseCase6_VerifyPin_Pcsc', dependsOn: 'classes', type: JavaExec, group:'keyple') {
+    main = 'org.eclipse.keyple.example.calypso.UseCase6_VerifyPin.Main_VerifyPin_Pcsc'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task('run_calypso_UseCase7_StoredValue_SimpleReload_Pcsc', dependsOn: 'classes', type: JavaExec, group:'keyple') {
+    main = 'org.eclipse.keyple.example.calypso.UseCase7_StoredValue_SimpleReload.Main_StoredValue_SimpleReload_Pcsc'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task('run_calypso_UseCase8_StoredValue_DebitInSession_Pcsc', dependsOn: 'classes', type: JavaExec, group:'keyple') {
+    main = 'org.eclipse.keyple.example.calypso.UseCase8_StoredValue_DebitInSession.Main_StoredValue_DebitInSession_Pcsc'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: keyple_v
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: keyple_v
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-pcsc', version: keyple_v
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-stub', version: keyple_v
+
+    implementation "org.slf4j:slf4j-simple:1.7.25"
+    implementation "org.slf4j:slf4j-ext:1.7.25"
+    implementation "com.squareup.retrofit2:converter-gson:2.4.0"
+}

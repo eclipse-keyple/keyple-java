@@ -1,6 +1,5 @@
 rootProject.name = 'keyple-java-example'
 
 include 'calypso'
-include 'calypso:local'
-include 'calypso:remote'
+include 'generic:remote'
 include 'generic:local'
