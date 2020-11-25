@@ -11,11 +11,11 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.stub;
 
+import org.eclipse.keyple.core.service.PoolPlugin;
 import org.eclipse.keyple.core.service.Reader;
-import org.eclipse.keyple.core.service.ReaderPoolPlugin;
 
-/** StubPoolPlugin allows to simulate a {@link ReaderPoolPlugin} and a {@link StubSmartCard} */
-public interface StubPoolPlugin extends ReaderPoolPlugin {
+/** StubPoolPlugin allows to simulate a {@link PoolPlugin} and a {@link StubSmartCard} */
+public interface StubPoolPlugin extends PoolPlugin {
 
   /**
    * Plug synchronously a new @{@link StubReaderImpl} in Pool with groupReference and a StubSE. A

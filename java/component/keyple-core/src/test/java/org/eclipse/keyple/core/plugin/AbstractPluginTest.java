@@ -18,7 +18,6 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.core.CoreBaseTest;
-import org.eclipse.keyple.core.plugin.reader.BlankAbstractReader;
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.junit.Assert;
@@ -57,7 +56,7 @@ public class AbstractPluginTest extends CoreBaseTest {
   @Test
   public void addRemoveReadersMultiThreaded() throws Exception {
     Plugin plugin = new BlankAbstractPlugin("addRemoveReadersMultiThreaded");
-    plugin.register();
+    ((AbstractPlugin) plugin).register();
     Map<String, Reader> readers = plugin.getReaders();
     final CountDownLatch lock = new CountDownLatch(10);
 
