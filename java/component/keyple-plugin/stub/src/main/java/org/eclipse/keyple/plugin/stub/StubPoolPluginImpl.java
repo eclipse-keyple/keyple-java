@@ -12,8 +12,8 @@
 package org.eclipse.keyple.plugin.stub;
 
 import java.util.*;
+import org.eclipse.keyple.core.service.PoolPlugin;
 import org.eclipse.keyple.core.service.Reader;
-import org.eclipse.keyple.core.service.ReaderPoolPlugin;
 import org.eclipse.keyple.core.service.event.PluginObservationExceptionHandler;
 import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleAllocationNoReaderException;
@@ -22,10 +22,9 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 
 /**
- * Simulates a @{@link ReaderPoolPlugin} with {@link StubReaderImpl} and {@link StubSmartCard}
- * Manages allocation readers by group reference, Limitations : - each group can contain only one
- * StubReader thus one StubSmartCard This class uses internally @{@link StubPluginImpl} which is a
- * singleton.
+ * Simulates a @{@link PoolPlugin} with {@link StubReaderImpl} and {@link StubSmartCard} Manages
+ * allocation readers by group reference, Limitations : - each group can contain only one StubReader
+ * thus one StubSmartCard This class uses internally @{@link StubPluginImpl} which is a singleton.
  */
 final class StubPoolPluginImpl implements StubPoolPlugin {
 
@@ -185,15 +184,5 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
   @Override
   public Reader getReader(String name) {
     return stubPlugin.getReader(name);
-  }
-
-  @Override
-  public void register() {
-    stubPlugin.register();
-  }
-
-  @Override
-  public void unregister() {
-    stubPlugin.unregister();
   }
 }

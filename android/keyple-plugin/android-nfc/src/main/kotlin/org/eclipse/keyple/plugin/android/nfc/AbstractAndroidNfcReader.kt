@@ -19,10 +19,10 @@ import android.os.Bundle
 import java.io.IOException
 import java.lang.ref.WeakReference
 import java.util.HashMap
-import org.eclipse.keyple.core.plugin.reader.AbstractObservableLocalAutonomousReader
-import org.eclipse.keyple.core.plugin.reader.AbstractObservableLocalReader
-import org.eclipse.keyple.core.plugin.reader.DontWaitForCardRemovalDuringProcessing
-import org.eclipse.keyple.core.plugin.reader.WaitForCardInsertionAutonomous
+import org.eclipse.keyple.core.plugin.AbstractObservableLocalAutonomousReader
+import org.eclipse.keyple.core.plugin.AbstractObservableLocalReader
+import org.eclipse.keyple.core.plugin.DontWaitForCardRemovalDuringProcessing
+import org.eclipse.keyple.core.plugin.WaitForCardInsertionAutonomous
 import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler
 import org.eclipse.keyple.core.service.exception.KeypleReaderException
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException

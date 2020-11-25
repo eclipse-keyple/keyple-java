@@ -12,9 +12,6 @@
 package org.eclipse.keyple.plugin.android.omapi.simalliance
 
 import java.io.IOException
-import kotlin.experimental.or
-import org.eclipse.keyple.core.card.message.ApduResponse
-import org.eclipse.keyple.core.card.selection.CardSelector
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiReader
@@ -60,13 +57,15 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
 
     /**
      * Open a logical channel by selecting the application
-     * @param aidSelector the selection parameters
-     * @return a ApduResponse built from the FCI data resulting from the application selection
+     * @param dfName A byte array containing the DF name or null if a basic opening is wanted.
+     * @param isoControlMask The selection bits defined by the ISO selection command and expected by the OMAPI as P2 parameter.
+     * @return A byte array containing the response to the OMAPI openLogicalChannel process or null if the Secure Element is unable to
+     *         provide a new logical channel
      * @throws KeypleReaderIOException if the communication with the reader or the card has failed
      */
     @Throws(KeypleReaderIOException::class)
-    override fun openChannelForAid(aidSelector: CardSelector.AidSelector): ApduResponse {
-        if (aidSelector.aidToSelect == null) {
+    override fun openChannelForAid(dfName: ByteArray?, isoControlMask: Byte): ByteArray? {
+        if (dfName == null) {
             try {
                 openChannel = session?.openBasicChannel(null)
             } catch (e: IOException) {
@@ -74,7 +73,7 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
                 throw KeypleReaderIOException("IOException while opening basic channel.")
             } catch (e: SecurityException) {
                 Timber.e(e)
-                throw KeypleReaderIOException("Error while opening basic channel, SE_SELECTOR = $aidSelector", e.cause)
+                throw KeypleReaderIOException("Error while opening basic channel, DFNAME = " + ByteArrayUtil.toHex(dfName), e.cause)
             }
 
             if (openChannel == null) {
@@ -82,18 +81,18 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
             }
         } else {
             Timber.i("[%s] openLogicalChannel => Select Application with AID = %s",
-                    this.name, ByteArrayUtil.toHex(aidSelector.aidToSelect))
+                    this.name, ByteArrayUtil.toHex(dfName))
             try {
                 // openLogicalChannel of SimAlliance OMAPI is only available for version 3.0+ of the library.
                 // By default the library always passes p2=00h
                 // So if a p2 different of 00h is requested, we must check if omapi support it. Otherwise we throw an exception.
-                val p2 = aidSelector.fileOccurrence.isoBitMask or aidSelector.fileControlInformation.isoBitMask
+                val p2 = isoControlMask
                 openChannel =
                         if (0 == p2.toInt()) {
-                            session?.openLogicalChannel(aidSelector.aidToSelect)
+                            session?.openLogicalChannel(dfName)
                         } else {
                             if (omapiVersion >= P2_SUPPORTED_MIN_VERSION) {
-                                session?.openLogicalChannel(aidSelector.aidToSelect, p2)
+                                session?.openLogicalChannel(dfName, p2)
                             } else {
                                 throw KeypleReaderIOException("P2 != 00h while opening logical channel is only supported by OMAPI version >= 3.0. Current is $omapiVersion")
                             }
@@ -104,10 +103,10 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
             } catch (e: NoSuchElementException) {
                 Timber.e(e, "NoSuchElementException")
                 throw java.lang.IllegalArgumentException(
-                        "NoSuchElementException: " + ByteArrayUtil.toHex(aidSelector.aidToSelect), e)
+                        "NoSuchElementException: " + ByteArrayUtil.toHex(dfName), e)
             } catch (e: SecurityException) {
                 Timber.e(e, "SecurityException")
-                throw KeypleReaderIOException("SecurityException while opening logical channel, aid :" + ByteArrayUtil.toHex(aidSelector.aidToSelect), e.cause)
+                throw KeypleReaderIOException("SecurityException while opening logical channel, aid :" + ByteArrayUtil.toHex(dfName), e.cause)
             }
 
             if (openChannel == null) {
@@ -115,7 +114,7 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
             }
         }
         /* get the FCI and build an ApduResponse */
-        return ApduResponse(openChannel?.selectResponse, aidSelector.successfulSelectionStatusCodes)
+        return openChannel!!.selectResponse
     }
 
     override fun isPhysicalChannelOpen(): Boolean {
