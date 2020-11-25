@@ -45,29 +45,6 @@ public final class PcscReaderUtils {
   private PcscReaderUtils() {}
 
   /**
-   * Sets the properties file for reader settings<br>
-   * The following keys are expected:
-   *
-   * <ul>
-   *   <li><b>reader.contact.regex</b>: regular expression matching contact readers (e.g.
-   *       ".*Identive.*"
-   *   <li><b>reader.contactless.regex</b>: regular expression matching contactless readers (e.g.
-   *       "(.*ASK LoGo.*)|(.*Contactless.*)")
-   * </ul>
-   *
-   * @param propertiesFile the properties file name
-   * @throws IOException if the access to the file failed
-   */
-  public static void setPropertiesFile(String propertiesFile) throws IOException {
-    // create and load properties
-    properties = new Properties();
-    FileInputStream in = null;
-    in = new FileInputStream(propertiesFile);
-    properties.load(in);
-    in.close();
-  }
-
-  /**
    * Returns the name of the first reader identified as contactless according to the parameter found
    * in the properties file.
    *
