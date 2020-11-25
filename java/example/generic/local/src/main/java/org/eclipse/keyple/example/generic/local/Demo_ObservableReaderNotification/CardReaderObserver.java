@@ -12,15 +12,17 @@
 package org.eclipse.keyple.example.generic.local.Demo_ObservableReaderNotification;
 
 import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/** A reader Observer handles card event such as CARD_INSERTED, CARD_MATCHED, CARD_REMOVED */
 class CardReaderObserver implements ObservableReader.ReaderObserver {
 
   private static final Logger logger = LoggerFactory.getLogger(CardReaderObserver.class);
 
   @Override
-  public void update(org.eclipse.keyple.core.service.event.ReaderEvent event) {
+  public void update(ReaderEvent event) {
     /* just log the event */
     logger.info(
         "Event: PLUGINNAME = {}, READERNAME = {}, EVENT = {}",

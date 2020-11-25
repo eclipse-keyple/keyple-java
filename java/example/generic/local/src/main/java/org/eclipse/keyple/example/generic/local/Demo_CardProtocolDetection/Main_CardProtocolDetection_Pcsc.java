@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
  *   <li>uses the observable mechanism to handle card insertion/detection
  *   <li>expects card with various protocols (technologies)
  *   <li>shows the identified protocol when a card is detected
- *   <li>executes a simple Hoplink reading when a Hoplink card is identified
  * </ul>
  *
  * The program spends most of its time waiting for a Enter key before exit. The actual card
@@ -96,6 +95,8 @@ public class Main_CardProtocolDetection_Pcsc {
     smartCardService.unregisterPlugin(plugin.getName());
 
     logger.info("Exit program.");
+
+    System.exit(0);
   }
 
   /**

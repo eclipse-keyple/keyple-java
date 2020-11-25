@@ -64,8 +64,8 @@ public class Main_PoAuthentication_Pcsc {
     // Get the instance of the SmartCardService (Singleton pattern)
     SmartCardService smartCardService = SmartCardService.getInstance();
 
-    // Register the PcscPlugin with SmartCardService, get the corresponding generic Plugin in
-    // return
+    // Register the PcscPlugin with SmartCardService
+    // This example does not use observation, no exception handler is defined.
     plugin = (PcscPlugin) smartCardService.registerPlugin(new PcscPluginFactory(null, null));
 
     Reader poReader = initPoReader();
