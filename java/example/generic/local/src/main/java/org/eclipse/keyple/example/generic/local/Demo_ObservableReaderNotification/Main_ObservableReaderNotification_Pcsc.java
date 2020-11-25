@@ -39,16 +39,17 @@ public class Main_ObservableReaderNotification_Pcsc {
         smartCardService.registerPlugin(
             new PcscPluginFactory(exceptionHandlerImpl, exceptionHandlerImpl));
 
+    /* start detection for all already present readers */
+    for (Reader reader : plugin.getReaders().values()) {
+      // add an observer for each reader connected
+      ((ObservableReader) reader).addObserver(new CardReaderObserver());
+      ((ObservableReader) reader).startCardDetection(ObservableReader.PollingMode.REPEATING);
+    }
+
     /*
      * We add an observer to each plugin (only one in this example) the readers observers will
      * be added dynamically upon plugin notification (see SpecificPluginObserver.update)
      */
-
-    /* start detection for all already present readers */
-    for (Reader reader : plugin.getReaders().values()) {
-      ((ObservableReader) reader).startCardDetection(ObservableReader.PollingMode.REPEATING);
-    }
-
     logger.info("Add observer PLUGINNAME = {}", plugin.getName());
     ((ObservablePlugin) plugin).addObserver(new PluginObserver());
 
