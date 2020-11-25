@@ -55,8 +55,7 @@ public class Main_DefaultSelectionNotification_Pcsc {
     // Get the instance of the SmartCardService (Singleton pattern)
     SmartCardService smartCardService = SmartCardService.getInstance();
 
-    // Register the PcscPlugin with SmartCardService, get the corresponding generic Plugin in
-    // return
+    // Register the PcscPlugin with SmartCardService
     Plugin plugin =
         smartCardService.registerPlugin(new PcscPluginFactory(null, new ExceptionHandlerImpl()));
 

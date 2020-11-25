@@ -15,11 +15,14 @@ import static org.eclipse.keyple.example.generic.local.Demo_CardProtocolDetectio
 
 import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.SelectionsResult;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/** A reader Observer handles card event such as CARD_INSERTED, CARD_MATCHED, CARD_REMOVED */
 class CardReaderObserver implements ObservableReader.ReaderObserver {
 
   private static final Logger logger = LoggerFactory.getLogger(CardReaderObserver.class);
@@ -32,7 +35,7 @@ class CardReaderObserver implements ObservableReader.ReaderObserver {
    * @param event the reader event, either CARD_MATCHED, CARD_INSERTED or CARD_REMOVED
    */
   public final void update(final ReaderEvent event) {
-    logger.info("New reader event: {}", event.getReaderName());
+    logger.info("New card event: {} - {}", event.getReaderName(), event.getEventType().toString());
     switch (event.getEventType()) {
       case CARD_INSERTED:
         logger.trace("Unexpected card insertion event");
@@ -40,20 +43,19 @@ class CardReaderObserver implements ObservableReader.ReaderObserver {
       case CARD_MATCHED:
         CardSelection cardSelection = getDefaultSelection();
         /* get the card that matches one of the two selection targets */
-        if (cardSelection
-            .processDefaultSelection(event.getDefaultSelectionsResponse())
-            .hasActiveSelection()) {
-          AbstractSmartCard selectedCard =
-              cardSelection
-                  .processDefaultSelection(event.getDefaultSelectionsResponse())
-                  .getActiveSmartCard();
+        SelectionsResult selectionsResult =
+            cardSelection.processDefaultSelection(event.getDefaultSelectionsResponse());
+        if (selectionsResult.hasActiveSelection()) {
+          AbstractSmartCard selectedCard = selectionsResult.getActiveSmartCard();
+          logger.info(
+              "Inserted card matched with ATR {}", ByteArrayUtil.toHex(selectedCard.getAtrBytes()));
         }
         break;
       case CARD_REMOVED:
         logger.trace("Card removal event");
         break;
       case UNREGISTERED:
-        logger.error("Unexpected error: the reader is no more registered in the SmartCardService.");
+        logger.trace("The reader is no more registered in the SmartCardService.");
         break;
     }
   }

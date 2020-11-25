@@ -73,6 +73,7 @@ public class Main_PoAuthentication_Stub {
     final String STUB_PLUGIN_NAME = "stub1";
 
     // Register Stub plugin in the platform
+    // This example does not use observation, no exception handler is defined.
     plugin =
         (StubPlugin)
             smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME, null, null));

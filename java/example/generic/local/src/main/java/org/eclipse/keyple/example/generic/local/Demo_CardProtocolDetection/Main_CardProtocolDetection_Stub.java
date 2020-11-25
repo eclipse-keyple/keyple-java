@@ -13,11 +13,13 @@ package org.eclipse.keyple.example.generic.local.Demo_CardProtocolDetection;
 
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.example.generic.local.common.StubCalypsoClassic;
 import org.eclipse.keyple.example.generic.local.common.StubMifareClassic;
 import org.eclipse.keyple.example.generic.local.common.StubMifareDesfire;
 import org.eclipse.keyple.example.generic.local.common.StubMifareUL;
@@ -32,12 +34,10 @@ import org.slf4j.LoggerFactory;
  * This code demonstrates the multi-protocols capability of the Keyple SmartCardService
  *
  * <ul>
- *   <li>instantiates a PC/SC plugin for a reader which name matches the regular expression provided
- *       by poReaderName.
+ *   <li>instantiates a stub plugin to simulates card insertion.
  *   <li>uses the observable mechanism to handle card insertion/detection
  *   <li>expects card with various protocols (technologies)
  *   <li>shows the identified protocol when a card is detected
- *   <li>executes a simple Hoplink reading when a Hoplink card is identified
  * </ul>
  */
 public class Main_CardProtocolDetection_Stub {
@@ -85,12 +85,15 @@ public class Main_CardProtocolDetection_Stub {
     // create an observer class to handle the card operations
     ReaderObserver observer = new CardReaderObserver();
 
+    // Set Default selection
+    ((ObservableReader) poReader)
+        .setDefaultSelectionRequest(
+            CardSelectionConfig.getDefaultSelection().getSelectionOperation(),
+            ObservableReader.NotificationMode.ALWAYS,
+            ObservableReader.PollingMode.REPEATING);
+
     // Set terminal as Observer of the first reader
     poReader.addObserver(observer);
-
-    Thread.sleep(300);
-
-    poReader.removeCard();
 
     Thread.sleep(100);
 
@@ -120,10 +123,19 @@ public class Main_CardProtocolDetection_Stub {
 
     Thread.sleep(100);
 
+    // insert Mifare Desfire
+    poReader.insertCard(new StubCalypsoClassic());
+
+    poReader.removeCard();
+
+    Thread.sleep(100);
+
     // unregister plugin
     smartCardService.unregisterPlugin(plugin.getName());
 
     logger.info("Exit program.");
+
+    System.exit(0);
   }
 
   private static class ExceptionHandlerImpl implements ReaderObservationExceptionHandler {

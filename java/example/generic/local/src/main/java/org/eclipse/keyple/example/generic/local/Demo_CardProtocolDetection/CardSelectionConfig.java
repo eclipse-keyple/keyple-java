@@ -22,6 +22,7 @@ import org.eclipse.keyple.example.generic.local.common.GenericCardSelectionReque
 class CardSelectionConfig {
 
   private static CardSelection cardSelection;
+  private static String HoplinkAID = "A000000291A000000191";
 
   /**
    * Define a default card selection configuration for multiple protocols
@@ -40,7 +41,6 @@ class CardSelectionConfig {
       switch (protocol) {
         case ISO_14443_4:
           /* Add a Hoplink selector */
-          String HoplinkAID = "A000000291A000000191";
           PoSelectionRequest poSelectionRequest =
               new PoSelectionRequest(
                   PoSelector.builder()

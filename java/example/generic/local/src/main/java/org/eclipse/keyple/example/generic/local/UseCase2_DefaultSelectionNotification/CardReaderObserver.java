@@ -20,6 +20,7 @@ import org.eclipse.keyple.core.service.exception.KeypleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/** A reader Observer handles card event such as CARD_INSERTED, CARD_MATCHED, CARD_REMOVED */
 class CardReaderObserver implements ObservableReader.ReaderObserver {
 
   private static final Logger logger = LoggerFactory.getLogger(CardReaderObserver.class);
