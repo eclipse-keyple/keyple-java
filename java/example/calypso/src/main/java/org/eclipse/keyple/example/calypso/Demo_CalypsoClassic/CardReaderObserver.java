@@ -50,7 +50,7 @@ class CardReaderObserver implements ObservableReader.ReaderObserver {
 
   @Override
   public void update(ReaderEvent event) {
-    logger.info("New reader event: {}", event.getReaderName());
+    logger.info("New reader event: {} on reader {}", event.getEventType(), event.getReaderName());
 
     switch (event.getEventType()) {
       case CARD_INSERTED:
@@ -86,8 +86,12 @@ class CardReaderObserver implements ObservableReader.ReaderObserver {
       case CARD_REMOVED:
         break;
       case UNREGISTERED:
+        logger.trace("Unexpected error: the reader is no more registered in the SmartcardService.");
+        /*
         throw new IllegalStateException(
             "Unexpected error: the reader is no more registered in the SmartcardService.");
+            */
+        break;
     }
   }
 
