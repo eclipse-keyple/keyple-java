@@ -119,6 +119,9 @@ public class PoTransactionTest {
   private static final String FILE7_REC1_COUNTER1 = "A55AA5";
   private static final String FILE7_REC1_COUNTER2 = "5AA55A";
 
+  private static final String REC_COUNTER_1000 = "0003E8";
+  private static final String REC_COUNTER_2000 = "0007D0";
+
   private static final byte[] FILE7_REC1_29B_BYTES = ByteArrayUtil.fromHex(FILE7_REC1_29B);
   private static final byte[] FILE7_REC2_29B_BYTES = ByteArrayUtil.fromHex(FILE7_REC2_29B);
   private static final byte[] FILE7_REC3_29B_BYTES = ByteArrayUtil.fromHex(FILE7_REC3_29B);
@@ -185,8 +188,8 @@ public class PoTransactionTest {
   private static final String PO_APPEND_REC_SFI9_REC1_4B_CMD = "00E2004804" + FILE9_REC1_4B;
   private static final String PO_DECREASE_SFI10_REC1_100U_CMD = "003001800300006400";
   private static final String PO_DECREASE_SFI10_REC1_100U_RSP = "0010BE9000";
-  private static final String PO_DECREASE_SFI11_REC1_100U_CMD = "003201880300006400";
-  private static final String PO_DECREASE_SFI11_REC1_100U_RSP = "0022759000";
+  private static final String PO_INCREASE_SFI11_REC1_100U_CMD = "003201880300006400";
+  private static final String PO_INCREASE_SFI11_REC1_100U_RSP = "0022759000";
 
   private static final String PO_SELECT_FILE_CURRENT_CMD = "00A4090002000000";
   private static final String PO_SELECT_FILE_FIRST_CMD = "00A4020002000000";
@@ -750,7 +753,7 @@ public class PoTransactionTest {
     poCommandsTestSet.put(PO_READ_REC_SFI10_REC1_CMD, PO_READ_REC_SFI10_REC1_RSP);
     poCommandsTestSet.put(PO_READ_REC_SFI11_REC1_CMD, PO_READ_REC_SFI11_REC1_RSP);
     poCommandsTestSet.put(PO_DECREASE_SFI10_REC1_100U_CMD, PO_DECREASE_SFI10_REC1_100U_RSP);
-    poCommandsTestSet.put(PO_DECREASE_SFI11_REC1_100U_CMD, PO_DECREASE_SFI11_REC1_100U_RSP);
+    poCommandsTestSet.put(PO_INCREASE_SFI11_REC1_100U_CMD, PO_INCREASE_SFI11_REC1_100U_RSP);
     poCommandsTestSet.put(PO_UPDATE_REC_SFI7_REC1_4B_CMD, SW1SW2_OK_RSP);
     poCommandsTestSet.put(PO_WRITE_REC_SFI8_REC1_4B_CMD, SW1SW2_OK_RSP);
     poCommandsTestSet.put(PO_APPEND_REC_SFI9_REC1_4B_CMD, SW1SW2_OK_RSP);
@@ -1686,6 +1689,30 @@ public class PoTransactionTest {
 
     poTransaction.prepareRehabilitate();
     poTransaction.prepareReleasePoChannel();
+    poTransaction.processPoCommands();
+  }
+
+  @Test
+  public void testPrepareSetCounter() {
+    CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
+    poTransaction = new PoTransaction(new CardResource<CalypsoPo>(poReader, calypsoPoRev31));
+
+    // set initial values
+    calypsoPoRev31.setCounter(FILE10, 1, ByteArrayUtil.fromHex(REC_COUNTER_1000));
+    calypsoPoRev31.setCounter(FILE11, 1, ByteArrayUtil.fromHex(REC_COUNTER_2000));
+
+    // add expected commands
+    poCommandsTestSet.put(PO_DECREASE_SFI10_REC1_100U_CMD, PO_DECREASE_SFI10_REC1_100U_RSP);
+    poCommandsTestSet.put(PO_INCREASE_SFI11_REC1_100U_CMD, PO_INCREASE_SFI11_REC1_100U_RSP);
+
+    // this action should do not induce new commands nothing
+    poTransaction.prepareSetCounter(FILE10, 1, 1000);
+    // this action should decrease the counter 1 of file 10 by 100
+    poTransaction.prepareSetCounter(FILE10, 1, 900);
+    // this action should increase the counter 1 of file 11 by 100
+    poTransaction.prepareSetCounter(FILE11, 1, 2100);
+
+    // we expect the commands added above to be processed
     poTransaction.processPoCommands();
   }
 

@@ -1586,6 +1586,68 @@ public class PoTransaction {
   }
 
   /**
+   * This method allows the new value of a counter to be set directly.
+   *
+   * <p>It builds an Increase or Decrease command and add it to the list of commands to be sent with
+   * the next <b>process</b> command in order to set the target counter to the specified value.<br>
+   * The operation (Increase or Decrease) is selected according to whether the difference between
+   * the current value and the desired value is negative (Increase) or positive (Decrease).
+   *
+   * <p>Note: it is assumed here that:<br>
+   * - the counter value has been read before,<br>
+   * - the type of session (and associated access rights) is consistent with the requested operation
+   * (reload session if the counter is incremented, debit if it is decremented). No control is
+   * performed on this point by this method; it is the closing of the session that will determine
+   * the success of the operation..
+   *
+   * @param counterNumber &gt;= 01h: Counters file, number of the counter. 00h: Simulated Counter
+   *     file.
+   * @param sfi SFI of the file to select or 00h for current EF
+   * @param newValue the desired value for the counter (defined as a positive int &lt;= 16777215
+   *     [FFFFFFh])
+   * @throws IllegalArgumentException - if the desired value is out of range or if the command is
+   *     inconsistent
+   * @throws CalypsoPoTransactionIllegalStateException - if the current counter value is unknown.
+   */
+  public final void prepareSetCounter(byte sfi, int counterNumber, int newValue) {
+    int changeValue = 0;
+    try {
+      changeValue =
+          newValue - calypsoPo.getFileBySfi(sfi).getData().getContentAsCounterValue(counterNumber);
+    } catch (NoSuchElementException ex) {
+      throw new CalypsoPoTransactionIllegalStateException(
+          "The value for counter " + counterNumber + " in file " + sfi + " is not available");
+    }
+    if (changeValue > 0) {
+      if (logger.isTraceEnabled()) {
+        logger.trace(
+            "Increment counter {} (file {}) from {} to {}",
+            counterNumber,
+            sfi,
+            newValue - changeValue,
+            newValue);
+      }
+      prepareIncreaseCounter(sfi, counterNumber, changeValue);
+    } else if (changeValue < 0) {
+      if (logger.isTraceEnabled()) {
+        logger.trace(
+            "Decrement counter {} (file {}) from {} to {}",
+            counterNumber,
+            sfi,
+            newValue - changeValue,
+            newValue);
+      }
+      prepareDecreaseCounter(sfi, counterNumber, -changeValue);
+    } else {
+      logger.info(
+          "The counter {} (SFI {}) is already set to the desired value {}.",
+          counterNumber,
+          sfi,
+          newValue);
+    }
+  }
+
+  /**
    * Builds a VerifyPin command without PIN presentation in order to get the attempt counter.<br>
    * The PIN status will made available in CalypsoPo after the execution of process command.<br>
    * Adds it to the list of commands to be sent with the next process command.
