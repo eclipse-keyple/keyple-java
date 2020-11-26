@@ -22,7 +22,7 @@ import org.eclipse.keyple.core.service.event.ObservablePlugin;
 public interface StubPlugin extends ObservablePlugin {
 
   /**
-   * Plug a Stub Reader
+   * Plug a new {@link StubReader} available in the plugin
    *
    * @param name : name of the created reader
    * @param synchronous : should the stubreader added synchronously (without waiting for the
@@ -32,10 +32,10 @@ public interface StubPlugin extends ObservablePlugin {
   void plugStubReader(String name, Boolean synchronous);
 
   /**
-   * Plug a Stub Reader
+   * Plug a new {@link StubReader} available in the plugin
    *
    * @param name : name of the created reader
-   * @param isContactless : true if the created reader is contactless, false if not.
+   * @param isContactless : true if the created reader should be contactless, false if not.
    * @param synchronous : should the stubreader added synchronously (without waiting for the
    *     observation thread). A READER_CONNECTED event is raised in both cases
    * @since 1.0
@@ -43,7 +43,7 @@ public interface StubPlugin extends ObservablePlugin {
   void plugStubReader(String name, boolean isContactless, Boolean synchronous);
 
   /**
-   * Plug a list of stub Reader at once
+   * Plug multiple new {@link StubReader} available in the plugin
    *
    * @param names : names of readers to be connected
    * @param synchronous : should the stubreader be added synchronously (without waiting for the
@@ -53,7 +53,7 @@ public interface StubPlugin extends ObservablePlugin {
   void plugStubReaders(Set<String> names, Boolean synchronous);
 
   /**
-   * Unplug a Stub Reader
+   * Unplug a {@link StubReader}
    *
    * @param name the name of the reader
    * @throws IllegalStateException in case of a reader exception
@@ -64,7 +64,7 @@ public interface StubPlugin extends ObservablePlugin {
   void unplugStubReader(String name, Boolean synchronous);
 
   /**
-   * Unplug a list of readers
+   * Unplug a list of {@link StubReader}
    *
    * @param names : names of the reader to be unplugged
    * @param synchronous : should the stubreader removed synchronously (without waiting for the

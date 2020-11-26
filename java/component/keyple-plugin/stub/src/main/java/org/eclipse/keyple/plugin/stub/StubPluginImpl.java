@@ -52,6 +52,7 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
     this.readerObservationExceptionHandler = readerObservationExceptionHandler;
   }
 
+  @Override
   public void plugStubReader(String readerName, Boolean synchronous) {
     plugStubReader(readerName, true, synchronous);
   }

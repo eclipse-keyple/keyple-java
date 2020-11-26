@@ -14,12 +14,16 @@ package org.eclipse.keyple.plugin.stub;
 import org.eclipse.keyple.core.service.PoolPlugin;
 import org.eclipse.keyple.core.service.Reader;
 
-/** StubPoolPlugin allows to simulate a {@link PoolPlugin} and a {@link StubSmartCard} */
+/**
+ * Simulates a @{@link PoolPlugin} with {@link StubReaderImpl} and {@link StubSmartCard} Manages
+ * allocation readers by group reference, Limitations : - each group can contain only one StubReader
+ * thus one StubSmartCard
+ */
 public interface StubPoolPlugin extends PoolPlugin {
 
   /**
-   * Plug synchronously a new @{@link StubReaderImpl} in Pool with groupReference and a StubSE. A
-   * READER_CONNECTED event will be raised.
+   * Plug synchronously a new {@link StubReader} in the {@link StubPoolPlugin} associated to
+   * groupReference and a stub card. A READER_CONNECTED event will be raised.
    *
    * @param groupReference : group refence of the new stub reader
    * @param readerName : name of the new stub reader
@@ -30,11 +34,19 @@ public interface StubPoolPlugin extends PoolPlugin {
   Reader plugStubPoolReader(String groupReference, String readerName, StubSmartCard card);
 
   /**
-   * Unplug synchronously a new reader by groupReference. A READER_DISCONNECTED event will be
-   * raised.
+   * Unplug synchronously all readers associated to a groupReference. A READER_DISCONNECTED event
+   * will be raised.
    *
    * @param groupReference groupReference of the reader to be unplugged
    * @since 1.0
    */
-  void unplugStubPoolReader(String groupReference);
+  void unplugStubPoolReadersByGroupReference(String groupReference);
+
+  /**
+   * Unplug synchronously a reader associated. A READER_DISCONNECTED event will be raised.
+   *
+   * @param readerName name of the reader to be unplugged
+   * @since 1.0
+   */
+  void unplugStubPoolReaderByName(String readerName);
 }
