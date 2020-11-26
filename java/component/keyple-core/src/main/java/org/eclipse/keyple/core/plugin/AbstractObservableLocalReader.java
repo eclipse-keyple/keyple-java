@@ -577,7 +577,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
    * Shuts down the reader's executor service.
    */
   @Override
-  public void unregister() {
+  protected void unregister() {
     super.unregister();
     try {
       notifyObservers(
