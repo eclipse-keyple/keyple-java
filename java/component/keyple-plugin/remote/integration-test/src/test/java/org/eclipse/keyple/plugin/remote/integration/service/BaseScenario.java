@@ -32,11 +32,11 @@ import org.eclipse.keyple.plugin.remote.impl.LocalServiceClientTest;
 import org.eclipse.keyple.plugin.remote.impl.RemotePluginServerFactory;
 import org.eclipse.keyple.plugin.remote.impl.RemotePluginServerUtils;
 import org.eclipse.keyple.plugin.remote.integration.common.app.ReaderEventFilter;
-import org.eclipse.keyple.plugin.remote.integration.common.app.RemotePluginObserver;
+import org.eclipse.keyple.plugin.remote.integration.common.app.RemotePluginServerObserver;
 import org.eclipse.keyple.plugin.remote.integration.common.model.ConfigurationResult;
 import org.eclipse.keyple.plugin.remote.integration.common.model.DeviceInput;
-import org.eclipse.keyple.plugin.remote.integration.common.model.TransactionResult;
 import org.eclipse.keyple.plugin.remote.integration.common.model.UserInput;
+import org.eclipse.keyple.plugin.remote.integration.common.model.UserOutputDataDto;
 import org.eclipse.keyple.plugin.remote.integration.common.se.StubCalypsoClassic;
 import org.eclipse.keyple.plugin.remote.integration.common.util.CalypsoUtilities;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
@@ -192,7 +192,7 @@ public abstract class BaseScenario {
                   .registerPlugin(
                       RemotePluginServerFactory.builder()
                           .withSyncNode()
-                          .withPluginObserver(new RemotePluginObserver())
+                          .withPluginObserver(new RemotePluginServerObserver())
                           // .usingDefaultEventNotificationPool()
                           .usingEventNotificationPool(serverPool)
                           .build());
@@ -211,7 +211,7 @@ public abstract class BaseScenario {
                   .registerPlugin(
                       RemotePluginServerFactory.builder()
                           .withAsyncNode(serverEndpoint)
-                          .withPluginObserver(new RemotePluginObserver())
+                          .withPluginObserver(new RemotePluginServerObserver())
                           .usingEventNotificationPool(serverPool)
                           .build());
     }
@@ -250,7 +250,7 @@ public abstract class BaseScenario {
         return eventFilter.transactionResult != null
             && eventFilter.transactionResult.isSuccessful() == isSucessful
             && eventFilter.transactionResult.getUserId().equals(userInput.getUserId())
-            && eventFilter.resetTransactionResult();
+            && eventFilter.resetUserOutputDataDto();
       }
     };
   }
@@ -273,12 +273,12 @@ public abstract class BaseScenario {
         localReader.insertCard(new StubCalypsoClassic());
 
         // execute remote service
-        TransactionResult output =
+        UserOutputDataDto output =
             localService.executeRemoteService(
                 RemoteServiceParameters.builder(SERVICE_ID_3, localReader)
                     .withUserInputData(user)
                     .build(),
-                TransactionResult.class);
+                UserOutputDataDto.class);
 
         // validate result
         assertThat(output.isSuccessful()).isTrue();
@@ -296,13 +296,13 @@ public abstract class BaseScenario {
     CalypsoPo calypsoPo = explicitPoSelection();
 
     // execute remote service fed with the card
-    TransactionResult output =
+    UserOutputDataDto output =
         localService.executeRemoteService(
             RemoteServiceParameters.builder(SERVICE_ID_1, localReader)
                 .withInitialCardContent(calypsoPo)
                 .withUserInputData(user1)
                 .build(),
-            TransactionResult.class);
+            UserOutputDataDto.class);
 
     // validate result
     assertThat(output.isSuccessful()).isTrue();
@@ -314,12 +314,12 @@ public abstract class BaseScenario {
     localReader.insertCard(new StubCalypsoClassic());
 
     // execute remote service
-    TransactionResult output =
+    UserOutputDataDto output =
         localService.executeRemoteService(
             RemoteServiceParameters.builder(SERVICE_ID_3, localReader)
                 .withUserInputData(user1)
                 .build(),
-            TransactionResult.class);
+            UserOutputDataDto.class);
 
     // validate result
     assertThat(output.isSuccessful()).isTrue();
@@ -359,12 +359,12 @@ public abstract class BaseScenario {
     localReader.insertCard(failingSe);
 
     // execute remote service
-    TransactionResult output =
+    UserOutputDataDto output =
         localService.executeRemoteService(
             RemoteServiceParameters.builder(SERVICE_ID_3, localReader)
                 .withUserInputData(user1)
                 .build(),
-            TransactionResult.class);
+            UserOutputDataDto.class);
 
     // validate result is false
     assertThat(output.isSuccessful()).isFalse();
@@ -377,12 +377,12 @@ public abstract class BaseScenario {
 
     try {
       // execute remote service
-      TransactionResult output =
+      UserOutputDataDto output =
           localService.executeRemoteService(
               RemoteServiceParameters.builder(SERVICE_ID_3, localReader)
                   .withUserInputData(user1)
                   .build(),
-              TransactionResult.class);
+              UserOutputDataDto.class);
 
       // validate result is false
       assertThat(output.isSuccessful()).isTrue();
@@ -448,12 +448,12 @@ public abstract class BaseScenario {
     localReader.insertCard(new StubCalypsoClassic());
 
     // execute remote service
-    TransactionResult output =
+    UserOutputDataDto output =
         localService.executeRemoteService(
             RemoteServiceParameters.builder(SERVICE_ID_3, localReader)
                 .withUserInputData(user1)
                 .build(),
-            TransactionResult.class);
+            UserOutputDataDto.class);
   }
 
   void all_methods() {
@@ -461,12 +461,12 @@ public abstract class BaseScenario {
     localReader.insertCard(new StubCalypsoClassic());
 
     // execute remote service
-    TransactionResult output =
+    UserOutputDataDto output =
         localService.executeRemoteService(
             RemoteServiceParameters.builder(SERVICE_ID_4, localReader)
                 .withUserInputData(device1)
                 .build(),
-            TransactionResult.class);
+            UserOutputDataDto.class);
 
     // validate result
     assertThat(output.isSuccessful()).isTrue();
