@@ -25,8 +25,8 @@ public interface StubPoolPlugin extends PoolPlugin {
    * Plug synchronously a new {@link StubReader} in the {@link StubPoolPlugin} associated to
    * groupReference and a stub card. A READER_CONNECTED event will be raised.
    *
-   * @param groupReference : group refence of the new stub reader
-   * @param readerName : name of the new stub reader
+   * @param groupReference : group reference of the new stub reader (mandatory)
+   * @param readerName : name of the new stub reader (mandatory)
    * @param card : insert a card at creation (can be null)
    * @return created StubReader
    * @since 1.0
@@ -37,7 +37,7 @@ public interface StubPoolPlugin extends PoolPlugin {
    * Unplug synchronously all readers associated to a groupReference. A READER_DISCONNECTED event
    * will be raised.
    *
-   * @param groupReference groupReference of the reader to be unplugged
+   * @param groupReference groupReference of the reader(s) to be unplugged (mandatory)
    * @since 1.0
    */
   void unplugStubPoolReadersByGroupReference(String groupReference);
@@ -45,7 +45,7 @@ public interface StubPoolPlugin extends PoolPlugin {
   /**
    * Unplug synchronously a reader associated. A READER_DISCONNECTED event will be raised.
    *
-   * @param readerName name of the reader to be unplugged
+   * @param readerName name of the reader to be unplugged (mandatory)
    * @since 1.0
    */
   void unplugStubPoolReaderByName(String readerName);
