@@ -16,6 +16,9 @@ import android.content.Intent
 import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.os.Bundle
+import java.io.IOException
+import java.lang.ref.WeakReference
+import java.util.HashMap
 import org.eclipse.keyple.core.plugin.AbstractObservableLocalAutonomousReader
 import org.eclipse.keyple.core.plugin.AbstractObservableLocalReader
 import org.eclipse.keyple.core.plugin.DontWaitForCardRemovalDuringProcessing
@@ -25,9 +28,6 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderException
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import timber.log.Timber
-import java.io.IOException
-import java.lang.ref.WeakReference
-import java.util.HashMap
 
 /**
  *
@@ -133,7 +133,6 @@ internal abstract class AbstractAndroidNfcReader(activity: Activity, readerObser
         nfcAdapter = null
     }
 
-    /**
      * The transmission mode is always CONTACTLESS in a NFC reader
      *
      * @return Always true.
@@ -230,12 +229,12 @@ internal abstract class AbstractAndroidNfcReader(activity: Activity, readerObser
                     }
                 } catch (e: IOException) {
                     throw KeypleReaderIOException(
-                            "Error while transmitting APDU, invalid out data buffer", e
+                        "Error while transmitting APDU, invalid out data buffer", e
                     )
                 } catch (e: NoSuchElementException) {
                     throw KeypleReaderIOException(
-                            "Error while transmitting APDU, no such Element",
-                            e
+                        "Error while transmitting APDU, no such Element",
+                        e
                     )
                 }
             }
