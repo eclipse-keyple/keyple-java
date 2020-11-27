@@ -63,7 +63,7 @@ public class StubPluginAsyncTest extends BaseStubTest {
           }
         });
 
-    stubPlugin.plugStubReader(READER_NAME, true, false);
+    stubPlugin.plugReader(READER_NAME, true, false);
     lock.await(2, TimeUnit.SECONDS);
     Assert.assertEquals(0, lock.getCount());
   }
@@ -104,12 +104,12 @@ public class StubPluginAsyncTest extends BaseStubTest {
     stubPlugin.addObserver(disconnected_obs);
 
     // plug a reader
-    stubPlugin.plugStubReader(READER_NAME, false);
+    stubPlugin.plugReader(READER_NAME, false);
 
     connectedLock.await(2, TimeUnit.SECONDS);
 
     // unplug reader
-    stubPlugin.unplugStubReader(READER_NAME, false);
+    stubPlugin.unplugReader(READER_NAME, false);
 
     // wait for event to be raised
     disconnectedLock.await(2, TimeUnit.SECONDS);
@@ -144,7 +144,7 @@ public class StubPluginAsyncTest extends BaseStubTest {
         });
 
     // connect readers
-    stubPlugin.plugStubReaders(READERS, false);
+    stubPlugin.plugReaders(READERS, false);
 
     // wait for event to be raised
     readerConnected.await(2, TimeUnit.SECONDS);
@@ -188,11 +188,11 @@ public class StubPluginAsyncTest extends BaseStubTest {
     stubPlugin.addObserver(assertDisconnect);
 
     // connect reader
-    stubPlugin.plugStubReaders(READERS, true);
+    stubPlugin.plugReaders(READERS, true);
 
     Assert.assertTrue(connectedLock.await(2, TimeUnit.SECONDS));
 
-    stubPlugin.unplugStubReaders(READERS, false);
+    stubPlugin.unplugReaders(READERS, false);
 
     Assert.assertTrue(disconnectedLock.await(2, TimeUnit.SECONDS));
 

@@ -68,12 +68,11 @@ public class Main_CardProtocolDetection_Stub {
             new StubPluginFactory(STUB_PLUGIN_NAME, null, exceptionHandler));
 
     // Plug PO reader.
-    ((StubPlugin) plugin).plugStubReader("poReader", true);
+    ((StubPlugin) plugin).plugReader("poReader", true);
 
     Thread.sleep(200);
 
-    StubReader poReader = null;
-    poReader = (StubReader) (plugin.getReader("poReader"));
+    StubReader poReader = (StubReader) (plugin.getReader("poReader"));
 
     /* Activate protocols */
     poReader.activateProtocol(
