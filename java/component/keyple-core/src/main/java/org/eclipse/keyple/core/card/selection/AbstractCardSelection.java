@@ -21,34 +21,43 @@ import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.service.exception.KeypleException;
 
 /**
- * The AbstractCardSelectionRequest class embeds a {@link CardSelector} with additional helper
- * methods useful to the selection process done in {@link CardSelection}.
+ * This class provide means to create a CardSelectionRequest and analyse its result.
  *
- * <p>This class may also be extended to add particular features specific to a card family.
+ * <p>It embeds a {@link CardSelector} provided at construction and offers methods to manage
+ * additional APDU command builders.<br>
+ * The resulting {@link CardSelectionRequest} will be used as a selection case in the general
+ * selection process implemented in {@link CardSelectionsService}.
+ *
+ * <p>This class can also be extended to add specific features to a family of cards and create
+ * specific instances of {@link AbstractSmartCard} in return for the parse method.
+ *
+ * @since 0.9
  */
-public abstract class AbstractCardSelectionRequest<T extends AbstractApduCommandBuilder> {
+public abstract class AbstractCardSelection<T extends AbstractApduCommandBuilder> {
   protected final CardSelector cardSelector;
 
-  /** optional command builder list of command to be executed following the selection process */
-  private final List<T> commandBuilders = new ArrayList<T>();
+  private final List<T> commandBuilders;
 
   /**
    * (protected)<br>
    * Constructor.
    *
    * @param cardSelector A not null {@link CardSelector}.
+   * @since 0.9
    */
-  protected AbstractCardSelectionRequest(CardSelector cardSelector) {
+  protected AbstractCardSelection(CardSelector cardSelector) {
     this.cardSelector = cardSelector;
+    commandBuilders = new ArrayList<T>();
   }
 
   /**
-   * Returns a selection CardRequest built from the information provided in the constructor and
-   * possibly completed with the commandBuilders list
+   * Returns a {@link CardSelectionRequest} built from the information provided in the constructor
+   * and possibly completed with APDUs from the command builders list optionally added.
    *
-   * @return the selection CardRequest
+   * @return A not null {@link CardSelectionRequest}
+   * @since 0.9
    */
-  final CardSelectionRequest getSelectionRequest() {
+  final CardSelectionRequest getCardSelectionRequest() {
     List<ApduRequest> cardSelectionApduRequests = new ArrayList<ApduRequest>();
     for (T commandBuilder : commandBuilders) {
       cardSelectionApduRequests.add(commandBuilder.getApduRequest());
@@ -68,22 +77,32 @@ public abstract class AbstractCardSelectionRequest<T extends AbstractApduCommand
    * order in which they were added.
    *
    * @param commandBuilder an {@link AbstractApduCommandBuilder}
+   * @since 0.9
    */
   protected final void addCommandBuilder(T commandBuilder) {
     commandBuilders.add(commandBuilder);
   }
 
-  /** @return the current command builder list */
+  /**
+   * Gets the list of command builders.
+   *
+   * @return the current command builder list
+   * @since 0.9
+   */
   protected final List<T> getCommandBuilders() {
     return commandBuilders;
   }
 
   /**
-   * Virtual parse method
+   * Parsing method to be implemented in a card specific extension.
+   *
+   * <p>It returns an instance of {@link AbstractSmartCard} created from the data collected in the
+   * selection step (FCI, other data if any).
    *
    * @param cardSelectionResponse the card response received
    * @return a {@link AbstractSmartCard}
    * @throws KeypleException if an error occurs while parsing the card response
+   * @since 0.9
    */
   protected abstract AbstractSmartCard parse(CardSelectionResponse cardSelectionResponse);
 }

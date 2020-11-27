@@ -15,8 +15,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Detect the card removal thanks to the method {@link
- * WaitForCardRemovalBlocking#waitForCardAbsentNative()}. This method is invoked in another thread
+ * Detect the card removal thanks to the method
+ * WaitForCardRemovalBlocking#waitForCardAbsentNative().
+ *
+ * <p>This method is invoked in another thread
  *
  * <p>This job should be used by readers who have the ability to natively detect the disappearance
  * of the card during a communication session with an ES (between two APDU exchanges).
@@ -31,6 +33,8 @@ import org.slf4j.LoggerFactory;
  * <p>All runtime exceptions that may occur during the monitoring process are caught and notified at
  * the application level through the {@link
  * org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler} mechanism.
+ *
+ * @since 0.9
  */
 class SmartRemovalMonitoringJob extends AbstractMonitoringJob {
 

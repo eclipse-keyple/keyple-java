@@ -27,6 +27,8 @@ import org.eclipse.keyple.core.card.message.CardSelectionResponse;
  * </ul>
  *
  * when they are available.
+ *
+ * @since 0.9
  */
 public abstract class AbstractSmartCard {
   private final byte[] fciBytes;
@@ -36,6 +38,7 @@ public abstract class AbstractSmartCard {
    * Constructor.
    *
    * @param cardSelectionResponse the response from the card
+   * @since 0.9
    */
   protected AbstractSmartCard(CardSelectionResponse cardSelectionResponse) {
     ApduResponse fci = cardSelectionResponse.getSelectionStatus().getFci();
@@ -52,19 +55,32 @@ public abstract class AbstractSmartCard {
     }
   }
 
-  /** @return true if the matching card has an FCI */
+  /**
+   * Tells if the card provided a FCI
+   *
+   * @return true if the card has an FCI
+   * @since 0.9
+   */
   public boolean hasFci() {
     return fciBytes != null && fciBytes.length > 0;
   }
 
-  /** @return true if the matching card has an ATR */
+  /**
+   * Tells if the card provided an ATR
+   *
+   * @return true if the card has an ATR
+   * @since 0.9
+   */
   public boolean hasAtr() {
     return atrBytes != null && atrBytes.length > 0;
   }
 
   /**
-   * @return the FCI
+   * Gets the FCI
+   *
+   * @return the FCI as a not null byte array
    * @throws IllegalStateException if no FCI is available (see hasFci)
+   * @since 0.9
    */
   public byte[] getFciBytes() {
     if (hasFci()) {
@@ -74,8 +90,11 @@ public abstract class AbstractSmartCard {
   }
 
   /**
-   * @return the ATR
+   * Gets the ATR
+   *
+   * @return the ATR as a not null byte array
    * @throws IllegalStateException if no ATR is available (see hasAtr)
+   * @since 0.9
    */
   public byte[] getAtrBytes() {
     if (hasAtr()) {

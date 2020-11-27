@@ -17,8 +17,8 @@ import org.eclipse.keyple.calypso.transaction.CalypsoSam;
 import org.eclipse.keyple.calypso.transaction.PoSecuritySettings;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.core.card.selection.CardResource;
-import org.eclipse.keyple.core.card.selection.CardSelection;
-import org.eclipse.keyple.core.card.selection.SelectionsResult;
+import org.eclipse.keyple.core.card.selection.CardSelectionsResult;
+import org.eclipse.keyple.core.card.selection.CardSelectionsService;
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
@@ -65,20 +65,20 @@ public class Main_VerifyPin_Pcsc {
     ((PcscReader) samReader).setContactless(false).setIsoProtocol(PcscReader.IsoProtocol.T0);
 
     // Create a SAM resource after selecting the SAM
-    CardSelection samSelection = CardSelectionConfig.getSamCardSelection();
+    CardSelectionsService samSelection = CardSelectionConfig.getSamCardSelection();
 
     if (!samReader.isCardPresent()) {
       throw new IllegalStateException("No SAM is present in the reader " + samReader.getName());
     }
 
     // process explicit selection
-    SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
+    CardSelectionsResult cardSelectionsResult = samSelection.processExplicitSelections(samReader);
 
-    if (!selectionsResult.hasActiveSelection()) {
+    if (!cardSelectionsResult.hasActiveSelection()) {
       throw new IllegalStateException("Unable to open a logical channel for SAM!");
     }
 
-    CalypsoSam calypsoSam = (CalypsoSam) selectionsResult.getActiveSmartCard();
+    CalypsoSam calypsoSam = (CalypsoSam) cardSelectionsResult.getActiveSmartCard();
 
     CardResource<CalypsoSam> samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
 
@@ -90,12 +90,12 @@ public class Main_VerifyPin_Pcsc {
     logger.info("= ##### 1st PO exchange: AID based selection with reading of Environment file.");
 
     // Prepare a Calypso PO selection
-    CardSelection cardSelection = CardSelectionConfig.getPoCardSelection();
+    CardSelectionsService cardSelectionsService = CardSelectionConfig.getPoCardSelection();
 
     // Actual PO communication: operate through a single request the Calypso PO selection
     // and the file read
     CalypsoPo calypsoPo =
-        (CalypsoPo) cardSelection.processExplicitSelection(poReader).getActiveSmartCard();
+        (CalypsoPo) cardSelectionsService.processExplicitSelections(poReader).getActiveSmartCard();
 
     // Security settings
     PoSecuritySettings poSecuritySettings =

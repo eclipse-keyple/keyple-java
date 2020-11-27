@@ -12,9 +12,9 @@
 package org.eclipse.keyple.example.generic.local.UseCase3_SequentialMultiSelection;
 
 import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
-import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.CardSelectionsResult;
+import org.eclipse.keyple.core.card.selection.CardSelectionsService;
 import org.eclipse.keyple.core.card.selection.CardSelector;
-import org.eclipse.keyple.core.card.selection.SelectionsResult;
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
@@ -58,18 +58,18 @@ public class Main_SequentialMultiSelection_Pcsc {
       logger.error("No card was detected.");
     }
 
-    CardSelection cardSelection;
+    CardSelectionsService cardSelectionsService;
 
     // operate card AID selection (change the AID prefix here to adapt it to the card used for
     // the test [the card should have at least two applications matching the AID prefix])
     String cardAidPrefix = "315449432E494341";
 
     // First selection case
-    cardSelection = new CardSelection();
+    cardSelectionsService = new CardSelectionsService();
 
     // AID based selection: get the first application occurrence matching the AID, keep the
     // physical channel open
-    cardSelection.prepareSelection(
+    cardSelectionsService.prepareSelection(
         new GenericCardSelectionRequest(
             CardSelector.builder()
                 .aidSelector(
@@ -81,13 +81,13 @@ public class Main_SequentialMultiSelection_Pcsc {
                 .build()));
 
     // Do the selection and display the result
-    doAndAnalyseSelection(reader, cardSelection, 1);
+    doAndAnalyseSelection(reader, cardSelectionsService, 1);
 
     // New selection: get the next application occurrence matching the same AID, close the
     // physical channel after
-    cardSelection = new CardSelection();
+    cardSelectionsService = new CardSelectionsService();
 
-    cardSelection.prepareSelection(
+    cardSelectionsService.prepareSelection(
         new GenericCardSelectionRequest(
             CardSelector.builder()
                 .aidSelector(
@@ -99,18 +99,20 @@ public class Main_SequentialMultiSelection_Pcsc {
                 .build()));
 
     // close the channel after the selection
-    cardSelection.prepareReleaseChannel();
+    cardSelectionsService.prepareReleaseChannel();
 
     // Do the selection and display the result
-    doAndAnalyseSelection(reader, cardSelection, 2);
+    doAndAnalyseSelection(reader, cardSelectionsService, 2);
 
     System.exit(0);
   }
 
-  private static void doAndAnalyseSelection(Reader reader, CardSelection cardSelection, int index) {
-    SelectionsResult selectionsResult = cardSelection.processExplicitSelection(reader);
-    if (selectionsResult.hasActiveSelection()) {
-      AbstractSmartCard smartCard = selectionsResult.getActiveSmartCard();
+  private static void doAndAnalyseSelection(
+      Reader reader, CardSelectionsService cardSelectionsService, int index) {
+    CardSelectionsResult cardSelectionsResult =
+        cardSelectionsService.processExplicitSelections(reader);
+    if (cardSelectionsResult.hasActiveSelection()) {
+      AbstractSmartCard smartCard = cardSelectionsResult.getActiveSmartCard();
       logger.info("The card matched the selection {}.", index);
       String atr = smartCard.hasAtr() ? ByteArrayUtil.toHex(smartCard.getAtrBytes()) : "no ATR";
       String fci = smartCard.hasFci() ? ByteArrayUtil.toHex(smartCard.getFciBytes()) : "no FCI";

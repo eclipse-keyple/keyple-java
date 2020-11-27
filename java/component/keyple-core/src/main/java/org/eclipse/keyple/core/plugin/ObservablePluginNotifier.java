@@ -15,14 +15,16 @@ import org.eclipse.keyple.core.service.event.ObservablePlugin;
 import org.eclipse.keyple.core.service.event.PluginEvent;
 
 /**
- * The {@link ObservablePluginNotifier} interface provides the API to notify the observers of an
- * {@link ObservablePlugin}
+ * Provides the API to notify the observers of an ObservablePlugin
+ *
+ * @since 0.9
  */
 public interface ObservablePluginNotifier extends ObservablePlugin {
   /**
    * Push a PluginEvent of the {@link ObservablePluginNotifier} to its registered observers.
    *
    * @param event the event (see {@link PluginEvent})
+   * @since 0.9
    */
   void notifyObservers(final PluginEvent event);
 }

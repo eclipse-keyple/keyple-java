@@ -11,10 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.service.exception;
 
-/**
- * The exception {@code KeypleException} is the parent abstract class of all Keyple checked
- * exceptions.
- */
+/** The exception KeypleException is the parent abstract class of all Keyple checked exceptions. */
 public abstract class KeypleException extends RuntimeException {
 
   /** @param message the message to identify the exception context */

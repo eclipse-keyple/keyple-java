@@ -18,11 +18,11 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.core.card.message.CardResponse;
 import org.eclipse.keyple.core.card.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.card.message.ProxyReader;
-import org.eclipse.keyple.core.card.selection.AbstractCardSelectionRequest;
+import org.eclipse.keyple.core.card.selection.AbstractCardSelection;
 import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
-import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.CardSelectionsResult;
+import org.eclipse.keyple.core.card.selection.CardSelectionsService;
 import org.eclipse.keyple.core.card.selection.CardSelector;
-import org.eclipse.keyple.core.card.selection.SelectionsResult;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
@@ -254,7 +254,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     // register observer
     virtualReader.addObserver(obs);
 
-    CardSelection cardSelection = new CardSelection();
+    CardSelectionsService cardSelectionsService = new CardSelectionsService();
 
     GenericCardSelectionRequest genericCardSelectionRequest =
         new GenericCardSelectionRequest(
@@ -263,11 +263,12 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                 .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .build());
 
-    cardSelection.prepareSelection(genericCardSelectionRequest);
+    cardSelectionsService.prepareSelection(genericCardSelectionRequest);
 
     ((ObservableReader) virtualReader)
         .setDefaultSelectionRequest(
-            cardSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
+            cardSelectionsService.getDefaultSelectionsRequest(),
+            ObservableReader.NotificationMode.MATCHED_ONLY);
 
     nativeReader.startCardDetection(ObservableReader.PollingMode.SINGLESHOT);
 
@@ -311,7 +312,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
     String poAid = "A000000291A000000192"; // not matching poAid
 
-    CardSelection cardSelection = new CardSelection();
+    CardSelectionsService cardSelectionsService = new CardSelectionsService();
 
     GenericCardSelectionRequest genericCardSelectionRequest =
         new GenericCardSelectionRequest(
@@ -320,11 +321,12 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                 .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .build());
 
-    cardSelection.prepareSelection(genericCardSelectionRequest);
+    cardSelectionsService.prepareSelection(genericCardSelectionRequest);
 
     ((ObservableReader) virtualReader)
         .setDefaultSelectionRequest(
-            cardSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
+            cardSelectionsService.getDefaultSelectionsRequest(),
+            ObservableReader.NotificationMode.MATCHED_ONLY);
 
     // wait 1 second
     logger.debug("Wait 1 second before inserting card");
@@ -378,7 +380,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
     String poAid = "A000000291A000000192"; // not matching poAid
 
-    CardSelection cardSelection = new CardSelection();
+    CardSelectionsService cardSelectionsService = new CardSelectionsService();
 
     GenericCardSelectionRequest genericCardSelectionRequest =
         new GenericCardSelectionRequest(
@@ -387,11 +389,12 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                 .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .build());
 
-    cardSelection.prepareSelection(genericCardSelectionRequest);
+    cardSelectionsService.prepareSelection(genericCardSelectionRequest);
 
     ((ObservableReader) virtualReader)
         .setDefaultSelectionRequest(
-            cardSelection.getSelectionOperation(), ObservableReader.NotificationMode.ALWAYS);
+            cardSelectionsService.getDefaultSelectionsRequest(),
+            ObservableReader.NotificationMode.ALWAYS);
 
     // wait 1 second
     logger.debug("Wait 1 second before inserting card");
@@ -422,7 +425,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     nativeReader.insertSe(hoplinkSE());
 
     logger.info("Prepare card selection");
-    CardSelection cardSelection = new CardSelection();
+    CardSelectionsService cardSelectionsService = new CardSelectionsService();
     GenericCardSelectionRequest genericCardSelectionRequest =
         new GenericCardSelectionRequest(
             CardSelector.builder()
@@ -431,20 +434,20 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                 .build());
 
     /* Prepare selector, ignore AbstractSmartCard here */
-    cardSelection.prepareSelection(genericCardSelectionRequest);
+    cardSelectionsService.prepareSelection(genericCardSelectionRequest);
 
     logger.info("Process explicit card selection");
 
-    SelectionsResult selectionsResult = null;
+    CardSelectionsResult cardSelectionsResult = null;
     try {
-      selectionsResult = cardSelection.processExplicitSelection(virtualReader);
+      cardSelectionsResult = cardSelectionsService.processExplicitSelections(virtualReader);
     } catch (KeypleException e) {
       Assert.fail("Unexpected exception");
     }
 
-    logger.info("Explicit card selection result : {}", selectionsResult);
+    logger.info("Explicit card selection result : {}", cardSelectionsResult);
 
-    AbstractSmartCard smartCard = selectionsResult.getActiveSmartCard();
+    AbstractSmartCard smartCard = cardSelectionsResult.getActiveSmartCard();
 
     nativeReader.removeSe();
 
@@ -464,7 +467,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
             Assert.assertEquals(ReaderEvent.EventType.CARD_INSERTED, event.getEventType());
             logger.info("Prepare card selection");
-            CardSelection cardSelection = new CardSelection();
+            CardSelectionsService cardSelectionsService = new CardSelectionsService();
             GenericCardSelectionRequest genericCardSelectionRequest =
                 new GenericCardSelectionRequest(
                     CardSelector.builder()
@@ -473,13 +476,13 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                         .build());
 
             /* Prepare selector, ignore AbstractSmartCard here */
-            cardSelection.prepareSelection(genericCardSelectionRequest);
+            cardSelectionsService.prepareSelection(genericCardSelectionRequest);
 
             logger.info("Process explicit card selection");
 
-            SelectionsResult selectionsResult = null;
+            CardSelectionsResult cardSelectionsResult = null;
             try {
-              selectionsResult = cardSelection.processExplicitSelection(virtualReader);
+              cardSelectionsResult = cardSelectionsService.processExplicitSelections(virtualReader);
 
             } catch (KeypleReaderException e) {
               Assert.fail("Unexpected exception");
@@ -487,9 +490,9 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
               Assert.fail("Unexpected exception");
             }
 
-            logger.info("Explicit card selection result : {}", selectionsResult);
+            logger.info("Explicit card selection result : {}", cardSelectionsResult);
 
-            AbstractSmartCard smartCard = selectionsResult.getActiveSmartCard();
+            AbstractSmartCard smartCard = cardSelectionsResult.getActiveSmartCard();
 
             Assert.assertNotNull(smartCard);
 
@@ -525,8 +528,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
    * HeLPERS
    */
 
-  /** Create a new class extending AbstractCardSelectionRequest */
-  private class GenericCardSelectionRequest extends AbstractCardSelectionRequest {
+  /** Create a new class extending AbstractCardSelection */
+  private class GenericCardSelectionRequest extends AbstractCardSelection {
     public GenericCardSelectionRequest(CardSelector cardSelector) {
       super(cardSelector);
     }

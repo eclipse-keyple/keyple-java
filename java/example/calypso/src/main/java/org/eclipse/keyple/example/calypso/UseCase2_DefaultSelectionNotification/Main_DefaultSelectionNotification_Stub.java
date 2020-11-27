@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.calypso.UseCase2_DefaultSelectionNotification;
 
-import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.CardSelectionsService;
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
@@ -88,13 +88,13 @@ public class Main_DefaultSelectionNotification_Stub {
     /*
      * Prepare a Calypso PO selection
      */
-    CardSelection cardSelection = CardSelectionConfig.getCardSelection();
+    CardSelectionsService cardSelectionsService = CardSelectionConfig.getCardSelection();
     /*
      * Provide the Reader with the selection operation to be processed when a PO is inserted.
      */
     ((ObservableReader) poReader)
         .setDefaultSelectionRequest(
-            cardSelection.getSelectionOperation(),
+            cardSelectionsService.getDefaultSelectionsRequest(),
             ObservableReader.NotificationMode.MATCHED_ONLY,
             ObservableReader.PollingMode.REPEATING);
 

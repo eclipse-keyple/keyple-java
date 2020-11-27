@@ -28,10 +28,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This abstract class is used to manage the matter of observing card events in the case of a local
- * reader.
+ * Extends AbstractLocalReader to manage the observation of card events.
  *
- * <p>It provides the means to configure the plugin's behavior when a card is detected.
+ * <p>It provides the means to configure the reader's behavior when a card is detected.
  *
  * <p>The event management implements a ObservableReaderStateService state machine that is composed
  * of four states.
@@ -71,6 +70,8 @@ import org.slf4j.LoggerFactory;
  *       notified to the application and the state machine changes to the WAIT_FOR_SE_INSERTION or
  *       WAIT_FOR_START_DETECTION state according the polling mode (ObservableReader.PollingMode).
  * </ol>
+ *
+ * @since 0.9
  */
 public abstract class AbstractObservableLocalReader extends AbstractLocalReader
     implements ObservableReaderNotifier {
@@ -133,6 +134,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
    *
    * @param pluginName the name of the plugin that instantiated the reader
    * @param readerName the name of the reader
+   * @since 0.9
    */
   protected AbstractObservableLocalReader(String pluginName, String readerName) {
     super(pluginName, readerName);
@@ -148,6 +150,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
    * @param observer the observer object
    * @throws IllegalStateException If observer is null or no {@link
    *     PluginObservationExceptionHandler} has been set.
+   * @since 0.9
    */
   @Override
   public final void addObserver(final ObservableReader.ReaderObserver observer) {
@@ -176,6 +179,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
    * <p>The observer will do not receive any of the events produced by this reader.
    *
    * @param observer the observer object
+   * @since 0.9
    */
   @Override
   public final void removeObserver(final ObservableReader.ReaderObserver observer) {
@@ -198,6 +202,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
    * Notify all registered observers with the provided {@link ReaderEvent}
    *
    * @param event the reader event
+   * @since 0.9
    */
   @Override
   public final void notifyObservers(final ReaderEvent event) {
@@ -224,7 +229,12 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
     }
   }
 
-  /** @return the number of observers */
+  /**
+   * Gets the number of observers.
+   *
+   * @return An int
+   * @since 0.9
+   */
   @Override
   public final int countObservers() {
     return observers == null ? 0 : observers.size();

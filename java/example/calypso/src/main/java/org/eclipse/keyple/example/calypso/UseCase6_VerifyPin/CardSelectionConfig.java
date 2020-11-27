@@ -13,41 +13,41 @@ package org.eclipse.keyple.example.calypso.UseCase6_VerifyPin;
 
 import static org.eclipse.keyple.calypso.command.sam.SamRevision.C1;
 
-import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
+import org.eclipse.keyple.calypso.transaction.PoSelection;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
-import org.eclipse.keyple.calypso.transaction.SamSelectionRequest;
+import org.eclipse.keyple.calypso.transaction.SamSelection;
 import org.eclipse.keyple.calypso.transaction.SamSelector;
-import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.CardSelectionsService;
 import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.example.calypso.common.CalypsoClassicInfo;
 
 /** Card Selection Configuration */
 class CardSelectionConfig {
 
-  private static CardSelection poCardSelection;
+  private static CardSelectionsService poCardSelection;
 
   /**
    * Define the card selection configuration for the Calypso PO
    *
    * @return card selection object
    */
-  static CardSelection getPoCardSelection() {
+  static CardSelectionsService getPoCardSelection() {
     /*Return PO card selection if already defined */
     if (poCardSelection != null) {
       return poCardSelection;
     }
     // Prepare a Calypso PO selection
-    poCardSelection = new CardSelection();
+    poCardSelection = new CardSelectionsService();
 
     // Setting of an AID based selection of a Calypso REV3 PO
     //
     // Select the first application matching the selection AID whatever the card communication
     // protocol keep the logical channel open after the selection
 
-    // Calypso selection: configures a PoSelectionRequest with all the desired attributes to
+    // Calypso selection: configures a PoSelection with all the desired attributes to
     // make the selection and read additional information afterwards
-    PoSelectionRequest poSelectionRequest =
-        new PoSelectionRequest(
+    PoSelection poSelection =
+        new PoSelection(
             PoSelector.builder()
                 .aidSelector(
                     CardSelector.AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
@@ -55,13 +55,13 @@ class CardSelectionConfig {
                 .build());
 
     // Prepare the reading of the Environment and Holder file.
-    poSelectionRequest.prepareReadRecordFile(
+    poSelection.prepareReadRecordFile(
         CalypsoClassicInfo.SFI_EnvironmentAndHolder, CalypsoClassicInfo.RECORD_NUMBER_1);
 
     // Add the selection case to the current selection
     //
     // (we could have added other cases here)
-    poCardSelection.prepareSelection(poSelectionRequest);
+    poCardSelection.prepareSelection(poSelection);
 
     return poCardSelection;
   }
@@ -71,14 +71,14 @@ class CardSelectionConfig {
    *
    * @return card selection object
    */
-  static CardSelection getSamCardSelection() {
+  static CardSelectionsService getSamCardSelection() {
     // Create a SAM resource after selecting the SAM
-    CardSelection samSelection = new CardSelection();
+    CardSelectionsService samSelection = new CardSelectionsService();
 
     SamSelector samSelector = SamSelector.builder().samRevision(C1).serialNumber(".*").build();
 
     // Prepare selector
-    samSelection.prepareSelection(new SamSelectionRequest(samSelector));
+    samSelection.prepareSelection(new SamSelection(samSelector));
 
     return samSelection;
   }

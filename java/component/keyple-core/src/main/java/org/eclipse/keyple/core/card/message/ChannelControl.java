@@ -12,8 +12,8 @@
 package org.eclipse.keyple.core.card.message;
 
 /**
- * Indicates the action to be operated on the physical channel at the end of the request
- * transmission.
+ * Indicates the action to be taken on the physical channel at the end of the transmission of the
+ * request.
  *
  * @since 0.9
  */

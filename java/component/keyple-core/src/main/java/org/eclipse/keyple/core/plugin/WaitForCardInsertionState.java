@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Wait for card Insertion State
+ * Wait for card insertion state implementation.
  *
  * <p>The state during which the insertion of a card is expected.
  *
@@ -29,6 +29,8 @@ import org.slf4j.LoggerFactory;
  *   <li>Upon STOP_DETECT event, the machine changes state for WAIT_FOR_SE_DETECTION.
  *   <li>Upon CARD_REMOVED event, the machine changes state for WAIT_FOR_SE_DETECTION.
  * </ul>
+ *
+ * @since 0.9
  */
 class WaitForCardInsertionState extends AbstractObservableState {
 

@@ -47,14 +47,14 @@ public class CardSelectionTest extends CoreBaseTest {
 
   @Test
   public void prepareSelection() {
-    CardSelection cardSelection = createCardSelection();
+    CardSelectionsService cardSelectionsService = createCardSelection();
 
     // let's check if the result is as expected
     // (see createSelectionSelectionSelection to have a look at the expected values)
 
     // get the selection operation
     DefaultSelectionsRequest selectionOperation =
-        (DefaultSelectionsRequest) cardSelection.getSelectionOperation();
+        (DefaultSelectionsRequest) cardSelectionsService.getDefaultSelectionsRequest();
 
     // check common flags
     Assert.assertEquals(
@@ -127,10 +127,10 @@ public class CardSelectionTest extends CoreBaseTest {
 
   @Test
   public void processDefaultSelectionNull() {
-    CardSelection cardSelection = Mockito.mock(CardSelection.class);
+    CardSelectionsService cardSelectionsService = Mockito.mock(CardSelectionsService.class);
 
     try {
-      Assert.assertNull(cardSelection.processDefaultSelection(null));
+      Assert.assertNull(cardSelectionsService.processDefaultSelectionsResponse(null));
     } catch (KeypleException e) {
       Assert.fail("Exception raised: " + e.getMessage());
     }
@@ -138,28 +138,29 @@ public class CardSelectionTest extends CoreBaseTest {
 
   @Test
   public void processDefaultSelectionEmpty() {
-    CardSelection cardSelection = createCardSelection();
+    CardSelectionsService cardSelectionsService = createCardSelection();
 
     AbstractDefaultSelectionsResponse defaultSelectionsResponse;
     List<CardSelectionResponse> cardSelectionResponses = new ArrayList<CardSelectionResponse>();
 
     defaultSelectionsResponse = new DefaultSelectionsResponse(cardSelectionResponses);
 
-    SelectionsResult selectionsResult = null;
+    CardSelectionsResult cardSelectionsResult = null;
     try {
-      selectionsResult = cardSelection.processDefaultSelection(defaultSelectionsResponse);
+      cardSelectionsResult =
+          cardSelectionsService.processDefaultSelectionsResponse(defaultSelectionsResponse);
     } catch (KeypleException e) {
       Assert.fail("Exception raised: " + e.getMessage());
     }
 
-    Assert.assertFalse(selectionsResult.hasActiveSelection());
-    Assert.assertEquals(0, selectionsResult.getSmartCards().size());
+    Assert.assertFalse(cardSelectionsResult.hasActiveSelection());
+    Assert.assertEquals(0, cardSelectionsResult.getSmartCards().size());
   }
 
   @Test
   public void processDefaultSelectionNotMatching() {
-    // create a CardSelection
-    CardSelection cardSelection = createCardSelection();
+    // create a CardSelectionsService
+    CardSelectionsService cardSelectionsService = createCardSelection();
 
     // create a selection response
     AbstractDefaultSelectionsResponse defaultSelectionsResponse;
@@ -186,17 +187,18 @@ public class CardSelectionTest extends CoreBaseTest {
 
     defaultSelectionsResponse = new DefaultSelectionsResponse(cardSelectionResponses);
 
-    // process the selection response with the CardSelection
-    SelectionsResult selectionsResult = null;
+    // process the selection response with the CardSelectionsService
+    CardSelectionsResult cardSelectionsResult = null;
     try {
-      selectionsResult = cardSelection.processDefaultSelection(defaultSelectionsResponse);
+      cardSelectionsResult =
+          cardSelectionsService.processDefaultSelectionsResponse(defaultSelectionsResponse);
     } catch (KeypleException e) {
       Assert.fail("Exception raised: " + e.getMessage());
     }
 
-    Assert.assertFalse(selectionsResult.hasActiveSelection());
+    Assert.assertFalse(cardSelectionsResult.hasActiveSelection());
     try {
-      selectionsResult.getActiveSmartCard();
+      cardSelectionsResult.getActiveSmartCard();
     } catch (Exception e) {
       Assert.assertTrue(e.getMessage().contains("No active Matching card is available"));
     }
@@ -204,8 +206,8 @@ public class CardSelectionTest extends CoreBaseTest {
 
   @Test
   public void processDefaultSelectionMatching() {
-    // create a CardSelection
-    CardSelection cardSelection = createCardSelection();
+    // create a CardSelectionsService
+    CardSelectionsService cardSelectionsService = createCardSelection();
 
     // create a selection response
     AbstractDefaultSelectionsResponse defaultSelectionsResponse;
@@ -232,21 +234,22 @@ public class CardSelectionTest extends CoreBaseTest {
 
     defaultSelectionsResponse = new DefaultSelectionsResponse(cardSelectionResponses);
 
-    // process the selection response with the CardSelection
-    SelectionsResult selectionsResult = null;
+    // process the selection response with the CardSelectionsService
+    CardSelectionsResult cardSelectionsResult = null;
     try {
-      selectionsResult = cardSelection.processDefaultSelection(defaultSelectionsResponse);
+      cardSelectionsResult =
+          cardSelectionsService.processDefaultSelectionsResponse(defaultSelectionsResponse);
     } catch (KeypleException e) {
       Assert.fail("Exception raised: " + e.getMessage());
     }
 
-    Assert.assertTrue(selectionsResult.hasActiveSelection());
-    Assert.assertNotNull(selectionsResult.getActiveSmartCard());
+    Assert.assertTrue(cardSelectionsResult.hasActiveSelection());
+    Assert.assertNotNull(cardSelectionsResult.getActiveSmartCard());
   }
 
   /*
-   * @Test public void processExplicitSelection() { // create a CardSelection CardSelection
-   * cardSelection = createCardSelection();
+   * @Test public void processExplicitSelections() { // create a CardSelectionsService CardSelectionsService
+   * cardSelectionsService = createCardSelection();
    *
    * AbstractLocalReader r = Mockito.spy(new Reader("CardSelectionP", "CardSelectionR"));
    *
@@ -261,9 +264,9 @@ public class CardSelectionTest extends CoreBaseTest {
    * // physical channel is open doReturn(true).when(r).isPhysicalChannelOpen(); }
    */
 
-  /** Create a CardSelection object */
-  private CardSelection createCardSelection() {
-    CardSelection cardSelection = new CardSelection();
+  /** Create a CardSelectionsService object */
+  private CardSelectionsService createCardSelection() {
+    CardSelectionsService cardSelectionsService = new CardSelectionsService();
 
     // create and add two selection cases
     CardSelector.AidSelector aidSelector =
@@ -291,7 +294,8 @@ public class CardSelectionTest extends CoreBaseTest {
             new ApduRequest(ByteArrayUtil.fromHex("66778899AABB"), true)
                 .setName("Apdu 66778899AABB")));
 
-    cardSelection.prepareSelection(new CardSelectionRequest(cardSelector1, commandBuilders));
+    cardSelectionsService.prepareSelection(
+        new CardSelectionRequest(cardSelector1, commandBuilders));
 
     aidSelector =
         CardSelector.AidSelector.builder()
@@ -308,13 +312,13 @@ public class CardSelectionTest extends CoreBaseTest {
             .aidSelector(aidSelector)
             .build();
 
-    cardSelection.prepareSelection(new CardSelectionRequest(cardSelector2, null));
+    cardSelectionsService.prepareSelection(new CardSelectionRequest(cardSelector2, null));
 
-    return cardSelection;
+    return cardSelectionsService;
   }
 
   /** Selection Request instantiation */
-  private final class CardSelectionRequest extends AbstractCardSelectionRequest {
+  private final class CardSelectionRequest extends AbstractCardSelection {
 
     public CardSelectionRequest(
         CardSelector cardSelector, List<AbstractApduCommandBuilder> commandBuilders) {

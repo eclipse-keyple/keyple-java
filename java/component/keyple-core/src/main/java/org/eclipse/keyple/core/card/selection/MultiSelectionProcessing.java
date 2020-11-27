@@ -12,8 +12,8 @@
 package org.eclipse.keyple.core.card.selection;
 
 /**
- * indicates whether the selection process should stop after the first matching or process all
- * requests in the CardRequest Set
+ * Indicates whether the selection process should stop after the first matching or process all
+ * requests in the CardSelectionRequest list.
  */
 public enum MultiSelectionProcessing {
   /** The selection process stops as soon as a selection case is successful. */

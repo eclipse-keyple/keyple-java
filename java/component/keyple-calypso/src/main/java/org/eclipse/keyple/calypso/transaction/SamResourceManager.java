@@ -15,8 +15,8 @@ import static org.eclipse.keyple.calypso.command.sam.SamRevision.AUTO;
 
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
 import org.eclipse.keyple.core.card.selection.CardResource;
-import org.eclipse.keyple.core.card.selection.CardSelection;
-import org.eclipse.keyple.core.card.selection.SelectionsResult;
+import org.eclipse.keyple.core.card.selection.CardSelectionsResult;
+import org.eclipse.keyple.core.card.selection.CardSelectionsService;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.exception.KeypleAllocationReaderException;
 import org.eclipse.keyple.core.service.exception.KeypleException;
@@ -76,28 +76,28 @@ public abstract class SamResourceManager {
    */
   protected SamResourceManagerDefault.ManagedSamResource createSamResource(Reader samReader) {
 
-    CardSelection samSelection = new CardSelection();
+    CardSelectionsService samSelection = new CardSelectionsService();
 
     /* Prepare selector */
     samSelection.prepareSelection(
-        new SamSelectionRequest(
+        new SamSelection(
             SamSelector.builder()
                 .samIdentifier(SamIdentifier.builder().samRevision(AUTO).build())
                 .build()));
 
-    SelectionsResult selectionsResult = null;
+    CardSelectionsResult cardSelectionsResult = null;
 
     try {
-      selectionsResult = samSelection.processExplicitSelection(samReader);
+      cardSelectionsResult = samSelection.processExplicitSelections(samReader);
     } catch (KeypleException e) {
       throw new CalypsoNoSamResourceAvailableException("Failed to select a SAM");
     }
 
-    if (!selectionsResult.hasActiveSelection()) {
+    if (!cardSelectionsResult.hasActiveSelection()) {
       throw new CalypsoNoSamResourceAvailableException("Unable to open a logical channel for SAM!");
     }
 
-    CalypsoSam calypsoSam = (CalypsoSam) selectionsResult.getActiveSmartCard();
+    CalypsoSam calypsoSam = (CalypsoSam) cardSelectionsResult.getActiveSmartCard();
 
     return new SamResourceManagerDefault.ManagedSamResource(samReader, calypsoSam);
   }

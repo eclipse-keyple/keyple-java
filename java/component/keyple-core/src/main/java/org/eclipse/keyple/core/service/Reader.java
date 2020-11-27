@@ -15,15 +15,16 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderProtocolNotSupportedException;
 
 /**
- * Defines a high level API to access a card reader.
+ * Defines the high level API to access a card reader.
  *
  * <ul>
  *   <li>To retrieve the unique reader name
  *   <li>To check the card presence.
  *   <li>To activate and deactivate the card protocols.
+ *   <li>To tell if the communication is contactless or not.
  * </ul>
  *
- * Interface used by applications processing the card.
+ * The interface is used by applications processing the card.
  *
  * @since 0.9
  */

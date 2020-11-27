@@ -11,10 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.service.exception;
 
-/**
- * The exception {@code KeypleReaderNotFoundException} indicates that the current card protocol is
- * undetermined.
- */
+/** Indicates that the current card protocol is undetermined. */
 public class KeypleReaderProtocolNotFoundException extends KeypleReaderException {
 
   /** @param identificationData the identification data used to identify the card */

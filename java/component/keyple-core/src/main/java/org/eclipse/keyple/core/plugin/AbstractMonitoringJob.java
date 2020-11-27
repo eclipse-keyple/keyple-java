@@ -12,7 +12,7 @@
 package org.eclipse.keyple.core.plugin;
 
 /**
- * Monitoring jobs abstract class.
+ * Foundation class for background tasks of monitoring readers.
  *
  * <p>Observable readers can instantiate {@link AbstractMonitoringJob} to perform background
  * processing during the different states of the generic state machine.

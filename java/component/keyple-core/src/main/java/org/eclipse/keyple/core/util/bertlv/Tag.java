@@ -12,9 +12,11 @@
 package org.eclipse.keyple.core.util.bertlv;
 
 /**
- * This class represent a TAG as defined by the Basic Encoding Rules for ASN.1 <br>
+ * Represents a TAG as defined by the Basic Encoding Rules for ASN.1<br>
  * This implementation limits the tag size to 2.<br>
  * (ITU-T X.690 / ISO 8825)
+ *
+ * @since 0.9
  */
 public class Tag {
   private final int tagNumber;
@@ -22,13 +24,22 @@ public class Tag {
   private final TagType tagType;
   private final int tagSize;
 
-  /* the tag class */
+  /**
+   * The tag classes
+   *
+   * @since 0.9
+   */
   public static final byte UNIVERSAL = (byte) 0x00;
+
   public static final byte APPLICATION = (byte) 0x01;
   public static final byte CONTEXT = (byte) 0x02;
   public static final byte PRIVATE = (byte) 0x03;
 
-  /* the tag type */
+  /**
+   * The tag type
+   *
+   * @since 0.9
+   */
   public enum TagType {
     PRIMITIVE,
     CONSTRUCTED
@@ -43,6 +54,7 @@ public class Tag {
    * @param tagClass the tag class.
    * @param tagType constructed or primitive
    * @param tagSize the tag size (1 or 2)
+   * @since 0.9
    */
   public Tag(int tagNumber, byte tagClass, TagType tagType, int tagSize) {
     if (tagType == null) {
@@ -65,6 +77,7 @@ public class Tag {
    * @param binary the byte array containing the TLV data
    * @param offset the start offset in the byte array
    * @throws IndexOutOfBoundsException if the offset is too large
+   * @since 0.9
    */
   public Tag(byte[] binary, int offset) {
     /* the 2 first bits (b7b6) of the first byte defines the class */
@@ -90,18 +103,42 @@ public class Tag {
     tagNumber = number;
   }
 
+  /**
+   * Gets the tag number
+   *
+   * @return An int
+   * @since 0.9
+   */
   public int getTagNumber() {
     return tagNumber;
   }
 
+  /**
+   * Gets the tag class
+   *
+   * @return A byte
+   * @since 0.9
+   */
   public byte getTagClass() {
     return tagClass;
   }
 
+  /**
+   * Gets the tag type
+   *
+   * @return An {@link TagType} enum item
+   * @since 0.9
+   */
   public TagType getTagType() {
     return tagType;
   }
 
+  /**
+   * Gets the tag size
+   *
+   * @return An int
+   * @since 0.9
+   */
   public int getTagSize() {
     return tagSize;
   }

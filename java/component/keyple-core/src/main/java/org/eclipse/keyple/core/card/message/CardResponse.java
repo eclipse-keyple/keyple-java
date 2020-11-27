@@ -15,7 +15,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * This POJO wraps the data from a card obtained in response to a {@link CardRequest}.
+ * This POJO wraps the data from a card obtained in response to a CardRequest.
  *
  * <p>These data are a list of {@link ApduResponse} corresponding to the list of {@link ApduRequest}
  * present in the original {@link CardRequest}.

@@ -82,7 +82,7 @@ public class Main_CardProtocolDetection_Pcsc {
     // Set Default selection
     ((ObservableReader) poReader)
         .setDefaultSelectionRequest(
-            CardSelectionConfig.getDefaultSelection().getSelectionOperation(),
+            CardSelectionConfig.getDefaultSelection().getDefaultSelectionsRequest(),
             ObservableReader.NotificationMode.ALWAYS,
             ObservableReader.PollingMode.REPEATING);
 

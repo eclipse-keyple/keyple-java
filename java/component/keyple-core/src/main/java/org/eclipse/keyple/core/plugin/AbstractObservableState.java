@@ -17,8 +17,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Defines a state behaviour for a {@link AbstractObservableLocalReader} Handles {@link
- * AbstractObservableLocalReader.InternalEvent} that might results on a switch of state.
+ * Defines a state behaviour for a AbstractObservableLocalReader.
+ *
+ * <p>Handles AbstractObservableLocalReader.InternalEvent that might results on a switch of state.
+ *
+ * @since 0.9
  */
 abstract class AbstractObservableState {
 
@@ -55,6 +58,7 @@ abstract class AbstractObservableState {
    * @param monitoringJob the job to be executed in background (may be null if no background job is
    *     required)
    * @param executorService the executor service
+   * @since 0.9
    */
   protected AbstractObservableState(
       MonitoringState state,
@@ -72,6 +76,7 @@ abstract class AbstractObservableState {
    *
    * @param reader : observable reader this currentState is attached to
    * @param state : name of the currentState
+   * @since 0.9
    */
   protected AbstractObservableState(MonitoringState state, AbstractObservableLocalReader reader) {
     this.reader = reader;
@@ -82,6 +87,7 @@ abstract class AbstractObservableState {
    * Get the current state identifier of the state machine
    *
    * @return the current state identifier
+   * @since 0.9
    */
   public MonitoringState getMonitoringState() {
     return state;
@@ -91,6 +97,7 @@ abstract class AbstractObservableState {
    * Switch state in the parent reader
    *
    * @param stateId the new state
+   * @since 0.9
    */
   protected void switchState(AbstractObservableState.MonitoringState stateId) {
     reader.switchState(stateId);
@@ -100,10 +107,15 @@ abstract class AbstractObservableState {
    * Handle Internal Event Usually state is switched using method reader::switchState
    *
    * @param event internal event received by reader
+   * @since 0.9
    */
   abstract void onEvent(AbstractObservableLocalReader.InternalEvent event);
 
-  /** Invoked when activated, a custom behaviour can be added here */
+  /**
+   * Invoked when activated, a custom behaviour can be added here
+   *
+   * @since 0.9
+   */
   void onActivate() {
     if (logger.isTraceEnabled()) {
       logger.trace("[{}] onActivate => {}", this.reader.getName(), this.getMonitoringState());
@@ -117,7 +129,11 @@ abstract class AbstractObservableState {
     }
   }
 
-  /** Invoked when deactivated */
+  /**
+   * Invoked when deactivated
+   *
+   * @since 0.9
+   */
   void onDeactivate() {
     if (logger.isTraceEnabled()) {
       logger.trace("[{}] onDeactivate => {}", this.reader.getName(), this.getMonitoringState());

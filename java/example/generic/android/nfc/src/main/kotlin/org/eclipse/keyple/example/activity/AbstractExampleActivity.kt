@@ -27,7 +27,7 @@ import kotlinx.android.synthetic.main.activity_calypso_examples.eventRecyclerVie
 import kotlinx.android.synthetic.main.activity_calypso_examples.navigationView
 import kotlinx.android.synthetic.main.activity_calypso_examples.toolbar
 import org.eclipse.keyple.core.card.selection.AbstractSmartCard
-import org.eclipse.keyple.core.card.selection.CardSelection
+import org.eclipse.keyple.core.card.selection.CardSelectionsService
 import org.eclipse.keyple.core.service.SmartCardService
 import org.eclipse.keyple.core.service.event.ObservableReader
 import org.eclipse.keyple.core.service.event.ReaderEvent
@@ -62,7 +62,7 @@ abstract class AbstractExampleActivity : AppCompatActivity(), NavigationView.OnN
     protected lateinit var reader: AndroidNfcReader
 
     protected var useCase: UseCase? = null
-    protected lateinit var cardSelection: CardSelection
+    protected lateinit var cardSelectionsService: CardSelectionsService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

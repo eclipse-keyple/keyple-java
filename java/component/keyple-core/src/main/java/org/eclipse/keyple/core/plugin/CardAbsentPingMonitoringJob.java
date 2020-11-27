@@ -16,8 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Ping the card to detect removal thanks to the method {@link
- * AbstractObservableLocalReader#isCardPresentPing()}. This method is invoked in another thread.
+ * Ping the card to detect removal thanks to the method
+ * AbstractObservableLocalReader#isCardPresentPing().
+ *
+ * <p>This method is invoked in another thread.
  *
  * <p>This job should be used by readers who do not have the ability to natively detect the
  * disappearance of the card at the end of the transaction.

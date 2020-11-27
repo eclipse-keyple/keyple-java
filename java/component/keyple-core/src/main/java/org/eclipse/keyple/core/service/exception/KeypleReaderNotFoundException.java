@@ -12,8 +12,8 @@
 package org.eclipse.keyple.core.service.exception;
 
 /**
- * The exception {@code KeypleReaderNotFoundException} indicates that the reader is not found by its
- * name, generally when it is not connected to the terminal.
+ * Indicates that the reader is not found by its name, generally when it is not connected to the
+ * terminal.
  */
 public class KeypleReaderNotFoundException extends KeypleReaderException {
 

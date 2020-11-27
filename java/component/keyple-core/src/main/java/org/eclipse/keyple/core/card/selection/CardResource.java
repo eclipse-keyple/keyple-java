@@ -13,7 +13,11 @@ package org.eclipse.keyple.core.card.selection;
 
 import org.eclipse.keyple.core.service.Reader;
 
-/** The CardResource class groups a AbstractSmartCard and its associated Reader */
+/**
+ * The CardResource class groups a AbstractSmartCard and its associated Reader
+ *
+ * @since 0.9
+ */
 public class CardResource<T extends AbstractSmartCard> {
   private final Reader reader;
   private final T smartCard;
@@ -23,18 +27,29 @@ public class CardResource<T extends AbstractSmartCard> {
    *
    * @param reader the {@link Reader} with which the card is communicating
    * @param smartCard the {@link AbstractSmartCard} information structure
+   * @since 0.9
    */
   public CardResource(Reader reader, T smartCard) {
     this.reader = reader;
     this.smartCard = smartCard;
   }
 
-  /** @return the current {@link Reader} for this card */
+  /**
+   * Gets the reader
+   *
+   * @return the current {@link Reader} for this card
+   * @since 0.9
+   */
   public Reader getReader() {
     return reader;
   }
 
-  /** @return the {@link AbstractSmartCard} */
+  /**
+   * Gets the card
+   *
+   * @return the {@link AbstractSmartCard}
+   * @since 0.9
+   */
   public T getSmartCard() {
     return smartCard;
   }

@@ -31,23 +31,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The CardSelection class handles the card selection process.
+ * The CardSelectionsService provides the means to prepare and execute a card selection.
  *
  * <p>It provides a way to do an explicit card selection or to post process a default card
- * selection. <br>
+ * selection.<br>
  * The channel is kept open by default, but can be closed after each selection cases (see
  * prepareReleaseChannel).
+ *
+ * @since 0.9
  */
-public final class CardSelection {
-  private static final Logger logger = LoggerFactory.getLogger(CardSelection.class);
+public final class CardSelectionsService {
+  private static final Logger logger = LoggerFactory.getLogger(CardSelectionsService.class);
 
   /*
    * list of selection requests used to build the AbstractSmartCard list in return of
    * processSelection methods
    */
-  private final List<AbstractCardSelectionRequest<? extends AbstractApduCommandBuilder>>
+  private final List<AbstractCardSelection<? extends AbstractApduCommandBuilder>>
       commandCardSelectionRequests =
-          new ArrayList<AbstractCardSelectionRequest<? extends AbstractApduCommandBuilder>>();
+          new ArrayList<AbstractCardSelection<? extends AbstractApduCommandBuilder>>();
   private final MultiSelectionProcessing multiSelectionProcessing;
   private ChannelControl channelControl = ChannelControl.KEEP_OPEN;
 
@@ -55,13 +57,14 @@ public final class CardSelection {
    * Constructor.
    *
    * @param multiSelectionProcessing the multi card processing mode
+   * @since 0.9
    */
-  public CardSelection(MultiSelectionProcessing multiSelectionProcessing) {
+  public CardSelectionsService(MultiSelectionProcessing multiSelectionProcessing) {
     this.multiSelectionProcessing = multiSelectionProcessing;
   }
 
   /** Alternate constructor for standard usages. */
-  public CardSelection() {
+  public CardSelectionsService() {
     this(MultiSelectionProcessing.FIRST_MATCH);
   }
 
@@ -73,11 +76,12 @@ public final class CardSelection {
    *
    * @param cardSelectionRequest the selector to prepare
    * @return the selection index giving the current selection position in the selection request.
+   * @since 0.9
    */
   public int prepareSelection(
-      AbstractCardSelectionRequest<? extends AbstractApduCommandBuilder> cardSelectionRequest) {
+      AbstractCardSelection<? extends AbstractApduCommandBuilder> cardSelectionRequest) {
     if (logger.isTraceEnabled()) {
-      logger.trace("CardSelectionRequest = {}", cardSelectionRequest.getSelectionRequest());
+      logger.trace("CardSelectionRequest = {}", cardSelectionRequest.getCardSelectionRequest());
     }
     /* keep the selection request */
     commandCardSelectionRequests.add(cardSelectionRequest);
@@ -91,6 +95,8 @@ public final class CardSelection {
    * the PO will be associated with the indication CLOSE_AFTER in order to close the card channel.
    * <br>
    * This makes it possible to chain several selections on the same card if necessary.
+   *
+   * @since 0.9
    */
   public final void prepareReleaseChannel() {
     channelControl = ChannelControl.CLOSE_AFTER;
@@ -106,13 +112,14 @@ public final class CardSelection {
    * null element in the list
    *
    * @param defaultSelectionsResponse the selection response
-   * @return the {@link SelectionsResult} containing the result of all prepared selection cases,
+   * @return the {@link CardSelectionsResult} containing the result of all prepared selection cases,
    *     including {@link AbstractSmartCard} and {@link CardResponse}.
    * @throws KeypleException if the selection process failed
+   * @since 0.9
    */
-  private SelectionsResult processSelection(
+  private CardSelectionsResult processSelection(
       AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
-    SelectionsResult selectionsResult = new SelectionsResult();
+    CardSelectionsResult cardSelectionsResult = new CardSelectionsResult();
 
     int index = 0;
 
@@ -132,20 +139,16 @@ public final class CardSelection {
 
         // determine if the current matching card is selected
         SelectionStatus selectionStatus = cardSelectionResponse.getSelectionStatus();
-        boolean isSelected;
-        if (selectionStatus != null) {
-          isSelected =
-              selectionStatus.hasMatched()
-                  && cardSelectionResponse.getCardResponse().isLogicalChannelOpen();
-        } else {
-          isSelected = false;
-        }
 
-        selectionsResult.addSmartCard(index, smartCard, isSelected);
+        boolean isSelected =
+            selectionStatus.hasMatched()
+                && cardSelectionResponse.getCardResponse().isLogicalChannelOpen();
+
+        cardSelectionsResult.addSmartCard(index, smartCard, isSelected);
       }
       index++;
     }
-    return selectionsResult;
+    return cardSelectionsResult;
   }
 
   /**
@@ -156,11 +159,12 @@ public final class CardSelection {
    *
    * @param defaultSelectionsResponse the response from the reader to the {@link
    *     AbstractDefaultSelectionsRequest}
-   * @return the {@link SelectionsResult} containing the result of all prepared selection cases,
+   * @return the {@link CardSelectionsResult} containing the result of all prepared selection cases,
    *     including {@link AbstractSmartCard} and {@link CardResponse}.
    * @throws KeypleException if an error occurs during the selection process
+   * @since 0.9
    */
-  public SelectionsResult processDefaultSelection(
+  public CardSelectionsResult processDefaultSelectionsResponse(
       AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
 
     /* null pointer exception protection */
@@ -195,16 +199,17 @@ public final class CardSelection {
    * <p>
    *
    * @param reader the Reader on which the selection is made
-   * @return the {@link SelectionsResult} containing the result of all prepared selection cases,
+   * @return the {@link CardSelectionsResult} containing the result of all prepared selection cases,
    *     including {@link AbstractSmartCard} and {@link CardResponse}.
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @throws KeypleException if an error occurs during the selection process
+   * @since 0.9
    */
-  public SelectionsResult processExplicitSelection(Reader reader) {
+  public CardSelectionsResult processExplicitSelections(Reader reader) {
     List<CardSelectionRequest> cardSelectionRequests = new ArrayList<CardSelectionRequest>();
-    for (AbstractCardSelectionRequest<? extends AbstractApduCommandBuilder> cardSelectionRequest :
+    for (AbstractCardSelection<? extends AbstractApduCommandBuilder> cardSelectionRequest :
         this.commandCardSelectionRequests) {
-      cardSelectionRequests.add(cardSelectionRequest.getSelectionRequest());
+      cardSelectionRequests.add(cardSelectionRequest.getCardSelectionRequest());
     }
     if (logger.isTraceEnabled()) {
       logger.trace("Transmit CardSelectionRequest ({} request(s))", cardSelectionRequests.size());
@@ -225,12 +230,13 @@ public final class CardSelection {
    * prepared selection to be executed by a reader just after a card insertion.
    *
    * @return the {@link AbstractDefaultSelectionsRequest} previously prepared with prepareSelection
+   * @since 0.9
    */
-  public AbstractDefaultSelectionsRequest getSelectionOperation() {
+  public AbstractDefaultSelectionsRequest getDefaultSelectionsRequest() {
     List<CardSelectionRequest> cardSelectionRequests = new ArrayList<CardSelectionRequest>();
-    for (AbstractCardSelectionRequest<? extends AbstractApduCommandBuilder> cardSelectionRequest :
+    for (AbstractCardSelection<? extends AbstractApduCommandBuilder> cardSelectionRequest :
         this.commandCardSelectionRequests) {
-      cardSelectionRequests.add(cardSelectionRequest.getSelectionRequest());
+      cardSelectionRequests.add(cardSelectionRequest.getCardSelectionRequest());
     }
     return new DefaultSelectionsRequest(
         cardSelectionRequests, multiSelectionProcessing, channelControl);
