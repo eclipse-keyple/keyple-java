@@ -64,7 +64,7 @@ public class Main_DefaultSelectionNotification_Stub {
             new StubPluginFactory(STUB_PLUGIN_NAME, null, new ExceptionHandlerImpl()));
 
     /* Plug the PO stub reader. */
-    ((StubPlugin) stubPlugin).plugStubReader("poReader", true);
+    ((StubPlugin) stubPlugin).plugReader("poReader", true);
 
     /*
      * Get a PO reader ready to work with Calypso PO.

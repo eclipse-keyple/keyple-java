@@ -74,7 +74,7 @@ public class StubReaderTest extends BaseStubTest {
     reader.removeObserver(readerObs);
     readerObs = null;
     Assert.assertEquals(0, ((ObservableReader) reader).countObservers());
-    stubPlugin.unplugStubReader("StubReaderTest", true);
+    stubPlugin.unplugReader("StubReaderTest", true);
   }
 
   /*
@@ -92,7 +92,7 @@ public class StubReaderTest extends BaseStubTest {
   @Test
   public void testInsert() throws Exception {
 
-    stubPlugin.plugStubReader("StubReaderTest", true);
+    stubPlugin.plugReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
 
     final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
@@ -143,7 +143,7 @@ public class StubReaderTest extends BaseStubTest {
    */
   @Test
   public void testRemove() throws Exception {
-    stubPlugin.plugStubReader("StubReaderTest", true);
+    stubPlugin.plugReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
 
@@ -211,7 +211,7 @@ public class StubReaderTest extends BaseStubTest {
    */
   @Test
   public void A_testInsertRemoveTwice() throws Exception {
-    stubPlugin.plugStubReader("StubReaderTest", true);
+    stubPlugin.plugReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
 
@@ -316,7 +316,7 @@ public class StubReaderTest extends BaseStubTest {
 
   @Test
   public void A_testInsertRemoveTwiceFast() throws Exception {
-    stubPlugin.plugStubReader("StubReaderTest", true);
+    stubPlugin.plugReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
 
@@ -414,7 +414,7 @@ public class StubReaderTest extends BaseStubTest {
 
   @Test
   public void testInsertSmartCard() throws Exception {
-    stubPlugin.plugStubReader("StubReaderTest", true);
+    stubPlugin.plugReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
 
@@ -517,7 +517,7 @@ public class StubReaderTest extends BaseStubTest {
 
   @Test
   public void testInsertNotMatching_MatchedOnly() throws Exception {
-    stubPlugin.plugStubReader("StubReaderTest", true);
+    stubPlugin.plugReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
 
@@ -580,7 +580,7 @@ public class StubReaderTest extends BaseStubTest {
 
   @Test
   public void testInsertNotMatching_Always() throws Exception {
-    stubPlugin.plugStubReader("StubReaderTest", true);
+    stubPlugin.plugReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
 
@@ -653,7 +653,7 @@ public class StubReaderTest extends BaseStubTest {
 
   @Test
   public void testExplicitSelection_onEvent() throws Exception {
-    stubPlugin.plugStubReader("StubReaderTest", true);
+    stubPlugin.plugReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
 
@@ -720,7 +720,7 @@ public class StubReaderTest extends BaseStubTest {
 
   @Test
   public void testReleaseSeChannel() throws InterruptedException {
-    stubPlugin.plugStubReader("StubReaderTest", true);
+    stubPlugin.plugReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
 
@@ -792,7 +792,7 @@ public class StubReaderTest extends BaseStubTest {
 
   @Test
   public void transmit_Hoplink_Successful() {
-    stubPlugin.plugStubReader("StubReaderTest", true);
+    stubPlugin.plugReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
 
@@ -825,7 +825,7 @@ public class StubReaderTest extends BaseStubTest {
 
   @Test(expected = KeypleReaderException.class)
   public void transmit_no_response() throws Exception {
-    stubPlugin.plugStubReader("StubReaderTest", true);
+    stubPlugin.plugReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
 
@@ -854,7 +854,7 @@ public class StubReaderTest extends BaseStubTest {
 
   @Test
   public void transmit_partial_response_set_0() {
-    stubPlugin.plugStubReader("StubReaderTest", true);
+    stubPlugin.plugReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
 
@@ -891,7 +891,7 @@ public class StubReaderTest extends BaseStubTest {
 
   // @Test
   public void transmit_partial_response_set_1() {
-    stubPlugin.plugStubReader("StubReaderTest", true);
+    stubPlugin.plugReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
     // init Request
@@ -931,7 +931,7 @@ public class StubReaderTest extends BaseStubTest {
 
   // @Test
   public void transmit_partial_response_set_2() {
-    stubPlugin.plugStubReader("StubReaderTest", true);
+    stubPlugin.plugReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
     // init Request
@@ -971,7 +971,7 @@ public class StubReaderTest extends BaseStubTest {
 
   // @Test
   public void transmit_partial_response_set_3() {
-    stubPlugin.plugStubReader("StubReaderTest", true);
+    stubPlugin.plugReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
     // init Request
@@ -1010,7 +1010,7 @@ public class StubReaderTest extends BaseStubTest {
 
   @Test
   public void transmit_partial_response_0() {
-    stubPlugin.plugStubReader("StubReaderTest", true);
+    stubPlugin.plugReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
 
@@ -1041,7 +1041,7 @@ public class StubReaderTest extends BaseStubTest {
 
   @Test
   public void transmit_partial_response_1() {
-    stubPlugin.plugStubReader("StubReaderTest", true);
+    stubPlugin.plugReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
 
@@ -1072,7 +1072,7 @@ public class StubReaderTest extends BaseStubTest {
 
   @Test
   public void transmit_partial_response_2() {
-    stubPlugin.plugStubReader("StubReaderTest", true);
+    stubPlugin.plugReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
 
@@ -1103,7 +1103,7 @@ public class StubReaderTest extends BaseStubTest {
 
   @Test
   public void transmit_partial_response_3() {
-    stubPlugin.plugStubReader("StubReaderTest", true);
+    stubPlugin.plugReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
 
@@ -1137,7 +1137,7 @@ public class StubReaderTest extends BaseStubTest {
 
   @Test
   public void testGetName() {
-    stubPlugin.plugStubReader("StubReaderTest", true);
+    stubPlugin.plugReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
     Assert.assertNotNull(reader.getName());

@@ -121,7 +121,7 @@ public class Main_CalypsoClassic_Stub {
     /*
      * Plug PO and SAM stub readers.
      */
-    ((StubPlugin) plugin).plugStubReader("poReader", true);
+    ((StubPlugin) plugin).plugReader("poReader", true);
 
     StubReader poReader = (StubReader) (plugin.getReader("poReader"));
 
@@ -146,7 +146,7 @@ public class Main_CalypsoClassic_Stub {
 
   private static StubReader initSamReader() {
     // Get and configure the SAM reader
-    ((StubPlugin) plugin).plugStubReader("samReader", true);
+    ((StubPlugin) plugin).plugReader("samReader", true);
 
     StubReader samReader = (StubReader) (plugin.getReader("samReader"));
     logger.info("SAM Reader  NAME = {}", samReader.getName());

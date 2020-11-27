@@ -29,7 +29,7 @@ public interface StubPlugin extends ObservablePlugin {
    *     observation thread). A READER_CONNECTED event is raised in both cases
    * @since 1.0
    */
-  void plugStubReader(String name, Boolean synchronous);
+  void plugReader(String name, Boolean synchronous);
 
   /**
    * Plug a new {@link StubReader} available in the plugin
@@ -40,7 +40,7 @@ public interface StubPlugin extends ObservablePlugin {
    *     observation thread). A READER_CONNECTED event is raised in both cases
    * @since 1.0
    */
-  void plugStubReader(String name, boolean isContactless, Boolean synchronous);
+  void plugReader(String name, boolean isContactless, Boolean synchronous);
 
   /**
    * Plug multiple new {@link StubReader} available in the plugin
@@ -50,7 +50,7 @@ public interface StubPlugin extends ObservablePlugin {
    *     observation thread). A READER_CONNECTED event is raised in both cases
    * @since 1.0
    */
-  void plugStubReaders(Set<String> names, Boolean synchronous);
+  void plugReaders(Set<String> names, Boolean synchronous);
 
   /**
    * Unplug a {@link StubReader}
@@ -61,7 +61,7 @@ public interface StubPlugin extends ObservablePlugin {
    *     observation thread). A READER_DISCONNECTED event is raised in both cases
    * @since 1.0
    */
-  void unplugStubReader(String name, Boolean synchronous);
+  void unplugReader(String name, Boolean synchronous);
 
   /**
    * Unplug a list of {@link StubReader}
@@ -71,5 +71,5 @@ public interface StubPlugin extends ObservablePlugin {
    *     observation thread). A READER_DISCONNECTED event is raised in both cases
    * @since 1.0
    */
-  void unplugStubReaders(Set<String> names, Boolean synchronous);
+  void unplugReaders(Set<String> names, Boolean synchronous);
 }

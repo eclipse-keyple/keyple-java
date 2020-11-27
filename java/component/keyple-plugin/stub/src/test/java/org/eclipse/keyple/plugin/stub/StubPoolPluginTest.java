@@ -47,9 +47,9 @@ public class StubPoolPluginTest extends BaseStubTest {
     StubPoolPluginImpl stubPoolPlugin =
         (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME, null, null).getPlugin();
 
-    Reader reader = stubPoolPlugin.plugStubPoolReader("anyGroup", "reader", stubCard);
-    Reader reader2 = stubPoolPlugin.plugStubPoolReader("anyGroup2", "reader2", stubCard);
-    Reader reader3 = stubPoolPlugin.plugStubPoolReader("anyGroup2", "reader3", stubCard);
+    Reader reader = stubPoolPlugin.plugPoolReader("anyGroup", "reader", stubCard);
+    Reader reader2 = stubPoolPlugin.plugPoolReader("anyGroup2", "reader2", stubCard);
+    Reader reader3 = stubPoolPlugin.plugPoolReader("anyGroup2", "reader3", stubCard);
 
     Assert.assertEquals(3, stubPoolPlugin.getReaders().size());
     Assert.assertEquals(true, reader.isCardPresent());
@@ -64,12 +64,12 @@ public class StubPoolPluginTest extends BaseStubTest {
         (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME, null, null).getPlugin();
 
     // plug a reader
-    stubPoolPlugin.plugStubPoolReader("anyGroup", "reader1", stubCard);
-    stubPoolPlugin.plugStubPoolReader("anyGroup", "reader2", stubCard);
-    stubPoolPlugin.plugStubPoolReader("anyGroup2", "reader3", stubCard);
+    stubPoolPlugin.plugPoolReader("anyGroup", "reader1", stubCard);
+    stubPoolPlugin.plugPoolReader("anyGroup", "reader2", stubCard);
+    stubPoolPlugin.plugPoolReader("anyGroup2", "reader3", stubCard);
 
     // unplug the reader
-    stubPoolPlugin.unplugStubPoolReadersByGroupReference("anyGroup");
+    stubPoolPlugin.unplugPoolReaders("anyGroup");
 
     Assert.assertEquals(1, stubPoolPlugin.getReaders().size());
     Assert.assertEquals(1, stubPoolPlugin.getReaderGroupReferences().size());
@@ -83,8 +83,8 @@ public class StubPoolPluginTest extends BaseStubTest {
         (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME, null, null).getPlugin();
 
     // plug readers
-    stubPoolPlugin.plugStubPoolReader("group1", "stub1", stubCard);
-    stubPoolPlugin.plugStubPoolReader("group2", "stub2", stubCard);
+    stubPoolPlugin.plugPoolReader("group1", "stub1", stubCard);
+    stubPoolPlugin.plugPoolReader("group2", "stub2", stubCard);
 
     // allocate Reader
     Reader reader = stubPoolPlugin.allocateReader("group1");
@@ -104,9 +104,9 @@ public class StubPoolPluginTest extends BaseStubTest {
         (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME, null, null).getPlugin();
 
     // plug readers
-    stubPoolPlugin.plugStubPoolReader("group1", "stub1", stubCard);
-    stubPoolPlugin.plugStubPoolReader("group1", "stub2", stubCard);
-    stubPoolPlugin.plugStubPoolReader("group2", "stub3", stubCard);
+    stubPoolPlugin.plugPoolReader("group1", "stub1", stubCard);
+    stubPoolPlugin.plugPoolReader("group1", "stub2", stubCard);
+    stubPoolPlugin.plugPoolReader("group2", "stub3", stubCard);
 
     // allocate Reader
     Reader reader = stubPoolPlugin.allocateReader("group1");
@@ -124,7 +124,7 @@ public class StubPoolPluginTest extends BaseStubTest {
         (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME, null, null).getPlugin();
 
     // plug readers
-    stubPoolPlugin.plugStubPoolReader("group1", "stub1", stubCard);
+    stubPoolPlugin.plugPoolReader("group1", "stub1", stubCard);
 
     // allocate Reader
     Reader reader = stubPoolPlugin.allocateReader("group1");

@@ -31,7 +31,7 @@ public interface StubPoolPlugin extends PoolPlugin {
    * @return created StubReader
    * @since 1.0
    */
-  Reader plugStubPoolReader(String groupReference, String readerName, StubSmartCard card);
+  Reader plugPoolReader(String groupReference, String readerName, StubSmartCard card);
 
   /**
    * Unplug synchronously all readers associated to a groupReference. A READER_DISCONNECTED event
@@ -40,13 +40,13 @@ public interface StubPoolPlugin extends PoolPlugin {
    * @param groupReference groupReference of the reader(s) to be unplugged (mandatory)
    * @since 1.0
    */
-  void unplugStubPoolReadersByGroupReference(String groupReference);
+  void unplugPoolReaders(String groupReference);
 
   /**
-   * Unplug synchronously a reader associated. A READER_DISCONNECTED event will be raised.
+   * Unplug synchronously a pool reader. A READER_DISCONNECTED event will be raised.
    *
    * @param readerName name of the reader to be unplugged (mandatory)
    * @since 1.0
    */
-  void unplugStubPoolReaderByName(String readerName);
+  void unplugPoolReader(String readerName);
 }

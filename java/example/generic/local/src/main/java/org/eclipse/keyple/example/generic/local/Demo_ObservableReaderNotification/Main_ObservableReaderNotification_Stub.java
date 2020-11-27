@@ -61,12 +61,12 @@ public class Main_ObservableReaderNotification_Stub {
     Thread.sleep(200);
 
     logger.info("Plug reader 1.");
-    ((StubPlugin) plugin).plugStubReader(READER1_NAME, true);
+    ((StubPlugin) plugin).plugReader(READER1_NAME, true);
 
     Thread.sleep(100);
 
     logger.info("Plug reader 2.");
-    ((StubPlugin) plugin).plugStubReader(READER2_NAME, true);
+    ((StubPlugin) plugin).plugReader(READER2_NAME, true);
 
     Thread.sleep(1000);
 
@@ -99,12 +99,12 @@ public class Main_ObservableReaderNotification_Stub {
     Thread.sleep(100);
 
     logger.info("Unplug reader 1.");
-    ((StubPlugin) plugin).unplugStubReader(READER1_NAME, true);
+    ((StubPlugin) plugin).unplugReader(READER1_NAME, true);
 
     Thread.sleep(100);
 
     logger.info("Unplug reader 2.");
-    ((StubPlugin) plugin).unplugStubReader(READER2_NAME, true);
+    ((StubPlugin) plugin).unplugReader(READER2_NAME, true);
 
     logger.info("END.");
     // unregister plugin

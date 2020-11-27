@@ -164,7 +164,7 @@ public class Main_PoAuthentication_Stub {
 
   private static Reader initPoReader() {
     // Plug PO
-    plugin.plugStubReader("poReader", true);
+    plugin.plugReader("poReader", true);
 
     Reader poReader = plugin.getReader("poReader");
 
@@ -184,7 +184,7 @@ public class Main_PoAuthentication_Stub {
 
   private static Reader initSamReader() {
     // Plug a SAM stub reader.
-    ((StubPlugin) plugin).plugStubReader("samReader", true);
+    ((StubPlugin) plugin).plugReader("samReader", true);
     Reader samReader = plugin.getReader("samReader");
 
     // activate protocols

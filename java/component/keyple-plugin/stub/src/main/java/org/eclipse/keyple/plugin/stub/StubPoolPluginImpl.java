@@ -18,12 +18,16 @@ import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleAllocationNoReaderException;
 import org.eclipse.keyple.core.util.Assert;
 
-/** Implementation of {@link StubPoolPlugin} This class uses internally @{@link StubPluginImpl}. */
+/**
+ * Implementation of {@link StubPoolPlugin}. This class uses internally a {@link StubPluginImpl} to
+ * manage {@link StubReader}.
+ */
 final class StubPoolPluginImpl implements StubPoolPlugin {
 
-  StubPluginImpl stubPlugin;
-  Map<String, String> poolReaders; // map of readername and its associared groupReference
-  List<String> allocatedReaders; // list of allocated readers : readerName
+  private final StubPluginImpl stubPlugin; // inner plugin to manage reader lifecycle
+  private final Map<String, String>
+      poolReaders; // map of 'readerName' and its associated 'groupReference'
+  private final List<String> allocatedReaders; // list of allocated readers by their readerName
 
   public StubPoolPluginImpl(
       String pluginName,
@@ -52,13 +56,13 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
   }
 
   @Override
-  public Reader plugStubPoolReader(String groupReference, String readerName, StubSmartCard card) {
+  public Reader plugPoolReader(String groupReference, String readerName, StubSmartCard card) {
     Assert.getInstance()
         .notNull(groupReference, "group reference")
         .notNull(readerName, "reader name");
 
     // create new reader
-    stubPlugin.plugStubReader(readerName, true);
+    stubPlugin.plugReader(readerName, true);
 
     // get new reader
     StubReaderImpl newReader = (StubReaderImpl) stubPlugin.getReader(readerName);
@@ -74,18 +78,18 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
   }
 
   @Override
-  public void unplugStubPoolReadersByGroupReference(String aGroupReference) {
+  public void unplugPoolReaders(String aGroupReference) {
     Assert.getInstance().notNull(aGroupReference, "group reference");
 
     // find the reader in the readerPool
     List<String> readerNames = listReadersByGroup(aGroupReference);
     for (String readerName : readerNames) {
-      unplugStubPoolReaderByName(readerName);
+      unplugPoolReader(readerName);
     }
   }
 
   @Override
-  public void unplugStubPoolReaderByName(String readerName) {
+  public void unplugPoolReader(String readerName) {
     Assert.getInstance().notNull(readerName, "reader name");
 
     // remove reader from pool
@@ -95,18 +99,9 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
     allocatedReaders.remove(readerName);
 
     // remove reader from plugin
-    stubPlugin.unplugStubReader(readerName, true);
+    stubPlugin.unplugReader(readerName, true);
   }
 
-  /**
-   * Allocate a reader if available by groupReference
-   *
-   * @param aGroupReference the reference of the group to which the reader belongs (may be null
-   *     depending on the implementation made)
-   * @return reader if available, null otherwise
-   * @throws KeypleAllocationNoReaderException if the allocation failed due to lack of available
-   *     reader
-   */
   @Override
   public Reader allocateReader(String aGroupReference) {
     Assert.getInstance().notNull(aGroupReference, "group reference");
@@ -124,11 +119,6 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
         "No reader is available in the groupReference : " + aGroupReference);
   }
 
-  /**
-   * Release a reader
-   *
-   * @param reader the Reader to be released.
-   */
   @Override
   public void releaseReader(Reader reader) {
     Assert.getInstance().notNull(reader, "reader");
@@ -170,7 +160,7 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
   }
 
   /**
-   * (package-private)
+   * (package-private) is allocated
    *
    * @param readerName
    * @return true if reader is allocated
@@ -179,7 +169,7 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
     return allocatedReaders.contains(readerName);
   }
 
-  List<String> listReadersByGroup(String aGroupReference) {
+  private List<String> listReadersByGroup(String aGroupReference) {
     List<String> readers = new ArrayList<String>();
     // find the reader in the readerPool
     for (Map.Entry<String, String> entry : poolReaders.entrySet()) {

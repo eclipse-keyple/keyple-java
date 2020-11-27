@@ -65,7 +65,7 @@ public class Main_ExplicitSelectionAid_Stub {
         smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME, null, null));
 
     // Plug the PO stub reader.
-    ((StubPlugin) stubPlugin).plugStubReader("poReader", true);
+    ((StubPlugin) stubPlugin).plugReader("poReader", true);
 
     // Get a PO reader ready to work with Calypso PO.
     StubReader poReader = (StubReader) (stubPlugin.getReader("poReader"));

@@ -38,26 +38,40 @@ class StubReaderImpl extends AbstractObservableLocalReader
   private static final Logger logger = LoggerFactory.getLogger(StubReaderImpl.class);
 
   private StubSmartCard card;
-  boolean isContactless = true;
+  private boolean isContactless = true;
 
   private final AtomicBoolean loopWaitCard = new AtomicBoolean();
   private final AtomicBoolean loopWaitCardRemoval = new AtomicBoolean();
 
-  ReaderObservationExceptionHandler readerObservationExceptionHandler =
-      new ReaderObservationExceptionHandler() {
-        @Override
-        public void onReaderObservationError(String pluginName, String readerName, Throwable e) {
-          logger.error("Unexpected exception {}:{}", pluginName, readerName, e);
-        }
-      };
+  ReaderObservationExceptionHandler readerObservationExceptionHandler;
 
   /**
-   * Do not use directly
+   * Constructor
    *
-   * @param readerName
+   * @param readerName name of the reader
+   * @param pluginName name of the plugin
    */
   StubReaderImpl(String pluginName, String readerName) {
     super(pluginName, readerName);
+    readerObservationExceptionHandler =
+        new ReaderObservationExceptionHandler() {
+          @Override
+          public void onReaderObservationError(String pluginName, String readerName, Throwable e) {
+            logger.error("Unexpected exception {}:{}", pluginName, readerName, e);
+          }
+        };
+  }
+
+  /**
+   * Specify
+   *
+   * @param readerName name of the reader
+   * @param pluginName name of the plugin
+   * @param isContactless true if this reader should be contactless
+   */
+  StubReaderImpl(String pluginName, String readerName, boolean isContactless) {
+    this(pluginName, readerName);
+    this.isContactless = isContactless;
   }
 
   @Override
@@ -65,25 +79,15 @@ class StubReaderImpl extends AbstractObservableLocalReader
     return readerObservationExceptionHandler;
   }
 
-  /**
-   * Specify
-   *
-   * @param pluginName
-   * @param name
-   * @param isContactless
-   */
-  StubReaderImpl(String pluginName, String name, boolean isContactless) {
-    this(pluginName, name);
-    this.isContactless = isContactless;
+  @Override
+  protected void onStartDetection() {
+    logger.trace("Detection has been started on reader {}", this.getName());
   }
 
-  @SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract")
   @Override
-  protected void onStartDetection() {}
-
-  @SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract")
-  @Override
-  protected void onStopDetection() {}
+  protected void onStopDetection() {
+    logger.trace("Detection has been stopped on reader {}", this.getName());
+  }
 
   @Override
   protected byte[] getATR() {

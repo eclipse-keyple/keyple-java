@@ -62,7 +62,7 @@ public class BaseStubTest {
     logger.info("---------");
 
     stubPlugin.clearObservers();
-    stubPlugin.unplugStubReaders(stubPlugin.getReaderNames(), true);
+    stubPlugin.unplugReaders(stubPlugin.getReaderNames(), true);
     stubPlugin.unregister();
   }
 }

@@ -28,9 +28,9 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
   private static final Logger logger = LoggerFactory.getLogger(StubPluginImpl.class);
 
   // simulated list of real-time connected stubReader
-  private SortedSet<String> connectedStubNames = new TreeSet<String>();
-  private PluginObservationExceptionHandler pluginObservationExceptionHandler;
-  private ReaderObservationExceptionHandler readerObservationExceptionHandler;
+  private final SortedSet<String> connectedStubNames;
+  private final PluginObservationExceptionHandler pluginObservationExceptionHandler;
+  private final ReaderObservationExceptionHandler readerObservationExceptionHandler;
 
   /**
    * Constructor
@@ -48,21 +48,22 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
      * 10 ms to speed up responsiveness.
      */
     threadWaitTimeout = 10;
+    this.connectedStubNames = new TreeSet<String>();
     this.pluginObservationExceptionHandler = pluginObservationExceptionHandler;
     this.readerObservationExceptionHandler = readerObservationExceptionHandler;
   }
 
   @Override
-  public void plugStubReader(String readerName, Boolean synchronous) {
-    plugStubReader(readerName, true, synchronous);
+  public void plugReader(String readerName, Boolean synchronous) {
+    plugReader(readerName, true, synchronous);
   }
 
   @Override
-  public void plugStubReader(String readerName, boolean isContactless, Boolean synchronous) {
+  public void plugReader(String readerName, boolean isContactless, Boolean synchronous) {
 
     /* add the native reader to the native readers list */
     if (connectedStubNames.contains(readerName)) {
-      logger.error("Reader with readerName {} was already plugged", readerName);
+      logger.error("Reader with readerName {} is already plugged", readerName);
       return;
     }
 
@@ -93,7 +94,7 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
   }
 
   @Override
-  public void plugStubReaders(Set<String> readerNames, Boolean synchronous) {
+  public void plugReaders(Set<String> readerNames, Boolean synchronous) {
     logger.info("Plugging {} readers ..", readerNames.size());
 
     connectedStubNames.addAll(readerNames);
@@ -128,7 +129,7 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
 
   /** {@inheritDoc} */
   @Override
-  public void unplugStubReader(String readerName, Boolean synchronous) {
+  public void unplugReader(String readerName, Boolean synchronous) {
 
     if (!connectedStubNames.contains(readerName)) {
       logger.warn("No reader found with name {}", readerName);
@@ -165,7 +166,7 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
   }
 
   @Override
-  public void unplugStubReaders(Set<String> readerNames, Boolean synchronous) {
+  public void unplugReaders(Set<String> readerNames, Boolean synchronous) {
     logger.trace("Unplug stub readers.. {}", readerNames);
 
     connectedStubNames.removeAll(readerNames);
