@@ -16,8 +16,7 @@ import org.eclipse.keyple.core.service.Reader;
 
 /**
  * Simulates a @{@link PoolPlugin} with {@link StubReaderImpl} and {@link StubSmartCard} Manages
- * allocation readers by group reference, Limitations : - each group can contain only one StubReader
- * thus one StubSmartCard
+ * allocation readers by group reference.
  */
 public interface StubPoolPlugin extends PoolPlugin {
 
@@ -26,7 +25,8 @@ public interface StubPoolPlugin extends PoolPlugin {
    * groupReference and a stub card. A READER_CONNECTED event will be raised.
    *
    * @param groupReference : group reference of the new stub reader (mandatory)
-   * @param readerName : name of the new stub reader (mandatory)
+   * @param readerName : name of the new stub reader (mandatory). Each reader should have a unique
+   *     name, no matter to what groupReference they are associated to
    * @param card : insert a card at creation (can be null)
    * @return created StubReader
    * @since 1.0
