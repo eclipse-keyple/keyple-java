@@ -42,11 +42,6 @@ interface AndroidNfcReader : ObservableReader {
     fun processIntent(intent: Intent)
 
     /**
-     * clear context instance
-     */
-    fun clearContext()
-
-    /**
      * Allows the calling application to specify the delay that the platform will use for performing presence checks on any discovered tag.
      * see @NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY
      */
@@ -66,5 +61,4 @@ interface AndroidNfcReader : ObservableReader {
         val READER_NAME = "AndroidNfcReader"
         val PLUGIN_NAME = AndroidNfcPlugin.PLUGIN_NAME
     }
-
 }
