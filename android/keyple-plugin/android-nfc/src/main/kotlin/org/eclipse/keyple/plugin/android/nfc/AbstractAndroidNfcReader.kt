@@ -54,17 +54,35 @@ internal abstract class AbstractAndroidNfcReader(activity: Activity, readerObser
         this.readerObservationExceptionHandler = readerObservationExceptionHandler
     }
 
-    // Android NFC Adapter
-    protected var nfcAdapter: NfcAdapter? = null
-
     // keep state between session if required
     private var tagProxy: TagProxy? = null
 
-    private val parameters = HashMap<String, String?>()
-
     private val protocolsMap = HashMap<String, String?>()
 
-    private val NO_TAG = "no-tag"
+    // Android NFC Adapter
+    protected var nfcAdapter: NfcAdapter? = null
+
+    private var mPresenceCheckDelay: Int? = null
+    private var mNoPlateformSound: Boolean? = null
+    private var mSkipNdefCheck: Boolean? = null
+
+    override var presenceCheckDelay: Int?
+        get() = mPresenceCheckDelay
+        set(value) {
+            mPresenceCheckDelay = value
+        }
+
+    override var noPlateformSound: Boolean?
+        get() = mNoPlateformSound
+        set(value) {
+            mNoPlateformSound = value
+        }
+
+    override var skipNdefCheck: Boolean?
+        get() = mSkipNdefCheck
+        set(value) {
+            mSkipNdefCheck = value
+        }
 
     /**
      * Build Reader Mode flags Integer from parameters
@@ -76,14 +94,11 @@ internal abstract class AbstractAndroidNfcReader(activity: Activity, readerObser
         get() {
             var flags = 0
 
-            val ndef = parameters[AndroidNfcReader.FLAG_READER_SKIP_NDEF_CHECK]
-            val nosounds = parameters[AndroidNfcReader.FLAG_READER_NO_PLATFORM_SOUNDS]
-
-            if (ndef != null && ndef == "1") {
+            if (skipNdefCheck != null && skipNdefCheck == true) {
                 flags = flags or NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK
             }
 
-            if (nosounds != null && nosounds == "1") {
+            if (noPlateformSound != null && noPlateformSound == true) {
                 flags = flags or NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS
             }
             for (cardProtocol in this.protocolsMap.keys) {
@@ -105,65 +120,17 @@ internal abstract class AbstractAndroidNfcReader(activity: Activity, readerObser
     val options: Bundle
         get() {
             val options = Bundle(1)
-            if (parameters.containsKey(AndroidNfcReader.FLAG_READER_PRESENCE_CHECK_DELAY)) {
-                val delay = Integer
-                    .parseInt(parameters[AndroidNfcReader.FLAG_READER_PRESENCE_CHECK_DELAY]!!)
+            presenceCheckDelay?.let { delay ->
                 options.putInt(NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY, delay)
             }
             return options
         }
 
-    override fun clearContext() {
+    private fun clearContext() {
         contextWeakRef.clear()
         contextWeakRef = WeakReference(null)
 
         nfcAdapter = null
-    }
-
-    /**
-     * Get Reader parameters
-     *
-     * @return parameters
-     */
-    override fun getParameters(): Map<String, String?> {
-        return parameters
-    }
-
-    /**
-     * Configure NFC Reader AndroidNfcReaderImpl supports the following parameters : FLAG_READER:
-     * SKIP_NDEF_CHECK (skip NDEF check when a smartcard is detected) FLAG_READER:
-     * NO_PLATFORM_SOUNDS (disable device sound when nfc smartcard is detected)
-     * EXTRA_READER_PRESENCE_CHECK_DELAY: "Int" (see @NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY)
-     *
-     * @param key the parameter key
-     * @param value the parameter value
-     * @throws IOException
-     */
-    @Throws(IllegalArgumentException::class)
-    override fun setParameter(key: String, value: String) {
-        Timber.i("AndroidNfcReaderImpl supports the following parameters")
-        Timber.i(
-            "%s, FLAG_READER_SKIP_NDEF_CHECK:%s, FLAG_READER_NO_PLATFORM_SOUNDS:%s, FLAG_READER_PRESENCE_CHECK_DELAY:%s",
-            AndroidNfcReader.READER_NAME,
-            parameters[AndroidNfcReader.FLAG_READER_SKIP_NDEF_CHECK],
-            parameters[AndroidNfcReader.FLAG_READER_NO_PLATFORM_SOUNDS],
-            parameters[AndroidNfcReader.FLAG_READER_PRESENCE_CHECK_DELAY]
-        )
-
-        val correctParameter =
-            (key == AndroidNfcReader.FLAG_READER_SKIP_NDEF_CHECK && value == "1" || value == "0" ||
-                    key == AndroidNfcReader.FLAG_READER_NO_PLATFORM_SOUNDS && value == "1" || value == "0" ||
-                    key == AndroidNfcReader.FLAG_READER_PRESENCE_CHECK_DELAY && Integer.parseInt(
-                value
-            ) > -1)
-
-        if (correctParameter) {
-            Timber.w("Adding parameter : $key - $value")
-            parameters[key] = value
-        } else {
-            Timber.w("Unrecognized parameter : $key")
-            throw IllegalArgumentException("Unrecognized parameter $key : $value")
-        }
     }
 
     /**
@@ -248,14 +215,14 @@ internal abstract class AbstractAndroidNfcReader(activity: Activity, readerObser
         return with(tagProxy) {
             if (this == null) {
                 throw KeypleReaderIOException(
-                    "Error while transmitting APDU, invalid out data buffer"
+                        "Error while transmitting APDU, invalid out data buffer"
                 )
             } else {
                 try {
                     val bytes = transceive(apduIn)
                     if (bytes.size < 2) {
                         throw KeypleReaderIOException(
-                            "Error while transmitting APDU, invalid out data buffer"
+                                "Error while transmitting APDU, invalid out data buffer"
                         )
                     } else {
                         Timber.d("Receive data from card : ${ByteArrayUtil.toHex(bytes)}")
@@ -263,12 +230,12 @@ internal abstract class AbstractAndroidNfcReader(activity: Activity, readerObser
                     }
                 } catch (e: IOException) {
                     throw KeypleReaderIOException(
-                        "Error while transmitting APDU, invalid out data buffer", e
+                            "Error while transmitting APDU, invalid out data buffer", e
                     )
                 } catch (e: NoSuchElementException) {
                     throw KeypleReaderIOException(
-                        "Error while transmitting APDU, no such Element",
-                        e
+                            "Error while transmitting APDU, no such Element",
+                            e
                     )
                 }
             }
@@ -290,7 +257,7 @@ internal abstract class AbstractAndroidNfcReader(activity: Activity, readerObser
     override fun activateReaderProtocol(readerProtocolName: String?) {
         if (!protocolsMap.containsKey(readerProtocolName)) {
             protocolsMap[readerProtocolName!!] =
-                AndroidNfcProtocolSettings.getSetting(readerProtocolName)
+                    AndroidNfcProtocolSettings.getSetting(readerProtocolName)
         }
         Timber.d("$name: Activate protocol $readerProtocolName with rule \"${protocolsMap[readerProtocolName]}\".")
     }
@@ -381,8 +348,8 @@ internal abstract class AbstractAndroidNfcReader(activity: Activity, readerObser
                 // build a user friendly TechList
                 val techList = tag.techList.joinToString(separator = ", ") {
                     it.replace(
-                        "android.nfc.tech.",
-                        ""
+                            "android.nfc.tech.",
+                            ""
                     )
                 }
                 // build a hexa TechId

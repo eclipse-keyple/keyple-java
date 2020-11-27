@@ -22,7 +22,8 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
  */
 public interface WaitForCardInsertionBlocking extends ObservableReaderNotifier {
   /**
-   * Waits for a card. Returns true if a card is detected before the end of the provided timeout.
+   * Waits for a card. Returns true if a card is detected, false it was interrupted or if the reader
+   * is no longer able to detect a card.
    *
    * <p>This method must be implemented by the plugin's reader class when it implements the {@link
    * WaitForCardInsertionBlocking} interface.

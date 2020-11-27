@@ -50,19 +50,17 @@ class SmartInsertionMonitoringJob extends AbstractMonitoringJob {
       @Override
       public void run() {
         try {
-          boolean isCardFound = false;
-          while (!isCardFound && !Thread.currentThread().isInterrupted()) {
+          while (!Thread.currentThread().isInterrupted()) {
             if (logger.isTraceEnabled()) {
               logger.trace("[{}] Invoke waitForCardPresent asynchronously", reader.getName());
             }
 
             boolean isCardPresent = reader.waitForCardPresent();
-
             try {
               if (isCardPresent) {
                 state.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_INSERTED);
-                isCardFound = true;
               }
+              break;
             } catch (KeypleReaderIOException e) {
               logger.warn(
                   "[{}] waitForCardPresent => Error while processing card insertion event",

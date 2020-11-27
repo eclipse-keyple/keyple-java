@@ -42,34 +42,23 @@ interface AndroidNfcReader : ObservableReader {
     fun processIntent(intent: Intent)
 
     /**
-     * clear context instance
+     * Allows the calling application to specify the delay that the platform will use for performing presence checks on any discovered tag.
+     * see @NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY
      */
-    fun clearContext()
+    var presenceCheckDelay: Int?
 
     /**
-     * Configure NFC Reader
+     * Allows the caller to prevent the platform from playing sounds when it discovers a tag.
      */
-    fun setParameter(key: String, value: String)
+    var noPlateformSound: Boolean?
 
     /**
-     * Get Reader parameters
-     *
-     * @return parameters
+     * Prevent the platform from performing any NDEF checks in reader mode.
      */
-    fun getParameters(): Map<String, String?>
+    var skipNdefCheck: Boolean?
 
     companion object {
-
         val READER_NAME = "AndroidNfcReader"
         val PLUGIN_NAME = AndroidNfcPlugin.PLUGIN_NAME
-
-        // FLAG_READER_SKIP_NDEF_CHECK Prevent the platform from performing any NDEF checks in reader mode. Must be 0 or 1.
-        val FLAG_READER_SKIP_NDEF_CHECK = "FLAG_READER_SKIP_NDEF_CHECK"
-
-        // Allows the caller to prevent the platform from playing sounds when it discovers a tag. Must be 0 or 1.
-        val FLAG_READER_NO_PLATFORM_SOUNDS = "FLAG_READER_NO_PLATFORM_SOUNDS"
-
-        // Allows the calling application to specify the delay that the platform will use for performing presence checks on any discovered tag.
-        val FLAG_READER_PRESENCE_CHECK_DELAY = "FLAG_READER_PRESENCE_CHECK_DELAY"
     }
 }
