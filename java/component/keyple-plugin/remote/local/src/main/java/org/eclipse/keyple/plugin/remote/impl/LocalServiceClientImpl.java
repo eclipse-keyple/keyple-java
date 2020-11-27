@@ -104,14 +104,14 @@ final class LocalServiceClientImpl extends AbstractLocalService
     // Generate a new session id
     String sessionId = generateSessionId();
 
-    // build keypleMessageDto EXECUTE_REMOTE_SERVICE with user params
+    // build messageDto EXECUTE_REMOTE_SERVICE with user params
     MessageDto remoteServiceDto = buildRemoteServiceMessage(parameters, sessionId);
 
     try {
       // Open a new session on the node
       node.openSession(sessionId);
 
-      // send keypleMessageDto through the node
+      // send messageDto through the node
       MessageDto receivedDto = node.sendRequest(remoteServiceDto);
 
       T userOutputData;
@@ -209,7 +209,7 @@ final class LocalServiceClientImpl extends AbstractLocalService
         // Open a new session on the node
         node.openSession(sessionId);
 
-        // send keypleMessageDto through the node
+        // send messageDto through the node
         MessageDto receivedDto = node.sendRequest(eventMessageDto);
 
         // Process all the transaction

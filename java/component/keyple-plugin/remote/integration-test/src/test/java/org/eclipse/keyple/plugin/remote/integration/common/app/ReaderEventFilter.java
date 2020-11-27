@@ -12,21 +12,21 @@
 package org.eclipse.keyple.plugin.remote.integration.common.app;
 
 import org.eclipse.keyple.core.service.event.ReaderEvent;
-import org.eclipse.keyple.plugin.remote.integration.common.model.TransactionResult;
 import org.eclipse.keyple.plugin.remote.integration.common.model.UserInput;
+import org.eclipse.keyple.plugin.remote.integration.common.model.UserOutputDataDto;
 import org.eclipse.keyple.plugin.remote.spi.DoNotPropagateEventException;
 import org.eclipse.keyple.plugin.remote.spi.ObservableReaderEventFilter;
 
 public class ReaderEventFilter implements ObservableReaderEventFilter {
 
-  public TransactionResult transactionResult;
+  public UserOutputDataDto transactionResult;
   public UserInput user;
 
   public void setUserData(UserInput user) {
     this.user = user;
   }
 
-  public boolean resetTransactionResult() {
+  public boolean resetUserOutputDataDto() {
     transactionResult = null;
     return true;
   }
@@ -46,13 +46,13 @@ public class ReaderEventFilter implements ObservableReaderEventFilter {
 
   @Override
   public Class<? extends Object> getUserOutputDataClass() {
-    return TransactionResult.class;
+    return UserOutputDataDto.class;
   }
 
   @Override
   public void afterPropagation(Object userOutputData) {
     if (userOutputData != null) {
-      transactionResult = (TransactionResult) userOutputData;
+      transactionResult = (UserOutputDataDto) userOutputData;
     }
   }
 };

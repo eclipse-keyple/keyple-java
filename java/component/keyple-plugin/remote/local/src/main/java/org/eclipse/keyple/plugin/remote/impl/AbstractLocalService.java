@@ -69,8 +69,8 @@ abstract class AbstractLocalService extends AbstractMessageHandler {
 
   /**
    * (package-private)<br>
-   * Execute a keypleMessageDto on the local localReader, returns the response embedded on a
-   * keypleMessageDto ready to be sent back.
+   * Execute a messageDto on the local localReader, returns the response embedded on a messageDto
+   * ready to be sent back.
    *
    * @param msg The message to process (must be not null).
    * @return a not null reference
