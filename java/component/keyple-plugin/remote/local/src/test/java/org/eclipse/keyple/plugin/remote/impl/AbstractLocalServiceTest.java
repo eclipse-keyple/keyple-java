@@ -27,6 +27,7 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.MessageDto;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -90,6 +91,11 @@ public class AbstractLocalServiceTest extends BaseLocalTest {
     SmartCardService.getInstance().registerPlugin(pluginFactoryMocked);
   }
 
+  @After
+  public void tearDown() {
+    SmartCardService.getInstance().unregisterPlugin(pluginName);
+  }
+
   @Test(expected = KeypleReaderNotFoundException.class)
   public void findLocalReader_notFound() {
     service.findLocalReader(readerNameUnknown);
@@ -101,7 +107,6 @@ public class AbstractLocalServiceTest extends BaseLocalTest {
     ProxyReader seReader = service.findLocalReader(readerName);
     // results
     Assert.assertNotNull(seReader);
-    SmartCardService.getInstance().unregisterPlugin(pluginName);
   }
 
   @Test

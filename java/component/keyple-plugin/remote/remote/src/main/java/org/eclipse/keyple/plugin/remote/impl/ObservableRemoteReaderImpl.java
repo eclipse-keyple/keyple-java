@@ -15,7 +15,7 @@ import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import org.eclipse.keyple.core.plugin.reader.ObservableReaderNotifier;
+import org.eclipse.keyple.core.plugin.ObservableReaderNotifier;
 import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderEvent;

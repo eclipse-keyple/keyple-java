@@ -14,7 +14,7 @@ package org.eclipse.keyple.plugin.remote.impl;
 import com.google.gson.JsonObject;
 import java.util.*;
 import org.eclipse.keyple.core.card.message.ProxyReader;
-import org.eclipse.keyple.core.service.ReaderPoolPlugin;
+import org.eclipse.keyple.core.service.PoolPlugin;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.exception.KeypleAllocationReaderException;
 import org.eclipse.keyple.core.service.exception.KeypleException;
@@ -66,7 +66,7 @@ final class PoolLocalServiceServerImpl extends AbstractLocalService
   void onMessage(MessageDto msg) {
     MessageDto response;
     ProxyReader reader;
-    ReaderPoolPlugin poolPlugin;
+    PoolPlugin poolPlugin;
     try {
       switch (MessageDto.Action.valueOf(msg.getAction())) {
         case ALLOCATE_READER:
@@ -112,10 +112,9 @@ final class PoolLocalServiceServerImpl extends AbstractLocalService
    * @return non nullable instance of a pool plugin
    * @throws KeypleAllocationReaderException if no pool plugin containing group reference is found
    */
-  private ReaderPoolPlugin getAPoolPlugin(String groupReference) {
+  private PoolPlugin getAPoolPlugin(String groupReference) {
     for (String poolPluginName : poolPluginNames) {
-      ReaderPoolPlugin poolPlugin =
-          (ReaderPoolPlugin) SmartCardService.getInstance().getPlugin(poolPluginName);
+      PoolPlugin poolPlugin = (PoolPlugin) SmartCardService.getInstance().getPlugin(poolPluginName);
       if (poolPlugin.getReaderGroupReferences().contains(groupReference)) {
         return poolPlugin;
       }
@@ -135,8 +134,7 @@ final class PoolLocalServiceServerImpl extends AbstractLocalService
   private SortedSet<String> getAllGroupReferences() {
     SortedSet<String> allGroupReferences = new TreeSet<String>();
     for (String poolPluginName : poolPluginNames) {
-      ReaderPoolPlugin poolPlugin =
-          (ReaderPoolPlugin) SmartCardService.getInstance().getPlugin(poolPluginName);
+      PoolPlugin poolPlugin = (PoolPlugin) SmartCardService.getInstance().getPlugin(poolPluginName);
       allGroupReferences.addAll(poolPlugin.getReaderGroupReferences());
     }
     return allGroupReferences;
@@ -151,8 +149,7 @@ final class PoolLocalServiceServerImpl extends AbstractLocalService
    */
   private void releaseReader(String readerName) {
     for (String poolPluginName : poolPluginNames) {
-      ReaderPoolPlugin poolPlugin =
-          (ReaderPoolPlugin) SmartCardService.getInstance().getPlugin(poolPluginName);
+      PoolPlugin poolPlugin = (PoolPlugin) SmartCardService.getInstance().getPlugin(poolPluginName);
       if (poolPlugin.getReaderNames().contains(readerName)) {
         poolPlugin.releaseReader(poolPlugin.getReader(readerName));
         return;
@@ -171,8 +168,7 @@ final class PoolLocalServiceServerImpl extends AbstractLocalService
    */
   private ProxyReader findReader(String localReaderName) {
     for (String poolPluginName : poolPluginNames) {
-      ReaderPoolPlugin plugin =
-          (ReaderPoolPlugin) SmartCardService.getInstance().getPlugin(poolPluginName);
+      PoolPlugin plugin = (PoolPlugin) SmartCardService.getInstance().getPlugin(poolPluginName);
       try {
         return (ProxyReader) plugin.getReader(localReaderName);
       } catch (KeypleReaderNotFoundException e) {

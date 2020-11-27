@@ -29,6 +29,7 @@ import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -47,6 +48,17 @@ public class PoolRemotePluginClientTest {
   public void setUp() {
     asyncEndpoint = Mockito.mock(AsyncEndpointClient.class);
     syncEndpoint = Mockito.mock(SyncEndpointClient.class);
+  }
+
+  @After
+  public void tearDown() {
+    try {
+      // unregister plugin
+      SmartCardService.getInstance()
+          .unregisterPlugin(PoolRemotePluginClientUtils.getRemotePlugin().getName());
+    } catch (KeyplePluginNotFoundException e) {
+      // plugin not found, was not register
+    }
   }
 
   @Test
@@ -102,7 +114,6 @@ public class PoolRemotePluginClientTest {
     remotePoolPlugin =
         (PoolRemotePluginClientImpl)
             PoolRemotePluginClientFactory.builder().withSyncNode(syncEndpoint).build().getPlugin();
-    remotePoolPlugin.register();
     remoteReader = remotePoolPlugin.allocateReader(groupReference);
     remotePoolPlugin.releaseReader(remoteReader);
     assertThat(remotePoolPlugin.getReaders()).isEmpty();

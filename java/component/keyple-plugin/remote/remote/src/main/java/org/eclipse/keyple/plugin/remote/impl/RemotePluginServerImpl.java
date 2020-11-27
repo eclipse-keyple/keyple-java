@@ -78,7 +78,6 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
 
         // create a remote reader from message parameters
         final AbstractRemoteReaderServer remoteReader = createMasterReader(message);
-        remoteReader.register();
         readers.put(remoteReader.getName(), remoteReader);
         notifyObservers(
             new PluginEvent(
@@ -88,7 +87,6 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
         Assert.getInstance().notNull(message.getRemoteReaderName(), "remoteReaderName");
 
         ObservableRemoteReaderServerImpl delegateRemoteReader = createSlaveReader(message);
-        delegateRemoteReader.register();
         readers.put(delegateRemoteReader.getName(), delegateRemoteReader);
 
         // notify observers of this event

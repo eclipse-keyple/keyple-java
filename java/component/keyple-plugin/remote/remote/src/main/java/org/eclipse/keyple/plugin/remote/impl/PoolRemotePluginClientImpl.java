@@ -98,7 +98,6 @@ final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
               node,
               sessionId,
               response.getClientNodeId());
-      reader.register();
       readers.put(reader.getName(), reader);
 
       return reader;

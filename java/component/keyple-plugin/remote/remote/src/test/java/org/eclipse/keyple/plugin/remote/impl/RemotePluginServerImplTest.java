@@ -39,7 +39,6 @@ public class RemotePluginServerImplTest extends RemoteServerBaseTest {
     node = Mockito.mock(AbstractNode.class);
     remotePlugin.node = node;
     doAnswer(aVoid()).when(node).sendMessage(messageArgumentCaptor.capture());
-    remotePlugin.register();
   }
 
   /*

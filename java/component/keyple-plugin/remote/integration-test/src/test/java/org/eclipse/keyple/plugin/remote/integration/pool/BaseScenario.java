@@ -45,14 +45,13 @@ public abstract class BaseScenario {
       localPoolPlugin =
           (StubPoolPlugin)
               SmartCardService.getInstance()
-                  .registerPlugin(new StubPoolPluginFactory(NATIVE_POOL_PLUGIN_NAME));
+                  .registerPlugin(new StubPoolPluginFactory(NATIVE_POOL_PLUGIN_NAME, null, null));
     }
     // plug one reader if not exists yet
     try {
       localReader = (StubReader) localPoolPlugin.getReader(NATIVE_READER_NAME);
     } catch (KeypleReaderNotFoundException e) {
-      localPoolPlugin.plugStubPoolReader(
-          groupReference, NATIVE_READER_NAME, new StubCalypsoClassic());
+      localPoolPlugin.plugPoolReader(groupReference, NATIVE_READER_NAME, new StubCalypsoClassic());
       localReader = (StubReader) localPoolPlugin.getReader(NATIVE_READER_NAME);
       // activate ISO_14443_4
       localReader.activateProtocol(
@@ -64,7 +63,7 @@ public abstract class BaseScenario {
       localReader2 = (StubReader) localPoolPlugin.getReader(NATIVE_READER_NAME_2);
     } catch (KeypleReaderNotFoundException e) {
       // plug a second reader
-      localPoolPlugin.plugStubPoolReader(
+      localPoolPlugin.plugPoolReader(
           groupReference, NATIVE_READER_NAME_2, new StubCalypsoClassic());
       localReader2 = (StubReader) localPoolPlugin.getReader(NATIVE_READER_NAME_2);
       // activate ISO_14443_4

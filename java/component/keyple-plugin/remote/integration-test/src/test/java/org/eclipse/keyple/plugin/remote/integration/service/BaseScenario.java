@@ -149,13 +149,13 @@ public abstract class BaseScenario {
       localPlugin =
           (StubPlugin)
               SmartCardService.getInstance()
-                  .registerPlugin(new StubPluginFactory(NATIVE_PLUGIN_NAME));
+                  .registerPlugin(new StubPluginFactory(NATIVE_PLUGIN_NAME, null, null));
     }
     // localReader should be reset
     try {
       localReader = (StubReader) localPlugin.getReader(NATIVE_READER_NAME);
     } catch (KeypleReaderNotFoundException e) {
-      localPlugin.plugStubReader(NATIVE_READER_NAME, true, true);
+      localPlugin.plugReader(NATIVE_READER_NAME, true, true);
       localReader = (StubReader) localPlugin.getReader(NATIVE_READER_NAME);
       // activate ISO_14443_4
       localReader.activateProtocol(
@@ -167,7 +167,7 @@ public abstract class BaseScenario {
       localReader2 = (StubReader) localPlugin.getReader(NATIVE_READER_NAME_2);
     } catch (KeypleReaderNotFoundException e) {
       // plug a second reader
-      localPlugin.plugStubReader(NATIVE_READER_NAME_2, true, true);
+      localPlugin.plugReader(NATIVE_READER_NAME_2, true, true);
       localReader2 = (StubReader) localPlugin.getReader(NATIVE_READER_NAME_2);
       // activate ISO_14443_4
       localReader2.activateProtocol(
@@ -177,8 +177,8 @@ public abstract class BaseScenario {
   }
 
   void clearNativeReader() {
-    localPlugin.unplugStubReader(NATIVE_READER_NAME, true);
-    localPlugin.unplugStubReader(NATIVE_READER_NAME_2, true);
+    localPlugin.unplugReader(NATIVE_READER_NAME, true);
+    localPlugin.unplugReader(NATIVE_READER_NAME_2, true);
   }
 
   /** Init a Sync Remote Server Plugin (ie. http server) */

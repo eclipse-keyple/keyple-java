@@ -12,7 +12,7 @@
 package org.eclipse.keyple.plugin.remote;
 
 import org.eclipse.keyple.core.service.PluginFactory;
-import org.eclipse.keyple.core.service.ReaderPoolPlugin;
+import org.eclipse.keyple.core.service.PoolPlugin;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.plugin.remote.impl.PoolRemotePluginClientFactory;
 import org.eclipse.keyple.plugin.remote.impl.PoolRemotePluginClientUtils;
@@ -33,8 +33,8 @@ import org.eclipse.keyple.plugin.remote.impl.PoolRemotePluginClientUtils;
  *       SmartCardService#unregisterPlugin(String)} using the plugin name.
  * </ul>
  *
- * <p>This plugin behaves like a {@link ReaderPoolPlugin}.
+ * <p>This plugin behaves like a {@link PoolPlugin}.
  *
  * @since 1.0
  */
-public interface PoolRemotePluginClient extends ReaderPoolPlugin {}
+public interface PoolRemotePluginClient extends PoolPlugin {}

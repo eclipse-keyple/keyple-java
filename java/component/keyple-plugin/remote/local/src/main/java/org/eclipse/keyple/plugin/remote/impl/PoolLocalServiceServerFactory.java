@@ -12,7 +12,7 @@
 package org.eclipse.keyple.plugin.remote.impl;
 
 import org.eclipse.keyple.core.service.Plugin;
-import org.eclipse.keyple.core.service.ReaderPoolPlugin;
+import org.eclipse.keyple.core.service.PoolPlugin;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remote.PoolLocalServiceServer;
@@ -76,7 +76,7 @@ public final class PoolLocalServiceServerFactory {
 
   public interface PluginStep {
     /**
-     * Configures the service with one or more {@link ReaderPoolPlugin} plugin(s).
+     * Configures the service with one or more {@link PoolPlugin} plugin(s).
      *
      * @param poolPluginNames One or more plugin names of PoolPlugin
      * @return next configuration step
@@ -112,7 +112,7 @@ public final class PoolLocalServiceServerFactory {
       // verify that each plugin is instance of ReaderPoolPlugin
       for (String poolPluginName : poolPluginNames) {
         Plugin plugin = SmartCardService.getInstance().getPlugin(poolPluginName);
-        if (!(plugin instanceof ReaderPoolPlugin)) {
+        if (!(plugin instanceof PoolPlugin)) {
           throw new IllegalArgumentException(
               "Invalid plugin type for plugin "
                   + poolPluginName

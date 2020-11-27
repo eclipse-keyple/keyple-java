@@ -29,7 +29,6 @@ public final class GenericCardSelectionRequest extends AbstractCardSelectionRequ
         super(cardSelectionResponse);
       }
 
-      @Override
       public String toJson() {
         return "{}";
       }

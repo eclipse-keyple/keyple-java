@@ -20,7 +20,7 @@ import java.util.SortedSet;
 import org.assertj.core.util.Sets;
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.PluginFactory;
-import org.eclipse.keyple.core.service.ReaderPoolPlugin;
+import org.eclipse.keyple.core.service.PoolPlugin;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.exception.KeypleAllocationReaderException;
 import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
@@ -41,7 +41,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class PoolLocalServiceServerTest extends BaseLocalTest {
 
-  ReaderPoolPlugin poolPluginMock;
+  PoolPlugin poolPluginMock;
   AsyncEndpointServer asyncServer;
   Gson parser;
   String groupReference = "1";
@@ -232,7 +232,7 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
    */
 
   private void initMockService() {
-    poolPluginMock = Mockito.mock(ReaderPoolPlugin.class);
+    poolPluginMock = Mockito.mock(PoolPlugin.class);
     doReturn(readerMocked).when(poolPluginMock).allocateReader(groupReference);
     doReturn(readerMocked).when(poolPluginMock).getReader(readerName);
     doReturn(Sets.newTreeSet(readerName)).when(poolPluginMock).getReaderNames();

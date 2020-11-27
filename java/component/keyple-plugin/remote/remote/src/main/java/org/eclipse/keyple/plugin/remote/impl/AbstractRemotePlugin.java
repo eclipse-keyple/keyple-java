@@ -31,9 +31,6 @@ abstract class AbstractRemotePlugin extends AbstractMessageHandler implements Pl
   private final String name;
   protected final Map<String, Reader> readers;
 
-  /** Registration status of the plugin */
-  private boolean isRegistered;
-
   /**
    * (package-private)<br>
    * Constructor.
@@ -83,27 +80,4 @@ abstract class AbstractRemotePlugin extends AbstractMessageHandler implements Pl
    * @throws KeypleReaderIOException if the communication with the reader or the Card has failed
    */
   abstract Map<String, Reader> initNativeReaders() throws KeypleReaderIOException;
-
-  /** {@inheritDoc} */
-  @Override
-  public void register() {
-    if (isRegistered)
-      throw new IllegalStateException(
-          String.format("This plugin, %s, is already registered", getName()));
-    isRegistered = true;
-    readers.putAll(initNativeReaders());
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void unregister() {
-    if (!isRegistered)
-      throw new IllegalStateException(
-          String.format("This plugin, %s, is not registered", getName()));
-    isRegistered = false;
-    for (String key : readers.keySet()) {
-      final Reader seReader = readers.remove(key);
-      seReader.unregister();
-    }
-  }
 }

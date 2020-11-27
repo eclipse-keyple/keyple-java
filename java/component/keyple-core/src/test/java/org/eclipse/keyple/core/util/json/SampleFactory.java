@@ -11,6 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.util.json;
 
+import static org.eclipse.keyple.core.service.util.ContactCardCommonProtocols.ISO_7816_3;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +27,6 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
-import org.eclipse.keyple.core.service.util.ContactsCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 public class SampleFactory {
@@ -137,7 +138,7 @@ public class SampleFactory {
     CardSelector seAtrSelector =
         CardSelector.builder() //
             .atrFilter(atrFilter) //
-            .cardProtocol(ContactsCardCommonProtocols.ISO_7816_3.name()) //
+            .cardProtocol(ISO_7816_3.name()) //
             .build();
 
     CardSelectionRequest cardSelectionRequest =

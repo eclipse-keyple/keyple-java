@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.impl;
 
-import org.eclipse.keyple.core.plugin.reader.ObservableReaderNotifier;
+import org.eclipse.keyple.core.plugin.ObservableReaderNotifier;
 import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.util.Assert;

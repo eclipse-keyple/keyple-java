@@ -146,16 +146,4 @@ abstract class AbstractRemoteReaderServer implements RemoteReaderServer, ProxyRe
   public boolean isContactless() {
     return reader.isContactless();
   }
-
-  /** {@inheritDoc} */
-  @Override
-  public void register() {
-    reader.register();
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void unregister() {
-    reader.unregister();
-  }
 }

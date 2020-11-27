@@ -16,7 +16,7 @@ import com.google.gson.reflect.TypeToken;
 import java.util.*;
 import org.eclipse.keyple.core.card.message.*;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
-import org.eclipse.keyple.core.plugin.reader.AbstractReader;
+import org.eclipse.keyple.core.plugin.AbstractReader;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.MessageDto;
