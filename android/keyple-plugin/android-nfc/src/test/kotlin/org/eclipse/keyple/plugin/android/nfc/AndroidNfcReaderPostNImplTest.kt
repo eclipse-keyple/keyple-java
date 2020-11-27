@@ -12,16 +12,17 @@
 package org.eclipse.keyple.plugin.android.nfc
 
 import android.app.Activity
+import android.app.Application
 import android.content.Intent
 import android.nfc.NfcAdapter
 import android.nfc.Tag
+import androidx.test.core.app.ApplicationProvider
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll
-import java.io.IOException
 import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler
 import org.eclipse.keyple.core.service.exception.KeypleReaderException
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException
@@ -34,7 +35,7 @@ import org.junit.runner.RunWith
 import org.junit.runners.MethodSorters
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
+import java.io.IOException
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(RobolectricTestRunner::class)
@@ -55,7 +56,7 @@ class AndroidNfcReaderPostNImplTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
-        val app = RuntimeEnvironment.application
+        val app: Application = ApplicationProvider.getApplicationContext()
         activity = Robolectric.buildActivity(Activity::class.java).create().get()
         reader = AndroidNfcReaderPostNImpl(activity, readerObservationExceptionHandler)
 
@@ -83,7 +84,9 @@ class AndroidNfcReaderPostNImplTest {
         Assert.assertEquals(true, reader.isContactless)
         Assert.assertEquals(AndroidNfcPlugin.PLUGIN_NAME, reader.pluginName)
         Assert.assertEquals(AndroidNfcReader.READER_NAME, reader.name)
-        Assert.assertTrue((reader as AndroidNfcReader).getParameters().isEmpty())
+        Assert.assertNull((reader as AndroidNfcReader).presenceCheckDelay)
+        Assert.assertNull((reader as AndroidNfcReader).noPlateformSound)
+        Assert.assertNull((reader as AndroidNfcReader).skipNdefCheck)
     }
 
     // ---- TAG EVENTS  TESTS ----------- //
@@ -208,40 +211,21 @@ class AndroidNfcReaderPostNImplTest {
 
     @Test
     @Throws(IllegalArgumentException::class)
-    fun bSetCorrectParameter() { // Must be ran in 2nd position as AndroidNfcReaderImpl is a singleton
-        reader.setParameter(AndroidNfcReader.FLAG_READER_NO_PLATFORM_SOUNDS, "1")
+    fun bCheckReaderParams() { // Must be ran in 2nd position as AndroidNfcReaderImpl is a singleton
+        reader.noPlateformSound = true
         Assert.assertEquals(NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS, reader.flags)
-        reader.setParameter(AndroidNfcReader.FLAG_READER_NO_PLATFORM_SOUNDS, "0")
+
+        reader.noPlateformSound = false
         Assert.assertEquals(0, reader.flags)
-        reader.setParameter(AndroidNfcReader.FLAG_READER_SKIP_NDEF_CHECK, "1")
+
+        reader.skipNdefCheck = true
         Assert.assertEquals(NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK, reader.flags)
-        reader.setParameter(AndroidNfcReader.FLAG_READER_SKIP_NDEF_CHECK, "0")
+
+        reader.skipNdefCheck = false
         Assert.assertEquals(0, reader.flags)
-        reader.setParameter(AndroidNfcReader.FLAG_READER_PRESENCE_CHECK_DELAY, "10")
 
-        /*
-         * Fail because android.os.Bundle is not present in the JVM, roboelectric is needed to play
-         * this test Assert.assertEquals(10,
-         * reader.getOptions().get(NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY));
-         * Assert.assertEquals(3, reader.getParameters().size());
-         */
-        Assert.assertEquals(3, (reader as AndroidNfcReader).getParameters().count())
+        reader.presenceCheckDelay = 10
         Assert.assertEquals(10, reader.options.get(NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY))
-    }
-
-    @Test(expected = IllegalArgumentException::class)
-    fun setUnCorrectParameter() {
-        reader.setParameter(AndroidNfcReader.FLAG_READER_NO_PLATFORM_SOUNDS, "A")
-    }
-
-    @Test(expected = IllegalArgumentException::class)
-    fun setUnCorrectParameter2() {
-        reader.setParameter(AndroidNfcReader.FLAG_READER_SKIP_NDEF_CHECK, "2")
-    }
-
-    @Test(expected = IllegalArgumentException::class)
-    fun setUnCorrectParameter3() {
-        reader.setParameter(AndroidNfcReader.FLAG_READER_PRESENCE_CHECK_DELAY, "-1")
     }
 
     @Test
