@@ -40,9 +40,6 @@ public final class ReaderEvent {
    */
   public enum EventType {
 
-    /** An timeout error occurred. */
-    TIMEOUT_ERROR,
-
     /** A card has been inserted. */
     CARD_INSERTED,
 

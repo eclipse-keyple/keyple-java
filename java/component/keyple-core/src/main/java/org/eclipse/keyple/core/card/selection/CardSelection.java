@@ -46,7 +46,7 @@ public final class CardSelection {
    * processSelection methods
    */
   private final List<AbstractCardSelectionRequest<? extends AbstractApduCommandBuilder>>
-      cardSelectionRequests =
+      commandCardSelectionRequests =
           new ArrayList<AbstractCardSelectionRequest<? extends AbstractApduCommandBuilder>>();
   private final MultiSelectionProcessing multiSelectionProcessing;
   private ChannelControl channelControl = ChannelControl.KEEP_OPEN;
@@ -80,9 +80,9 @@ public final class CardSelection {
       logger.trace("CardSelectionRequest = {}", cardSelectionRequest.getSelectionRequest());
     }
     /* keep the selection request */
-    cardSelectionRequests.add(cardSelectionRequest);
+    commandCardSelectionRequests.add(cardSelectionRequest);
     /* return the selection index (starting at 0) */
-    return cardSelectionRequests.size() - 1;
+    return commandCardSelectionRequests.size() - 1;
   }
 
   /**
@@ -127,7 +127,8 @@ public final class CardSelection {
          * create a AbstractSmartCard with the class deduced from the selection request
          * during the selection preparation
          */
-        AbstractSmartCard smartCard = cardSelectionRequests.get(index).parse(cardSelectionResponse);
+        AbstractSmartCard smartCard =
+            commandCardSelectionRequests.get(index).parse(cardSelectionResponse);
 
         // determine if the current matching card is selected
         SelectionStatus selectionStatus = cardSelectionResponse.getSelectionStatus();
@@ -202,7 +203,7 @@ public final class CardSelection {
   public SelectionsResult processExplicitSelection(Reader reader) {
     List<CardSelectionRequest> cardSelectionRequests = new ArrayList<CardSelectionRequest>();
     for (AbstractCardSelectionRequest<? extends AbstractApduCommandBuilder> cardSelectionRequest :
-        this.cardSelectionRequests) {
+        this.commandCardSelectionRequests) {
       cardSelectionRequests.add(cardSelectionRequest.getSelectionRequest());
     }
     if (logger.isTraceEnabled()) {
@@ -228,7 +229,7 @@ public final class CardSelection {
   public AbstractDefaultSelectionsRequest getSelectionOperation() {
     List<CardSelectionRequest> cardSelectionRequests = new ArrayList<CardSelectionRequest>();
     for (AbstractCardSelectionRequest<? extends AbstractApduCommandBuilder> cardSelectionRequest :
-        this.cardSelectionRequests) {
+        this.commandCardSelectionRequests) {
       cardSelectionRequests.add(cardSelectionRequest.getSelectionRequest());
     }
     return new DefaultSelectionsRequest(

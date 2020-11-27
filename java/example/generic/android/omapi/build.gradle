@@ -1,0 +1,167 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: "com.diffplug.gradle.spotless"
+
+project.group 'org.eclipse.keyple'
+
+buildscript {
+    ext.kotlin_version = '1.3.50'
+    repositories {
+        mavenCentral()
+        google()
+        jcenter()
+
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.5.3'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.10.0"
+        classpath "com.diffplug.spotless:spotless-plugin-gradle:3.27.1"
+    }
+}
+
+ext {
+    keyple_v = project.hasProperty("keyple_version") ? keyple_version : '+'
+}
+
+//Loading Keystore specified for SE Access
+Properties properties = new Properties()
+if (project.rootProject.file("local.properties").exists()) {
+    properties.load(project.rootProject.file("local.properties").newDataInputStream())
+}
+
+android {
+    compileSdkVersion 29
+    defaultConfig {
+        applicationId "org.eclipse.keyple.example.calypso.android.omapi"
+        minSdkVersion 19
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        if (properties.containsKey("path_to_se_registered_keystore")) {
+            keypleDebug {
+                storeFile file(properties["path_to_se_registered_keystore"])
+                storePassword properties["keystore_password"]
+                keyAlias properties["key_alias"]
+                keyPassword properties["key_password"]
+            }
+        }
+    }
+
+
+    buildTypes {
+        if (properties.containsKey("path_to_se_registered_keystore")) {
+            debug {
+                signingConfig signingConfigs.keypleDebug
+            }
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            debuggable true
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_6
+        targetCompatibility JavaVersion.VERSION_1_6
+    }
+    lintOptions {
+        abortOnError false
+    }
+    packagingOptions {
+        exclude 'META-INF/NOTICE.md'
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
+    }
+
+}
+
+spotless {
+    kotlin {
+        target "**/*.kt"
+        ktlint()
+
+        // also supports license headers
+        licenseHeader '/********************************************************************************\n' +
+                ' * Copyright (c) $YEAR Calypso Networks Association https://www.calypsonet-asso.org/\n' +
+                ' *\n' +
+                ' * See the NOTICE file(s) distributed with this work for additional information regarding copyright\n' +
+                ' * ownership.\n' +
+                ' *\n' +
+                ' * This program and the accompanying materials are made available under the terms of the Eclipse\n' +
+                ' * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0\n' +
+                ' *\n' +
+                ' * SPDX-License-Identifier: EPL-2.0\n' +
+                ' ********************************************************************************/'
+    }
+}
+
+repositories {
+    mavenLocal()
+    //to import keyple snapshots
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    
+    mavenCentral()
+    google()
+}
+
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], exclude: ['org.simalliance.openmobileapi.jar'], dir: 'libs')
+    /*
+    Keyple dependencies
+     */
+    //import the last version of keyple-java-core
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: keyple_v
+
+    //import the last version of keyple-java-calypso
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: keyple_v
+
+    //import the last version of keyple-java-plugin-omapi
+    implementation group: 'org.eclipse.keyple', name: 'keyple-android-plugin-omapi', version: keyple_v
+    //implementation project(':android-omapi')
+
+
+    /*
+    Android components
+     */
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.google.android.material:material:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.cardview:cardview:1.0.0'
+
+    /*
+    Log
+     */
+    implementation "org.slf4j:slf4j-api:1.7.25"
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+    implementation 'com.arcao:slf4j-timber:3.1@aar' //SLF4J binding for Timber
+
+    /*
+    Kotlin
+     */
+    implementation 'androidx.core:core-ktx:1.2.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    /*
+    Coroutines
+     */
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.3'
+
+    /*
+    Test
+     */
+    testImplementation "junit:junit:4.12"
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+}

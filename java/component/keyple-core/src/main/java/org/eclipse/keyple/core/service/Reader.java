@@ -27,7 +27,15 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderProtocolNotSupporte
  *
  * @since 0.9
  */
-public interface Reader extends ProxyElement {
+public interface Reader {
+
+  /**
+   * Gets the name of the reader
+   *
+   * @return A not empty string.
+   * @since 0.9
+   */
+  String getName();
 
   /**
    * Checks if is the card present.
@@ -89,20 +97,4 @@ public interface Reader extends ProxyElement {
    * @since 1.0
    */
   boolean isContactless();
-
-  /**
-   * Change the reader status to registered
-   *
-   * @throws IllegalStateException is thrown when plugin is already registered.
-   * @since 1.0
-   */
-  void register();
-
-  /**
-   * Change the reader status to unregistered
-   *
-   * @throws IllegalStateException is thrown when plugin is already unregistered.
-   * @since 1.0
-   */
-  void unregister();
 }

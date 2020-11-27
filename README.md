@@ -274,8 +274,8 @@ To build the plugins, execute the following commands in the **/android folder**,
 To build the example app NFC and OMAPI, first, you need to build and install locally the java component keyple-core, keyple-calypso and keyple-android-plugin (see above)
 
 ```
-./gradlew -b ./example/calypso/nfc/build.gradle assembleDebug 
-./gradlew -b ./example/calypso/omapi/build.gradle assembleDebug
+./gradlew -b ./example/calypso/android/nfc/build.gradle assembleDebug 
+./gradlew -b ./example/calypso/android/omapi/build.gradle assembleDebug
 ```
 
 #### Windows

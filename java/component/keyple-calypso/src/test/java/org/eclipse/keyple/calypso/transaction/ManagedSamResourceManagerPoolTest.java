@@ -20,8 +20,8 @@ import org.eclipse.keyple.calypso.CalypsoBaseTest;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
 import org.eclipse.keyple.core.card.selection.CardResource;
+import org.eclipse.keyple.core.service.PoolPlugin;
 import org.eclipse.keyple.core.service.Reader;
-import org.eclipse.keyple.core.service.ReaderPoolPlugin;
 import org.eclipse.keyple.core.service.exception.KeypleAllocationReaderException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -72,13 +72,13 @@ public class ManagedSamResourceManagerPoolTest extends CalypsoBaseTest {
 
     // assert an exception is thrown after MAX_BLOCKING_TIME
     Assert.assertTrue(exceptionThrown);
-    Assert.assertTrue(stop - start > MAX_BLOCKING_TIME);
+    Assert.assertTrue(stop - start >= MAX_BLOCKING_TIME);
   }
 
   @Test
   public void getResource() throws Exception {
     // init plugin
-    ReaderPoolPlugin poolPlugin = Mockito.mock(ReaderPoolPlugin.class);
+    PoolPlugin poolPlugin = Mockito.mock(PoolPlugin.class);
     doReturn(readerMock()).when(poolPlugin).allocateReader(any(String.class));
 
     // init SamResourceManagerPool with custom pool plugin
@@ -108,14 +108,14 @@ public class ManagedSamResourceManagerPoolTest extends CalypsoBaseTest {
    * Helpers
    */
   // get a srm spy with a custom mock reader
-  SamResourceManagerPool srmSpy(ReaderPoolPlugin poolPlugin) {
+  SamResourceManagerPool srmSpy(PoolPlugin poolPlugin) {
     return Mockito.spy(
         new SamResourceManagerPool(poolPlugin, MAX_BLOCKING_TIME, DEFAULT_SLEEP_TIME));
   }
 
   // get a srm spy with a default mock reader
   SamResourceManagerPool srmSpy() {
-    ReaderPoolPlugin poolPlugin = Mockito.mock(ReaderPoolPlugin.class);
+    PoolPlugin poolPlugin = Mockito.mock(PoolPlugin.class);
     return Mockito.spy(
         new SamResourceManagerPool(poolPlugin, MAX_BLOCKING_TIME, DEFAULT_SLEEP_TIME));
   }

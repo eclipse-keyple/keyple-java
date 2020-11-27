@@ -12,11 +12,12 @@
 package org.eclipse.keyple.plugin.stub;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.eclipse.keyple.core.plugin.reader.AbstractObservableLocalReader;
-import org.eclipse.keyple.core.plugin.reader.ObservableReaderStateService;
-import org.eclipse.keyple.core.plugin.reader.SmartInsertionReader;
-import org.eclipse.keyple.core.plugin.reader.SmartRemovalReader;
+import org.eclipse.keyple.core.plugin.AbstractObservableLocalReader;
+import org.eclipse.keyple.core.plugin.WaitForCardInsertionBlocking;
+import org.eclipse.keyple.core.plugin.WaitForCardRemovalBlocking;
+import org.eclipse.keyple.core.plugin.WaitForCardRemovalDuringProcessing;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderProtocolNotFoundException;
@@ -29,35 +30,63 @@ import org.slf4j.LoggerFactory;
  * ReaderEvent} : CARD_INSERTED, CARD_REMOVED
  */
 class StubReaderImpl extends AbstractObservableLocalReader
-    implements StubReader, SmartInsertionReader, SmartRemovalReader {
+    implements StubReader,
+        WaitForCardInsertionBlocking,
+        WaitForCardRemovalDuringProcessing,
+        WaitForCardRemovalBlocking {
 
   private static final Logger logger = LoggerFactory.getLogger(StubReaderImpl.class);
 
   private StubSmartCard card;
-  boolean isContactless = true;
+  private boolean isContactless = true;
 
   private final AtomicBoolean loopWaitCard = new AtomicBoolean();
   private final AtomicBoolean loopWaitCardRemoval = new AtomicBoolean();
 
+  ReaderObservationExceptionHandler readerObservationExceptionHandler;
+
   /**
-   * Do not use directly
+   * Constructor
    *
-   * @param readerName
+   * @param readerName name of the reader
+   * @param pluginName name of the plugin
    */
   StubReaderImpl(String pluginName, String readerName) {
     super(pluginName, readerName);
+    readerObservationExceptionHandler =
+        new ReaderObservationExceptionHandler() {
+          @Override
+          public void onReaderObservationError(String pluginName, String readerName, Throwable e) {
+            logger.error("Unexpected exception {}:{}", pluginName, readerName, e);
+          }
+        };
   }
 
   /**
    * Specify
    *
-   * @param pluginName
-   * @param name
-   * @param isContactless
+   * @param readerName name of the reader
+   * @param pluginName name of the plugin
+   * @param isContactless true if this reader should be contactless
    */
-  StubReaderImpl(String pluginName, String name, boolean isContactless) {
-    this(pluginName, name);
+  StubReaderImpl(String pluginName, String readerName, boolean isContactless) {
+    this(pluginName, readerName);
     this.isContactless = isContactless;
+  }
+
+  @Override
+  protected ReaderObservationExceptionHandler getObservationExceptionHandler() {
+    return readerObservationExceptionHandler;
+  }
+
+  @Override
+  protected void onStartDetection() {
+    logger.trace("Detection has been started on reader {}", this.getName());
+  }
+
+  @Override
+  protected void onStopDetection() {
+    logger.trace("Detection has been stopped on reader {}", this.getName());
   }
 
   @Override
@@ -207,8 +236,8 @@ class StubReaderImpl extends AbstractObservableLocalReader
   }
 
   /**
-   * Defined in the {@link SmartRemovalReader} interface, this method is called by the monitoring
-   * thread to check the card absence
+   * Defined in the {@link WaitForCardRemovalBlocking} interface, this method is called by the
+   * monitoring thread to check the card absence
    *
    * @return true if the card is absent
    */
@@ -234,14 +263,5 @@ class StubReaderImpl extends AbstractObservableLocalReader
   @Override
   public void stopWaitForCardRemoval() {
     loopWaitCardRemoval.set(false);
-  }
-
-  @Override
-  protected final ObservableReaderStateService initStateService() {
-    return ObservableReaderStateService.builder(this)
-        .waitForCardInsertionWithSmartDetection()
-        .waitForCardProcessingWithSmartDetection()
-        .waitForCardRemovalWithSmartDetection()
-        .build();
   }
 }

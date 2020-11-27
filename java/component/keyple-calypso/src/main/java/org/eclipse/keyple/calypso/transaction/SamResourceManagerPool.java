@@ -14,14 +14,14 @@ package org.eclipse.keyple.calypso.transaction;
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
 import org.eclipse.keyple.core.card.selection.CardResource;
 import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.PoolPlugin;
 import org.eclipse.keyple.core.service.Reader;
-import org.eclipse.keyple.core.service.ReaderPoolPlugin;
 import org.eclipse.keyple.core.service.exception.KeypleAllocationNoReaderException;
 import org.eclipse.keyple.core.service.exception.KeypleAllocationReaderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Implementation of Sam Resource Manager working a {@link ReaderPoolPlugin} */
+/** Implementation of Sam Resource Manager working a {@link PoolPlugin} */
 public class SamResourceManagerPool extends SamResourceManager {
   private static final Logger logger = LoggerFactory.getLogger(SamResourceManagerPool.class);
 
@@ -32,13 +32,12 @@ public class SamResourceManagerPool extends SamResourceManager {
   /**
    * Protected constructor, use the {@link SamResourceManagerFactory}
    *
-   * @param samReaderPoolPlugin the reader pool plugin
+   * @param samPoolPlugin the reader pool plugin
    * @param maxBlockingTime the maximum duration for which the allocateSamResource method will
    *     attempt to allocate a new reader by retrying (in milliseconds).
    * @param sleepTime the duration to wait between two retries
    */
-  protected SamResourceManagerPool(
-      ReaderPoolPlugin samReaderPoolPlugin, int maxBlockingTime, int sleepTime) {
+  protected SamResourceManagerPool(PoolPlugin samPoolPlugin, int maxBlockingTime, int sleepTime) {
     if (sleepTime < 1) {
       throw new IllegalArgumentException("Sleep time must be greater than 0");
     }
@@ -47,7 +46,7 @@ public class SamResourceManagerPool extends SamResourceManager {
     }
     this.sleepTime = sleepTime;
     this.maxBlockingTime = maxBlockingTime;
-    this.samReaderPlugin = samReaderPoolPlugin;
+    this.samReaderPlugin = samPoolPlugin;
     logger.info(
         "Create SAM resource manager from reader pool plugin: {}", samReaderPlugin.getName());
     // HSM reader plugin type
@@ -64,7 +63,7 @@ public class SamResourceManagerPool extends SamResourceManager {
       try {
         // virtually infinite number of readers
         Reader samReader =
-            ((ReaderPoolPlugin) samReaderPlugin).allocateReader(samIdentifier.getGroupReference());
+            ((PoolPlugin) samReaderPlugin).allocateReader(samIdentifier.getGroupReference());
         if (samReader != null) {
           SamResourceManagerDefault.ManagedSamResource managedSamResource =
               createSamResource(samReader);
@@ -114,6 +113,6 @@ public class SamResourceManagerPool extends SamResourceManager {
   public void freeSamResource(CardResource<CalypsoSam> samResource) {
     // virtually infinite number of readers
     logger.debug("Freeing HSM SAM resource.");
-    ((ReaderPoolPlugin) samReaderPlugin).releaseReader(samResource.getReader());
+    ((PoolPlugin) samReaderPlugin).releaseReader(samResource.getReader());
   }
 }

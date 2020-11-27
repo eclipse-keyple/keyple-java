@@ -15,17 +15,35 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import org.eclipse.keyple.core.plugin.reader.AbstractReader;
 import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.event.PluginObservationExceptionHandler;
 
 public class MockAbstractThreadedPlugin extends AbstractThreadedObservablePlugin {
 
+  PluginObservationExceptionHandler pluginObservationExceptionHandler;
+  SortedSet<String> nativeReaderNames;
+
   public MockAbstractThreadedPlugin(String name) {
     super(name);
+    nativeReaderNames = new TreeSet<String>();
+  }
+
+  protected void setPluginObservationExceptionHandler(
+      PluginObservationExceptionHandler pluginObservationExceptionHandler) {
+    this.pluginObservationExceptionHandler = pluginObservationExceptionHandler;
+  }
+
+  protected void addNativeReaderName(String readerName) {
+    nativeReaderNames.add(readerName);
   }
 
   public Boolean isMonitoring() {
     return super.isMonitoring();
+  }
+
+  @Override
+  protected PluginObservationExceptionHandler getObservationExceptionHandler() {
+    return pluginObservationExceptionHandler;
   }
 
   public void finalize() throws Throwable {
@@ -34,7 +52,7 @@ public class MockAbstractThreadedPlugin extends AbstractThreadedObservablePlugin
 
   @Override
   protected SortedSet<String> fetchNativeReadersNames() {
-    return new TreeSet<String>();
+    return nativeReaderNames;
   }
 
   @Override

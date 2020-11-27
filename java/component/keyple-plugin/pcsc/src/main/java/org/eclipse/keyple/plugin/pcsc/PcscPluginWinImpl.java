@@ -17,11 +17,13 @@ import java.util.Map;
 import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CardTerminals;
 import javax.smartcardio.TerminalFactory;
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * (package-private)<br>
  * Implementation of AbstractPcscPlugin suitable for Windows platforms.
  *
  * <p>Windows 8/10 platforms have a problem in the management of the smart card service combined
@@ -30,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * any new connection (SCARD_E_NO_SERVICE CardException). To overcome this problem a hack using
  * reflexivity is used to reset internal variables of smartcard.io.
  */
-public final class PcscPluginWinImpl extends AbstractPcscPlugin {
+final class PcscPluginWinImpl extends AbstractPcscPlugin {
 
   private static final Logger logger = LoggerFactory.getLogger(PcscPluginWinImpl.class);
 
@@ -121,7 +123,10 @@ public final class PcscPluginWinImpl extends AbstractPcscPlugin {
 
   /** {@inheritDoc} */
   @Override
-  protected AbstractPcscReader createReader(String name, CardTerminal terminal) {
-    return new PcscReaderImpl(name, terminal);
+  AbstractPcscReader createReader(
+      String name,
+      CardTerminal terminal,
+      ReaderObservationExceptionHandler readerObservationExceptionHandler) {
+    return new PcscReaderImpl(name, terminal, readerObservationExceptionHandler);
   }
 }

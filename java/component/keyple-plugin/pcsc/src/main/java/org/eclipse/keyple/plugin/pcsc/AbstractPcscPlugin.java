@@ -20,9 +20,11 @@ import java.util.regex.Pattern;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CardTerminals;
+import org.eclipse.keyple.core.plugin.AbstractReader;
 import org.eclipse.keyple.core.plugin.AbstractThreadedObservablePlugin;
-import org.eclipse.keyple.core.plugin.reader.AbstractReader;
 import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.event.PluginObservationExceptionHandler;
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
@@ -40,15 +42,15 @@ abstract class AbstractPcscPlugin extends AbstractThreadedObservablePlugin imple
 
   private static final Logger logger = LoggerFactory.getLogger(AbstractPcscPlugin.class);
 
-  private Boolean scardNoServiceHackNeeded;
   private String contactReaderRegexFilter;
   private String contactlessReaderRegexFilter;
+  private PluginObservationExceptionHandler pluginObservationExceptionHandler;
+  private ReaderObservationExceptionHandler readerObservationExceptionHandler;
 
   protected AbstractPcscPlugin() {
     super(PcscPluginFactory.PLUGIN_NAME);
     contactReaderRegexFilter = "";
     contactlessReaderRegexFilter = "";
-    scardNoServiceHackNeeded = null;
   }
 
   /**
@@ -86,9 +88,14 @@ abstract class AbstractPcscPlugin extends AbstractThreadedObservablePlugin imple
    *
    * @param name A not empty String.
    * @param terminal A {@link CardTerminal} reference.
+   * @param readerObservationExceptionHandler A not null reference to an object implementing {@link
+   *     ReaderObservationExceptionHandler}
    * @return An instance of AbstractPcscReader
    */
-  protected abstract AbstractPcscReader createReader(String name, CardTerminal terminal);
+  abstract AbstractPcscReader createReader(
+      String name,
+      CardTerminal terminal,
+      ReaderObservationExceptionHandler readerObservationExceptionHandler);
 
   /**
    * Fetch all connected native readers (provided by smartcard.io) and returns a {@link Map} of
@@ -110,7 +117,8 @@ abstract class AbstractPcscPlugin extends AbstractThreadedObservablePlugin imple
     logger.trace("[{}] initNativeReaders => CardTerminal in list: {}", this.getName(), terminals);
     try {
       for (CardTerminal terminal : terminals.list()) {
-        final PcscReader pcscReader = createReader(this.getName(), terminal);
+        final PcscReader pcscReader =
+            createReader(this.getName(), terminal, readerObservationExceptionHandler);
         nativeReaders.put(pcscReader.getName(), pcscReader);
       }
     } catch (CardException e) {
@@ -157,7 +165,7 @@ abstract class AbstractPcscPlugin extends AbstractThreadedObservablePlugin imple
               "[{}] fetchNativeReader => CardTerminal in new PcscReader: {}",
               this.getName(),
               terminals);
-          reader = createReader(this.getName(), terminal);
+          reader = createReader(this.getName(), terminal, readerObservationExceptionHandler);
         }
       }
     } catch (CardException e) {
@@ -227,5 +235,33 @@ abstract class AbstractPcscPlugin extends AbstractThreadedObservablePlugin imple
     }
     throw new IllegalStateException(
         "Unable to determine the transmission mode for reader " + readerName);
+  }
+
+  /**
+   * (package-private) Sets the plugin observation exception handler
+   *
+   * @param pluginObservationExceptionHandler A not null reference to an object implementing {@link
+   *     PluginObservationExceptionHandler}
+   */
+  void setPluginObservationExceptionHandler(
+      PluginObservationExceptionHandler pluginObservationExceptionHandler) {
+    this.pluginObservationExceptionHandler = pluginObservationExceptionHandler;
+  }
+
+  /**
+   * (package-private) Sets the reader observation exception handler
+   *
+   * @param readerObservationExceptionHandler A not null reference to an object implementing {@link
+   *     ReaderObservationExceptionHandler}
+   */
+  void setReaderObservationExceptionHandler(
+      ReaderObservationExceptionHandler readerObservationExceptionHandler) {
+    this.readerObservationExceptionHandler = readerObservationExceptionHandler;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  protected PluginObservationExceptionHandler getObservationExceptionHandler() {
+    return pluginObservationExceptionHandler;
   }
 }

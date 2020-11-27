@@ -11,21 +11,33 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
+import android.app.Activity
 import java.io.IOException
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler
 import org.eclipse.keyple.core.service.exception.KeypleReaderException
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.Robolectric
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class AndroidNfcPluginImplTest {
 
-    private val plugin = AndroidNfcPluginImpl
+    private lateinit var plugin: AndroidNfcPluginImpl
+
+    lateinit var activity: Activity
+
+    private val readerObservationExceptionHandler = ReaderObservationExceptionHandler { pluginName, readerName, e -> }
 
     // init before each test
     @Before
     @Throws(IOException::class)
     fun setUp() {
+        activity = Robolectric.buildActivity(Activity::class.java).create().get()
+        plugin = AndroidNfcPluginImpl(activity, readerObservationExceptionHandler)
         // get unique instance
         plugin.register()
     }
@@ -54,13 +66,13 @@ class AndroidNfcPluginImplTest {
     @Throws(KeypleReaderException::class)
     fun getReaders() {
         Assert.assertEquals(1, plugin.readers.size)
-        Assert.assertTrue(plugin.readers.values.first() is AndroidNfcReaderImpl)
+        Assert.assertTrue(plugin.readers.values.first() is AbstractAndroidNfcReader)
     }
 
     @Test
     @Throws(Exception::class)
     fun getName() {
-        Assert.assertEquals(AndroidNfcPluginImpl.name, plugin.name)
+        Assert.assertEquals(AndroidNfcPluginImpl(activity, readerObservationExceptionHandler).name, plugin.name)
     }
 
     /*
@@ -70,13 +82,13 @@ class AndroidNfcPluginImplTest {
     @Test
     @Throws(Exception::class)
     fun getNativeReader() {
-        Assert.assertTrue(plugin.getReader(AndroidNfcReaderImpl.name) is AndroidNfcReaderImpl)
+        Assert.assertTrue(plugin.getReader(AndroidNfcReaderPostNImpl(activity, readerObservationExceptionHandler).name) is AndroidNfcReaderPostNImpl)
     }
 
     @Test
     @Throws(Exception::class)
     fun getNativeReaders() {
         Assert.assertEquals(1, plugin.readers.size)
-        Assert.assertTrue(plugin.readers.values.first() is AndroidNfcReaderImpl)
+        Assert.assertTrue(plugin.readers.values.first() is AbstractAndroidNfcReader)
     }
 }

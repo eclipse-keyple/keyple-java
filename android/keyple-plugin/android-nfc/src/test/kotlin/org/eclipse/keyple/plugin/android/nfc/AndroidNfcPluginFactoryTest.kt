@@ -11,21 +11,32 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
+import android.app.Activity
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.Robolectric
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class AndroidNfcPluginFactoryTest {
 
     lateinit var factory: AndroidNfcPluginFactory
 
+    lateinit var activity: Activity
+
+    private val readerObservationExceptionHandler = ReaderObservationExceptionHandler { pluginName, readerName, e -> }
+
     @Before
     fun setUp() {
-        factory = AndroidNfcPluginFactory()
+        activity = Robolectric.buildActivity(Activity::class.java).create().get()
+        factory = AndroidNfcPluginFactory(activity, readerObservationExceptionHandler)
     }
 
     @Test
     fun getPluginName() {
-        Assert.assertEquals(AndroidNfcReaderImpl.pluginName, factory.pluginName)
+        Assert.assertEquals(AndroidNfcReaderPostNImpl(activity, readerObservationExceptionHandler).pluginName, factory.pluginName)
     }
 }

@@ -85,10 +85,10 @@ pipeline {
                 container('java-builder') {
                     sh 'keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US" -keyalg RSA -keysize 2048 -validity 90'
 
-                    dir('java/example/calypso/android/nfc/') {
+                    dir('java/example/generic/android/nfc/') {
                         sh "./gradlew assembleDebug -P keyple_version=${keypleVersion}"
                     }
-                    dir('java/example/calypso/android/omapi') {
+                    dir('java/example/generic/android/omapi') {
                         sh "./gradlew assembleDebug -P keyple_version=${keypleVersion}"
                     }
                 }
@@ -195,8 +195,8 @@ pipeline {
                     sh 'cp ./java/component/keyple-plugin/pcsc/build/libs/keyple-java-plugin*.jar ./repository/java'
                     sh 'cp ./java/component/keyple-plugin/remotese/build/libs/keyple-java-plugin*.jar ./repository/java'
                     sh 'cp ./java/component/keyple-plugin/stub/build/libs/keyple-java-plugin*.jar ./repository/java'
-                    sh 'cp ./java/example/calypso/android/nfc/build/outputs/apk/debug/*.apk ./repository/android'
-                    sh 'cp ./java/example/calypso/android/omapi/build/outputs/apk/debug/*.apk ./repository/android'
+                    sh 'cp ./java/example/generic/android/nfc/build/outputs/apk/debug/*.apk ./repository/android'
+                    sh 'cp ./java/example/generic/android/omapi/build/outputs/apk/debug/*.apk ./repository/android'
                     sh 'cp ./android/keyple-plugin/android-nfc/build/outputs/aar/keyple-android-plugin*.aar ./repository/android'
                     sh 'cp ./android/keyple-plugin/android-omapi/build/outputs/aar/keyple-android-plugin*.aar ./repository/android'
                     sh 'ls -R ./repository'

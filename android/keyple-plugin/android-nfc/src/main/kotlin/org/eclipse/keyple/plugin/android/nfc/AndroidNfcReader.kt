@@ -11,21 +11,20 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
-import android.app.Activity
 import android.content.Intent
 import android.nfc.NfcAdapter
-import org.eclipse.keyple.core.plugin.reader.SmartRemovalReader
 import org.eclipse.keyple.core.service.Reader
+import org.eclipse.keyple.core.service.event.ObservableReader
 
 /**
  * [Reader] to communicate with NFC Tag though
  * Android [NfcAdapter]
  *
- * Configure NFCAdapter Protocols with [AndroidNfcReaderImpl.setParameter]
+ * Configure NFCAdapter Protocols with [AbstractAndroidNfcReader.setParameter]
  *
  * Optimized for android 4.4 (API 19) to  6.0 (API 23)
  */
-interface AndroidNfcReader : SmartRemovalReader {
+interface AndroidNfcReader : ObservableReader {
     /**
      * Gets a string describing the low level description of the current tag.
      *
@@ -43,39 +42,23 @@ interface AndroidNfcReader : SmartRemovalReader {
     fun processIntent(intent: Intent)
 
     /**
-     * Declare app to handle NFC Tags while in the foreground
+     * Allows the calling application to specify the delay that the platform will use for performing presence checks on any discovered tag.
+     * see @NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY
      */
-    fun enableNFCReaderMode(activity: Activity)
+    var presenceCheckDelay: Int?
 
     /**
-     * Stop app handling NFC Tags while in the foreground
+     * Allows the caller to prevent the platform from playing sounds when it discovers a tag.
      */
-    fun disableNFCReaderMode(activity: Activity)
+    var noPlateformSound: Boolean?
 
     /**
-     * Configure NFC Reader
+     * Prevent the platform from performing any NDEF checks in reader mode.
      */
-    fun setParameter(key: String, value: String)
-
-    /**
-     * Get Reader parameters
-     *
-     * @return parameters
-     */
-    fun getParameters(): Map<String, String?>
+    var skipNdefCheck: Boolean?
 
     companion object {
-
-        val READER_NAME = "AndroidNfcReaderImpl"
+        val READER_NAME = "AndroidNfcReader"
         val PLUGIN_NAME = AndroidNfcPlugin.PLUGIN_NAME
-
-        // FLAG_READER_SKIP_NDEF_CHECK Prevent the platform from performing any NDEF checks in reader mode. Must be 0 or 1.
-        val FLAG_READER_SKIP_NDEF_CHECK = "FLAG_READER_SKIP_NDEF_CHECK"
-
-        // Allows the caller to prevent the platform from playing sounds when it discovers a tag. Must be 0 or 1.
-        val FLAG_READER_NO_PLATFORM_SOUNDS = "FLAG_READER_NO_PLATFORM_SOUNDS"
-
-        // Allows the calling application to specify the delay that the platform will use for performing presence checks on any discovered tag.
-        val FLAG_READER_PRESENCE_CHECK_DELAY = "FLAG_READER_PRESENCE_CHECK_DELAY"
     }
 }

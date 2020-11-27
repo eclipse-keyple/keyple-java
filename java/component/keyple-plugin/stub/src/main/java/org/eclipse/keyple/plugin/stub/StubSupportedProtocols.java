@@ -18,7 +18,7 @@ package org.eclipse.keyple.plugin.stub;
  */
 public enum StubSupportedProtocols {
   ISO_14443_4,
-  CALYPSO_OLD_CARD_PRIME,
+  INNOVATRON_B_PRIME_CARD,
   MIFARE_ULTRA_LIGHT,
   MIFARE_CLASSIC,
   MIFARE_DESFIRE,

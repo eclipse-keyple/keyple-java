@@ -19,11 +19,13 @@ import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
-import org.eclipse.keyple.core.plugin.reader.AbstractObservableLocalReader;
-import org.eclipse.keyple.core.plugin.reader.ObservableReaderStateService;
-import org.eclipse.keyple.core.plugin.reader.SmartInsertionReader;
-import org.eclipse.keyple.core.plugin.reader.SmartRemovalReader;
+import org.eclipse.keyple.core.plugin.AbstractObservableLocalReader;
+import org.eclipse.keyple.core.plugin.WaitForCardInsertionBlocking;
+import org.eclipse.keyple.core.plugin.WaitForCardRemovalBlocking;
+import org.eclipse.keyple.core.plugin.WaitForCardRemovalDuringProcessing;
+import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderProtocolNotSupportedException;
 import org.eclipse.keyple.core.util.Assert;
@@ -31,12 +33,29 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Package private class implementing the {@link Reader} interface for PC/SC based readers.
+ *
+ * <p>A PC/SC reader is observable ({@link AbstractObservableLocalReader}), autonomous to detect the
+ * insertion and removal of cards ({@link WaitForCardInsertionBlocking} {@link
+ * WaitForCardRemovalBlocking}), able to detect the removal of a card prior an attempt to
+ * communicate with it ({@link WaitForCardRemovalDuringProcessing} and has specific settings ({@link
+ * PcscReader}.
+ *
+ * <p>However, due to some problems in the implementation of smartcard.io in macOS, the detection of
+ * card insertion is done differently on this platform. This is why there are two specific
+ * implementations of this class: {@link PcscReaderMacOsImpl} for macOS platforms and {@link
+ * PcscReaderImpl} for all others.
+ *
+ * @since 1.0
+ */
 abstract class AbstractPcscReader extends AbstractObservableLocalReader
-    implements PcscReader, SmartInsertionReader, SmartRemovalReader {
+    implements PcscReader, WaitForCardRemovalDuringProcessing, WaitForCardRemovalBlocking {
 
   private static final Logger logger = LoggerFactory.getLogger(AbstractPcscReader.class);
 
-  private final CardTerminal terminal;
+  protected final CardTerminal terminal;
+  private final ReaderObservationExceptionHandler readerObservationExceptionHandler;
   private String parameterCardProtocol;
   private boolean cardExclusiveMode;
   private boolean cardReset;
@@ -46,16 +65,12 @@ abstract class AbstractPcscReader extends AbstractObservableLocalReader
   private CardChannel channel;
 
   // the latency delay value (in ms) determines the maximum time during which the
-  // waitForCardPresent and waitForCardPresent blocking functions will execute.
+  // waitForCardAbsent blocking functions will execute.
   // This will correspond to the capacity to react to the interrupt signal of
   // the thread (see cancel method of the Future object)
-  private static final long INSERT_LATENCY = 500;
   private static final long REMOVAL_LATENCY = 500;
 
-  private final AtomicBoolean loopWaitCard = new AtomicBoolean();
   private final AtomicBoolean loopWaitCardRemoval = new AtomicBoolean();
-
-  private final boolean usePingPresence;
 
   /**
    * This constructor should only be called by PcscPlugin PCSC reader parameters are initialized
@@ -65,7 +80,10 @@ abstract class AbstractPcscReader extends AbstractObservableLocalReader
    * @param terminal the PC/SC terminal
    * @since 0.9
    */
-  protected AbstractPcscReader(String pluginName, CardTerminal terminal) {
+  protected AbstractPcscReader(
+      String pluginName,
+      CardTerminal terminal,
+      ReaderObservationExceptionHandler readerObservationExceptionHandler) {
 
     super(pluginName, terminal.getName());
 
@@ -76,42 +94,18 @@ abstract class AbstractPcscReader extends AbstractObservableLocalReader
     this.cardExclusiveMode = true;
     this.cardReset = false;
     this.isContactless = null;
-
-    String os = System.getProperty("os.name").toLowerCase();
-    usePingPresence = os.contains("mac");
-    logger.info(
-        "System detected : {}, is macOs checkPresence ping activated {}", os, usePingPresence);
+    this.readerObservationExceptionHandler = readerObservationExceptionHandler;
 
     logger.debug("[{}] constructor => using terminal ", terminal);
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @since 0.9
-   */
+  @SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract")
   @Override
-  public ObservableReaderStateService initStateService() {
-    ObservableReaderStateService observableReaderStateService = null;
+  protected void onStartDetection() {}
 
-    if (!usePingPresence) {
-      observableReaderStateService =
-          ObservableReaderStateService.builder(this)
-              .waitForCardInsertionWithSmartDetection()
-              .waitForCardProcessingWithSmartDetection()
-              .waitForCardRemovalWithSmartDetection()
-              .build();
-    } else {
-      observableReaderStateService =
-          ObservableReaderStateService.builder(this)
-              .waitForCardInsertionWithPollingDetection()
-              .waitForCardProcessingWithSmartDetection()
-              .waitForCardRemovalWithSmartDetection()
-              .build();
-    }
-
-    return observableReaderStateService;
-  }
+  @SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract")
+  @Override
+  protected void onStopDetection() {}
 
   /**
    * {@inheritDoc}
@@ -124,7 +118,6 @@ abstract class AbstractPcscReader extends AbstractObservableLocalReader
     try {
       if (card != null) {
         logger.debug("[{}] closePhysicalChannel => closing the channel.", this.getName());
-
         channel = null;
         card.disconnect(cardReset);
         card = null;
@@ -148,64 +141,6 @@ abstract class AbstractPcscReader extends AbstractObservableLocalReader
     } catch (CardException e) {
       throw new KeypleReaderIOException("Exception occurred in isCardPresent", e);
     }
-  }
-
-  /**
-   * Implements from SmartInsertionReader<br>
-   * {@inheritDoc}
-   *
-   * @since 0.9
-   */
-  @Override
-  public boolean waitForCardPresent() {
-
-    logger.debug(
-        "[{}] waitForCardPresent => loop with latency of {} ms.", this.getName(), INSERT_LATENCY);
-
-    // activate loop
-    loopWaitCard.set(true);
-
-    try {
-      while (loopWaitCard.get()) {
-        if (logger.isTraceEnabled()) {
-          logger.trace("[{}] waitForCardPresent => looping", this.getName());
-        }
-        if (terminal.waitForCardPresent(INSERT_LATENCY)) {
-          // card inserted
-          return true;
-        } else {
-          if (Thread.interrupted()) {
-            logger.debug("[{}] waitForCardPresent => task has been cancelled", this.getName());
-            // task has been cancelled
-            return false;
-          }
-        }
-      }
-      // if loop was stopped
-      return false;
-    } catch (CardException e) {
-      throw new KeypleReaderIOException(
-          "["
-              + this.getName()
-              + "] Exception occurred in waitForCardPresent. "
-              + "Message: "
-              + e.getMessage());
-    } catch (Throwable t) {
-      // can or can not happen depending on terminal.waitForCardPresent
-      logger.debug("[{}] waitForCardPresent => Throwable caught.", this.getName(), t);
-      return false;
-    }
-  }
-
-  /**
-   * Implements from SmartInsertionReader<br>
-   * {@inheritDoc}
-   *
-   * @since 0.9
-   */
-  @Override
-  public void stopWaitForCard() {
-    loopWaitCard.set(false);
   }
 
   /**
@@ -256,7 +191,7 @@ abstract class AbstractPcscReader extends AbstractObservableLocalReader
   }
 
   /**
-   * Implements from SmartRemovalReader<br>
+   * Implements from {@link WaitForCardRemovalBlocking}<br>
    * {@inheritDoc}
    *
    * @since 0.9
@@ -503,5 +438,11 @@ abstract class AbstractPcscReader extends AbstractObservableLocalReader
               .isContactless(getName());
     }
     return isContactless;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  protected ReaderObservationExceptionHandler getObservationExceptionHandler() {
+    return readerObservationExceptionHandler;
   }
 }

@@ -25,8 +25,8 @@ import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
 import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.service.util.ContactCardCommonProtocols;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
-import org.eclipse.keyple.core.service.util.ContactsCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 public class SampleFactory {
@@ -141,7 +141,7 @@ public class SampleFactory {
     CardSelector cardAtrSelector =
         CardSelector.builder()
             .atrFilter(atrFilter)
-            .cardProtocol(ContactsCardCommonProtocols.ISO_7816_3.name())
+            .cardProtocol(ContactCardCommonProtocols.ISO_7816_3.name())
             .build();
 
     CardRequest cardRequest = new CardRequest(aidCardSelector, poApduRequests);

@@ -364,7 +364,6 @@ public class SamResourceManagerDefault extends SamResourceManager {
             }
             break;
           case CARD_REMOVED:
-          case TIMEOUT_ERROR:
             removeResource(samReader);
             break;
         }
