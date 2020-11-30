@@ -24,6 +24,8 @@ import org.slf4j.LoggerFactory
 /**
  * Proxy Tag for [IsoDep], [MifareClassic], [MifareUltralight] Invoke
  * getTagTransceiver factory method to get a TagProxy object from a @[Tag] object
+ *
+ * @since 0.9
  */
 internal class TagProxy private constructor(private val tagTechnology: TagTechnology, val tech: String) : TagTechnology {
 
@@ -34,6 +36,8 @@ internal class TagProxy private constructor(private val tagTechnology: TagTechno
      * 3B8F8001804F0CA0000003060300030000000068 for Mifare Ultralight
      *
      * @return
+     *
+     * @since 0.9
      */
     // can not happen
     val atr: ByteArray?
@@ -90,6 +94,8 @@ internal class TagProxy private constructor(private val tagTechnology: TagTechno
          * @param tag : tag to be proxied
          * @return tagProxy
          * @throws KeypleReaderIOException
+         *
+         * @since 0.9
          */
         @Throws(KeypleReaderIOException::class)
         fun getTagProxy(tag: Tag): TagProxy {

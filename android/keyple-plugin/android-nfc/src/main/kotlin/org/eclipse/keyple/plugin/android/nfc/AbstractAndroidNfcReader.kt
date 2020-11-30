@@ -20,7 +20,6 @@ import java.io.IOException
 import java.lang.ref.WeakReference
 import java.util.HashMap
 import org.eclipse.keyple.core.plugin.AbstractObservableLocalAutonomousReader
-import org.eclipse.keyple.core.plugin.AbstractObservableLocalReader
 import org.eclipse.keyple.core.plugin.DontWaitForCardRemovalDuringProcessing
 import org.eclipse.keyple.core.plugin.WaitForCardInsertionAutonomous
 import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler
@@ -30,9 +29,17 @@ import org.eclipse.keyple.core.util.ByteArrayUtil
 import timber.log.Timber
 
 /**
+ * Package private abstract class implementing the {@link Reader} native Android NFC based Reader.
  *
- * Abstract implementation of [AndroidNfcReader] based on keyple core abstract classes [AbstractObservableLocalReader]
- * and
+ * <p>A Native NFC Android is observable ({@link AbstractObservableLocalAutonomousReader}), Autonomous to detect the insertion
+ * of cards ({@link WaitForCardInsertionAutonomous}), not able to detect the removal of a card prior an attempt to
+ * communicate with it ({@link DontWaitForCardRemovalDuringProcessing}) and has specific settings ({@link AndroidNfcReader}).
+ *
+ * <p> However, native Android NFC card removal behaviour changes regarding the version of Android. This is why there is
+ * two specific implementations of this class: ({@link AndroidNfcReaderPreNImpl}) for OS with API number < 24 and
+ * ({@link AndroidNfcReaderPostNImpl}) for OS with API number >= 24
+ *
+ * @since 0.9
  */
 internal abstract class AbstractAndroidNfcReader(activity: Activity, readerObservationExceptionHandler: ReaderObservationExceptionHandler) :
     AbstractObservableLocalAutonomousReader(
@@ -136,7 +143,8 @@ internal abstract class AbstractAndroidNfcReader(activity: Activity, readerObser
     /**
      * The transmission mode is always CONTACTLESS in a NFC reader
      *
-     * @return Always true.
+     * @return Boolean
+     * @since 0.9
      */
     override fun isContactless(): Boolean {
         return true
@@ -148,6 +156,7 @@ internal abstract class AbstractAndroidNfcReader(activity: Activity, readerObser
      * Do not call this function directly.
      *
      * @param tag : detected tag
+     * @since 0.9
      */
     override fun onTagDiscovered(tag: Tag?) {
         Timber.i("Received Tag Discovered event $tag")
@@ -162,10 +171,6 @@ internal abstract class AbstractAndroidNfcReader(activity: Activity, readerObser
         }
     }
 
-    /**
-     *
-     * @return true if a card is present
-     */
     public override fun checkCardPresence(): Boolean {
         return tagProxy != null
     }
@@ -180,6 +185,11 @@ internal abstract class AbstractAndroidNfcReader(activity: Activity, readerObser
         return tagProxy?.isConnected == true
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @since 0.9
+     */
     @Throws(KeypleReaderIOException::class)
     public override fun openPhysicalChannel() {
         if (tagProxy?.isConnected != true) {
@@ -196,6 +206,11 @@ internal abstract class AbstractAndroidNfcReader(activity: Activity, readerObser
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @since 0.9
+     */
     @Throws(KeypleReaderIOException::class)
     public override fun closePhysicalChannel() {
         try {
@@ -209,6 +224,11 @@ internal abstract class AbstractAndroidNfcReader(activity: Activity, readerObser
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @since 0.9
+     */
     @Throws(KeypleReaderIOException::class)
     public override fun transmitApdu(apduIn: ByteArray): ByteArray {
         Timber.d("Send data to card : ${apduIn.size} bytes")
@@ -245,14 +265,15 @@ internal abstract class AbstractAndroidNfcReader(activity: Activity, readerObser
     /**
      * Activates the provided card protocol.
      *
-     *
-     *  * Ask the plugin to take this protocol into account if a card using this protocol is
+     * Request the plugin to take this protocol into account if a card using this protocol is
      * identified during the selection phase.
-     *  * Activates the detection of SEs using this protocol (if the plugin allows it).
      *
+     * Activates the detection of SEs using this protocol (if the plugin allows it).
      *
      * @param readerProtocolName The protocol to activate (must be not null).
      * @throws KeypleReaderProtocolNotSupportedException if the protocol is not supported.
+     *
+     * @since 1.0
      */
     override fun activateReaderProtocol(readerProtocolName: String?) {
         if (!protocolsMap.containsKey(readerProtocolName)) {
@@ -265,13 +286,14 @@ internal abstract class AbstractAndroidNfcReader(activity: Activity, readerObser
     /**
      * Deactivates the provided card protocol.
      *
-     *
-     *  * Ask the plugin to ignore this protocol if a card using this protocol is identified during
+     * Request the plugin to ignore this protocol if a card using this protocol is identified during
      * the selection phase.
-     *  * Inhibits the detection of SEs using this protocol (if the plugin allows it).
      *
+     * Inhibits the detection of SEs using this protocol (if the plugin allows it).
      *
      * @param readerProtocolName The protocol to deactivate (must be not null).
+     *
+     * @since 1.0
      */
     override fun deactivateReaderProtocol(readerProtocolName: String?) {
         if (protocolsMap.containsKey(readerProtocolName)) {
@@ -281,11 +303,12 @@ internal abstract class AbstractAndroidNfcReader(activity: Activity, readerObser
     }
 
     /**
-     * Tells if the provided protocol matches the current protocol.
+     * Indicates if the provided protocol matches the current protocol.
      *
      * @param readerProtocolName A not empty String.
-     * @return True or false
+     * @return Boolean
      * @throws KeypleReaderProtocolNotFoundException if it is not possible to determine the protocol.
+     *
      * @since 1.0
      */
     override fun isCurrentProtocol(readerProtocolName: String?): Boolean {

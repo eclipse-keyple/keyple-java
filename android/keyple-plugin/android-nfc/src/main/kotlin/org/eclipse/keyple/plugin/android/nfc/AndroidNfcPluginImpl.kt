@@ -26,6 +26,7 @@ import timber.log.Timber
  *
  * Will provide 2 version of Android NFC reader based on Android OS version.
  *
+ * @since 0.9
  */
 internal class AndroidNfcPluginImpl(private val activity: Activity, private val readerObservationExceptionHandler: ReaderObservationExceptionHandler) :
     AbstractPlugin(AndroidNfcPlugin.PLUGIN_NAME),

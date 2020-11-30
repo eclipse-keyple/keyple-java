@@ -23,6 +23,8 @@ import timber.log.Timber
  * Singleton used by the plugin to run native NFC reader on Android version >= 24 (Android N)
  *
  * It will used native features of Android NFC API to detect card removal.
+ *
+ * @since 0.9
  */
 internal class AndroidNfcReaderPostNImpl(activity: Activity, readerObservationExceptionHandler: ReaderObservationExceptionHandler) : AbstractAndroidNfcReader(activity, readerObservationExceptionHandler), WaitForCardRemovalBlocking {
 
@@ -50,6 +52,8 @@ internal class AndroidNfcReaderPostNImpl(activity: Activity, readerObservationEx
     /**
      * This method is called when the state machine changes to WAIT_FOR_SE_REMOVAL.
      * Starts waiting for card removal.
+     *
+     * Wait duration is 10 seconds max before going timeout.
      *
      * @see WaitForCardRemovalBlocking.waitForCardAbsentNative
      *

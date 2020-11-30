@@ -17,6 +17,8 @@ package org.eclipse.keyple.plugin.android.nfc
  *
  *
  * The application can choose to add all parameters or only a subset.
+ *
+ * @since 0.9
  */
 object AndroidNfcProtocolSettings {
 
@@ -41,6 +43,8 @@ object AndroidNfcProtocolSettings {
      *
      * @param specificProtocols
      * @return a settings map
+     *
+     * @since 0.9
      */
     @Throws(NoSuchElementException::class)
     fun getSpecificSettings(specificProtocols: Set<String>):
@@ -54,6 +58,8 @@ object AndroidNfcProtocolSettings {
      *
      * @return a settings map
      * @throws No such Element Exception if protocol not found in settings
+     *
+     * @since 0.9
      */
     @Throws(NoSuchElementException::class)
     fun getSetting(cardProtocol: String): String {
