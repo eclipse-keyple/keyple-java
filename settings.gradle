@@ -38,4 +38,3 @@ project(':java:component:keyple-plugin:remote:integration-test').name = "keyple-
 
 include ':java:example:calypso'
 include ':java:example:generic:local'
-include ':java:example:generic:remote'
