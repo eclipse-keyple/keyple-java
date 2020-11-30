@@ -91,6 +91,18 @@ pipeline {
                     dir('java/example/generic/android/omapi') {
                         sh "./gradlew assembleDebug -P keyple_version=${keypleVersion}"
                     }
+                    dir('java/example/generic/remote/keyple-example-remote-poolclient-webservice') {
+                        sh "./gradlew assemble -P keyple_version=${keypleVersion}"
+                    }
+                    dir('java/example/generic/remote/keyple-example-remote-server-webservice') {
+                        sh "./gradlew assemble -P keyple_version=${keypleVersion}"
+                    }
+                    dir('java/example/generic/remote/keyple-example-remote-server-websocket') {
+                        sh "./gradlew assemble -P keyple_version=${keypleVersion}"
+                    }
+                    dir('java/example/calypso') {
+                        sh "./gradlew assemble -P keyple_version=${keypleVersion}"
+                    }
                 }
             }
         }
@@ -153,10 +165,9 @@ pipeline {
                         sh './gradlew :java:component:keyple-core:uploadArchives ${uploadParams}'
                         sh './gradlew :java:component:keyple-calypso:uploadArchives ${uploadParams}'
                         sh './gradlew :java:component:keyple-plugin:keyple-plugin-pcsc:uploadArchives ${uploadParams}'
-                        sh './gradlew :java:component:keyple-plugin:keyple-plugin-remotese:uploadArchives ${uploadParams}'
-                        sh './gradlew :java:component:keyple-plugin:remote-se:keyple-plugin-remotese-core:uploadArchives ${uploadParams}'
-                        sh './gradlew :java:component:keyple-plugin:remote-se:keyple-plugin-remotese-nativese:uploadArchives ${uploadParams}'
-                        sh './gradlew :java:component:keyple-plugin:remote-se:keyple-plugin-remotese-virtualse:uploadArchives ${uploadParams}'
+                        sh './gradlew :java:component:keyple-plugin:remote-se:keyple-plugin-remote-core:uploadArchives ${uploadParams}'
+                        sh './gradlew :java:component:keyple-plugin:remote-se:keyple-plugin-remote-local:uploadArchives ${uploadParams}'
+                        sh './gradlew :java:component:keyple-plugin:remote-se:keyple-plugin-remote-remote:uploadArchives ${uploadParams}'
                         sh './gradlew :java:component:keyple-plugin:keyple-plugin-stub:uploadArchives ${uploadParams}'
                         sh './gradlew --stop'
                     }
@@ -193,7 +204,7 @@ pipeline {
                     sh 'cp ./java/component/keyple-calypso/build/libs/keyple-java-calypso*.jar ./repository/java'
                     sh 'cp ./java/component/keyple-core/build/libs/keyple-java-core*.jar ./repository/java'
                     sh 'cp ./java/component/keyple-plugin/pcsc/build/libs/keyple-java-plugin*.jar ./repository/java'
-                    sh 'cp ./java/component/keyple-plugin/remotese/build/libs/keyple-java-plugin*.jar ./repository/java'
+                    sh 'cp ./java/component/keyple-plugin/remote/build/libs/keyple-java-plugin*.jar ./repository/java'
                     sh 'cp ./java/component/keyple-plugin/stub/build/libs/keyple-java-plugin*.jar ./repository/java'
                     sh 'cp ./java/example/generic/android/nfc/build/outputs/apk/debug/*.apk ./repository/android'
                     sh 'cp ./java/example/generic/android/omapi/build/outputs/apk/debug/*.apk ./repository/android'
