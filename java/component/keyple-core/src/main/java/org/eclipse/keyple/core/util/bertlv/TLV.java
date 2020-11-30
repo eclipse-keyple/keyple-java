@@ -14,9 +14,11 @@ package org.eclipse.keyple.core.util.bertlv;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /**
- * This class helps to parse a byte array as a TLV structure
+ * Helps to parse a byte array as a TLV structure
  *
  * <p>(ITU-T X.690 / ISO 8825)
+ *
+ * @since 0.9
  */
 public class TLV {
   private Tag tag;
@@ -30,6 +32,7 @@ public class TLV {
    * <p>
    *
    * @param binary the byte array containing the TLV structure
+   * @since 0.9
    */
   public TLV(byte[] binary) {
     tag = new Tag(0, (byte) 0, Tag.TagType.PRIMITIVE, 1); // This is a primitive TLV
@@ -48,6 +51,7 @@ public class TLV {
    * @param tag the tag to search in the byte array
    * @param offset the position to start in the byte array
    * @return true or false according to the presence of the provided tag
+   * @since 0.9
    */
   public boolean parse(Tag tag, int offset) {
     if (tag == null) {
@@ -87,22 +91,11 @@ public class TLV {
   }
 
   /**
-   * Return a byte array copied from the main array corresponding to value part of the last TLV
-   * parsing.
+   * Gets the current position in the main array
    *
-   * <p>This method modifies the global position in the main array. Thus, it must be called once
-   * only.
-   *
-   * @return a byte array
+   * @return An int
+   * @since 0.9
    */
-  public byte[] getValue() {
-    byte[] value = new byte[length];
-    System.arraycopy(binary, position, value, 0, length);
-    position += length;
-    return value;
-  }
-
-  /** @return the current position in the main array */
   public int getPosition() {
     return position;
   }
@@ -111,5 +104,22 @@ public class TLV {
   public String toString() {
     return String.format(
         "TAG: %s, LENGTH: %d, VALUE: %s", tag.toString(), length, ByteArrayUtil.toHex(getValue()));
+  }
+
+  /**
+   * Return a byte array copied from the main array corresponding to value part of the last TLV
+   * parsing.
+   *
+   * <p>This method modifies the global position in the main array. Thus, it must be called once
+   * only.
+   *
+   * @return a byte array
+   * @since 0.9
+   */
+  public byte[] getValue() {
+    byte[] value = new byte[length];
+    System.arraycopy(binary, position, value, 0, length);
+    position += length;
+    return value;
   }
 }

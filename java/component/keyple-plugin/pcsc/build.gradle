@@ -37,11 +37,30 @@ task sourcesJar(type: Jar, dependsOn : classes) {
     from sourceSets.main.output, sourceSets.main.java
 }
 
-//generate javadoc jar
+// Javadoc generation
+// Copy static custom files (logo)
+javadoc {
+    doLast {
+        copy {
+            from "src/main/javadoc/images"
+            into "$project.buildDir/docs/javadoc/images"
+            include "*.png"
+        }
+    }
+}
+
+// Generate javadoc jar
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     javadoc.options.encoding = 'UTF-8'
     from javadoc.destinationDir
+    javadoc.options.overview = "src/main/javadoc/overview.html"
+    javadoc.options.setUse(true) // adds the "use" link to the navigation bar
+    javadoc.options.setStylesheetFile(file("src/main/javadoc/keyple-stylesheet.css"))
+    javadoc.options.setWindowTitle(project.description + " Reference API - version " + version)
+    javadoc.options.setDocTitle(project.description + " Reference API - version " + version)
+    javadoc.options.setHeader("<a target=\"_parent\" href=\"https://keyple.org/\"><img src=\"{@docRoot}/images/keyple.png\" height=\"20px\" style=\"background-color: white; padding: 3px; margin: 0 10px -7px 3px;\"/></a><span style=\"line-height: 30px\"> PCSC PLUGIN REFERENCE API - VERSION " + version + "</span>")
+    javadoc.options.setFooter("Copyright &copy; Eclipse Foundation, Inc. All Rights Reserved.")
 }
 
 //publish javadoc, sources and jar

@@ -25,8 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link AbstractThreadedObservablePlugin} class provides the means to observe a plugin
- * (insertion/removal of readers) using a monitoring thread.
+ * Provides the means to observe a plugin (insertion/removal of readers) using a monitoring thread.
  *
  * @since 0.9
  */
@@ -148,14 +147,13 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
   }
 
   /**
+   * (package-private)<br>
    * Check whether the background job is monitoring for new readers
    *
    * @return true, if the background job is monitoring, false in all other cases.
-   * @deprecated will change in a later version
    * @since 0.9
    */
-  @Deprecated
-  protected Boolean isMonitoring() {
+  Boolean isMonitoring() {
     return thread != null && thread.isAlive() && thread.isMonitoring();
   }
 

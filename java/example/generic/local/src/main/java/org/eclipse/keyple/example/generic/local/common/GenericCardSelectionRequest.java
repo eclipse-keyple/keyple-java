@@ -12,12 +12,12 @@
 package org.eclipse.keyple.example.generic.local.common;
 
 import org.eclipse.keyple.core.card.message.CardSelectionResponse;
-import org.eclipse.keyple.core.card.selection.AbstractCardSelectionRequest;
+import org.eclipse.keyple.core.card.selection.AbstractCardSelection;
 import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.card.selection.CardSelector;
 
-/** Create a new class extending AbstractCardSelectionRequest */
-public final class GenericCardSelectionRequest extends AbstractCardSelectionRequest {
+/** Create a new class extending AbstractCardSelection */
+public final class GenericCardSelectionRequest extends AbstractCardSelection {
   public GenericCardSelectionRequest(CardSelector cardSelector) {
     super(cardSelector);
   }

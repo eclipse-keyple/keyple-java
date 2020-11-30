@@ -17,7 +17,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Detect the card insertion thanks to the method {@link
- * WaitForCardInsertionBlocking#waitForCardPresent()}. This method is invoked in another thread.
+ * WaitForCardInsertionBlocking#waitForCardPresent()}.
+ *
+ * <p>This method is invoked in another thread.
  *
  * <p>The job waits indefinitely for the waitForCardPresent method to return.
  *
@@ -29,6 +31,8 @@ import org.slf4j.LoggerFactory;
  * <p>All runtime exceptions that may occur during the monitoring process are caught and notified at
  * the application level through the {@link
  * org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler} mechanism.
+ *
+ * @since 0.9
  */
 class SmartInsertionMonitoringJob extends AbstractMonitoringJob {
 

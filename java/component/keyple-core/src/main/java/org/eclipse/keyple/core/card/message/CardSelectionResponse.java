@@ -14,8 +14,7 @@ package org.eclipse.keyple.core.card.message;
 import java.io.Serializable;
 
 /**
- * This POJO is used to transport data from a card obtained in response to a {@link
- * CardSelectionRequest}.
+ * This POJO wraps the data from a card obtained in response to a {@link CardSelectionRequest}.
  *
  * <p>These data are the selection status and the responses ({@link SelectionStatus}), if any, to
  * the APDUs sent to the card (a list of {@link ApduResponse}).

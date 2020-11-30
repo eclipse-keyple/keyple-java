@@ -41,7 +41,7 @@ public class SampleFactory {
     return new KeypleReaderIOException("Keyple Reader Exception");
   }
 
-  public static AbstractDefaultSelectionsRequest getSelectionRequest() {
+  public static AbstractDefaultSelectionsRequest getCardSelectionRequest() {
     return new DefaultSelectionsRequest(
         getACardRequestList_ISO14443_4(),
         MultiSelectionProcessing.FIRST_MATCH,

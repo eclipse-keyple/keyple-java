@@ -13,7 +13,11 @@ package org.eclipse.keyple.core.util;
 
 import java.util.regex.Pattern;
 
-/** Utils around byte arrays */
+/**
+ * Utils around byte arrays
+ *
+ * @since 0.9
+ */
 public final class ByteArrayUtil {
   /* byte to hex string conversion table */
   private static final String[] byteToHex =
@@ -52,6 +56,7 @@ public final class ByteArrayUtil {
    *
    * @param hex Hexa string
    * @return byte array
+   * @since 0.9
    */
   public static byte[] fromHex(String hex) {
     hex = HEX_IGNORED_CHARS.matcher(hex).replaceAll("").toUpperCase();
@@ -75,6 +80,7 @@ public final class ByteArrayUtil {
    *
    * @param byteArray byte array to represent to hex
    * @return Hex representation of the byte array
+   * @since 0.9
    */
   public static String toHex(byte[] byteArray) {
     if (byteArray == null) {
@@ -98,6 +104,7 @@ public final class ByteArrayUtil {
    * @param offset offset from which the 2 bytes are
    * @return the resulting int
    * @throws IllegalArgumentException if the buffer has a bad length
+   * @since 0.9
    */
   public static int twoBytesToInt(byte[] bytes, int offset) {
     if (bytes == null || bytes.length < offset + 2 || offset < 0) {
@@ -120,6 +127,7 @@ public final class ByteArrayUtil {
    * @param offset offset from which the 2 bytes are
    * @return the resulting int
    * @throws IllegalArgumentException if the buffer has a bad length
+   * @since 0.9
    */
   public static int twoBytesSignedToInt(byte[] bytes, int offset) {
     if (bytes == null || bytes.length < offset + 2 || offset < 0) {
@@ -145,6 +153,7 @@ public final class ByteArrayUtil {
    * @param offset offset from which the 3 bytes are
    * @return the resulting int
    * @throws IllegalArgumentException if the buffer has a bad length
+   * @since 0.9
    */
   public static int threeBytesToInt(byte[] bytes, int offset) {
     if (bytes == null || bytes.length < offset + 3 || offset < 0) {
@@ -169,6 +178,7 @@ public final class ByteArrayUtil {
    * @param offset offset from which the 3 bytes are
    * @return the resulting int
    * @throws IllegalArgumentException if the buffer has a bad length
+   * @since 0.9
    */
   public static int threeBytesSignedToInt(byte[] bytes, int offset) {
     if (bytes == null || bytes.length < offset + 3 || offset < 0) {
@@ -199,6 +209,7 @@ public final class ByteArrayUtil {
    * @param offset offset from which the 4 bytes are
    * @return the resulting int
    * @throws IllegalArgumentException if the buffer has a bad length
+   * @since 0.9
    */
   public static int fourBytesToInt(byte[] bytes, int offset) {
     if (bytes == null || bytes.length < offset + 4 || offset < 0) {

@@ -14,8 +14,8 @@ package org.eclipse.keyple.example.generic.local.Demo_CardProtocolDetection;
 import static org.eclipse.keyple.example.generic.local.Demo_CardProtocolDetection.CardSelectionConfig.getDefaultSelection;
 
 import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
-import org.eclipse.keyple.core.card.selection.CardSelection;
-import org.eclipse.keyple.core.card.selection.SelectionsResult;
+import org.eclipse.keyple.core.card.selection.CardSelectionsResult;
+import org.eclipse.keyple.core.card.selection.CardSelectionsService;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -41,12 +41,13 @@ class CardReaderObserver implements ObservableReader.ReaderObserver {
         logger.trace("Unexpected card insertion event");
         break;
       case CARD_MATCHED:
-        CardSelection cardSelection = getDefaultSelection();
+        CardSelectionsService cardSelectionsService = getDefaultSelection();
         /* get the card that matches one of the two selection targets */
-        SelectionsResult selectionsResult =
-            cardSelection.processDefaultSelection(event.getDefaultSelectionsResponse());
-        if (selectionsResult.hasActiveSelection()) {
-          AbstractSmartCard selectedCard = selectionsResult.getActiveSmartCard();
+        CardSelectionsResult cardSelectionsResult =
+            cardSelectionsService.processDefaultSelectionsResponse(
+                event.getDefaultSelectionsResponse());
+        if (cardSelectionsResult.hasActiveSelection()) {
+          AbstractSmartCard selectedCard = cardSelectionsResult.getActiveSmartCard();
           logger.info(
               "Inserted card matched with ATR {}", ByteArrayUtil.toHex(selectedCard.getAtrBytes()));
         }

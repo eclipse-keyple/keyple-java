@@ -23,7 +23,7 @@ import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
 
-public class AbstractCardSelectionRequestTest {
+public class AbstractCardSelectionTest {
   private static final String AID = "112233445566";
   private static final String APDU1 = "00 11 2233 01 11";
   private static final String APDU2 = "00 11 2233 01 22";
@@ -56,14 +56,14 @@ public class AbstractCardSelectionRequestTest {
     List<AbstractApduCommandBuilder> builders = testCardSelectionRequest.getCommandBuilders();
     assertThat(builders.get(0)).isEqualTo(builder1);
     assertThat(builders.get(1)).isEqualTo(builder2);
-    CardRequest cardRequest = testCardSelectionRequest.getSelectionRequest().getCardRequest();
+    CardRequest cardRequest = testCardSelectionRequest.getCardSelectionRequest().getCardRequest();
     List<ApduRequest> apduRequests = cardRequest.getApduRequests();
     assertThat(apduRequests.get(0)).isEqualTo(apduRequest1);
     assertThat(apduRequests.get(1)).isEqualTo(apduRequest2);
   }
 
   private static class TestCardSelectionRequest
-      extends AbstractCardSelectionRequest<AbstractApduCommandBuilder> {
+      extends AbstractCardSelection<AbstractApduCommandBuilder> {
     public TestCardSelectionRequest(CardSelector cardSelector) {
       super(cardSelector);
     }

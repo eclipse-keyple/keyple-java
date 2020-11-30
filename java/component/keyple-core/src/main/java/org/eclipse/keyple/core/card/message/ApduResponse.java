@@ -17,12 +17,13 @@ import java.util.Set;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /**
- * This POJO wraps the card's response to an ApduRequest.
+ * This POJO wraps the card's response to an {@link ApduRequest}.
  *
  * <p>The ApduResponse is built by a reader from an array of bytes received from the card in
  * response to an ApduRequest. The status code and the success status of the command are retrieved
- * from the data with an optional list of correct status codes optionally provided in the
- * constructor.
+ * from the data.
+ *
+ * @since 0.9
  */
 public final class ApduResponse implements Serializable {
 
@@ -41,6 +42,7 @@ public final class ApduResponse implements Serializable {
    *
    * @param buffer A byte array (must be not null)
    * @param successfulStatusCodes An optional Set of Integer (may be null)
+   * @since 0.9
    */
   public ApduResponse(byte[] buffer, Set<Integer> successfulStatusCodes) {
 
@@ -63,6 +65,7 @@ public final class ApduResponse implements Serializable {
    * Tells if the current APDU is successful or not.
    *
    * @return True if the current APDU is successful, false if not.
+   * @since 0.9
    */
   public boolean isSuccessful() {
     return successful;

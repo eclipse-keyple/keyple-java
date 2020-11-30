@@ -39,7 +39,7 @@ class CardReaderObserver implements ObservableReader.ReaderObserver {
         try {
           selectedCard =
               getDefaultSelection()
-                  .processDefaultSelection(event.getDefaultSelectionsResponse())
+                  .processDefaultSelectionsResponse(event.getDefaultSelectionsResponse())
                   .getActiveSmartCard();
         } catch (KeypleException e) {
           logger.error("Exception: {}", e.getMessage());

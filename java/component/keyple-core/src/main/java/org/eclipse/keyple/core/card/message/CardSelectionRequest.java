@@ -15,7 +15,8 @@ import java.io.Serializable;
 import org.eclipse.keyple.core.card.selection.CardSelector;
 
 /**
- * This POJO, combining a CardSelector and a CardRequest, is used to define a selection case.
+ * This POJO, combining a {@link CardSelector} and a {@link CardRequest}, is used to define a
+ * selection case.
  *
  * <p>The {@link CardSelector} is used to select a particular smart card, the optinal {@link
  * CardRequest} contains additional commands to be sent to the card when the selection is

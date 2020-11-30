@@ -77,7 +77,7 @@ public class Main_DefaultSelectionNotification_Pcsc {
     // Provide the Reader with the selection operation to be processed when a card is inserted.
     ((ObservableReader) reader)
         .setDefaultSelectionRequest(
-            CardSelectionConfig.getDefaultSelection().getSelectionOperation(),
+            CardSelectionConfig.getDefaultSelection().getDefaultSelectionsRequest(),
             ObservableReader.NotificationMode.MATCHED_ONLY,
             ObservableReader.PollingMode.REPEATING);
 

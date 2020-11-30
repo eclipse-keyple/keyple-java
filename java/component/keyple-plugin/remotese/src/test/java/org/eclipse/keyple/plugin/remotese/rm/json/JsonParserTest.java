@@ -55,13 +55,15 @@ public class JsonParserTest {
 
   @Test
   public void testSelectionByAidRequest() {
-    AbstractDefaultSelectionsRequest defaultSelectionsRequest = SampleFactory.getSelectionRequest();
+    AbstractDefaultSelectionsRequest defaultSelectionsRequest =
+        SampleFactory.getCardSelectionRequest();
     testSerializeDeserializeObj(defaultSelectionsRequest, DefaultSelectionsRequest.class);
   }
 
   @Test
   public void testSelectionByAtrRequest() {
-    AbstractDefaultSelectionsRequest defaultSelectionsRequest = SampleFactory.getSelectionRequest();
+    AbstractDefaultSelectionsRequest defaultSelectionsRequest =
+        SampleFactory.getCardSelectionRequest();
     testSerializeDeserializeObj(defaultSelectionsRequest, DefaultSelectionsRequest.class);
   }
 

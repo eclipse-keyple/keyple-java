@@ -12,8 +12,7 @@
 package org.eclipse.keyple.core.service.exception;
 
 /**
- * The exception {@code KeypleReaderException} is the parent abstract class of all Keyple reader
- * exceptions.
+ * The exception KeypleReaderException is the parent abstract class of all Keyple reader exceptions.
  */
 public abstract class KeypleReaderException extends KeypleException {
 

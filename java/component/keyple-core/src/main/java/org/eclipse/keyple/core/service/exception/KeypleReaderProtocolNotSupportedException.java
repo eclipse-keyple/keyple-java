@@ -11,10 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.service.exception;
 
-/**
- * The exception {@code KeypleReaderNotFoundException} indicates that the current card protocol is
- * not supported by the plugin.
- */
+/** Indicates that the current card protocol is not supported by the plugin. */
 public class KeypleReaderProtocolNotSupportedException extends KeypleReaderException {
 
   /** @param cardProtocol the identification data used to identify the card */

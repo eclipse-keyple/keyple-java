@@ -24,11 +24,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A generic reader. <code>AbstractReader</code> describes the high-level interface to a {@link
- * ProxyReader} made available by the underlying system.
+ * Implements the ProxyReader high-level interface.
  *
  * <p><code>AbstractReader</code> defines the minimum required functionality for a local or remote
- * reader and provides some logging facilities.
+ * reader.
+ *
+ * <p>It provides logging facilities.
+ *
+ * @since 0.9
  */
 public abstract class AbstractReader implements ProxyReader {
 
@@ -48,8 +51,11 @@ public abstract class AbstractReader implements ProxyReader {
   protected boolean isRegistered;
 
   /**
-   * Reader constructor taking the name of the plugin that instantiated the reader and the name of
-   * the reader in argument.
+   * Constructor.<br>
+   *
+   * <p>Plugin and reader names helps to identify the object in a multireader context.
+   *
+   * <p>The reader is marked as registered as soon as it is created.
    *
    * <p>Initializes the time measurement log at {@link CardRequest} level. The first measurement
    * gives the time elapsed since the plugin was loaded.
@@ -81,6 +87,7 @@ public abstract class AbstractReader implements ProxyReader {
    * Gets the name of plugin provided in the constructor.
    *
    * @return A not empty string.
+   * @since 0.9
    */
   public final String getPluginName() {
     return pluginName;
@@ -94,6 +101,8 @@ public abstract class AbstractReader implements ProxyReader {
    * #processCardSelectionRequests(List, MultiSelectionProcessing, ChannelControl)}.<br>
    * It adds a logging of exchanges including a measure of execution time, available at the debug
    * level.
+   *
+   * @since 0.9
    */
   @Override
   public final List<CardSelectionResponse> transmitCardSelectionRequests(
@@ -149,7 +158,7 @@ public abstract class AbstractReader implements ProxyReader {
 
   /**
    * This method is the actual implementation of the process of transmitting a list of {@link
-   * CardRequest} as defined by {@link ProxyReader#transmitCardSelectionRequests(List,
+   * CardSelectionRequest} as defined by {@link ProxyReader#transmitCardSelectionRequests(List,
    * MultiSelectionProcessing, ChannelControl)}.
    *
    * @param cardSelectionRequests A not empty list of not null {@link CardSelectionRequest}.
@@ -175,6 +184,8 @@ public abstract class AbstractReader implements ProxyReader {
    * is based on {@link #processCardRequest(CardRequest, ChannelControl)}.<br>
    * It adds a logging of exchanges including a measure of execution time, available at the debug
    * level.
+   *
+   * @since 0.9
    */
   @Override
   public final CardResponse transmitCardRequest(
@@ -226,11 +237,12 @@ public abstract class AbstractReader implements ProxyReader {
   }
 
   /**
+   * (package-private)<br>
    * Check if the reader status is "registered".
    *
    * @throws IllegalStateException is thrown when reader is not (or no longer) registered.
    */
-  protected void checkStatus() {
+  void checkStatus() {
     if (!isRegistered)
       throw new IllegalStateException(
           String.format("This reader, %s, is not registered", getName()));
@@ -247,6 +259,7 @@ public abstract class AbstractReader implements ProxyReader {
   }
 
   /**
+   * (package-private)<br>
    * Change the reader status to unregistered
    *
    * <p>This method may be overridden in order to meet specific needs in certain implementations of
@@ -255,7 +268,7 @@ public abstract class AbstractReader implements ProxyReader {
    * @throws IllegalStateException is thrown when plugin is already unregistered.
    * @since 1.0
    */
-  protected void unregister() {
+  void unregister() {
     checkStatus();
     isRegistered = false;
   }

@@ -46,10 +46,9 @@ public class SamSelectionRequestTest {
         SamSelector.builder() //
             .samRevision(SamRevision.AUTO) //
             .build();
-    SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
+    SamSelection samSelection = new SamSelection(samSelector);
     SelectionStatus selectionStatus = new SelectionStatus(new AnswerToReset(ATR), null, true);
-    CalypsoSam calypsoSam =
-        samSelectionRequest.parse(new CardSelectionResponse(selectionStatus, null));
+    CalypsoSam calypsoSam = samSelection.parse(new CardSelectionResponse(selectionStatus, null));
     // minimal checks on the CalypsoSam result
     assertThat(calypsoSam.getSamRevision()).isEqualTo(SamRevision.C1);
     assertThat(calypsoSam.getSerialNumber()).isEqualTo(SN);
@@ -62,12 +61,12 @@ public class SamSelectionRequestTest {
             .samRevision(SamRevision.AUTO) //
             .unlockData(UNLOCK_DATA)
             .build();
-    SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
+    SamSelection samSelection = new SamSelection(samSelector);
     SelectionStatus selectionStatus = new SelectionStatus(new AnswerToReset(ATR), null, true);
     List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
     apduResponses.add(UNLOCK_APDU_RESPONSE_OK);
     CalypsoSam calypsoSam =
-        samSelectionRequest.parse(
+        samSelection.parse(
             new CardSelectionResponse(selectionStatus, new CardResponse(true, apduResponses)));
     // minimal checks on the CalypsoSam result
     assertThat(calypsoSam.getSamRevision()).isEqualTo(SamRevision.C1);
@@ -81,12 +80,12 @@ public class SamSelectionRequestTest {
             .samRevision(SamRevision.AUTO) //
             .unlockData(UNLOCK_DATA)
             .build();
-    SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
+    SamSelection samSelection = new SamSelection(samSelector);
     SelectionStatus selectionStatus = new SelectionStatus(new AnswerToReset(ATR), null, true);
     List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
     apduResponses.add(UNLOCK_APDU_RESPONSE_KO);
     CalypsoSam calypsoSam =
-        samSelectionRequest.parse(
+        samSelection.parse(
             new CardSelectionResponse(selectionStatus, new CardResponse(true, apduResponses)));
   }
 }

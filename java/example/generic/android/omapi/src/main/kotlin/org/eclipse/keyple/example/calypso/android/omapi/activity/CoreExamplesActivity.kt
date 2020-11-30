@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.activity_core_examples.toolbar
 import org.eclipse.keyple.core.card.message.CardSelectionRequest
 import org.eclipse.keyple.core.card.message.ChannelControl
 import org.eclipse.keyple.core.card.message.ProxyReader
-import org.eclipse.keyple.core.card.selection.CardSelection
+import org.eclipse.keyple.core.card.selection.CardSelectionsService
 import org.eclipse.keyple.core.card.selection.CardSelector
 import org.eclipse.keyple.core.card.selection.CardSelector.AidSelector
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing
@@ -103,16 +103,16 @@ class CoreExamplesActivity : ExamplesActivity() {
     private fun groupedMultiSelection() {
         addHeaderEvent("UseCase Generic #3: AID based grouped explicit multiple selection")
 
-        val cardSelection = CardSelection(MultiSelectionProcessing.PROCESS_ALL)
+        val cardSelectionsService = CardSelectionsService(MultiSelectionProcessing.PROCESS_ALL)
 
         /* Close the channel after the selection in order to secure the selection of all applications */
-        cardSelection.prepareReleaseChannel()
+        cardSelectionsService.prepareReleaseChannel()
 
         /* operate card selection (change the AID here to adapt it to the card used for the test) */
         val cardAidPrefix = "A000000404012509"
 
         /* AID based selection (1st selection, later indexed 0) */
-        cardSelection.prepareSelection(GenericCardSelectionRequest(
+        cardSelectionsService.prepareSelection(GenericCardSelectionRequest(
                 CardSelector.builder()
                         .aidSelector(AidSelector.builder()
                                 .aidToSelect(cardAidPrefix)
@@ -121,7 +121,7 @@ class CoreExamplesActivity : ExamplesActivity() {
                         .build()))
 
         /* next selection (2nd selection, later indexed 1) */
-        cardSelection.prepareSelection(GenericCardSelectionRequest(
+        cardSelectionsService.prepareSelection(GenericCardSelectionRequest(
                 CardSelector.builder()
                 .aidSelector(AidSelector.builder()
                         .aidToSelect(cardAidPrefix)
@@ -130,7 +130,7 @@ class CoreExamplesActivity : ExamplesActivity() {
                 .build()))
 
         /* next selection (3rd selection, later indexed 2) */
-        cardSelection.prepareSelection(GenericCardSelectionRequest(
+        cardSelectionsService.prepareSelection(GenericCardSelectionRequest(
                 CardSelector.builder()
                         .aidSelector(AidSelector.builder()
                                 .aidToSelect(cardAidPrefix)
@@ -148,9 +148,9 @@ class CoreExamplesActivity : ExamplesActivity() {
                 if (reader.isCardPresent) {
                     addActionEvent("Sending multiSelection request based on AID Prefix $cardAidPrefix to ${reader.name}")
                     try {
-                        val selectionsResult = cardSelection.processExplicitSelection(reader)
-                        if (selectionsResult.smartCards.size> 0) {
-                            selectionsResult.smartCards.forEach {
+                        val cardSelectionsResult = cardSelectionsService.processExplicitSelections(reader)
+                        if (cardSelectionsResult.smartCards.size> 0) {
+                            cardSelectionsResult.smartCards.forEach {
                                 val smartCard = it.value
                                 addResultEvent("Selection status for selection " +
                                         "(indexed ${it.key}): \n\t\t" +
@@ -186,13 +186,13 @@ class CoreExamplesActivity : ExamplesActivity() {
             readers.values.forEach { reader: Reader ->
                 if (reader.isCardPresent) {
 
-                    var cardSelection = CardSelection()
+                    var cardSelectionsService = CardSelectionsService()
 
                     /*
                      * AID based selection: get the first application occurrence matching the AID, keep the
                      * physical channel open
                      */
-                    cardSelection.prepareSelection(GenericCardSelectionRequest(
+                    cardSelectionsService.prepareSelection(GenericCardSelectionRequest(
                             CardSelector.builder()
                                     .aidSelector(AidSelector.builder()
                                             .aidToSelect(cardAidPrefix)
@@ -200,18 +200,18 @@ class CoreExamplesActivity : ExamplesActivity() {
                                             .fileControlInformation(AidSelector.FileControlInformation.FCI).build())
                                     .build()))
                     /* Do the selection and display the result */
-                    doAndAnalyseSelection(reader, cardSelection, 1, cardAidPrefix)
+                    doAndAnalyseSelection(reader, cardSelectionsService, 1, cardAidPrefix)
 
                     /*
                      * New selection: get the next application occurrence matching the same AID, close the
                      * physical channel after
                      */
-                    cardSelection = CardSelection()
+                    cardSelectionsService = CardSelectionsService()
 
                     /* Close the channel after the selection */
-                    cardSelection.prepareReleaseChannel()
+                    cardSelectionsService.prepareReleaseChannel()
 
-                    cardSelection.prepareSelection(GenericCardSelectionRequest(
+                    cardSelectionsService.prepareSelection(GenericCardSelectionRequest(
                             CardSelector.builder()
                                     .aidSelector(AidSelector.builder()
                                             .aidToSelect(cardAidPrefix)
@@ -220,7 +220,7 @@ class CoreExamplesActivity : ExamplesActivity() {
                                     .build()))
 
                     /* Do the selection and display the result */
-                    doAndAnalyseSelection(reader, cardSelection, 2, cardAidPrefix)
+                    doAndAnalyseSelection(reader, cardSelectionsService, 2, cardAidPrefix)
                 } else {
                     addResultEvent("No cards were detected")
                 }
@@ -230,11 +230,11 @@ class CoreExamplesActivity : ExamplesActivity() {
     }
 
     @Throws(KeypleReaderException::class)
-    private fun doAndAnalyseSelection(reader: Reader, cardSelection: CardSelection, index: Int, cardAidPrefix: String) {
+    private fun doAndAnalyseSelection(reader: Reader, cardSelectionsService: CardSelectionsService, index: Int, cardAidPrefix: String) {
         addActionEvent("Sending multiSelection request based on AID Prefix $cardAidPrefix to ${reader.name}")
-        val selectionsResult = cardSelection.processExplicitSelection(reader)
-        if (selectionsResult.hasActiveSelection()) {
-            val smartCard = selectionsResult.activeSmartCard
+        val cardSelectionsResult = cardSelectionsService.processExplicitSelections(reader)
+        if (cardSelectionsResult.hasActiveSelection()) {
+            val smartCard = cardSelectionsResult.activeSmartCard
             addResultEvent("The card matched the selection $index.")
 
             addResultEvent("Selection status for case $index: \n\t\t" +

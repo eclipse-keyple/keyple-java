@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Wait for card Removal State
+ * Wait for card removal state implementation.
  *
  * <p>The state in which the card is still present and awaiting removal.
  *
@@ -26,6 +26,8 @@ import org.slf4j.LoggerFactory;
  *       WAIT_FOR_SE_DETECTION according to the {@link ObservableReader.PollingMode} setting.
  *   <li>Upon STOP_DETECT event, the machine changes state for WAIT_FOR_SE_DETECTION.
  * </ul>
+ *
+ * @since 0.9
  */
 class WaitForCardRemovalState extends AbstractObservableState {
 

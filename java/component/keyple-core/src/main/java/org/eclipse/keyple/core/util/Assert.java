@@ -14,8 +14,8 @@ package org.eclipse.keyple.core.util;
 import java.util.List;
 
 /**
- * The utility class {@code Assert} exposes very useful methods for testing method call parameters
- * and raising a {@link IllegalArgumentException} unchecked exception.
+ * Exposes useful methods for testing method call parameters and raising a IllegalArgumentException
+ * unchecked exception.
  *
  * @since 0.9
  */

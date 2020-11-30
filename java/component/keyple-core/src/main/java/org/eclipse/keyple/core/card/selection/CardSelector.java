@@ -19,8 +19,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The CardSelector class groups the information and methods used to select a particular secure
- * element
+ * This POJO hold the information and methods needed to select a particular card.
+ *
+ * <p>In addition to the card protocol provides two optional structure {@link AidSelector} and
+ * {@link AtrFilter} to specify the expected card profile.
+ *
+ * @since 0.9
  */
 public class CardSelector implements Serializable {
   /** logger */
@@ -36,12 +40,17 @@ public class CardSelector implements Serializable {
    * <p>- AID’s bytes of the card application to select. In case the card application is currently
    * not selected, a logical channel is established and the corresponding card application is
    * selected by the card reader, otherwise keep the current channel. <br>
-   * - optional {@link FileOccurrence} and {@link FileControlInformation} defines selections modes
-   * according to ISO7816-4<br>
-   * - optional successfulSelectionStatusCodes define a list of accepted SW1SW2 codes (in addition
-   * to 9000). Allows, for example, to manage the selection of the invalidated cards.<br>
-   * - AidSelector could be missing in CardSelector when operating a card which don’t support the
-   * Select Application command (as it is the case for SAM).
+   *
+   * <ul>
+   *   <li>optional {@link FileOccurrence} and {@link FileControlInformation} defines selections
+   *       modes according to ISO7816-4.
+   *   <li>optional successfulSelectionStatusCodes define a list of accepted SW1SW2 codes (in
+   *       addition to 9000). Allows, for example, to manage the selection of the invalidated cards.
+   *   <li>AidSelector could be missing in CardSelector when operating a card which don’t support
+   *       the Select Application command (as it is the case for SAM).
+   * </ul>
+   *
+   * @since 0.9
    */
   public static final class AidSelector implements Serializable {
     public static final int AID_MIN_LENGTH = 5;
@@ -52,6 +61,8 @@ public class CardSelector implements Serializable {
      *
      * <p>The getIsoBitMask method provides the bit mask to be used to set P2 in the select command
      * (ISO/IEC 7816-4.2)
+     *
+     * @since 0.9
      */
     public enum FileOccurrence {
       FIRST((byte) 0x00),
@@ -76,6 +87,8 @@ public class CardSelector implements Serializable {
      *
      * <p>The getIsoBitMask method provides the bit mask to be used to set P2 in the select command
      * (ISO/IEC 7816-4.2)
+     *
+     * @since 0.9
      */
     public enum FileControlInformation {
       FCI(((byte) 0x00)),
@@ -102,6 +115,8 @@ public class CardSelector implements Serializable {
     /**
      * List of status codes in response to the select application command that should be considered
      * successful although they are different from 9000
+     *
+     * @since 0.9
      */
     private Set<Integer> successfulSelectionStatusCodes;
 
@@ -131,6 +146,7 @@ public class CardSelector implements Serializable {
        *
        * @param aid the AID as an array of bytes
        * @return the builder instance
+       * @since 0.9
        */
       public AidSelectorBuilder aidToSelect(byte[] aid) {
         if (aid.length < AID_MIN_LENGTH || aid.length > AID_MAX_LENGTH) {
@@ -151,6 +167,7 @@ public class CardSelector implements Serializable {
        *
        * @param aid the AID as an hex string
        * @return the builder instance
+       * @since 0.9
        */
       public AidSelectorBuilder aidToSelect(String aid) {
         return this.aidToSelect(ByteArrayUtil.fromHex(aid));
@@ -161,6 +178,7 @@ public class CardSelector implements Serializable {
        *
        * @param fileOccurrence the {@link FileOccurrence}
        * @return the builder instance
+       * @since 0.9
        */
       public AidSelectorBuilder fileOccurrence(
           CardSelector.AidSelector.FileOccurrence fileOccurrence) {
@@ -173,6 +191,7 @@ public class CardSelector implements Serializable {
        *
        * @param fileControlInformation the {@link FileControlInformation}
        * @return the builder instance
+       * @since 0.9
        */
       public AidSelectorBuilder fileControlInformation(
           CardSelector.AidSelector.FileControlInformation fileControlInformation) {
@@ -184,6 +203,7 @@ public class CardSelector implements Serializable {
        * Build a new {@code AidSelector}.
        *
        * @return a new instance
+       * @since 0.9
        */
       public CardSelector.AidSelector build() {
         return new CardSelector.AidSelector(this);
@@ -194,6 +214,7 @@ public class CardSelector implements Serializable {
      * Gets a new builder.
      *
      * @return a new builder instance
+     * @since 0.9
      */
     public static AidSelectorBuilder builder() {
       return new AidSelectorBuilder();
@@ -203,17 +224,24 @@ public class CardSelector implements Serializable {
      * Getter for the AID provided at construction time
      *
      * @return byte array containing the AID
+     * @since 0.9
      */
     public byte[] getAidToSelect() {
       return aidToSelect;
     }
 
-    /** @return the file occurrence parameter */
+    /**
+     * @return the file occurrence parameter
+     * @since 0.9
+     */
     public FileOccurrence getFileOccurrence() {
       return fileOccurrence;
     }
 
-    /** @return the file control information parameter */
+    /**
+     * @return the file control information parameter
+     * @since 0.9
+     */
     public FileControlInformation getFileControlInformation() {
       return fileControlInformation;
     }
@@ -222,6 +250,7 @@ public class CardSelector implements Serializable {
      * Gets the list of successful selection status codes
      *
      * @return the list of status codes
+     * @since 0.9
      */
     public Set<Integer> getSuccessfulSelectionStatusCodes() {
       return successfulSelectionStatusCodes;
@@ -231,6 +260,7 @@ public class CardSelector implements Serializable {
      * Add as status code to be accepted to the list of successful selection status codes
      *
      * @param statusCode the status code to be accepted
+     * @since 0.9
      */
     public void addSuccessfulStatusCode(int statusCode) {
       // the list is kept null until a code is added
@@ -244,6 +274,7 @@ public class CardSelector implements Serializable {
      * Print out the AID in hex
      *
      * @return a string
+     * @since 0.9
      */
     @Override
     public String toString() {
@@ -260,7 +291,11 @@ public class CardSelector implements Serializable {
     }
   }
 
-  /** Static nested class to hold the data elements used to perform an ATR based filtering */
+  /**
+   * Static nested class to hold the data elements used to perform an ATR based filtering
+   *
+   * @since 0.9
+   */
   public static final class AtrFilter implements Serializable {
     /**
      * Regular expression dedicated to handle the card logical channel opening based on ATR pattern
@@ -271,6 +306,7 @@ public class CardSelector implements Serializable {
      * Regular expression based filter
      *
      * @param atrRegex String hex regular expression
+     * @since 0.9
      */
     public AtrFilter(String atrRegex) {
       this.atrRegex = atrRegex;
@@ -280,6 +316,7 @@ public class CardSelector implements Serializable {
      * Setter for the regular expression provided at construction time
      *
      * @param atrRegex expression string
+     * @since 0.9
      */
     public void setAtrRegex(String atrRegex) {
       this.atrRegex = atrRegex;
@@ -289,6 +326,7 @@ public class CardSelector implements Serializable {
      * Getter for the regular expression provided at construction time
      *
      * @return Regular expression string
+     * @since 0.9
      */
     public String getAtrRegex() {
       return atrRegex;
@@ -301,6 +339,7 @@ public class CardSelector implements Serializable {
      *
      * @param atr a buffer containing the ATR to be checked
      * @return a boolean true the ATR matches the current regex
+     * @since 0.9
      */
     public boolean atrMatches(byte[] atr) {
       boolean m;
@@ -318,6 +357,7 @@ public class CardSelector implements Serializable {
      * Print out the ATR regex
      *
      * @return a string
+     * @since 0.9
      */
     @Override
     public String toString() {
@@ -326,9 +366,10 @@ public class CardSelector implements Serializable {
   }
 
   /**
-   * Private constructor
+   * Protected constructor
    *
    * @param builder the CardSelector builder
+   * @since 0.9
    */
   protected CardSelector(CardSelectorBuilder builder) {
     this.cardProtocol = builder.cardProtocol;
@@ -354,7 +395,7 @@ public class CardSelector implements Serializable {
     private CardSelector.AtrFilter atrFilter;
     private CardSelector.AidSelector aidSelector;
 
-    /** Private constructor */
+    /** Protected constructor */
     protected CardSelectorBuilder() {}
 
     /**
@@ -362,6 +403,7 @@ public class CardSelector implements Serializable {
      *
      * @param cardProtocol A not empty String.
      * @return the builder instance
+     * @since 0.9
      */
     public CardSelectorBuilder cardProtocol(String cardProtocol) {
       this.cardProtocol = cardProtocol;
@@ -373,6 +415,7 @@ public class CardSelector implements Serializable {
      *
      * @param atrFilter the {@link AtrFilter} of the targeted card
      * @return the builder instance
+     * @since 0.9
      */
     public CardSelectorBuilder atrFilter(CardSelector.AtrFilter atrFilter) {
       this.atrFilter = atrFilter;
@@ -384,6 +427,7 @@ public class CardSelector implements Serializable {
      *
      * @param aidSelector the {@link AidSelector} of the targeted card
      * @return the builder instance
+     * @since 0.9
      */
     public CardSelectorBuilder aidSelector(CardSelector.AidSelector aidSelector) {
       this.aidSelector = aidSelector;
@@ -394,6 +438,7 @@ public class CardSelector implements Serializable {
      * Build a new {@code CardSelector}.
      *
      * @return a new instance
+     * @since 0.9
      */
     public CardSelector build() {
       return new CardSelector(this);
@@ -404,6 +449,7 @@ public class CardSelector implements Serializable {
    * Gets a new builder.
    *
    * @return a new builder instance
+   * @since 0.9
    */
   public static CardSelectorBuilder builder() {
     return new CardSelectorBuilder();
@@ -413,24 +459,27 @@ public class CardSelector implements Serializable {
    * Gets the card protocol name.
    *
    * @return the {@link String} provided at construction time
+   * @since 0.9
    */
   public String getCardProtocol() {
     return cardProtocol;
   }
 
   /**
-   * Getter
+   * Gets the ATR filter
    *
-   * @return the {@link AtrFilter} provided at construction time
+   * @return The {@link AtrFilter} (can be null)
+   * @since 0.9
    */
   public AtrFilter getAtrFilter() {
     return atrFilter;
   }
 
   /**
-   * Getter
+   * Gets the AID selector
    *
-   * @return the {@link AidSelector} provided at construction time
+   * @return The {@link AidSelector} (can be null)
+   * @since 0.9
    */
   public AidSelector getAidSelector() {
     return aidSelector;

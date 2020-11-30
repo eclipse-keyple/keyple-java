@@ -17,7 +17,7 @@ import org.eclipse.keyple.calypso.transaction.ElementaryFile;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
 import org.eclipse.keyple.core.card.selection.CardResource;
-import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.CardSelectionsService;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservableReader;
@@ -42,12 +42,12 @@ class CardReaderObserver implements ObservableReader.ReaderObserver {
         boolean transactionComplete = false;
         CalypsoPo calypsoPo = null;
         Reader poReader = null;
-        CardSelection cardSelection = CardSelectionConfig.getCardSelection();
+        CardSelectionsService cardSelectionsService = CardSelectionConfig.getCardSelection();
 
         calypsoPo =
             (CalypsoPo)
-                cardSelection
-                    .processDefaultSelection(event.getDefaultSelectionsResponse())
+                cardSelectionsService
+                    .processDefaultSelectionsResponse(event.getDefaultSelectionsResponse())
                     .getActiveSmartCard();
 
         poReader =

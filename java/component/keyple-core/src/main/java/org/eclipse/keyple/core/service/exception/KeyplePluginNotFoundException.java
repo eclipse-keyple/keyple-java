@@ -14,8 +14,8 @@ package org.eclipse.keyple.core.service.exception;
 import org.eclipse.keyple.core.service.SmartCardService;
 
 /**
- * The exception {@code KeyplePluginNotFoundException} indicates that the plugin is not found,
- * generally when it has not been previously registered to the {@link SmartCardService}.
+ * Indicates that the plugin is not found, generally when it has not been previously registered to
+ * the {@link SmartCardService}.
  */
 public class KeyplePluginNotFoundException extends KeyplePluginException {
 

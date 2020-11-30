@@ -23,7 +23,7 @@ import org.eclipse.keyple.calypso.transaction.ElementaryFile;
 import org.eclipse.keyple.calypso.transaction.PoSecuritySettings;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.core.card.selection.CardResource;
-import org.eclipse.keyple.core.card.selection.SelectionsResult;
+import org.eclipse.keyple.core.card.selection.CardSelectionsResult;
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
@@ -75,14 +75,14 @@ public class Main_StoredValue_DebitInSession_Pcsc {
       throw new IllegalStateException("No SAM is present in the reader " + samReader.getName());
     }
 
-    SelectionsResult selectionsResult =
-        CardSelectionConfig.getSamCardSelection().processExplicitSelection(samReader);
+    CardSelectionsResult cardSelectionsResult =
+        CardSelectionConfig.getSamCardSelection().processExplicitSelections(samReader);
 
-    if (!selectionsResult.hasActiveSelection()) {
+    if (!cardSelectionsResult.hasActiveSelection()) {
       throw new IllegalStateException("Unable to open a logical channel for SAM!");
     }
 
-    CalypsoSam calypsoSam = (CalypsoSam) selectionsResult.getActiveSmartCard();
+    CalypsoSam calypsoSam = (CalypsoSam) cardSelectionsResult.getActiveSmartCard();
 
     CardResource<CalypsoSam> samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
 
@@ -94,7 +94,7 @@ public class Main_StoredValue_DebitInSession_Pcsc {
     CalypsoPo calypsoPo =
         (CalypsoPo)
             CardSelectionConfig.getPoCardSelection()
-                .processExplicitSelection(poReader)
+                .processExplicitSelections(poReader)
                 .getActiveSmartCard();
 
     // Security settings

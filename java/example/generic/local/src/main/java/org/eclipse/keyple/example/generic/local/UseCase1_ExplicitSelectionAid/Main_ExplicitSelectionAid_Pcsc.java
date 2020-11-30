@@ -12,9 +12,9 @@
 package org.eclipse.keyple.example.generic.local.UseCase1_ExplicitSelectionAid;
 
 import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
-import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.CardSelectionsResult;
+import org.eclipse.keyple.core.card.selection.CardSelectionsService;
 import org.eclipse.keyple.core.card.selection.CardSelector;
-import org.eclipse.keyple.core.card.selection.SelectionsResult;
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
@@ -76,7 +76,7 @@ public class Main_ExplicitSelectionAid_Pcsc {
     logger.info("= #### AID based selection.");
 
     // Prepare the card selection
-    CardSelection cardSelection = new CardSelection();
+    CardSelectionsService cardSelectionsService = new CardSelectionsService();
 
     // Setting of an AID based selection (in this example a Calypso REV3 PO)
     //
@@ -93,15 +93,16 @@ public class Main_ExplicitSelectionAid_Pcsc {
 
     // Add the selection case to the current selection (we could have added other cases
     // here)
-    cardSelection.prepareSelection(genericCardSelectionRequest);
+    cardSelectionsService.prepareSelection(genericCardSelectionRequest);
 
     // Actual card communication: operate through a single request the card selection
-    SelectionsResult selectionsResult = cardSelection.processExplicitSelection(reader);
+    CardSelectionsResult cardSelectionsResult =
+        cardSelectionsService.processExplicitSelections(reader);
 
-    if (!selectionsResult.hasActiveSelection()) {
+    if (!cardSelectionsResult.hasActiveSelection()) {
       logger.warn("The selection of the application " + cardAid + " failed.");
     }
-    AbstractSmartCard smartCard = selectionsResult.getActiveSmartCard();
+    AbstractSmartCard smartCard = cardSelectionsResult.getActiveSmartCard();
     logger.info("The selection of the card has succeeded.");
 
     if (smartCard.hasFci()) {

@@ -19,7 +19,7 @@ import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandExcepti
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronizedExchangesException;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.card.message.CardSelectionResponse;
-import org.eclipse.keyple.core.card.selection.AbstractCardSelectionRequest;
+import org.eclipse.keyple.core.card.selection.AbstractCardSelection;
 
 /**
  * Specialized selection request to manage the specific characteristics of Calypso SAMs<br>
@@ -27,15 +27,14 @@ import org.eclipse.keyple.core.card.selection.AbstractCardSelectionRequest;
  * to Unlock the SAM if unlockData are present in the {@link SamSelector}.<br>
  * This unlock command is currently the only one allowed during the SAM selection process.
  */
-public class SamSelectionRequest
-    extends AbstractCardSelectionRequest<
-        AbstractSamCommandBuilder<? extends AbstractSamResponseParser>> {
+public class SamSelection
+    extends AbstractCardSelection<AbstractSamCommandBuilder<? extends AbstractSamResponseParser>> {
   /**
-   * Create a {@link SamSelectionRequest}
+   * Create a {@link SamSelection}
    *
    * @param samSelector the SAM selector
    */
-  public SamSelectionRequest(SamSelector samSelector) {
+  public SamSelection(SamSelector samSelector) {
     super(samSelector);
     byte[] unlockData = samSelector.getUnlockData();
     if (unlockData != null) {

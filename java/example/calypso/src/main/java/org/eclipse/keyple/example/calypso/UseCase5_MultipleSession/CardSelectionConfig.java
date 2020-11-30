@@ -13,11 +13,11 @@ package org.eclipse.keyple.example.calypso.UseCase5_MultipleSession;
 
 import static org.eclipse.keyple.calypso.command.sam.SamRevision.C1;
 
-import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
+import org.eclipse.keyple.calypso.transaction.PoSelection;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
-import org.eclipse.keyple.calypso.transaction.SamSelectionRequest;
+import org.eclipse.keyple.calypso.transaction.SamSelection;
 import org.eclipse.keyple.calypso.transaction.SamSelector;
-import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.CardSelectionsService;
 import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.example.calypso.common.CalypsoClassicInfo;
 
@@ -29,9 +29,9 @@ class CardSelectionConfig {
    *
    * @return card selection object
    */
-  static CardSelection getPoCardSelection() {
+  static CardSelectionsService getPoCardSelection() {
     // Prepare a Calypso PO selection
-    CardSelection cardSelection = new CardSelection();
+    CardSelectionsService cardSelectionsService = new CardSelectionsService();
 
     // Setting of an AID based selection of a Calypso REV3 PO
     //
@@ -39,11 +39,11 @@ class CardSelectionConfig {
     // communication
     // protocol keep the logical channel open after the selection
 
-    // Calypso selection: configures a PoSelectionRequest with all the desired attributes
+    // Calypso selection: configures a PoSelection with all the desired attributes
     // to
     // make the selection and read additional information afterwards
-    PoSelectionRequest poSelectionRequest =
-        new PoSelectionRequest(
+    PoSelection poSelection =
+        new PoSelection(
             PoSelector.builder()
                 .aidSelector(
                     CardSelector.AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
@@ -52,9 +52,9 @@ class CardSelectionConfig {
 
     // Add the selection case to the current selection (we could have added other cases
     // here)
-    cardSelection.prepareSelection(poSelectionRequest);
+    cardSelectionsService.prepareSelection(poSelection);
 
-    return cardSelection;
+    return cardSelectionsService;
   }
 
   /**
@@ -62,14 +62,14 @@ class CardSelectionConfig {
    *
    * @return card selection object
    */
-  static CardSelection getSamCardSelection() {
+  static CardSelectionsService getSamCardSelection() {
     // Create a SAM resource after selecting the SAM
-    CardSelection samSelection = new CardSelection();
+    CardSelectionsService samSelection = new CardSelectionsService();
 
     SamSelector samSelector = SamSelector.builder().samRevision(C1).serialNumber(".*").build();
 
     // Prepare selector
-    samSelection.prepareSelection(new SamSelectionRequest(samSelector));
+    samSelection.prepareSelection(new SamSelection(samSelector));
 
     return samSelection;
   }

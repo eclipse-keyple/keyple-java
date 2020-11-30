@@ -12,36 +12,36 @@
 package org.eclipse.keyple.example.calypso.UseCase2_DefaultSelectionNotification;
 
 import org.eclipse.keyple.calypso.transaction.*;
-import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.CardSelectionsService;
 import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.example.calypso.common.CalypsoClassicInfo;
 
 /** Card Selection Configuration */
 class CardSelectionConfig {
 
-  private static CardSelection cardSelection;
+  private static CardSelectionsService cardSelectionsService;
 
   /**
    * Define the card selection configuration for the Calypso PO
    *
    * @return card selection object
    */
-  static CardSelection getCardSelection() {
+  static CardSelectionsService getCardSelection() {
     /*Return card selection if already defined */
-    if (cardSelection != null) {
-      return cardSelection;
+    if (cardSelectionsService != null) {
+      return cardSelectionsService;
     }
     // Prepare a Calypso PO selection
-    cardSelection = new CardSelection();
+    cardSelectionsService = new CardSelectionsService();
 
     // Setting of an AID based selection of a Calypso REV3 PO
     // // Select the first application matching the selection AID whatever the card communication
     // protocol keep the logical channel open after the selection
 
-    // Calypso selection: configures a PoSelectionRequest with all the desired attributes to
+    // Calypso selection: configures a PoSelection with all the desired attributes to
     // make the selection and read additional information afterwards
-    PoSelectionRequest poSelectionRequest =
-        new PoSelectionRequest(
+    PoSelection poSelection =
+        new PoSelection(
             PoSelector.builder()
                 .aidSelector(
                     CardSelector.AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
@@ -49,12 +49,12 @@ class CardSelectionConfig {
                 .build());
 
     // Prepare the reading.
-    poSelectionRequest.prepareReadRecordFile(
+    poSelection.prepareReadRecordFile(
         CalypsoClassicInfo.SFI_EnvironmentAndHolder, CalypsoClassicInfo.RECORD_NUMBER_1);
 
     // Add the selection case to the current selection (we could have added other cases here)
-    cardSelection.prepareSelection(poSelectionRequest);
+    cardSelectionsService.prepareSelection(poSelection);
 
-    return cardSelection;
+    return cardSelectionsService;
   }
 }

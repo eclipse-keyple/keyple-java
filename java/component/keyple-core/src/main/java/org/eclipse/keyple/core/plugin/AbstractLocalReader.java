@@ -24,7 +24,6 @@ import org.eclipse.keyple.core.card.message.ProxyReader;
 import org.eclipse.keyple.core.card.message.SelectionStatus;
 import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
-import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderProtocolNotFoundException;
@@ -35,10 +34,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A local reader. <code>AbstractLocalReader</code> implements the methods defined by the {@link
- * Reader} and {@link ProxyReader} interfaces for a local reader.<br>
- * It also defines a set of abstract methods to be implemented by the reader plugins in order to
- * take into account the specific needs of the hardware.
+ * Implements the methods defined by the {@link ProxyReader} interface for a local reader.
+ *
+ * <p>It also defines a set of abstract methods to be implemented by the reader plugins in order to
+ * manage the specific needs of the related reader platform.
  */
 public abstract class AbstractLocalReader extends AbstractReader {
 
@@ -121,8 +120,11 @@ public abstract class AbstractLocalReader extends AbstractReader {
    */
   protected abstract boolean checkCardPresence();
 
-  /** Close both logical and physical channels */
-  protected void closeLogicalAndPhysicalChannels() {
+  /**
+   * (package-private)<br>
+   * Close both logical and physical channels
+   */
+  void closeLogicalAndPhysicalChannels() {
 
     closeLogicalChannel();
     try {
