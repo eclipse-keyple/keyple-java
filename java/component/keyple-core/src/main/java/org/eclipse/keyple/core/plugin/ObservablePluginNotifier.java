@@ -15,7 +15,7 @@ import org.eclipse.keyple.core.service.event.ObservablePlugin;
 import org.eclipse.keyple.core.service.event.PluginEvent;
 
 /**
- * Provides the API to notify the observers of an ObservablePlugin
+ * Provides the API to notify the observers of an {@link ObservablePlugin}
  *
  * @since 0.9
  */

@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The CardSelectionsService provides the means to prepare and execute a card selection.
+ * Provides the means to prepare and execute a card selection.
  *
  * <p>It provides a way to do an explicit card selection or to post process a default card
  * selection.<br>

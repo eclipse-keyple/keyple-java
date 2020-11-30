@@ -12,8 +12,8 @@
 package org.eclipse.keyple.core.plugin;
 
 /**
- * Extends AbstractObservableLocalReader to allow the reader implementation to call back the core
- * when card insertion and removal events occur.
+ * Extends {@link AbstractObservableLocalReader} to allow the reader implementation to call back the
+ * core when card insertion and removal events occur.
  *
  * @since 1.0
  */

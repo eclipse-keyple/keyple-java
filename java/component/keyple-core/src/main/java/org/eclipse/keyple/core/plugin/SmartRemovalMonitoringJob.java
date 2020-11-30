@@ -15,8 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Detect the card removal thanks to the method
- * WaitForCardRemovalBlocking#waitForCardAbsentNative().
+ * Detect the card removal thanks to the method {@link
+ * WaitForCardRemovalBlocking#waitForCardAbsentNative()}.
  *
  * <p>This method is invoked in another thread
  *

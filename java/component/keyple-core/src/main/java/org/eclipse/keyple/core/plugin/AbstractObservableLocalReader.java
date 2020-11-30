@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Extends AbstractLocalReader to manage the observation of card events.
+ * Extends {@link AbstractLocalReader} to manage the observation of card events.
  *
  * <p>It provides the means to configure the reader's behavior when a card is detected.
  *

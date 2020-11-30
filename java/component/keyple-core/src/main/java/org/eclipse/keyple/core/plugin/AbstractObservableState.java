@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Defines a state behaviour for a AbstractObservableLocalReader.
+ * Defines a state behaviour for a {@link AbstractObservableLocalReader}.
  *
  * <p>Handles AbstractObservableLocalReader.InternalEvent that might results on a switch of state.
  *

@@ -16,7 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Detect the card insertion thanks to the method WaitForCardInsertionBlocking#waitForCardPresent().
+ * Detect the card insertion thanks to the method {@link
+ * WaitForCardInsertionBlocking#waitForCardPresent()}.
  *
  * <p>This method is invoked in another thread.
  *

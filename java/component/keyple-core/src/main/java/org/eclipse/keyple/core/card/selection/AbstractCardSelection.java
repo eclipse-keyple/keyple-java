@@ -21,7 +21,7 @@ import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.service.exception.KeypleException;
 
 /**
- * This class provide means to create a CardSelectionRequest and analyse its result.
+ * This class provide means to create a {@link CardSelectionRequest} and analyse its result.
  *
  * <p>It embeds a {@link CardSelector} provided at construction and offers methods to manage
  * additional APDU command builders.<br>

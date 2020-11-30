@@ -14,7 +14,8 @@ package org.eclipse.keyple.core.service.event;
 import org.eclipse.keyple.core.service.Plugin;
 
 /**
- * Provides the API to observe readers in plugins.
+ * Provides the API to observe {@link org.eclipse.keyple.core.service.Reader}'s
+ * connection/disconnection.
  *
  * <p>Allows registered observers to receive a {@link PluginEvent} when a reader is
  * connected/disconnected

@@ -15,7 +15,7 @@ import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
 
 /**
- * Provides the API to notify the observers of an ObservableReader
+ * Provides the API to notify the observers of an {@link ObservableReader}
  *
  * @since 0.9
  */

@@ -16,8 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Ping the card to detect removal thanks to the method
- * AbstractObservableLocalReader#isCardPresentPing().
+ * Ping the card to detect removal thanks to the method {@link
+ * AbstractObservableLocalReader#isCardPresentPing()}.
  *
  * <p>This method is invoked in another thread.
  *

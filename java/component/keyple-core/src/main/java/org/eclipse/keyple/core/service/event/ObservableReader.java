@@ -15,7 +15,7 @@ import org.eclipse.keyple.core.card.message.ChannelControl;
 import org.eclipse.keyple.core.service.Reader;
 
 /**
- * Provides the API to observe cards in readers.
+ * Provides the API to observe cards insertion/removal.
  *
  * <ul>
  *   <li>Observer management

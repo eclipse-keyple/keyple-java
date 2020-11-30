@@ -20,8 +20,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * (package-private)<br>
- * Manages the internal state of an AbstractObservableLocalReader Process InternalEvent against the
- * current state
+ * Manages the internal state of an {@link AbstractObservableLocalReader} Process InternalEvent
+ * against the current state
  *
  * @since 0.9
  */

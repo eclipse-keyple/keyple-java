@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Implements the methods defined by the ProxyReader interface for a local reader.
+ * Implements the methods defined by the {@link ProxyReader} interface for a local reader.
  *
  * <p>It also defines a set of abstract methods to be implemented by the reader plugins in order to
  * manage the specific needs of the related reader platform.

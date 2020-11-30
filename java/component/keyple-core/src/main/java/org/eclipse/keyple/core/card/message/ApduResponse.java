@@ -17,7 +17,7 @@ import java.util.Set;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /**
- * This POJO wraps the card's response to an ApduRequest.
+ * This POJO wraps the card's response to an {@link ApduRequest}.
  *
  * <p>The ApduResponse is built by a reader from an array of bytes received from the card in
  * response to an ApduRequest. The status code and the success status of the command are retrieved
