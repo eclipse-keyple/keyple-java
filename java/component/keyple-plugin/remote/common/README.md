@@ -20,8 +20,8 @@ We welcome code contributions through merge requests. Please help us enhance the
 
 In addition to the APIs class diagram available on the official website, here is the internal API :
 
-![Remote_Class_Internal_KeypleCore_API](../../../../../docs/img/remote-plugin/class/Remote_Class_Internal_KeypleCore_API.svg)
+![Remote_Class_Internal_KeypleCore_API](resources/uml/class/Remote_Class_Internal_KeypleCore_API.svg)
 
-![Remote_Class_Internal_Package_Remote_API](../../../../../docs/img/remote-plugin/class/Remote_Class_Internal_Package_Remote_API.svg)
+![Remote_Class_Internal_Package_Remote_API](resources/uml/class/Remote_Class_Internal_Package_Remote_API.svg)
 
-![Remote_Class_Internal_Package_RemoteImpl_API](../../../../../docs/img/remote-plugin/class/Remote_Class_Internal_Package_RemoteImpl_API.svg)
+![Remote_Class_Internal_Package_RemoteImpl_API](resources/uml/class/Remote_Class_Internal_Package_RemoteImpl_API.svg)
