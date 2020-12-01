@@ -18,7 +18,7 @@ import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Abstract class for all PO command builders. */
+/** Abstract class for all PO command builders {@link org.eclipse.keyple.core.service.Reader} */
 public abstract class AbstractPoCommandBuilder<T extends AbstractPoResponseParser>
     extends AbstractIso7816CommandBuilder {
 

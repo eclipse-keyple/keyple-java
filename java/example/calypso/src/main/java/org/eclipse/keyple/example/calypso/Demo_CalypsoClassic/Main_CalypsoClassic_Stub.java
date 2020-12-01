@@ -137,7 +137,7 @@ public class Main_CalypsoClassic_Stub {
 
     /* Set the default selection operation */
     poReader.setDefaultSelectionRequest(
-        CardSelectionConfig.getPoDefaultCardSelection().getSelectionOperation(),
+        CardSelectionConfig.getPoDefaultCardSelection().getDefaultSelectionsRequest(),
         ObservableReader.NotificationMode.MATCHED_ONLY,
         ObservableReader.PollingMode.REPEATING);
 

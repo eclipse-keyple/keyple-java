@@ -13,7 +13,7 @@ package org.eclipse.keyple.core.plugin;
 
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 
-/** Interface implemented by the readers able to handle natively the card removal process. */
+/** Interface to be implemented by the readers able to handle natively the card removal process. */
 public interface WaitForCardRemovalBlocking extends ObservableReaderNotifier {
   /**
    * Wait until the card disappears.

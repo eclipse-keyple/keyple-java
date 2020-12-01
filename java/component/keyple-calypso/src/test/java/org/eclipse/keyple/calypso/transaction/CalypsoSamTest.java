@@ -40,7 +40,7 @@ public class CalypsoSamTest {
   @Test
   public void test_CalypsoSam_1() {
     SamSelector samSelector = SamSelector.builder().samRevision(AUTO).build();
-    SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
+    SamSelection samSelection = new SamSelection(samSelector);
     SelectionStatus selectionStatus =
         new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR1)), null, true);
     CalypsoSam calypsoSam = new CalypsoSam(new CardSelectionResponse(selectionStatus, null));
@@ -58,7 +58,7 @@ public class CalypsoSamTest {
   @Test
   public void test_CalypsoSam_2() {
     SamSelector samSelector = SamSelector.builder().samRevision(AUTO).build();
-    SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
+    SamSelection samSelection = new SamSelection(samSelector);
     SelectionStatus selectionStatus =
         new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR2)), null, true);
     CalypsoSam calypsoSam = new CalypsoSam(new CardSelectionResponse(selectionStatus, null));
@@ -70,7 +70,7 @@ public class CalypsoSamTest {
   @Test
   public void test_CalypsoSam_3() {
     SamSelector samSelector = SamSelector.builder().samRevision(AUTO).build();
-    SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
+    SamSelection samSelection = new SamSelection(samSelector);
     SelectionStatus selectionStatus =
         new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR3)), null, true);
     CalypsoSam calypsoSam = new CalypsoSam(new CardSelectionResponse(selectionStatus, null));
@@ -82,7 +82,7 @@ public class CalypsoSamTest {
   @Test
   public void test_CalypsoSam_4() {
     SamSelector samSelector = SamSelector.builder().samRevision(AUTO).build();
-    SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
+    SamSelection samSelection = new SamSelection(samSelector);
     SelectionStatus selectionStatus =
         new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR4)), null, true);
     CalypsoSam calypsoSam = new CalypsoSam(new CardSelectionResponse(selectionStatus, null));
@@ -94,7 +94,7 @@ public class CalypsoSamTest {
   @Test
   public void test_CalypsoSam_5() {
     SamSelector samSelector = SamSelector.builder().samRevision(AUTO).build();
-    SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
+    SamSelection samSelection = new SamSelection(samSelector);
     SelectionStatus selectionStatus =
         new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR5)), null, true);
     CalypsoSam calypsoSam = new CalypsoSam(new CardSelectionResponse(selectionStatus, null));
@@ -106,7 +106,7 @@ public class CalypsoSamTest {
   @Test(expected = IllegalStateException.class)
   public void test_CalypsoSam_6() {
     SamSelector samSelector = SamSelector.builder().samRevision(AUTO).build();
-    SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
+    SamSelection samSelection = new SamSelection(samSelector);
     SelectionStatus selectionStatus =
         new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR6)), null, true);
     CalypsoSam calypsoSam = new CalypsoSam(new CardSelectionResponse(selectionStatus, null));
@@ -117,7 +117,7 @@ public class CalypsoSamTest {
   @Test(expected = IllegalStateException.class)
   public void test_CalypsoSam_7() {
     SamSelector samSelector = SamSelector.builder().samRevision(AUTO).build();
-    SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
+    SamSelection samSelection = new SamSelection(samSelector);
     SelectionStatus selectionStatus =
         new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR7)), null, true);
     CalypsoSam calypsoSam = new CalypsoSam(new CardSelectionResponse(selectionStatus, null));
@@ -128,7 +128,7 @@ public class CalypsoSamTest {
   @Test(expected = IllegalStateException.class)
   public void test_CalypsoSam_8() {
     SamSelector samSelector = SamSelector.builder().samRevision(AUTO).build();
-    SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
+    SamSelection samSelection = new SamSelection(samSelector);
     SelectionStatus selectionStatus =
         new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex("")), null, true);
     CalypsoSam calypsoSam = new CalypsoSam(new CardSelectionResponse(selectionStatus, null));

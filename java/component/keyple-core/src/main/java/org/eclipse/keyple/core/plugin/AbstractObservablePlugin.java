@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class class provides the means to make a plugin observable.
+ * Provides the means to manage the observation of a plugin.
  *
  * <p>It allows:
  *

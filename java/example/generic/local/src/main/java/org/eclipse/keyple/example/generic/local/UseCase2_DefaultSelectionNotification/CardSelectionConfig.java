@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.generic.local.UseCase2_DefaultSelectionNotification;
 
-import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.CardSelectionsService;
 import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.generic.local.common.GenericCardSelectionRequest;
@@ -19,7 +19,7 @@ import org.eclipse.keyple.example.generic.local.common.GenericCardSelectionReque
 /** Card Selection Configuration */
 class CardSelectionConfig {
 
-  private static CardSelection cardSelection;
+  private static CardSelectionsService cardSelectionsService;
 
   private static String cardAid = "A0000004040125090101";
 
@@ -28,12 +28,12 @@ class CardSelectionConfig {
    *
    * @return card selection object
    */
-  static CardSelection getDefaultSelection() {
-    if (cardSelection != null) {
-      return cardSelection;
+  static CardSelectionsService getDefaultSelection() {
+    if (cardSelectionsService != null) {
+      return cardSelectionsService;
     }
     // Prepare a card selection
-    cardSelection = new CardSelection();
+    cardSelectionsService = new CardSelectionsService();
 
     // Setting of an AID based selection
     //
@@ -50,8 +50,8 @@ class CardSelectionConfig {
                 .build());
 
     // Add the selection case to the current selection (we could have added other cases here)
-    cardSelection.prepareSelection(cardSelector);
+    cardSelectionsService.prepareSelection(cardSelector);
 
-    return cardSelection;
+    return cardSelectionsService;
   }
 }

@@ -23,8 +23,6 @@ import java.util.Arrays;
  * reconstructed ATR for a PC/SC reader, low-level protocol information for other card readers,
  * etc).
  *
- * <p>(May be enhanced to provide analysis methods)
- *
  * @since 0.9
  */
 public class AnswerToReset implements Serializable {

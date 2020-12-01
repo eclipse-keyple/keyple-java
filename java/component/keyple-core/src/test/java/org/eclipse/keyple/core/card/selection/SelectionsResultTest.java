@@ -28,7 +28,7 @@ public class SelectionsResultTest {
 
   @Test
   public void testSelectionsResult() {
-    SelectionsResult selectionsResult = new SelectionsResult();
+    CardSelectionsResult cardSelectionsResult = new CardSelectionsResult();
     ApduResponse fci1 = new ApduResponse(ByteArrayUtil.fromHex(FCI1), null);
     SelectionStatus selectionStatus1 = new SelectionStatus(null, fci1, true);
     CardSelectionResponse cardSelectionResponse1 =
@@ -39,18 +39,18 @@ public class SelectionsResultTest {
         new CardSelectionResponse(selectionStatus2, null);
     TestSmartCard testSmartCard1 = new TestSmartCard(cardSelectionResponse1);
     TestSmartCard testSmartCard2 = new TestSmartCard(cardSelectionResponse2);
-    selectionsResult.addSmartCard(0, testSmartCard1, false);
-    selectionsResult.addSmartCard(2, testSmartCard2, true);
-    assertThat(selectionsResult.hasActiveSelection()).isTrue();
-    AbstractSmartCard activeSmartCard = selectionsResult.getActiveSmartCard();
+    cardSelectionsResult.addSmartCard(0, testSmartCard1, false);
+    cardSelectionsResult.addSmartCard(2, testSmartCard2, true);
+    assertThat(cardSelectionsResult.hasActiveSelection()).isTrue();
+    AbstractSmartCard activeSmartCard = cardSelectionsResult.getActiveSmartCard();
     assertThat(activeSmartCard).isEqualTo(testSmartCard2);
-    assertThat(selectionsResult.getActiveSelectionIndex()).isEqualTo(2);
-    assertThat(selectionsResult.getSmartCard(0)).isEqualTo(testSmartCard1);
-    assertThat(selectionsResult.getSmartCard(2)).isEqualTo(testSmartCard2);
-    assertThat(selectionsResult.hasSelectionMatched(0)).isTrue();
-    assertThat(selectionsResult.hasSelectionMatched(1)).isFalse();
-    assertThat(selectionsResult.hasSelectionMatched(2)).isTrue();
-    Map<Integer, AbstractSmartCard> matchingSelections = selectionsResult.getSmartCards();
+    assertThat(cardSelectionsResult.getActiveSelectionIndex()).isEqualTo(2);
+    assertThat(cardSelectionsResult.getSmartCard(0)).isEqualTo(testSmartCard1);
+    assertThat(cardSelectionsResult.getSmartCard(2)).isEqualTo(testSmartCard2);
+    assertThat(cardSelectionsResult.hasSelectionMatched(0)).isTrue();
+    assertThat(cardSelectionsResult.hasSelectionMatched(1)).isFalse();
+    assertThat(cardSelectionsResult.hasSelectionMatched(2)).isTrue();
+    Map<Integer, AbstractSmartCard> matchingSelections = cardSelectionsResult.getSmartCards();
     assertThat(matchingSelections.get(0)).isEqualTo(testSmartCard1);
     assertThat(matchingSelections.get(1)).isEqualTo(null);
     assertThat(matchingSelections.get(2)).isEqualTo(testSmartCard2);

@@ -12,8 +12,8 @@
 package org.eclipse.keyple.core.service.exception;
 
 /**
- * The exception {@code KeyplePluginInstantiationException} indicates that the plugin cannot be
- * instantiated, possibly due to a problem with one of the associated readers.
+ * Indicates that the plugin cannot be instantiated, possibly due to a problem with one of the
+ * associated readers.
  */
 public class KeyplePluginInstantiationException extends KeyplePluginException {
 

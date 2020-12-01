@@ -11,10 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.service.exception;
 
-/**
- * The exception {@code KeypleAllocationNoReaderException} indicates that no reader were available
- * during allocation invocation.
- */
+/** Indicates that no reader were available during allocation invocation. */
 public class KeypleAllocationNoReaderException extends KeypleException {
 
   public KeypleAllocationNoReaderException(String message) {

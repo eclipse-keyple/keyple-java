@@ -15,7 +15,13 @@ import java.util.Map;
 import java.util.Set;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 
-/** Card readers plugin interface. */
+/**
+ * Defines the high level plugin API.
+ *
+ * <p>Provides methods to get the plugin name and to retrieve the readers.
+ *
+ * @since 0.9
+ */
 public interface Plugin {
 
   /**
@@ -31,6 +37,7 @@ public interface Plugin {
    *
    * @return a list of String
    * @throws IllegalStateException is called when plugin is no longer registered
+   * @since 0.9
    */
   Set<String> getReaderNames();
 
@@ -40,6 +47,7 @@ public interface Plugin {
    * @return the map of this plugin's connected reader's name and instance, can be an empty list,
    *     can not be null;
    * @throws IllegalStateException is called when plugin is no longer registered
+   * @since 0.9
    */
   Map<String, Reader> getReaders();
 
@@ -50,6 +58,7 @@ public interface Plugin {
    * @return the Reader object.
    * @throws KeypleReaderNotFoundException if the wanted reader is not found
    * @throws IllegalStateException is called when plugin is no longer registered
+   * @since 0.9
    */
   Reader getReader(String name);
 }

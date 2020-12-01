@@ -11,9 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.service.exception;
 
-/**
- * The exception {@code KeypleAllocationReaderException} indicates that a reader allocation failed.
- */
+/** Indicates that a reader allocation failed. */
 public class KeypleAllocationReaderException extends KeypleException {
 
   /** @param message the message to identify the exception context */

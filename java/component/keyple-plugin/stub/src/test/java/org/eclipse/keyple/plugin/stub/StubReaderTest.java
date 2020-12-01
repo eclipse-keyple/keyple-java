@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.builder.IncreaseCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
-import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
+import org.eclipse.keyple.calypso.transaction.PoSelection;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.core.card.message.ApduRequest;
 import org.eclipse.keyple.core.card.message.CardRequest;
@@ -27,12 +27,12 @@ import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.card.message.ChannelControl;
 import org.eclipse.keyple.core.card.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.card.message.ProxyReader;
-import org.eclipse.keyple.core.card.selection.AbstractCardSelectionRequest;
+import org.eclipse.keyple.core.card.selection.AbstractCardSelection;
 import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
-import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.CardSelectionsResult;
+import org.eclipse.keyple.core.card.selection.CardSelectionsService;
 import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
-import org.eclipse.keyple.core.card.selection.SelectionsResult;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
@@ -488,21 +488,22 @@ public class StubReaderTest extends BaseStubTest {
     // add observer
     reader.addObserver(readerObs);
 
-    CardSelection cardSelection = new CardSelection();
+    CardSelectionsService cardSelectionsService = new CardSelectionsService();
 
-    PoSelectionRequest poSelectionRequest =
-        new PoSelectionRequest(
+    PoSelection poSelection =
+        new PoSelection(
             PoSelector.builder()
                 .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
 
-    cardSelection.prepareSelection(poSelectionRequest);
+    cardSelectionsService.prepareSelection(poSelection);
 
     ((ObservableReader) reader)
         .setDefaultSelectionRequest(
-            cardSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
+            cardSelectionsService.getDefaultSelectionsRequest(),
+            ObservableReader.NotificationMode.MATCHED_ONLY);
 
     // set PollingMode to Continue
     reader.startCardDetection(ObservableReader.PollingMode.SINGLESHOT);
@@ -546,21 +547,22 @@ public class StubReaderTest extends BaseStubTest {
 
     String poAid = "A000000291A000000192"; // not matching poAid
 
-    CardSelection cardSelection = new CardSelection();
+    CardSelectionsService cardSelectionsService = new CardSelectionsService();
 
-    PoSelectionRequest poSelectionRequest =
-        new PoSelectionRequest(
+    PoSelection poSelection =
+        new PoSelection(
             PoSelector.builder()
                 .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
 
-    cardSelection.prepareSelection(poSelectionRequest);
+    cardSelectionsService.prepareSelection(poSelection);
 
     ((ObservableReader) reader)
         .setDefaultSelectionRequest(
-            cardSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
+            cardSelectionsService.getDefaultSelectionsRequest(),
+            ObservableReader.NotificationMode.MATCHED_ONLY);
 
     reader.startCardDetection(ObservableReader.PollingMode.SINGLESHOT);
 
@@ -620,21 +622,22 @@ public class StubReaderTest extends BaseStubTest {
 
     String poAid = "A000000291A000000192"; // not matching poAid
 
-    CardSelection cardSelection = new CardSelection();
+    CardSelectionsService cardSelectionsService = new CardSelectionsService();
 
-    PoSelectionRequest poSelectionRequest =
-        new PoSelectionRequest(
+    PoSelection poSelection =
+        new PoSelection(
             PoSelector.builder()
                 .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
 
-    cardSelection.prepareSelection(poSelectionRequest);
+    cardSelectionsService.prepareSelection(poSelection);
 
     ((ObservableReader) reader)
         .setDefaultSelectionRequest(
-            cardSelection.getSelectionOperation(), ObservableReader.NotificationMode.ALWAYS);
+            cardSelectionsService.getDefaultSelectionsRequest(),
+            ObservableReader.NotificationMode.ALWAYS);
 
     reader.startCardDetection(ObservableReader.PollingMode.SINGLESHOT);
 
@@ -670,10 +673,10 @@ public class StubReaderTest extends BaseStubTest {
         new ObservableReader.ReaderObserver() {
           @Override
           public void update(ReaderEvent event) {
-            CardSelection cardSelection = new CardSelection();
+            CardSelectionsService cardSelectionsService = new CardSelectionsService();
 
-            PoSelectionRequest poSelectionRequest =
-                new PoSelectionRequest(
+            PoSelection poSelection =
+                new PoSelection(
                     PoSelector.builder()
                         .cardProtocol(ContactlessCardCommonProtocols.INNOVATRON_B_PRIME_CARD.name())
                         .atrFilter(new PoSelector.AtrFilter("3B.*"))
@@ -681,12 +684,13 @@ public class StubReaderTest extends BaseStubTest {
                         .build());
 
             /* Prepare selector, ignore AbstractSmartCard here */
-            cardSelection.prepareSelection(poSelectionRequest);
+            cardSelectionsService.prepareSelection(poSelection);
 
             try {
-              SelectionsResult selectionsResult = cardSelection.processExplicitSelection(reader);
+              CardSelectionsResult cardSelectionsResult =
+                  cardSelectionsService.processExplicitSelections(reader);
 
-              AbstractSmartCard smartCard = selectionsResult.getActiveSmartCard();
+              AbstractSmartCard smartCard = cardSelectionsResult.getActiveSmartCard();
 
               Assert.assertNotNull(smartCard);
 
@@ -753,20 +757,21 @@ public class StubReaderTest extends BaseStubTest {
     // add observer
     reader.addObserver(readerObs);
 
-    CardSelection cardSelection = new CardSelection();
+    CardSelectionsService cardSelectionsService = new CardSelectionsService();
 
-    PoSelectionRequest poSelectionRequest =
-        new PoSelectionRequest(
+    PoSelection poSelection =
+        new PoSelection(
             PoSelector.builder()
                 .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
 
-    cardSelection.prepareSelection(poSelectionRequest);
+    cardSelectionsService.prepareSelection(poSelection);
 
     reader.setDefaultSelectionRequest(
-        cardSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
+        cardSelectionsService.getDefaultSelectionsRequest(),
+        ObservableReader.NotificationMode.MATCHED_ONLY);
 
     reader.startCardDetection(ObservableReader.PollingMode.SINGLESHOT);
 
@@ -1473,8 +1478,8 @@ public class StubReaderTest extends BaseStubTest {
   }
 
   public static void genericSelectSe(Reader reader) {
-    /** Create a new local class extending AbstractCardSelectionRequest */
-    class GenericCardSelectionRequest extends AbstractCardSelectionRequest {
+    /** Create a new local class extending AbstractCardSelection */
+    class GenericCardSelectionRequest extends AbstractCardSelection {
 
       public GenericCardSelectionRequest(CardSelector cardSelector) {
         super(cardSelector);
@@ -1491,8 +1496,9 @@ public class StubReaderTest extends BaseStubTest {
       }
     }
 
-    CardSelection cardSelection = new CardSelection();
-    // CardSelection cardSelection = new CardSelection(MultiSelectionProcessing.PROCESS_ALL,
+    CardSelectionsService cardSelectionsService = new CardSelectionsService();
+    // CardSelectionsService cardSelectionsService = new
+    // CardSelectionsService(MultiSelectionProcessing.PROCESS_ALL,
     // ChannelControl.CLOSE_AFTER);
     GenericCardSelectionRequest genericCardSelectionRequest =
         new GenericCardSelectionRequest(
@@ -1502,10 +1508,10 @@ public class StubReaderTest extends BaseStubTest {
                 .build());
 
     /* Prepare selector, ignore AbstractSmartCard here */
-    cardSelection.prepareSelection(genericCardSelectionRequest);
+    cardSelectionsService.prepareSelection(genericCardSelectionRequest);
 
     try {
-      cardSelection.processExplicitSelection(reader);
+      cardSelectionsService.processExplicitSelections(reader);
     } catch (KeypleException e) {
       Assert.fail("Unexpected exception");
     }

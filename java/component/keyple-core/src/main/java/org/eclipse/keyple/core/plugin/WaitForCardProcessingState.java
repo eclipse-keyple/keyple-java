@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Wait for card Processing State
+ * Wait for card processing state implementation.
  *
  * <p>The state during which the card is being processed by the application.
  *
@@ -28,6 +28,8 @@ import org.slf4j.LoggerFactory;
  *       WAIT_FOR_SE_DETECTION according to the {@link ObservableReader.PollingMode} setting.
  *   <li>Upon STOP_DETECT event, the machine changes state for WAIT_FOR_SE_DETECTION.
  * </ul>
+ *
+ * @since 0.9
  */
 class WaitForCardProcessingState extends AbstractObservableState {
 

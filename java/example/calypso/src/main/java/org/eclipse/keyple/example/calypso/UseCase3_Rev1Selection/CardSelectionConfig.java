@@ -11,9 +11,9 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.calypso.UseCase3_Rev1Selection;
 
-import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
+import org.eclipse.keyple.calypso.transaction.PoSelection;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
-import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.CardSelectionsService;
 import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -30,14 +30,14 @@ class CardSelectionConfig {
    *
    * @return card selection object
    */
-  static CardSelection getPoCardSelection() {
+  static CardSelectionsService getPoCardSelection() {
     // Select the first application matching the selection.
-    CardSelection cardSelection = new CardSelection();
+    CardSelectionsService cardSelectionsService = new CardSelectionsService();
 
-    // Calypso selection: configures a PoSelectionRequest with all the desired attributes to
+    // Calypso selection: configures a PoSelection with all the desired attributes to
     // make the selection and read additional information afterwards
-    PoSelectionRequest poSelectionRequest =
-        new PoSelectionRequest(
+    PoSelection poSelection =
+        new PoSelection(
             PoSelector.builder()
                 .cardProtocol(ContactlessCardCommonProtocols.INNOVATRON_B_PRIME_CARD.name())
                 .atrFilter(new CardSelector.AtrFilter(PO_ATR_REGEX))
@@ -45,16 +45,16 @@ class CardSelectionConfig {
                 .build());
 
     // Prepare the selection of the DF RT.
-    poSelectionRequest.prepareSelectFile(ByteArrayUtil.fromHex(PO_DF_RT_PATH));
+    poSelection.prepareSelectFile(ByteArrayUtil.fromHex(PO_DF_RT_PATH));
 
     // Prepare the reading order.
-    poSelectionRequest.prepareReadRecordFile(
+    poSelection.prepareReadRecordFile(
         CalypsoClassicInfo.SFI_EnvironmentAndHolder, CalypsoClassicInfo.RECORD_NUMBER_1);
 
     // Add the selection case to the current selection (we could have added other cases
     // here)
-    cardSelection.prepareSelection(poSelectionRequest);
+    cardSelectionsService.prepareSelection(poSelection);
 
-    return cardSelection;
+    return cardSelectionsService;
   }
 }

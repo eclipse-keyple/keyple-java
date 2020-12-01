@@ -15,14 +15,16 @@ import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
 
 /**
- * The {@link ObservableReaderNotifier} interface provides the API to notify the observers of a
- * {@link ObservableReader}
+ * Provides the API to notify the observers of an {@link ObservableReader}
+ *
+ * @since 0.9
  */
 public interface ObservableReaderNotifier extends ObservableReader {
   /**
    * Push a ReaderEvent of the {@link ObservableReaderNotifier} to its registered observers.
    *
    * @param event the event (see {@link ReaderEvent})
+   * @since 0.9
    */
   void notifyObservers(final ReaderEvent event);
 }

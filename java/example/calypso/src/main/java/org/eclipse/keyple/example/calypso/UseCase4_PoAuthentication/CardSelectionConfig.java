@@ -14,9 +14,9 @@ package org.eclipse.keyple.example.calypso.UseCase4_PoAuthentication;
 import static org.eclipse.keyple.calypso.command.sam.SamRevision.C1;
 
 import org.eclipse.keyple.calypso.transaction.*;
-import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.CardSelectionsResult;
+import org.eclipse.keyple.core.card.selection.CardSelectionsService;
 import org.eclipse.keyple.core.card.selection.CardSelector;
-import org.eclipse.keyple.core.card.selection.SelectionsResult;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.calypso.common.CalypsoClassicInfo;
@@ -38,12 +38,12 @@ class CardSelectionConfig {
     }
 
     // Prepare a Calypso PO selection
-    CardSelection cardSelection = CardSelectionConfig.getPoCardSelection();
+    CardSelectionsService cardSelectionsService = CardSelectionConfig.getPoCardSelection();
 
     // Actual PO communication: operate through a single request the Calypso PO selection
     // and the file read
     CalypsoPo calypsoPo =
-        (CalypsoPo) cardSelection.processExplicitSelection(poReader).getActiveSmartCard();
+        (CalypsoPo) cardSelectionsService.processExplicitSelections(poReader).getActiveSmartCard();
 
     return calypsoPo;
   }
@@ -57,35 +57,35 @@ class CardSelectionConfig {
    */
   static CalypsoSam selectSam(Reader samReader) {
     // Create a SAM resource after selecting the SAM
-    CardSelection samSelection = CardSelectionConfig.getSamCardSelection();
+    CardSelectionsService samSelection = CardSelectionConfig.getSamCardSelection();
 
     if (!samReader.isCardPresent()) {
       throw new IllegalStateException("No SAM is present in the reader " + samReader.getName());
     }
 
-    SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
+    CardSelectionsResult cardSelectionsResult = samSelection.processExplicitSelections(samReader);
 
-    if (!selectionsResult.hasActiveSelection()) {
+    if (!cardSelectionsResult.hasActiveSelection()) {
       throw new IllegalStateException("Unable to open a logical channel for SAM!");
     }
 
-    CalypsoSam calypsoSam = (CalypsoSam) selectionsResult.getActiveSmartCard();
+    CalypsoSam calypsoSam = (CalypsoSam) cardSelectionsResult.getActiveSmartCard();
 
     return calypsoSam;
   }
 
-  private static CardSelection getPoCardSelection() {
+  private static CardSelectionsService getPoCardSelection() {
     // Prepare a Calypso PO selection
-    CardSelection cardSelection = new CardSelection();
+    CardSelectionsService cardSelectionsService = new CardSelectionsService();
 
     // Setting of an AID based selection of a Calypso REV3 PO
     // Select the first application matching the selection AID whatever the card communication
     // protocol keep the logical channel open after the selection
 
-    // Calypso selection: configures a PoSelectionRequest with all the desired attributes to
+    // Calypso selection: configures a PoSelection with all the desired attributes to
     // make the selection and read additional information afterwards
-    PoSelectionRequest poSelectionRequest =
-        new PoSelectionRequest(
+    PoSelection poSelection =
+        new PoSelection(
             PoSelector.builder()
                 .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(
@@ -94,24 +94,24 @@ class CardSelectionConfig {
                 .build());
 
     // Prepare the reading of the Environment and Holder file.
-    poSelectionRequest.prepareReadRecordFile(
+    poSelection.prepareReadRecordFile(
         CalypsoClassicInfo.SFI_EnvironmentAndHolder, CalypsoClassicInfo.RECORD_NUMBER_1);
 
     // Add the selection case to the current selection
     // (we could have added other cases here)
-    cardSelection.prepareSelection(poSelectionRequest);
+    cardSelectionsService.prepareSelection(poSelection);
 
-    return cardSelection;
+    return cardSelectionsService;
   }
 
-  private static CardSelection getSamCardSelection() {
+  private static CardSelectionsService getSamCardSelection() {
     // Create a SAM resource after selecting the SAM
-    CardSelection samSelection = new CardSelection();
+    CardSelectionsService samSelection = new CardSelectionsService();
 
     SamSelector samSelector = SamSelector.builder().samRevision(C1).serialNumber(".*").build();
 
     // Prepare selector
-    samSelection.prepareSelection(new SamSelectionRequest(samSelector));
+    samSelection.prepareSelection(new SamSelection(samSelector));
 
     return samSelection;
   }

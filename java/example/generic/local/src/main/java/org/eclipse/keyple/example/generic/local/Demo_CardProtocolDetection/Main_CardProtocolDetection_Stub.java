@@ -87,7 +87,7 @@ public class Main_CardProtocolDetection_Stub {
     // Set Default selection
     ((ObservableReader) poReader)
         .setDefaultSelectionRequest(
-            CardSelectionConfig.getDefaultSelection().getSelectionOperation(),
+            CardSelectionConfig.getDefaultSelection().getDefaultSelectionsRequest(),
             ObservableReader.NotificationMode.ALWAYS,
             ObservableReader.PollingMode.REPEATING);
 

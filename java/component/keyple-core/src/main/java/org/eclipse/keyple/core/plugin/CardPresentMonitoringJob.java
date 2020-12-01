@@ -18,8 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This monitoring job polls the {@link Reader#isCardPresent()} method to detect
- * CARD_INSERTED/CARD_REMOVED
+ * This monitoring job polls the {@link Reader#isCardPresent()} method to detect a card insertion or
+ * a card removal.
  *
  * <p>All runtime exceptions that may occur during the monitoring process are caught and notified at
  * the application level through the {@link

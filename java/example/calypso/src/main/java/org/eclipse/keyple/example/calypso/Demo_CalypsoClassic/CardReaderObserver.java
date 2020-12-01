@@ -67,7 +67,7 @@ class CardReaderObserver implements ObservableReader.ReaderObserver {
         CalypsoPo calypsoPo =
             (CalypsoPo)
                 getPoDefaultCardSelection()
-                    .processDefaultSelection(event.getDefaultSelectionsResponse())
+                    .processDefaultSelectionsResponse(event.getDefaultSelectionsResponse())
                     .getActiveSmartCard();
 
         ElementaryFile eventLogEF = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);

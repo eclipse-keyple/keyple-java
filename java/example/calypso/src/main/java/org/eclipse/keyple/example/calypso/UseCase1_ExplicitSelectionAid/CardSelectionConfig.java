@@ -12,7 +12,7 @@
 package org.eclipse.keyple.example.calypso.UseCase1_ExplicitSelectionAid;
 
 import org.eclipse.keyple.calypso.transaction.*;
-import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.CardSelectionsService;
 import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.calypso.common.CalypsoClassicInfo;
@@ -25,19 +25,19 @@ class CardSelectionConfig {
    *
    * @return card selection object
    */
-  static CardSelection getPoCardSelection() {
+  static CardSelectionsService getPoCardSelection() {
 
     // Prepare a Calypso PO selection
-    CardSelection cardSelection = new CardSelection();
+    CardSelectionsService cardSelectionsService = new CardSelectionsService();
 
     // Setting of an AID based selection of a Calypso REV3 PO
     // Select the first application matching the selection AID whatever the card communication
     // protocol keep the logical channel open after the selection
 
-    // Calypso selection: configures a PoSelectionRequest with all the desired attributes to
+    // Calypso selection: configures a PoSelection with all the desired attributes to
     // make the selection and read additional information afterwards
-    PoSelectionRequest poSelectionRequest =
-        new PoSelectionRequest(
+    PoSelection poSelection =
+        new PoSelection(
             PoSelector.builder()
                 .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(
@@ -46,13 +46,13 @@ class CardSelectionConfig {
                 .build());
 
     // Prepare the reading order.
-    poSelectionRequest.prepareReadRecordFile(
+    poSelection.prepareReadRecordFile(
         CalypsoClassicInfo.SFI_EnvironmentAndHolder, CalypsoClassicInfo.RECORD_NUMBER_1);
 
     // Add the selection case to the current selection (we could have added other cases
     // here)
-    cardSelection.prepareSelection(poSelectionRequest);
+    cardSelectionsService.prepareSelection(poSelection);
 
-    return cardSelection;
+    return cardSelectionsService;
   }
 }

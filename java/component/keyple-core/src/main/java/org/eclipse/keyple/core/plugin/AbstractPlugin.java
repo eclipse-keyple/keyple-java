@@ -20,6 +20,7 @@ import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.util.Assert;
 
 /**
  * This class define the common API for all plugins.
@@ -28,6 +29,8 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
  * for readers management: initializes and manages the list of connected readers, allows to retrieve
  * them all or individually by their names, <br>
  * for the plugin registration cycle: register, unregister and check registration.
+ *
+ * @since 0.9
  */
 public abstract class AbstractPlugin implements Plugin {
 
@@ -47,15 +50,23 @@ public abstract class AbstractPlugin implements Plugin {
    *
    * <p>When readers initialisation failed, a KeypleReaderException is thrown
    *
+   * <p>The registered status is set to true as soon as the plugin is created.
+   *
    * @param name name of the plugin
    * @throws KeypleReaderException when an issue is raised with reader
+   * @since 0.9
    */
   protected AbstractPlugin(String name) {
+    Assert.getInstance().notEmpty(name, "name");
     this.name = name;
     this.isRegistered = true;
   }
 
-  /** @return the name of the plugin */
+  /**
+   * Gets the name of the plugin
+   *
+   * @return A not empty String * @since 0.9
+   */
   public final String getName() {
     return name;
   }
@@ -79,6 +90,7 @@ public abstract class AbstractPlugin implements Plugin {
    *
    * @return a list of String
    * @throws IllegalStateException is thrown when plugin is not (or no longer) registered.
+   * @since 0.9
    */
   @Override
   public final Set<String> getReaderNames() {
@@ -96,6 +108,7 @@ public abstract class AbstractPlugin implements Plugin {
    *
    * @return the map of AbstractReader objects.
    * @throws KeypleReaderIOException if the communication with the reader has failed
+   * @since 0.9
    */
   protected abstract Map<String, Reader> initNativeReaders();
 
@@ -106,6 +119,7 @@ public abstract class AbstractPlugin implements Plugin {
    * @return the reader
    * @throws KeypleReaderNotFoundException if the wanted reader is not found
    * @throws IllegalStateException is thrown when plugin is not (or no longer) registered.
+   * @since 0.9
    */
   @Override
   public final Reader getReader(String name) {
@@ -118,11 +132,13 @@ public abstract class AbstractPlugin implements Plugin {
   }
 
   /**
+   * (package-private)<br>
    * Check if the plugin status is "registered".
    *
    * @throws IllegalStateException is thrown when plugin is not (or no longer) registered.
+   * @since 1.0
    */
-  protected void checkStatus() {
+  void checkStatus() {
     if (!isRegistered)
       throw new IllegalStateException(
           String.format("This plugin, %s, is not registered", getName()));

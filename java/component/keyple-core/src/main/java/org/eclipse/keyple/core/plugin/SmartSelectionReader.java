@@ -15,8 +15,9 @@ import org.eclipse.keyple.core.card.message.ProxyReader;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 
 /**
- * Interface implemented by readers able to handle natively the card selection process (e.g. Android
- * OMAPI readers).
+ * Interface implemented by readers able to handle natively the card selection process.
+ *
+ * <p>Android OMAPI based readers are for example able to do this.
  */
 public interface SmartSelectionReader extends ProxyReader {
 

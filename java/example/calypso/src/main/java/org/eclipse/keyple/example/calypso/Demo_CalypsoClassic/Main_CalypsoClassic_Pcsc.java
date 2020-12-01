@@ -89,7 +89,7 @@ public class Main_CalypsoClassic_Pcsc {
     /* Set the default selection operation */
     ((ObservableReader) poReader)
         .setDefaultSelectionRequest(
-            CardSelectionConfig.getPoDefaultCardSelection().getSelectionOperation(),
+            CardSelectionConfig.getPoDefaultCardSelection().getDefaultSelectionsRequest(),
             ObservableReader.NotificationMode.MATCHED_ONLY,
             ObservableReader.PollingMode.REPEATING);
 

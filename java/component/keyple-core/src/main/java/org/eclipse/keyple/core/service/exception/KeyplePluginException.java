@@ -12,7 +12,7 @@
 package org.eclipse.keyple.core.service.exception;
 
 /**
- * The exception {@code KeyplePluginException} is the parent abstract class of all Keyple plugins
+ * The exception KeyplePluginException is the parent abstract class of all Keyple plugins
  * exceptions.
  */
 public abstract class KeyplePluginException extends KeypleException {

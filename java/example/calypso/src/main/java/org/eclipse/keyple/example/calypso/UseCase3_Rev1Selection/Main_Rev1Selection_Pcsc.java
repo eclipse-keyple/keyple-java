@@ -15,7 +15,7 @@ import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.ElementaryFile;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.core.card.selection.CardResource;
-import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.CardSelectionsService;
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
@@ -90,12 +90,12 @@ public class Main_Rev1Selection_Pcsc {
     // based on ATR
     //
     // Select the first application matching the selection.
-    CardSelection cardSelection = CardSelectionConfig.getPoCardSelection();
+    CardSelectionsService cardSelectionsService = CardSelectionConfig.getPoCardSelection();
 
     // Actual PO communication: operate through a single request the Calypso PO selection
     // and the file read
     CalypsoPo calypsoPo =
-        (CalypsoPo) cardSelection.processExplicitSelection(poReader).getActiveSmartCard();
+        (CalypsoPo) cardSelectionsService.processExplicitSelections(poReader).getActiveSmartCard();
     logger.info("The selection of the PO has succeeded.");
 
     // Retrieve the data read from the CalyspoPo updated during the transaction process

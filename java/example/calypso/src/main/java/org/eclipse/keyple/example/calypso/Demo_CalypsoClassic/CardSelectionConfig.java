@@ -14,23 +14,23 @@ package org.eclipse.keyple.example.calypso.Demo_CalypsoClassic;
 import static org.eclipse.keyple.calypso.command.sam.SamRevision.C1;
 
 import org.eclipse.keyple.calypso.transaction.*;
-import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.CardSelectionsResult;
+import org.eclipse.keyple.core.card.selection.CardSelectionsService;
 import org.eclipse.keyple.core.card.selection.CardSelector;
-import org.eclipse.keyple.core.card.selection.SelectionsResult;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.calypso.common.CalypsoClassicInfo;
 
 /** Card Selection Configuration */
 class CardSelectionConfig {
-  private static CardSelection poCardSelection;
+  private static CardSelectionsService poCardSelection;
 
   /**
    * Define the card selection configuration for the Calypso PO
    *
    * @return card selection object
    */
-  static CardSelection getPoDefaultCardSelection() {
+  static CardSelectionsService getPoDefaultCardSelection() {
     /* Return PO card selection if already defined */
     if (poCardSelection != null) {
       return poCardSelection;
@@ -38,7 +38,7 @@ class CardSelectionConfig {
     /*
      * Initialize the selection process
      */
-    poCardSelection = new CardSelection();
+    poCardSelection = new CardSelectionsService();
 
     /* operate multiple PO selections */
     String poFakeAid1 = "AABBCCDDEE"; // fake AID 1
@@ -48,7 +48,7 @@ class CardSelectionConfig {
      * Add selection case 1: Fake AID1, protocol ISO, target rev 3
      */
     poCardSelection.prepareSelection(
-        new PoSelectionRequest(
+        new PoSelection(
             PoSelector.builder()
                 .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poFakeAid1).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
@@ -59,8 +59,8 @@ class CardSelectionConfig {
      *
      * addition of read commands to execute following the selection
      */
-    PoSelectionRequest poSelectionRequestCalypsoAid =
-        new PoSelectionRequest(
+    PoSelection poSelectionRequestCalypsoAid =
+        new PoSelection(
             PoSelector.builder()
                 .aidSelector(
                     CardSelector.AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
@@ -80,7 +80,7 @@ class CardSelectionConfig {
      * Add selection case 3: Fake AID2, unspecified protocol, target rev 2 or 3
      */
     poCardSelection.prepareSelection(
-        new PoSelectionRequest(
+        new PoSelection(
             PoSelector.builder()
                 .cardProtocol(ContactlessCardCommonProtocols.INNOVATRON_B_PRIME_CARD.name())
                 .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poFakeAid2).build())
@@ -91,7 +91,7 @@ class CardSelectionConfig {
      * Add selection case 4: ATR selection, rev 1 atrregex
      */
     poCardSelection.prepareSelection(
-        new PoSelectionRequest(
+        new PoSelection(
             PoSelector.builder()
                 .cardProtocol(ContactlessCardCommonProtocols.INNOVATRON_B_PRIME_CARD.name())
                 .atrFilter(new CardSelector.AtrFilter(CalypsoClassicInfo.ATR_REV1_REGEX))
@@ -110,21 +110,21 @@ class CardSelectionConfig {
    */
   static CalypsoSam selectSam(Reader samReader) {
     // Create a SAM resource after selecting the SAM
-    CardSelection samSelection = new CardSelection();
+    CardSelectionsService samSelection = new CardSelectionsService();
 
     SamSelector samSelector = SamSelector.builder().samRevision(C1).serialNumber(".*").build();
 
     // Prepare selector
-    samSelection.prepareSelection(new SamSelectionRequest(samSelector));
+    samSelection.prepareSelection(new SamSelection(samSelector));
     CalypsoSam calypsoSam;
     if (!samReader.isCardPresent()) {
       throw new IllegalStateException("No SAM is present in the reader " + samReader.getName());
     }
-    SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
-    if (!selectionsResult.hasActiveSelection()) {
+    CardSelectionsResult cardSelectionsResult = samSelection.processExplicitSelections(samReader);
+    if (!cardSelectionsResult.hasActiveSelection()) {
       throw new IllegalStateException("Unable to open a logical channel for SAM!");
     }
-    calypsoSam = (CalypsoSam) selectionsResult.getActiveSmartCard();
+    calypsoSam = (CalypsoSam) cardSelectionsResult.getActiveSmartCard();
 
     return calypsoSam;
   }

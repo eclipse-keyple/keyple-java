@@ -11,9 +11,9 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.generic.local.Demo_CardProtocolDetection;
 
-import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
+import org.eclipse.keyple.calypso.transaction.PoSelection;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
-import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.CardSelectionsService;
 import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.generic.local.common.GenericCardSelectionRequest;
@@ -21,7 +21,7 @@ import org.eclipse.keyple.example.generic.local.common.GenericCardSelectionReque
 /** Card Selection Configuration */
 class CardSelectionConfig {
 
-  private static CardSelection cardSelection;
+  private static CardSelectionsService cardSelectionsService;
   private static String HoplinkAID = "A000000291A000000191";
 
   /**
@@ -29,20 +29,20 @@ class CardSelectionConfig {
    *
    * @return card selection object
    */
-  static CardSelection getDefaultSelection() {
-    if (cardSelection != null) {
-      return cardSelection;
+  static CardSelectionsService getDefaultSelection() {
+    if (cardSelectionsService != null) {
+      return cardSelectionsService;
     }
 
-    cardSelection = new CardSelection();
+    cardSelectionsService = new CardSelectionsService();
 
     // process SDK defined protocols
     for (ContactlessCardCommonProtocols protocol : ContactlessCardCommonProtocols.values()) {
       switch (protocol) {
         case ISO_14443_4:
           /* Add a Hoplink selector */
-          PoSelectionRequest poSelectionRequest =
-              new PoSelectionRequest(
+          PoSelection poSelection =
+              new PoSelection(
                   PoSelector.builder()
                       .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                       .aidSelector(
@@ -50,7 +50,7 @@ class CardSelectionConfig {
                       .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                       .build());
 
-          cardSelection.prepareSelection(poSelectionRequest);
+          cardSelectionsService.prepareSelection(poSelection);
           break;
         case NFC_A_ISO_14443_3A:
         case NFC_B_ISO_14443_3B:
@@ -61,7 +61,7 @@ class CardSelectionConfig {
           break;
         default:
           /* Add a generic selector */
-          cardSelection.prepareSelection(
+          cardSelectionsService.prepareSelection(
               new GenericCardSelectionRequest(
                   CardSelector.builder()
                       .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
@@ -70,6 +70,6 @@ class CardSelectionConfig {
           break;
       }
     }
-    return cardSelection;
+    return cardSelectionsService;
   }
 }
