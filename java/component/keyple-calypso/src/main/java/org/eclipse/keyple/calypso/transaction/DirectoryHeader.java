@@ -18,7 +18,7 @@ import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /**
- * The class {@code DirectoryHeader} contains all metadata of a Calypso DF.
+ * This POJO contains all metadata of a Calypso DF.
  *
  * @since 0.9
  */

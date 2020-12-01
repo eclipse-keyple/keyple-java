@@ -17,7 +17,7 @@ import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /**
- * The class {@code FileData} contains all known data content of a Calypso EF.
+ * This POJO contains all known data content of a Calypso EF.
  *
  * @since 0.9
  */

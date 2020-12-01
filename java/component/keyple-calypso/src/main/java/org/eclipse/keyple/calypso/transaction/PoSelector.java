@@ -13,10 +13,7 @@ package org.eclipse.keyple.calypso.transaction;
 
 import org.eclipse.keyple.core.card.selection.CardSelector;
 
-/**
- * The {@link PoSelector} class extends {@link CardSelector} to handle specific PO features such as
- * the additional successful status codes list (in response to a select application command)
- */
+/** Extends {@link CardSelector} to handle specific PO features. */
 public final class PoSelector extends CardSelector {
   private static final int SW_PO_INVALIDATED = 0x6283;
 

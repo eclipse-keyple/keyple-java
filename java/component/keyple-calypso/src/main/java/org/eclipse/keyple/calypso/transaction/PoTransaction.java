@@ -71,12 +71,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Portable Object Secure Session.
+ * This service provides high-level operations on a Calypso PO.
  *
- * <p>A non-encrypted secure session with a Calypso PO requires the management of two {@link
- * ProxyReader} in order to communicate with both a Calypso PO and a SAM
+ * <p>Depending on the type of operations required, the presence of a SAM may be necessary.
  *
- * @author Calypso Networks Association
+ * <p>La construction de ce service requiert donc
  */
 public class PoTransaction {
 

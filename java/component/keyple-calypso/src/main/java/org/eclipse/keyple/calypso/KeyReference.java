@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.calypso;
 
-/** The KeyReference class groups all information about a Calypso key */
+/** Groups all information about a Calypso key */
 public class KeyReference {
   /** key identifier */
   private final byte kif;

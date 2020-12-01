@@ -16,7 +16,7 @@ import java.util.Arrays;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /**
- * The class {@code FileHeader} contains all metadata of a Calypso EF.
+ * This POJO contains all metadata of a Calypso EF.
  *
  * @since 0.9
  */

@@ -14,7 +14,7 @@ package org.eclipse.keyple.calypso.transaction;
 import java.io.Serializable;
 
 /**
- * The class {@code ElementaryFile} contains the description of a Calypso EF.
+ * This POJO contains the description of a Calypso EF.
  *
  * @since 0.9
  */
