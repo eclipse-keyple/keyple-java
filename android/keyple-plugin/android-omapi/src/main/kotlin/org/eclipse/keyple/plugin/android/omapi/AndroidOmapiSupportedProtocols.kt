@@ -13,6 +13,8 @@ package org.eclipse.keyple.plugin.android.omapi
 
 /**
  * List of protocols supported by this plugin
+ *
+ * @since 0.9
  */
 enum class AndroidOmapiSupportedProtocols {
     ISO_7816_3
