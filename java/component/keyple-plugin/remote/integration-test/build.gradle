@@ -5,7 +5,7 @@ apply plugin: 'org.sonarqube'
 
 sourceCompatibility = 1.6
 archivesBaseName = "keyple-java-plugin-remote-integration-test"
-project.description ='Integration tests of Keyple Plugin Remote, only for testing'
+project.description ='Integration tests of Keyple Remote Plugin, only for testing'
 
 
 dependencies {
