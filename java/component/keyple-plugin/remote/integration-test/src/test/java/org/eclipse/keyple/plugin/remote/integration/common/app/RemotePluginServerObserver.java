@@ -12,8 +12,8 @@
 package org.eclipse.keyple.plugin.remote.integration.common.app;
 
 import org.eclipse.keyple.calypso.transaction.*;
-import org.eclipse.keyple.core.card.selection.CardSelection;
-import org.eclipse.keyple.core.card.selection.SelectionsResult;
+import org.eclipse.keyple.core.card.selection.CardSelectionsResult;
+import org.eclipse.keyple.core.card.selection.CardSelectionsService;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservablePlugin;
 import org.eclipse.keyple.core.service.event.ObservableReader;
@@ -26,7 +26,7 @@ import org.eclipse.keyple.plugin.remote.integration.common.model.ConfigurationRe
 import org.eclipse.keyple.plugin.remote.integration.common.model.DeviceInput;
 import org.eclipse.keyple.plugin.remote.integration.common.model.UserInput;
 import org.eclipse.keyple.plugin.remote.integration.common.model.UserOutputDataDto;
-import org.eclipse.keyple.plugin.remote.integration.common.util.CalypsoUtilities;
+import org.eclipse.keyple.plugin.remote.integration.common.util.CalypsoUtils;
 import org.eclipse.keyple.plugin.remote.integration.service.BaseScenario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +73,7 @@ public class RemotePluginServerObserver implements ObservablePlugin.PluginObserv
       UserInput userInput = remoteReader.getUserInputData(UserInput.class);
       try {
         // execute a transaction
-        CalypsoUtilities.readEventLog(calypsoPo, remoteReader, logger);
+        CalypsoUtils.readEventLog(calypsoPo, remoteReader, logger);
         return new UserOutputDataDto().setUserId(userInput.getUserId()).setSuccessful(true);
       } catch (KeypleException e) {
         return new UserOutputDataDto().setSuccessful(false).setUserId(userInput.getUserId());
@@ -87,9 +87,9 @@ public class RemotePluginServerObserver implements ObservablePlugin.PluginObserv
       DeviceInput deviceInput = observableRemoteReader.getUserInputData(DeviceInput.class);
 
       // configure default selection on reader
-      CardSelection cardSelection = CalypsoUtilities.getSeSelection();
+      CardSelectionsService cardSelection = CalypsoUtils.getCardSelection();
       observableRemoteReader.setDefaultSelectionRequest(
-          cardSelection.getSelectionOperation(),
+          cardSelection.getDefaultSelectionsRequest(),
           ObservableReader.NotificationMode.MATCHED_ONLY,
           ObservableReader.PollingMode.REPEATING);
 
@@ -103,13 +103,13 @@ public class RemotePluginServerObserver implements ObservablePlugin.PluginObserv
       UserInput userInput = remoteReader.getUserInputData(UserInput.class);
 
       // remote selection
-      CardSelection cardSelection = CalypsoUtilities.getSeSelection();
-      SelectionsResult selectionsResult = cardSelection.processExplicitSelection(remoteReader);
+      CardSelectionsService cardSelection = CalypsoUtils.getCardSelection();
+      CardSelectionsResult selectionsResult = cardSelection.processExplicitSelections(remoteReader);
       CalypsoPo calypsoPo = (CalypsoPo) selectionsResult.getActiveSmartCard();
 
       try {
         // execute a transaction
-        CalypsoUtilities.readEventLog(calypsoPo, remoteReader, logger);
+        CalypsoUtils.readEventLog(calypsoPo, remoteReader, logger);
         return new UserOutputDataDto().setUserId(userInput.getUserId()).setSuccessful(true);
       } catch (KeypleException e) {
         return new UserOutputDataDto().setSuccessful(false).setUserId(userInput.getUserId());

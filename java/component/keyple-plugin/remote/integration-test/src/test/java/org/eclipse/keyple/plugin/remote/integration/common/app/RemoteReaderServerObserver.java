@@ -12,7 +12,7 @@
 package org.eclipse.keyple.plugin.remote.integration.common.app;
 
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
-import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.CardSelectionsService;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
@@ -21,7 +21,7 @@ import org.eclipse.keyple.plugin.remote.ObservableRemoteReaderServer;
 import org.eclipse.keyple.plugin.remote.RemotePluginServer;
 import org.eclipse.keyple.plugin.remote.integration.common.model.UserInput;
 import org.eclipse.keyple.plugin.remote.integration.common.model.UserOutputDataDto;
-import org.eclipse.keyple.plugin.remote.integration.common.util.CalypsoUtilities;
+import org.eclipse.keyple.plugin.remote.integration.common.util.CalypsoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,17 +51,16 @@ public class RemoteReaderServerObserver implements ObservableReader.ReaderObserv
         UserInput userInput = observableRemoteReader.getUserInputData(UserInput.class);
 
         // retrieve selection
-        CardSelection cardSelection = CalypsoUtilities.getSeSelection();
+        CardSelectionsService cardSelection = CalypsoUtils.getCardSelection();
         CalypsoPo calypsoPo =
             (CalypsoPo)
                 cardSelection
-                    .processDefaultSelection(event.getDefaultSelectionsResponse())
+                    .processDefaultSelectionsResponse(event.getDefaultSelectionsResponse())
                     .getActiveSmartCard();
 
         // execute a transaction
         try {
-          String eventLog =
-              CalypsoUtilities.readEventLog(calypsoPo, observableRemoteReader, logger);
+          String eventLog = CalypsoUtils.readEventLog(calypsoPo, observableRemoteReader, logger);
           // on the 2nd Card MATCHED
           if (eventCounter == 2) {
             // clear observers in the reader

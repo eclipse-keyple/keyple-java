@@ -15,14 +15,14 @@ import static org.eclipse.keyple.calypso.transaction.PoTransaction.SessionSettin
 
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.card.selection.CardResource;
-import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.CardSelectionsService;
 import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 
-public final class CalypsoUtilities {
+public final class CalypsoUtils {
 
   public static PoSecuritySettings getSecuritySettings(CardResource<CalypsoSam> samResource) {
 
@@ -48,13 +48,13 @@ public final class CalypsoUtilities {
         .build();
   }
 
-  public static CardSelection getSeSelection() {
+  public static CardSelectionsService getCardSelection() {
     // Prepare PO Selection
-    CardSelection seSelection = new CardSelection();
+    CardSelectionsService cardSelection = new CardSelectionsService();
 
     // Calypso selection
-    PoSelectionRequest poSelectionRequest =
-        new PoSelectionRequest(
+    PoSelection poSelection =
+        new PoSelection(
             PoSelector.builder()
                 .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(
@@ -63,12 +63,13 @@ public final class CalypsoUtilities {
                 .build());
 
     // Prepare the reading order.
-    poSelectionRequest.prepareReadRecordFile(
+    poSelection.prepareReadRecordFile(
         CalypsoClassicInfo.SFI_EnvironmentAndHolder, CalypsoClassicInfo.RECORD_NUMBER_1);
 
     // Add the selection case to the current selection
-    seSelection.prepareSelection(poSelectionRequest);
-    return seSelection;
+    cardSelection.prepareSelection(poSelection);
+
+    return cardSelection;
   }
 
   public static String readEventLog(CalypsoPo calypsoPo, Reader reader, Logger logger) {

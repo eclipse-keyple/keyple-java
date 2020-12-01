@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.SortedSet;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
-import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.CardSelectionsService;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.plugin.remote.PoolRemotePluginClient;
@@ -23,7 +23,7 @@ import org.eclipse.keyple.plugin.remote.impl.PoolLocalServiceServerFactory;
 import org.eclipse.keyple.plugin.remote.impl.PoolRemotePluginClientFactory;
 import org.eclipse.keyple.plugin.remote.integration.common.endpoint.pool.StubAsyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.integration.common.endpoint.pool.StubAsyncEndpointServer;
-import org.eclipse.keyple.plugin.remote.integration.common.util.CalypsoUtilities;
+import org.eclipse.keyple.plugin.remote.integration.common.util.CalypsoUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -69,11 +69,11 @@ public class AsyncScenario extends BaseScenario {
     assertThat(groupReferences).containsExactly(groupReference);
 
     Reader remoteReader = poolRemotePluginClient.allocateReader(groupReference);
-    CardSelection seSelection = CalypsoUtilities.getSeSelection();
+    CardSelectionsService seSelection = CalypsoUtils.getCardSelection();
     CalypsoPo calypsoPo =
-        (CalypsoPo) seSelection.processExplicitSelection(remoteReader).getActiveSmartCard();
+        (CalypsoPo) seSelection.processExplicitSelections(remoteReader).getActiveSmartCard();
 
-    String eventLog = CalypsoUtilities.readEventLog(calypsoPo, remoteReader, logger);
+    String eventLog = CalypsoUtils.readEventLog(calypsoPo, remoteReader, logger);
     assertThat(eventLog).isNotNull();
     poolRemotePluginClient.releaseReader(remoteReader);
   }

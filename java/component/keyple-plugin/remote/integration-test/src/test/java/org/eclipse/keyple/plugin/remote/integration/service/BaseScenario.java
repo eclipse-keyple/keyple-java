@@ -17,14 +17,13 @@ import static org.awaitility.Awaitility.await;
 import java.util.UUID;
 import java.util.concurrent.*;
 import org.eclipse.keyple.calypso.transaction.*;
-import org.eclipse.keyple.core.card.selection.CardSelection;
-import org.eclipse.keyple.core.card.selection.SelectionsResult;
+import org.eclipse.keyple.core.card.selection.CardSelectionsResult;
+import org.eclipse.keyple.core.card.selection.CardSelectionsService;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
-import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.eclipse.keyple.plugin.remote.LocalServiceClient;
 import org.eclipse.keyple.plugin.remote.RemotePluginServer;
 import org.eclipse.keyple.plugin.remote.RemoteServiceParameters;
@@ -38,7 +37,8 @@ import org.eclipse.keyple.plugin.remote.integration.common.model.DeviceInput;
 import org.eclipse.keyple.plugin.remote.integration.common.model.UserInput;
 import org.eclipse.keyple.plugin.remote.integration.common.model.UserOutputDataDto;
 import org.eclipse.keyple.plugin.remote.integration.common.se.StubCalypsoClassic;
-import org.eclipse.keyple.plugin.remote.integration.common.util.CalypsoUtilities;
+import org.eclipse.keyple.plugin.remote.integration.common.util.CalypsoUtils;
+import org.eclipse.keyple.plugin.remote.integration.common.util.NamedThreadFactory;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
 import org.eclipse.keyple.plugin.stub.*;
 import org.slf4j.Logger;
@@ -237,8 +237,8 @@ public abstract class BaseScenario {
    * @return matching PO
    */
   CalypsoPo explicitPoSelection() {
-    CardSelection seSelection = CalypsoUtilities.getSeSelection();
-    SelectionsResult selectionsResult = seSelection.processExplicitSelection(localReader);
+    CardSelectionsService seSelection = CalypsoUtils.getCardSelection();
+    CardSelectionsResult selectionsResult = seSelection.processExplicitSelections(localReader);
     return (CalypsoPo) selectionsResult.getActiveSmartCard();
   }
 
