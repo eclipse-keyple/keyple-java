@@ -1,8 +1,8 @@
-# Keyple Remote Plugin - Common Lib
+# Keyple Remote Plugins - Network Lib
 
 ## Overview
 
-The **Common Lib** Java library contains the common elements used by the [Local Lib](../local/README.md) and [Remote Lib](../remote/README.md) libraries provided by the **Keyple Remote Plugin** solution.
+The **Network Lib** Java library contains the common network elements used by the [Local Lib](../local/README.md) and [Remote Lib](../remote/README.md) libraries provided by the **Keyple Remote Plugins** solution.
 
 This library **should not be import explicitly because it's imported by transitivity** by the main libraries.
 

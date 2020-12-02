@@ -95,7 +95,7 @@ task setVersion {
     dependsOn ':java:component:keyple-core:setVersion'
     dependsOn ':java:component:keyple-calypso:setVersion'
     dependsOn ':java:component:keyple-plugin:keyple-plugin-pcsc:setVersion'
-    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-common:setVersion'
+    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-network:setVersion'
     dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-local:setVersion'
     dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-remote:setVersion'
     dependsOn ':java:component:keyple-plugin:keyple-plugin-stub:setVersion'
@@ -124,21 +124,21 @@ task installPcscPlugin{
 
 task installRemotePluginCommon{
     group 'keyple'
-    description 'Builds and installs the keyple remote plugin (Core) into maven local repository'
+    description 'Builds and installs the Keyple Remote Plugins (Network Lib) into maven local repository'
     dependsOn installCore
-    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-common:installPlugin'
+    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-network:installPlugin'
 }
 
 task installRemotePluginLocal{
     group 'keyple'
-    description 'Builds and installs the keyple remote plugin (Local) into maven local repository'
+    description 'Builds and installs the Keyple Remote Plugins (Local Lib) into maven local repository'
     dependsOn installRemotePluginCommon
     dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-local:installPlugin'
 }
 
 task installRemotePluginRemote{
     group 'keyple'
-    description 'Builds and installs the keyple remote plugin (Remote) into maven local repository'
+    description 'Builds and installs the Keyple Remote Plugins (Remote Lib) into maven local repository'
     dependsOn installRemotePluginCommon
     dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-remote:installPlugin'
 }
@@ -186,7 +186,7 @@ task codeQuality {
     //dependsOn installRemotePlugin
     //dependsOn ':java:component:keyple-plugin:keyple-plugin-remote:sonarqube'
     dependsOn installRemotePluginCommon
-    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-common:sonarqube'
+    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-network:sonarqube'
     dependsOn installRemotePluginLocal
     dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-local:sonarqube'
     dependsOn installRemotePluginRemote

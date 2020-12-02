@@ -1,5 +1,5 @@
 /**
- * Contains the internal classes of the <b>Common</b> components.
+ * Contains the internal classes of the <b>Network</b> components.
  *
  * @since 1.0
  */

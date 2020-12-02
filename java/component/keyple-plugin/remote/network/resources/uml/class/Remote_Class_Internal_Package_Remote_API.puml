@@ -1,6 +1,6 @@
 @startuml
 title
-    Keyple Remote Plugin - Package "org.eclipse.keyple.plugin.remote" - 1.0.0 (06/11/2020)
+    Keyple Remote Plugins - Package "org.eclipse.keyple.plugin.remote" - 1.0.0 (06/11/2020)
 end title
 
 ' == THEME ==

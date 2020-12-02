@@ -1,6 +1,6 @@
 @startuml
 title
-    Keyple Remote Plugin - Keyple Core API - 1.0.0 (24/11/2020)
+    Keyple Remote Plugins - Keyple Core API - 1.0.0 (24/11/2020)
 end title
 
 ' == THEME ==

@@ -24,8 +24,8 @@ project(':java:component:keyple-plugin:pcsc').name = "keyple-plugin-pcsc"
 include ':java:component:keyple-plugin:stub'
 project(':java:component:keyple-plugin:stub').name = "keyple-plugin-stub"
 
-include ':java:component:keyple-plugin:remote:common'
-project(':java:component:keyple-plugin:remote:common').name = "keyple-plugin-remote-common"
+include ':java:component:keyple-plugin:remote:network'
+project(':java:component:keyple-plugin:remote:network').name = "keyple-plugin-remote-network"
 
 include ':java:component:keyple-plugin:remote:local'
 project(':java:component:keyple-plugin:remote:local').name = "keyple-plugin-remote-local"

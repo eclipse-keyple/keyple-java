@@ -6,8 +6,8 @@ apply plugin: 'jacoco'
 apply plugin: 'org.sonarqube'
 
 sourceCompatibility = 1.6
-archivesBaseName = "keyple-java-plugin-remote-common"
-project.description ='Keyple Remote Plugin (Common)'
+archivesBaseName = "keyple-plugin-remote-network"
+project.description ='Keyple Remote Plugins (Network Lib)'
 
 //copy license file from root folder to each generated artifact
 task copyLICENSEplugin(type: Copy) {
@@ -48,7 +48,6 @@ javadoc {
         }
     }
 }
-
 // Generate javadoc jar
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
@@ -57,9 +56,9 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     javadoc.options.overview = "src/main/javadoc/overview.html"
     javadoc.options.setUse(true) // adds the "use" link to the navigation bar
     javadoc.options.setStylesheetFile(file("src/main/javadoc/keyple-stylesheet.css"))
-    javadoc.options.setWindowTitle(project.description + " Reference API - " + version)
-    javadoc.options.setDocTitle(project.description + " Reference API - " + version)
-    javadoc.options.setHeader("<a target=\"_parent\" href=\"https://keyple.org/\"><img src=\"{@docRoot}/images/keyple.png\" height=\"20px\" style=\"background-color: white; padding: 3px; margin: 0 10px -7px 3px;\"/></a><span style=\"line-height: 30px\"> REMOTE PLUGIN (COMMON) REFERENCE API - " + version + "</span>")
+    javadoc.options.setWindowTitle("Keyple Remote Plugins - Network API - " + version)
+    javadoc.options.setDocTitle("Keyple Remote Plugins - Network API - " + version)
+    javadoc.options.setHeader("<a target=\"_parent\" href=\"https://keyple.org/\"><img src=\"{@docRoot}/images/keyple.png\" height=\"20px\" style=\"background-color: white; padding: 3px; margin: 0 10px -7px 3px;\"/></a><span style=\"line-height: 30px\"> REMOTE PLUGINS - NETWORK API - " + version + "</span>")
     javadoc.options.setFooter("Copyright &copy; Eclipse Foundation, Inc. All Rights Reserved.")
 }
 
@@ -178,17 +177,17 @@ uploadArchives {
 
 task installPlugin{
     group 'keyple'
-    description 'Builds and installs the Keyple Remote Plugin (Core) into maven local repository'
-    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-common:uploadArchives'
+    description 'Builds and installs the ' + project.description + ' into maven local repository'
+    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-network:uploadArchives'
 
     doLast {
-        println 'Keyple Remote Plugin (Core) has been installed into maven local repo at path : ' + project.getRepositories().get(0).getAt("url")
+        println project.description + ' has been installed into maven local repo at path : ' + project.getRepositories().get(0).getAt("url")
     }
 }
 
 dependencies {
 
-    //use keyple library : core
+    // Keyple Core Lib
     //api project(path:':java:component:keyple-core')
     api group: 'org.eclipse.keyple', name: 'keyple-java-core', version: project.version
 

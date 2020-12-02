@@ -16,8 +16,8 @@ import org.eclipse.keyple.core.service.event.ObservablePlugin;
 
 /**
  * This plugin allows to simulate card communication by creating @{@link StubReaderImpl} and @{@link
- * StubSmartCard}. Plug a new StubReader with StubPlugin#plugStubReader and insert an implementation
- * of your own of {@link StubSmartCard} to start simulation communication.
+ * StubSmartCard}. Plug a new StubReader with StubPlugin#plugReader and insert an implementation of
+ * your own of {@link StubSmartCard} to start simulation communication.
  */
 public interface StubPlugin extends ObservablePlugin {
 
