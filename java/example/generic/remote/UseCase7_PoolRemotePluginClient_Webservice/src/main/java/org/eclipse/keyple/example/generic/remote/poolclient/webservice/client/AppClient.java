@@ -43,7 +43,10 @@ public class AppClient {
 
     // Init the remote plugin factory.
     PoolRemotePluginClientFactory factory =
-        PoolRemotePluginClientFactory.builder().withSyncNode(endpointClient).build();
+        PoolRemotePluginClientFactory.builder()
+            .withDefaultPluginName()
+            .withSyncNode(endpointClient)
+            .build();
 
     // Register the remote plugin to the smart card service using the factory.
     SmartCardService.getInstance().registerPlugin(factory);

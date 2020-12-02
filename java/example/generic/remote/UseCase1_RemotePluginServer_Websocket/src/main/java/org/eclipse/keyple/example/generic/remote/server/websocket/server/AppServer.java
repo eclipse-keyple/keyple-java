@@ -40,6 +40,7 @@ public class AppServer {
     // Init the remote plugin factory.
     RemotePluginServerFactory factory =
         RemotePluginServerFactory.builder()
+            .withDefaultPluginName()
             .withAsyncNode(endpointServer)
             .withPluginObserver(pluginObserver)
             .usingDefaultEventNotificationPool()

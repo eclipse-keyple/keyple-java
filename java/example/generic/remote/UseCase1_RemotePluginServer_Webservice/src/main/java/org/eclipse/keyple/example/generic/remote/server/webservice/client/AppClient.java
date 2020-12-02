@@ -67,6 +67,7 @@ public class AppClient {
 
     // Init the local service using the associated factory.
     LocalServiceClientFactory.builder()
+        .withDefaultServiceName()
         .withSyncNode(endpointClient)
         .withoutReaderObservation()
         .getService();
