@@ -31,11 +31,9 @@ public class StubAsyncEndpointClient implements AsyncEndpointClient {
   private static final Logger logger = LoggerFactory.getLogger(StubAsyncEndpointClient.class);
   private final StubAsyncEndpointServer server;
   private final ExecutorService taskPool;
-  private final String pluginName;
 
-  public StubAsyncEndpointClient(StubAsyncEndpointServer server, String pluginName) {
+  public StubAsyncEndpointClient(StubAsyncEndpointServer server) {
     this.server = server;
-    this.pluginName = pluginName;
     this.taskPool = Executors.newCachedThreadPool(new NamedThreadFactory("client-async-pool"));
   }
 
@@ -51,14 +49,14 @@ public class StubAsyncEndpointClient implements AsyncEndpointClient {
           public void run() {
             logger.trace("Data received from server : {}", data);
             MessageDto message = JacksonParser.fromJson(data);
-            PoolRemotePluginClientUtils.getAsyncNode(pluginName).onMessage(message);
+            PoolRemotePluginClientUtils.getAsyncNode().onMessage(message);
           }
         });
   }
 
   @Override
   public void openSession(String sessionId) {
-    PoolRemotePluginClientUtils.getAsyncNode(pluginName).onOpen(sessionId);
+    PoolRemotePluginClientUtils.getAsyncNode().onOpen(sessionId);
   }
 
   @Override
@@ -80,6 +78,6 @@ public class StubAsyncEndpointClient implements AsyncEndpointClient {
   public void closeSession(String sessionId) {
     logger.trace("Close session {} to server", sessionId);
     server.close(sessionId);
-    PoolRemotePluginClientUtils.getAsyncNode(pluginName).onClose(sessionId);
+    PoolRemotePluginClientUtils.getAsyncNode().onClose(sessionId);
   }
 }

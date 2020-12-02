@@ -29,9 +29,6 @@ public class SyncScenario extends BaseScenario {
 
   SyncEndpointClient clientSyncEndpoint;
 
-  private static final String localServiceName = "SyncServiceLocalService";
-  private static final String pluginName = "SyncServicePluginName";
-
   @Before
   public void setUp() {
 
@@ -42,7 +39,7 @@ public class SyncScenario extends BaseScenario {
      *   <li>attach the plugin observer</li>
      * </ul>
      */
-    initRemotePluginWithSyncNode(pluginName);
+    initRemotePluginWithSyncNode();
 
     /*
      * Client side :
@@ -55,7 +52,7 @@ public class SyncScenario extends BaseScenario {
      */
     initNativeStubPlugin();
 
-    clientSyncEndpoint = new StubSyncEndpointClient(pluginName, false);
+    clientSyncEndpoint = new StubSyncEndpointClient(false);
 
     user1 = new UserInput().setUserId(UUID.randomUUID().toString());
     device1 = new DeviceInput().setDeviceId(DEVICE_ID);
@@ -69,7 +66,7 @@ public class SyncScenario extends BaseScenario {
 
   @AfterClass
   public static void globalTearDown() {
-    unRegisterRemotePlugin(pluginName);
+    unRegisterRemotePlugin();
   }
 
   /** {@inheritDoc} */
@@ -79,7 +76,7 @@ public class SyncScenario extends BaseScenario {
 
     localService =
         LocalServiceClientFactory.builder()
-            .withServiceName(localServiceName)
+            .withDefaultServiceName()
             .withSyncNode(clientSyncEndpoint)
             .withoutReaderObservation()
             .getService();
@@ -94,7 +91,7 @@ public class SyncScenario extends BaseScenario {
 
     localService =
         LocalServiceClientFactory.builder()
-            .withServiceName(localServiceName)
+            .withDefaultServiceName()
             .withSyncNode(clientSyncEndpoint)
             .withoutReaderObservation()
             .getService();
@@ -109,7 +106,7 @@ public class SyncScenario extends BaseScenario {
 
     localService =
         LocalServiceClientFactory.builder()
-            .withServiceName(localServiceName)
+            .withDefaultServiceName()
             .withSyncNode(clientSyncEndpoint)
             .withoutReaderObservation()
             .getService();
@@ -123,7 +120,7 @@ public class SyncScenario extends BaseScenario {
   public void execute_transaction_closeSession_card_error() {
     localService =
         LocalServiceClientFactory.builder()
-            .withServiceName(localServiceName)
+            .withDefaultServiceName()
             .withSyncNode(clientSyncEndpoint)
             .withoutReaderObservation()
             .getService();
@@ -135,11 +132,11 @@ public class SyncScenario extends BaseScenario {
   @Override
   @Test(expected = StubNetworkConnectionException.class)
   public void execute_transaction_host_network_error() {
-    clientSyncEndpoint = new StubSyncEndpointClient(pluginName, true);
+    clientSyncEndpoint = new StubSyncEndpointClient(true);
 
     localService =
         LocalServiceClientFactory.builder()
-            .withServiceName(localServiceName)
+            .withDefaultServiceName()
             .withSyncNode(clientSyncEndpoint)
             .withoutReaderObservation()
             .getService();
@@ -160,7 +157,7 @@ public class SyncScenario extends BaseScenario {
   public void execute_transaction_slowSe_success() {
     localService =
         LocalServiceClientFactory.builder()
-            .withServiceName(localServiceName)
+            .withDefaultServiceName()
             .withSyncNode(clientSyncEndpoint)
             .withoutReaderObservation()
             .getService();
@@ -175,7 +172,7 @@ public class SyncScenario extends BaseScenario {
 
     localService =
         LocalServiceClientFactory.builder()
-            .withServiceName(localServiceName)
+            .withDefaultServiceName()
             .withSyncNode(clientSyncEndpoint)
             .withReaderObservation(eventFilter)
             .getService();
@@ -191,7 +188,7 @@ public class SyncScenario extends BaseScenario {
 
     localService =
         LocalServiceClientFactory.builder()
-            .withServiceName(localServiceName)
+            .withDefaultServiceName()
             .withSyncNode(clientSyncEndpoint)
             .withReaderObservation(eventFilter)
             .getService();

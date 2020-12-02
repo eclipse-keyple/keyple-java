@@ -35,23 +35,21 @@ public class StubAsyncEndpointServer implements AsyncEndpointServer {
   private final Map<String, StubAsyncEndpointClient> clients; // sessionId_client
   private final Map<String, Integer> messageCounts; // sessionId_counts
   private final ExecutorService taskPool;
-  private final String pluginName;
 
   private boolean simulateConnectionError;
 
-  public StubAsyncEndpointServer(String pluginName) {
+  public StubAsyncEndpointServer() {
     this.clients = new HashMap<String, StubAsyncEndpointClient>();
     this.messageCounts = new HashMap<String, Integer>();
     this.taskPool = Executors.newCachedThreadPool(new NamedThreadFactory("server-async-pool"));
     this.simulateConnectionError = false;
-    this.pluginName = pluginName;
   }
 
   /** Simulate a close socket operation */
   void close(String sessionId) {
     messageCounts.remove(sessionId);
     clients.remove(sessionId);
-    RemotePluginServerUtils.getAsyncNode(pluginName).onClose(sessionId);
+    RemotePluginServerUtils.getAsyncNode().onClose(sessionId);
   }
 
   /**
@@ -66,7 +64,7 @@ public class StubAsyncEndpointServer implements AsyncEndpointServer {
         new Runnable() {
           @Override
           public void run() {
-            RemotePluginServerUtils.getAsyncNode(pluginName).onMessage(message);
+            RemotePluginServerUtils.getAsyncNode().onMessage(message);
           }
         });
   }
@@ -87,7 +85,7 @@ public class StubAsyncEndpointServer implements AsyncEndpointServer {
             try {
               client.onMessage(data);
             } catch (Throwable t) {
-              RemotePluginServerUtils.getAsyncNode(pluginName).onError(msg.getSessionId(), t);
+              RemotePluginServerUtils.getAsyncNode().onError(msg.getSessionId(), t);
             }
           }
         });

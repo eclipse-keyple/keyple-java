@@ -34,10 +34,8 @@ public class StubAsyncEndpointServer implements AsyncEndpointServer {
   private final Map<String, StubAsyncEndpointClient> clients; // sessionId_client
   private final Map<String, Integer> messageCounts; // sessionId_counts
   private final ExecutorService taskPool;
-  private final String localServiceName;
 
-  public StubAsyncEndpointServer(String localServiceName) {
-    this.localServiceName = localServiceName;
+  public StubAsyncEndpointServer() {
     this.clients = new HashMap<String, StubAsyncEndpointClient>();
     this.messageCounts = new HashMap<String, Integer>();
     this.taskPool = Executors.newCachedThreadPool(new NamedThreadFactory("server-async-pool"));
@@ -47,7 +45,7 @@ public class StubAsyncEndpointServer implements AsyncEndpointServer {
   void close(String sessionId) {
     messageCounts.remove(sessionId);
     clients.remove(sessionId);
-    PoolLocalServiceServerUtils.getAsyncNode(localServiceName).onClose(sessionId);
+    PoolLocalServiceServerUtils.getAsyncNode().onClose(sessionId);
   }
 
   /**
@@ -62,7 +60,7 @@ public class StubAsyncEndpointServer implements AsyncEndpointServer {
         new Runnable() {
           @Override
           public void run() {
-            PoolLocalServiceServerUtils.getAsyncNode(localServiceName).onMessage(message);
+            PoolLocalServiceServerUtils.getAsyncNode().onMessage(message);
           }
         });
   }
@@ -79,8 +77,7 @@ public class StubAsyncEndpointServer implements AsyncEndpointServer {
             try {
               client.onMessage(data);
             } catch (Throwable t) {
-              PoolLocalServiceServerUtils.getAsyncNode(localServiceName)
-                  .onError(msg.getSessionId(), t);
+              PoolLocalServiceServerUtils.getAsyncNode().onError(msg.getSessionId(), t);
             }
           }
         });

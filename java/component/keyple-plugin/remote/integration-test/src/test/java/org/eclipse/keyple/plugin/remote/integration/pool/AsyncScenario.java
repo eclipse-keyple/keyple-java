@@ -34,20 +34,16 @@ public class AsyncScenario extends BaseScenario {
 
   private static final Logger logger = LoggerFactory.getLogger(AsyncScenario.class);
 
-  private final String localServiceName = "AsyncPoolLocalService";
-  private final String pluginName = "AsyncPoolPluginName";
-
   @Before
   public void setUp() {
     initNativePoolStubPlugin();
 
-    StubAsyncEndpointServer serverEndpoint = new StubAsyncEndpointServer(localServiceName);
-    StubAsyncEndpointClient clientEndpoint =
-        new StubAsyncEndpointClient(serverEndpoint, pluginName);
+    StubAsyncEndpointServer serverEndpoint = new StubAsyncEndpointServer();
+    StubAsyncEndpointClient clientEndpoint = new StubAsyncEndpointClient(serverEndpoint);
 
     poolLocalServiceServer =
         PoolLocalServiceServerFactory.builder()
-            .withServiceName(localServiceName)
+            .withDefaultServiceName()
             .withAsyncNode(serverEndpoint)
             .withPoolPlugins(localPoolPlugin.getName())
             .getService();
@@ -57,7 +53,7 @@ public class AsyncScenario extends BaseScenario {
             SmartCardService.getInstance()
                 .registerPlugin(
                     PoolRemotePluginClientFactory.builder()
-                        .withPluginName(pluginName)
+                        .withDefaultPluginName()
                         .withAsyncNode(clientEndpoint)
                         .usingDefaultTimeout()
                         .build());
@@ -65,6 +61,7 @@ public class AsyncScenario extends BaseScenario {
 
   @After
   public void tearDown() {
+
     SmartCardService.getInstance().unregisterPlugin(poolRemotePluginClient.getName());
   }
 
