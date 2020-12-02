@@ -36,9 +36,9 @@ public class StubAsyncEndpointServer implements AsyncEndpointServer {
   private final ExecutorService taskPool;
 
   public StubAsyncEndpointServer() {
-    this.clients = new HashMap<String, StubAsyncEndpointClient>();
-    this.messageCounts = new HashMap<String, Integer>();
-    this.taskPool = Executors.newCachedThreadPool(new NamedThreadFactory("server-async-pool"));
+    clients = new HashMap<String, StubAsyncEndpointClient>();
+    messageCounts = new HashMap<String, Integer>();
+    taskPool = Executors.newCachedThreadPool(new NamedThreadFactory("server-async-pool"));
   }
 
   /** Simulate a close socket operation */
