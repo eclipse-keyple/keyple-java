@@ -79,6 +79,7 @@ public final class DecreaseRespPars extends AbstractPoResponseParser {
    *
    * @param response the response from the PO
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public DecreaseRespPars(ApduResponse response, DecreaseCmdBuild builder) {
     super(response, builder);
@@ -88,6 +89,7 @@ public final class DecreaseRespPars extends AbstractPoResponseParser {
    * Returns the new counter value as an int between 0
    *
    * @return the new value
+   * @since 0.9
    */
   public int getNewValue() {
     byte[] newValueBuffer = getApduResponse().getDataOut();

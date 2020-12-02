@@ -46,6 +46,7 @@ public class SamReadKeyParametersRespPars extends AbstractSamResponseParser {
     STATUS_TABLE = m;
   }
 
+  /** {@inheritDoc} */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -56,6 +57,7 @@ public class SamReadKeyParametersRespPars extends AbstractSamResponseParser {
    *
    * @param response of the SamReadKeyParametersRespPars
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public SamReadKeyParametersRespPars(ApduResponse response, SamReadKeyParametersCmdBuild builder) {
     super(response, builder);
@@ -65,6 +67,7 @@ public class SamReadKeyParametersRespPars extends AbstractSamResponseParser {
    * Gets the key parameters.
    *
    * @return the key parameters
+   * @since 0.9
    */
   public byte[] getKeyParameters() {
     return isSuccessful() ? response.getDataOut() : null;

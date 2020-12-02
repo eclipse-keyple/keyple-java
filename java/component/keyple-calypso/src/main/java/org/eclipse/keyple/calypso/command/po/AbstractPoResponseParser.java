@@ -17,6 +17,11 @@ import org.eclipse.keyple.core.card.command.CardCommand;
 import org.eclipse.keyple.core.card.command.exception.KeypleCardCommandException;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
+/**
+ * Superclass for all PO command parsers.
+ *
+ * @since 0.9
+ */
 public abstract class AbstractPoResponseParser extends AbstractApduResponseParser {
 
   /**

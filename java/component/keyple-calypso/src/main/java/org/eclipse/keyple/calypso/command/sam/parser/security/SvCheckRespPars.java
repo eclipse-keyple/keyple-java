@@ -42,6 +42,7 @@ public class SvCheckRespPars extends AbstractSamResponseParser {
     STATUS_TABLE = m;
   }
 
+  /** {@inheritDoc} */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -52,6 +53,7 @@ public class SvCheckRespPars extends AbstractSamResponseParser {
    *
    * @param response from the SAM
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public SvCheckRespPars(ApduResponse response, SvCheckCmdBuild builder) {
     super(response, builder);

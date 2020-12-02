@@ -37,6 +37,7 @@ public class DigestCloseRespPars extends AbstractSamResponseParser {
     STATUS_TABLE = m;
   }
 
+  /** {@inheritDoc} */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -47,6 +48,7 @@ public class DigestCloseRespPars extends AbstractSamResponseParser {
    *
    * @param response from the DigestCloseCmdBuild
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public DigestCloseRespPars(ApduResponse response, DigestCloseCmdBuild builder) {
     super(response, builder);
@@ -56,6 +58,7 @@ public class DigestCloseRespPars extends AbstractSamResponseParser {
    * Gets the sam signature.
    *
    * @return the sam half session signature
+   * @since 0.9
    */
   public byte[] getSignature() {
     return isSuccessful() ? response.getDataOut() : null;

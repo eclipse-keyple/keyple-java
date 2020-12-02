@@ -28,6 +28,7 @@ public final class OpenSession31RespPars extends AbstractOpenSessionRespPars {
    *
    * @param response from OpenSession31RespPars
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public OpenSession31RespPars(ApduResponse response, OpenSession31CmdBuild builder) {
     super(response, builder, PoRevision.REV3_1);

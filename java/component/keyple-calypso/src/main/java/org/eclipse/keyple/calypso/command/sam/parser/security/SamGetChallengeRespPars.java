@@ -34,6 +34,7 @@ public class SamGetChallengeRespPars extends AbstractSamResponseParser {
     STATUS_TABLE = m;
   }
 
+  /** {@inheritDoc} */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -44,6 +45,7 @@ public class SamGetChallengeRespPars extends AbstractSamResponseParser {
    *
    * @param response of the SamGetChallengeCmdBuild
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public SamGetChallengeRespPars(ApduResponse response, SamGetChallengeCmdBuild builder) {
     super(response, builder);
@@ -53,6 +55,7 @@ public class SamGetChallengeRespPars extends AbstractSamResponseParser {
    * Gets the challenge.
    *
    * @return the challenge
+   * @since 0.9
    */
   public byte[] getChallenge() {
     return isSuccessful() ? response.getDataOut() : null;

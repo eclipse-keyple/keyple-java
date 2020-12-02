@@ -17,7 +17,7 @@ import org.eclipse.keyple.core.card.message.ApduRequest;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
- * Abstract class for all PO command builders
+ * Superclass for all PO command builders
  *
  * @since 0.9
  */

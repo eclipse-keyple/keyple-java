@@ -44,6 +44,7 @@ public class UnlockRespPars extends AbstractSamResponseParser {
     STATUS_TABLE = m;
   }
 
+  /** {@inheritDoc} */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -54,6 +55,7 @@ public class UnlockRespPars extends AbstractSamResponseParser {
    *
    * @param response the response
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public UnlockRespPars(ApduResponse response, UnlockCmdBuild builder) {
     super(response, builder);

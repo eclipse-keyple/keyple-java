@@ -121,6 +121,7 @@ public final class GetDataFciRespPars extends AbstractPoResponseParser {
    *
    * @param response the select application response from Get Data APDU command
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public GetDataFciRespPars(ApduResponse response, GetDataFciCmdBuild builder) {
     super(response, builder);
@@ -198,22 +199,52 @@ public final class GetDataFciRespPars extends AbstractPoResponseParser {
     }
   }
 
+  /**
+   * Tells if the FCI is valid
+   *
+   * @return True if the FCI is valid, false if not
+   * @since 0.9
+   */
   public boolean isValidCalypsoFCI() {
     return isValidCalypsoFCI;
   }
 
+  /**
+   * Gets the DF name
+   *
+   * @return An array of bytes
+   * @since 0.9
+   */
   public byte[] getDfName() {
     return dfName;
   }
 
+  /**
+   * Gets the application serial number
+   *
+   * @return An array of bytes
+   * @since 0.9
+   */
   public byte[] getApplicationSerialNumber() {
     return applicationSN;
   }
 
+  /**
+   * Gets the discretionary data
+   *
+   * @return An array of bytes
+   * @since 0.9
+   */
   public byte[] getDiscretionaryData() {
     return discretionaryData;
   }
 
+  /**
+   * Tells if the DF is invalidated
+   *
+   * @return True if the DF is invalidated, false if not
+   * @since 0.9
+   */
   public boolean isDfInvalidated() {
     return isDfInvalidated;
   }

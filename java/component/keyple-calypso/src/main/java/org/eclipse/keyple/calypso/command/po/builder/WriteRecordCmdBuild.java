@@ -40,6 +40,7 @@ public final class WriteRecordCmdBuild extends AbstractPoCommandBuilder<WriteRec
    * @param newRecordData the new record data to write
    * @throws IllegalArgumentException - if record number is &lt; 1
    * @throws IllegalArgumentException - if the request is inconsistent
+   * @since 0.9
    */
   public WriteRecordCmdBuild(PoClass poClass, byte sfi, int recordNumber, byte[] newRecordData) {
     super(command, null);

@@ -51,6 +51,7 @@ public class CardCipherPinRespPars extends AbstractSamResponseParser {
     STATUS_TABLE = m;
   }
 
+  /** {@inheritDoc} */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -61,6 +62,7 @@ public class CardCipherPinRespPars extends AbstractSamResponseParser {
    *
    * @param response from the SAM
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public CardCipherPinRespPars(ApduResponse response, CardCipherPinCmdBuild builder) {
     super(response, builder);
@@ -70,6 +72,7 @@ public class CardCipherPinRespPars extends AbstractSamResponseParser {
    * Gets the 8 bytes of ciphered data.
    *
    * @return the ciphered data byte array
+   * @since 0.9
    */
   public byte[] getCipheredData() {
     return response.getDataOut();

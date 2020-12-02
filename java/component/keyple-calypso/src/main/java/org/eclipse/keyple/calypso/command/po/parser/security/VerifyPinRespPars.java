@@ -75,6 +75,7 @@ public class VerifyPinRespPars extends AbstractPoResponseParser {
    *
    * @param response the response from the PO
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public VerifyPinRespPars(ApduResponse response, VerifyPinCmdBuild builder) {
     super(response, builder);
@@ -84,6 +85,7 @@ public class VerifyPinRespPars extends AbstractPoResponseParser {
    * Determine the value of the attempt counter from the status word
    *
    * @return the remaining attempt counter value (0, 1, 2 or 3)
+   * @since 0.9
    */
   public int getRemainingAttemptCounter() {
     int attemptCounter;

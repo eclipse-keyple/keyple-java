@@ -42,6 +42,7 @@ public class SamReadCeilingsRespPars extends AbstractSamResponseParser {
     STATUS_TABLE = m;
   }
 
+  /** {@inheritDoc} */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -52,6 +53,7 @@ public class SamReadCeilingsRespPars extends AbstractSamResponseParser {
    *
    * @param response of the SamReadEventCounterRespPars
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public SamReadCeilingsRespPars(ApduResponse response, SamReadCeilingsCmdBuild builder) {
     super(response, builder);
@@ -61,6 +63,7 @@ public class SamReadCeilingsRespPars extends AbstractSamResponseParser {
    * Gets the key parameters.
    *
    * @return the ceilings data (Value or Record)
+   * @since 0.9
    */
   public byte[] getCeilingsData() {
     return isSuccessful() ? response.getDataOut() : null;

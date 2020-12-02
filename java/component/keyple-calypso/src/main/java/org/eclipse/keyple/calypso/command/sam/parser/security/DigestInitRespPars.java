@@ -50,6 +50,7 @@ public class DigestInitRespPars extends AbstractSamResponseParser {
     STATUS_TABLE = m;
   }
 
+  /** {@inheritDoc} */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -60,6 +61,7 @@ public class DigestInitRespPars extends AbstractSamResponseParser {
    *
    * @param response from DigestInitCmdBuild
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public DigestInitRespPars(ApduResponse response, DigestInitCmdBuild builder) {
     super(response, builder);

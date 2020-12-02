@@ -38,6 +38,7 @@ public final class OpenSession32RespPars extends AbstractOpenSessionRespPars {
    *
    * @param apduResponseData the apdu response data
    * @return a SecureSession
+   * @since 0.9
    */
   SecureSession toSecureSession(byte[] apduResponseData) {
     return createSecureSession(apduResponseData);

@@ -28,6 +28,7 @@ public final class OpenSession10RespPars extends AbstractOpenSessionRespPars {
    *
    * @param response from OpenSession10RespPars
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public OpenSession10RespPars(ApduResponse response, OpenSession10CmdBuild builder) {
     super(response, builder, PoRevision.REV1_0);

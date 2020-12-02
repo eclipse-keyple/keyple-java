@@ -27,11 +27,18 @@ public final class PoGetChallengeRespPars extends AbstractPoResponseParser {
    *
    * @param response the response from PO Get Challenge APDU Command
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public PoGetChallengeRespPars(ApduResponse response, PoGetChallengeCmdBuild builder) {
     super(response, builder);
   }
 
+  /**
+   * Gets the PO challenge
+   *
+   * @return An array of bytes
+   * @since 0.9
+   */
   public byte[] getPoChallenge() {
     return getApduResponse().getDataOut();
   }

@@ -58,6 +58,7 @@ public final class InvalidateRespPars extends AbstractPoResponseParser {
    *
    * @param response the response from Invalidate APDU Command
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public InvalidateRespPars(ApduResponse response, InvalidateCmdBuild builder) {
     super(response, builder);

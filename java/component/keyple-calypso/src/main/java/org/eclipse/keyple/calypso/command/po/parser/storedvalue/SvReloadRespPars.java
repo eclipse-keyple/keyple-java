@@ -91,6 +91,7 @@ public final class SvReloadRespPars extends AbstractPoResponseParser {
    *
    * @param response response to parse
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public SvReloadRespPars(ApduResponse response, SvReloadCmdBuild builder) {
     super(response, builder);
@@ -108,6 +109,7 @@ public final class SvReloadRespPars extends AbstractPoResponseParser {
    * signature is postponed until the end of the session.
    *
    * @return a byte array containing the signature
+   * @since 0.9
    */
   public byte[] getSignatureLo() {
     return getApduResponse().getDataOut();

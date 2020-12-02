@@ -58,6 +58,7 @@ public final class RehabilitateRespPars extends AbstractPoResponseParser {
    *
    * @param response the response from Rehabilitate APDU Command
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public RehabilitateRespPars(ApduResponse response, RehabilitateCmdBuild builder) {
     super(response, builder);

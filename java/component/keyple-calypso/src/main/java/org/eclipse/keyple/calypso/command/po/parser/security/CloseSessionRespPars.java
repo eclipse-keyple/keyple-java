@@ -69,6 +69,7 @@ public final class CloseSessionRespPars extends AbstractPoResponseParser {
    *
    * @param response from CloseSessionCmdBuild
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public CloseSessionRespPars(ApduResponse response, CloseSessionCmdBuild builder) {
     super(response, builder);
