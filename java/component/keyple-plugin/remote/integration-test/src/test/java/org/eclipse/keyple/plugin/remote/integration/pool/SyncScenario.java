@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 public class SyncScenario extends BaseScenario {
 
   private static final Logger logger = LoggerFactory.getLogger(SyncScenario.class);
-  
+
   @Before
   public void setUp() {
     initNativePoolStubPlugin();

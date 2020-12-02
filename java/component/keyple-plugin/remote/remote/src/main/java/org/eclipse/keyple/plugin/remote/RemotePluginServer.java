@@ -32,7 +32,7 @@ import org.eclipse.keyple.plugin.remote.impl.RemotePluginServerUtils;
  *       SmartCardService#registerPlugin(PluginFactory)} using the factory {@link
  *       RemotePluginServerFactory}.
  *   <li>To <b>access</b> the plugin, use the utility method {@link
- *       RemotePluginServerUtils#getRemotePlugin(String)}.
+ *       RemotePluginServerUtils#getRemotePlugin()}.
  *   <li>To <b>unregister</b> the plugin, use the method {@link
  *       SmartCardService#unregisterPlugin(String)} using the plugin name.
  * </ul>
