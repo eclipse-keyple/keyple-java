@@ -159,7 +159,8 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
   @Test
   public void onAllocateReader_shouldPropagate_toLocalPoolPlugin() {
     MessageDto request = getAllocateReaderDto();
-    PoolLocalServiceServerUtils.getAsyncNode(asyncLocalServiceName).onMessage(getAllocateReaderDto());
+    PoolLocalServiceServerUtils.getAsyncNode(asyncLocalServiceName)
+        .onMessage(getAllocateReaderDto());
     response = captureResponse();
     assertMetadataMatches(request, response);
     assertThat(readerMocked.getName()).isEqualTo(response.getLocalReaderName());
@@ -170,7 +171,8 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
     KeypleAllocationReaderException e = new KeypleAllocationReaderException("");
     doThrow(e).when(poolPluginMock).allocateReader(groupReference);
     MessageDto request = getAllocateReaderDto();
-    PoolLocalServiceServerUtils.getAsyncNode(asyncLocalServiceName).onMessage(getAllocateReaderDto());
+    PoolLocalServiceServerUtils.getAsyncNode(asyncLocalServiceName)
+        .onMessage(getAllocateReaderDto());
     response = captureResponse();
     assertMetadataMatches(request, response);
     assertThat(e).isEqualToComparingFieldByFieldRecursively(getExceptionFromDto(response));
@@ -180,7 +182,8 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
   public void onAllocateReader_withNoPlugin_shouldThrow_KPNFE() {
     SmartCardService.getInstance().unregisterPlugin(poolPluginName);
     MessageDto request = getAllocateReaderDto();
-    PoolLocalServiceServerUtils.getAsyncNode(asyncLocalServiceName).onMessage(getAllocateReaderDto());
+    PoolLocalServiceServerUtils.getAsyncNode(asyncLocalServiceName)
+        .onMessage(getAllocateReaderDto());
 
     response = captureResponse();
     assertMetadataMatches(request, response);
