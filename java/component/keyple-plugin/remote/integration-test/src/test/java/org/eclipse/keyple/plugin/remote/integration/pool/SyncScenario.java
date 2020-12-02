@@ -32,19 +32,16 @@ import org.slf4j.LoggerFactory;
 public class SyncScenario extends BaseScenario {
 
   private static final Logger logger = LoggerFactory.getLogger(SyncScenario.class);
-
-  private final String localServiceName = "SyncPoolLocalService";
-  private final String pluginName = "SyncPoolPluginName";
-
+  
   @Before
   public void setUp() {
     initNativePoolStubPlugin();
 
-    SyncEndpointClient clientEndpoint = new StubSyncEndpointClient(localServiceName);
+    SyncEndpointClient clientEndpoint = new StubSyncEndpointClient();
 
     poolLocalServiceServer =
         PoolLocalServiceServerFactory.builder()
-            .withServiceName(localServiceName)
+            .withDefaultServiceName()
             .withSyncNode()
             .withPoolPlugins(localPoolPlugin.getName())
             .getService();
@@ -54,7 +51,7 @@ public class SyncScenario extends BaseScenario {
             SmartCardService.getInstance()
                 .registerPlugin(
                     PoolRemotePluginClientFactory.builder()
-                        .withPluginName(pluginName)
+                        .withDefaultPluginName()
                         .withSyncNode(clientEndpoint)
                         .build());
   }

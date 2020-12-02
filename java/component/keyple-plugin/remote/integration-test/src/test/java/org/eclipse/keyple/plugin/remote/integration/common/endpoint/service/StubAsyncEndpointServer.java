@@ -39,10 +39,10 @@ public class StubAsyncEndpointServer implements AsyncEndpointServer {
   private boolean simulateConnectionError;
 
   public StubAsyncEndpointServer() {
-    this.clients = new HashMap<String, StubAsyncEndpointClient>();
-    this.messageCounts = new HashMap<String, Integer>();
-    this.taskPool = Executors.newCachedThreadPool(new NamedThreadFactory("server-async-pool"));
-    this.simulateConnectionError = false;
+    clients = new HashMap<String, StubAsyncEndpointClient>();
+    messageCounts = new HashMap<String, Integer>();
+    taskPool = Executors.newCachedThreadPool(new NamedThreadFactory("server-async-pool"));
+    simulateConnectionError = false;
   }
 
   /** Simulate a close socket operation */
