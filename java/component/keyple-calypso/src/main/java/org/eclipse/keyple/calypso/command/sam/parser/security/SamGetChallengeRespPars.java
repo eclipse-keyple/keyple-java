@@ -18,7 +18,11 @@ import org.eclipse.keyple.calypso.command.sam.builder.security.SamGetChallengeCm
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** SAM get challenge. See specs: Calypso / Page 108 / 9.5.4 - Get challenge */
+/**
+ * Parses the get challenge response.
+ *
+ * @since 0.9
+ */
 public class SamGetChallengeRespPars extends AbstractSamResponseParser {
 
   private static final Map<Integer, StatusProperties> STATUS_TABLE;

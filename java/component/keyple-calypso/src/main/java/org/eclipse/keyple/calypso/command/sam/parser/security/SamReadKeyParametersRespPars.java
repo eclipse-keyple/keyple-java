@@ -20,7 +20,11 @@ import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamDataAccessExce
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** SAM read key parameters. */
+/**
+ * Parses the read key parameters response.
+ *
+ * @since 0.9
+ */
 public class SamReadKeyParametersRespPars extends AbstractSamResponseParser {
 
   private static final Map<Integer, StatusProperties> STATUS_TABLE;

@@ -21,6 +21,11 @@ import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParamet
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIncorrectInputDataException;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
+/**
+ * Parses the Card Generate Key response.
+ *
+ * @since 0.9
+ */
 public class CardGenerateKeyRespPars extends AbstractSamResponseParser {
 
   private static final Map<Integer, StatusProperties> STATUS_TABLE;

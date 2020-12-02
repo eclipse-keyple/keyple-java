@@ -18,7 +18,11 @@ import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Abstract class for all PO command builders {@link org.eclipse.keyple.core.service.Reader} */
+/**
+ * Abstract class for all PO command builders
+ *
+ * @since 0.9
+ */
 public abstract class AbstractPoCommandBuilder<T extends AbstractPoResponseParser>
     extends AbstractIso7816CommandBuilder {
 
@@ -30,8 +34,9 @@ public abstract class AbstractPoCommandBuilder<T extends AbstractPoResponseParse
    *
    * @param commandRef a command reference from the Calypso command table
    * @param request the ApduRequest (the instruction byte will be overwritten)
+   * @since 0.9
    */
-  public AbstractPoCommandBuilder(CalypsoPoCommand commandRef, ApduRequest request) {
+  protected AbstractPoCommandBuilder(CalypsoPoCommand commandRef, ApduRequest request) {
     super(commandRef, request);
   }
 
@@ -55,6 +60,7 @@ public abstract class AbstractPoCommandBuilder<T extends AbstractPoResponseParse
    * <p>Allows the management of the overflow of this buffer.
    *
    * @return true if this command uses the session buffer
+   * @since 0.9
    */
   public abstract boolean isSessionBufferUsed();
 }

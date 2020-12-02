@@ -19,9 +19,9 @@ import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParamet
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
- * PO Give Random response parser.
+ * Parses the Give Random response.
  *
- * <p>No output data except status word
+ * @since 0.9
  */
 public class GiveRandomRespPars extends AbstractSamResponseParser {
 

@@ -13,7 +13,12 @@ package org.eclipse.keyple.calypso.transaction;
 
 import org.eclipse.keyple.core.card.selection.CardSelector;
 
-/** Extends {@link CardSelector} to handle specific PO features. */
+/**
+ * This POJO contains the information needed to select a particular PO and specify the behavior in
+ * case of invalidation.
+ *
+ * @since 0.9
+ */
 public final class PoSelector extends CardSelector {
   private static final int SW_PO_INVALIDATED = 0x6283;
 
@@ -22,6 +27,8 @@ public final class PoSelector extends CardSelector {
    *
    * <p>The acceptance of an invalid PO is determined with the additional successful status codes
    * specified in the {@link AidSelector}
+   *
+   * @since 0.9
    */
   public enum InvalidatedPo {
     REJECT,
@@ -37,7 +44,7 @@ public final class PoSelector extends CardSelector {
   }
 
   /**
-   * Builder of PoSelector
+   * Builder class for {@link PoSelector}
    *
    * @since 0.9
    */
@@ -53,6 +60,7 @@ public final class PoSelector extends CardSelector {
      *
      * @param invalidatedPo the {@link InvalidatedPo} wanted behaviour
      * @return the builder instance
+     * @since 0.9
      */
     public PoSelectorBuilder invalidatedPo(InvalidatedPo invalidatedPo) {
       this.invalidatedPo = invalidatedPo;
@@ -78,9 +86,10 @@ public final class PoSelector extends CardSelector {
     }
 
     /**
-     * Build a new {@code PoSelector}.
+     * Builds a new {@code PoSelector}.
      *
      * @return a new instance
+     * @since 0.9
      */
     @Override
     public PoSelector build() {
@@ -92,6 +101,7 @@ public final class PoSelector extends CardSelector {
    * Gets a new builder.
    *
    * @return a new builder instance
+   * @since 0.9
    */
   public static PoSelectorBuilder builder() {
     return new PoSelectorBuilder();

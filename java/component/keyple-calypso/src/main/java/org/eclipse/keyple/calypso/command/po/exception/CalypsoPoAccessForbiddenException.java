@@ -14,8 +14,9 @@ package org.eclipse.keyple.calypso.command.po.exception;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 
 /**
- * The exception {@code CalypsoPoAccessForbiddenException} indicates that the access is forbidden
- * (e.g. Never access mode, DF is invalidated,...).
+ * Indicates that the access is forbidden (e.g. Never access mode, DF is invalidated,...).
+ *
+ * @since 0.9
  */
 public final class CalypsoPoAccessForbiddenException extends CalypsoPoCommandException {
 
@@ -23,6 +24,7 @@ public final class CalypsoPoAccessForbiddenException extends CalypsoPoCommandExc
    * @param message the message to identify the exception context
    * @param command the Calypso PO command
    * @param statusCode the status code
+   * @since 0.9
    */
   public CalypsoPoAccessForbiddenException(
       String message, CalypsoPoCommand command, Integer statusCode) {

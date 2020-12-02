@@ -18,6 +18,11 @@ import org.eclipse.keyple.calypso.command.po.parser.security.AbstractOpenSession
 import org.eclipse.keyple.calypso.command.po.parser.security.OpenSession31RespPars;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
+/**
+ * Builds the Open Session command for a PO revision 3.1.
+ *
+ * @since 0.9
+ */
 public final class OpenSession31CmdBuild
     extends AbstractOpenSessionCmdBuild<AbstractOpenSessionRespPars> {
 
@@ -33,6 +38,7 @@ public final class OpenSession31CmdBuild
    * @param sfi the sfi to select
    * @param recordNumber the record number to read
    * @throws IllegalArgumentException - if the request is inconsistent
+   * @since 0.9
    */
   public OpenSession31CmdBuild(byte keyIndex, byte[] samChallenge, int sfi, int recordNumber) {
     super(PoRevision.REV3_1);
@@ -64,15 +70,19 @@ public final class OpenSession31CmdBuild
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public OpenSession31RespPars createResponseParser(ApduResponse apduResponse) {
     return new OpenSession31RespPars(apduResponse, this);
   }
 
   /**
-   * This command can't be executed in session and therefore doesn't uses the session buffer.
+   * {@inheritDoc}
+   *
+   * <p>This command can't be executed in session and therefore doesn't uses the session buffer.
    *
    * @return false
+   * @since 0.9
    */
   @Override
   public boolean isSessionBufferUsed() {

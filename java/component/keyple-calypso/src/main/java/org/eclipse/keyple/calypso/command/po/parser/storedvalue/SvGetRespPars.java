@@ -24,7 +24,11 @@ import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
-/** SV Get (007C) response parser. See specs: Calypso */
+/**
+ * Parses the SV Get response.
+ *
+ * @since 0.9
+ */
 public final class SvGetRespPars extends AbstractPoResponseParser {
 
   private static final Map<Integer, StatusProperties> STATUS_TABLE;
@@ -53,6 +57,7 @@ public final class SvGetRespPars extends AbstractPoResponseParser {
     STATUS_TABLE = m;
   }
 
+  /** {@inheritDoc} */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;

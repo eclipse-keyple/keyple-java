@@ -15,7 +15,11 @@ import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.builder.security.PoGetChallengeCmdBuild;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** PO Get challenge response parser. See specs: Calypso / page 108 / 9.54 - Get challenge */
+/**
+ * Parses the PO Get challenge response.
+ *
+ * @since 0.9
+ */
 public final class PoGetChallengeRespPars extends AbstractPoResponseParser {
 
   /**

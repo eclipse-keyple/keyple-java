@@ -20,7 +20,11 @@ import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
-/** Decrease (0030) response parser. See specs: Calypso / page 83 / 9.4.2 Decrease */
+/**
+ * Parses the Decrease response.
+ *
+ * @since 0.9
+ */
 public final class DecreaseRespPars extends AbstractPoResponseParser {
 
   private static final Map<Integer, StatusProperties> STATUS_TABLE;
@@ -64,6 +68,7 @@ public final class DecreaseRespPars extends AbstractPoResponseParser {
     STATUS_TABLE = m;
   }
 
+  /** {@inheritDoc} */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;

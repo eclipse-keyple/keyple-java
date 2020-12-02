@@ -16,6 +16,11 @@ import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.security.OpenSession10CmdBuild;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
+/**
+ * Parses the Open session response from a PO revision 1.0 .
+ *
+ * @since 0.9
+ */
 public final class OpenSession10RespPars extends AbstractOpenSessionRespPars {
 
   /**
@@ -36,7 +41,7 @@ public final class OpenSession10RespPars extends AbstractOpenSessionRespPars {
   public static SecureSession createSecureSession(byte[] apduResponseData) {
     boolean previousSessionRatified;
 
-    /**
+    /*
      * In rev 1.0 mode, the response to the Open Secure Session command is as follows:
      *
      * <p><code>CC CC CC CC [RR RR] [NN..NN]</code>

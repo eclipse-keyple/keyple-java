@@ -23,8 +23,9 @@ import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
- * Close Secure Session (008E) response parser. See specs: Calypso / page 104 / 9.5.2 - Close Secure
- * Session
+ * Parses the Close Secure Session response.
+ *
+ * @since 0.9
  */
 public final class CloseSessionRespPars extends AbstractPoResponseParser {
 
@@ -51,6 +52,7 @@ public final class CloseSessionRespPars extends AbstractPoResponseParser {
     STATUS_TABLE = m;
   }
 
+  /** {@inheritDoc} */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;

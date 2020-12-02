@@ -24,8 +24,10 @@ import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
- * SV Debit (00BA) response parser. See specs: Calypso Stored Value balance (signed binaries' coding
- * based on the two's complement method)
+ * Parses the SV Debit response.
+ *
+ * <p>See specs: Calypso Stored Value balance (signed binaries' coding based on the two's complement
+ * method)
  *
  * <p>balance - 3 bytes signed binary - Integer from -8,388,608 to 8,388,607
  *
@@ -61,6 +63,8 @@ import org.eclipse.keyple.core.card.message.ApduResponse;
  *
  * Notice: -32768 (%10000000.00000000) is not allowed.
  * </pre>
+ *
+ * @since 0.9
  */
 public class SvDebitRespPars extends AbstractPoResponseParser {
 
@@ -122,6 +126,7 @@ public class SvDebitRespPars extends AbstractPoResponseParser {
     return getApduResponse().getDataOut();
   }
 
+  /** {@inheritDoc} */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;

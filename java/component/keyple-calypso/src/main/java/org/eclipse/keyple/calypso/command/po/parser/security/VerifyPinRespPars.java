@@ -23,6 +23,11 @@ import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoTerminatedExcept
 import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
+/**
+ * Parses the Verify PIN response.
+ *
+ * @since 0.9
+ */
 public class VerifyPinRespPars extends AbstractPoResponseParser {
 
   private static final Map<Integer, StatusProperties> STATUS_TABLE;
@@ -102,6 +107,7 @@ public class VerifyPinRespPars extends AbstractPoResponseParser {
     return attemptCounter;
   }
 
+  /** {@inheritDoc} */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;

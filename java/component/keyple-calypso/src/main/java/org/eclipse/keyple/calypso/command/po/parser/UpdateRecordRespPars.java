@@ -19,7 +19,11 @@ import org.eclipse.keyple.calypso.command.po.exception.*;
 import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** Update Record response parser. See specs: Calypso / page 96 / 9.4.11 - Update Record */
+/**
+ * Parses the Update Record response.
+ *
+ * @since 0.9
+ */
 public final class UpdateRecordRespPars extends AbstractPoResponseParser {
 
   private static final Map<Integer, StatusProperties> STATUS_TABLE;
@@ -64,6 +68,7 @@ public final class UpdateRecordRespPars extends AbstractPoResponseParser {
     STATUS_TABLE = m;
   }
 
+  /** {@inheritDoc} */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -74,6 +79,7 @@ public final class UpdateRecordRespPars extends AbstractPoResponseParser {
    *
    * @param response the response from the PO
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public UpdateRecordRespPars(ApduResponse response, UpdateRecordCmdBuild builder) {
     super(response, builder);

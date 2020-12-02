@@ -19,7 +19,11 @@ import org.eclipse.keyple.calypso.command.po.parser.SelectFileRespPars;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
-/** This class provides the dedicated constructor to build the Select File APDU commands. */
+/**
+ * Builds the Select File APDU commands.
+ *
+ * @since 0.9
+ */
 public final class SelectFileCmdBuild extends AbstractPoCommandBuilder<SelectFileRespPars> {
 
   private static final CalypsoPoCommand command = CalypsoPoCommand.SELECT_FILE;
@@ -34,6 +38,7 @@ public final class SelectFileCmdBuild extends AbstractPoCommandBuilder<SelectFil
    *
    * @param poClass indicates which CLA byte should be used for the Apdu
    * @param selectFileControl the selection mode control: FIRST, NEXT or CURRENT
+   * @since 0.9
    */
   public SelectFileCmdBuild(PoClass poClass, SelectFileControl selectFileControl) {
     super(command, null);
@@ -76,6 +81,7 @@ public final class SelectFileCmdBuild extends AbstractPoCommandBuilder<SelectFil
    *
    * @param poClass indicates which CLA byte should be used for the Apdu
    * @param selectionPath the file identifier path
+   * @since 0.9
    */
   public SelectFileCmdBuild(PoClass poClass, byte[] selectionPath) {
     super(command, null);
@@ -94,16 +100,20 @@ public final class SelectFileCmdBuild extends AbstractPoCommandBuilder<SelectFil
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public SelectFileRespPars createResponseParser(ApduResponse apduResponse) {
     return new SelectFileRespPars(apduResponse, this);
   }
 
   /**
-   * This command doesn't modify the contents of the PO and therefore doesn't uses the session
+   * {@inheritDoc}
+   *
+   * <p>This command doesn't modify the contents of the PO and therefore doesn't uses the session
    * buffer.
    *
    * @return false
+   * @since 0.9
    */
   @Override
   public boolean isSessionBufferUsed() {
@@ -114,6 +124,7 @@ public final class SelectFileCmdBuild extends AbstractPoCommandBuilder<SelectFil
    * The selection path can be null if the chosen constructor targets the current EF
    *
    * @return the selection path or null
+   * @since 0.9
    */
   public byte[] getPath() {
     return path;
@@ -123,6 +134,7 @@ public final class SelectFileCmdBuild extends AbstractPoCommandBuilder<SelectFil
    * The file selection control can be null if the chosen constructor targets an explicit path
    *
    * @return the select file control or null
+   * @since 0.9
    */
   public SelectFileControl getSelectFileControl() {
     return selectFileControl;

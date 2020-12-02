@@ -14,7 +14,7 @@ package org.eclipse.keyple.calypso.transaction.exception;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException;
 
 /**
- * The exception {@code CalypsoSamAnomalyException} indicates an anomaly in the SAM.<br>
+ * Indicates an anomaly in the SAM.<br>
  * This can occur if the SAM is not Calypso compliant.
  */
 public class CalypsoSamAnomalyException extends CalypsoPoTransactionException {

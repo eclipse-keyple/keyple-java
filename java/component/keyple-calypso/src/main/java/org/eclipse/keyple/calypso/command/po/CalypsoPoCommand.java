@@ -13,6 +13,11 @@ package org.eclipse.keyple.calypso.command.po;
 
 import org.eclipse.keyple.core.card.command.CardCommand;
 
+/**
+ * Defines all supported Calypso PO APDU commands.
+ *
+ * @since 0.9
+ */
 public enum CalypsoPoCommand implements CardCommand {
 
   /** The po get data. */
@@ -57,34 +62,34 @@ public enum CalypsoPoCommand implements CardCommand {
   /** The po decrease counter. */
   SELECT_FILE("Select File", (byte) 0xA4),
 
-  /* The po change key */
+  /** The po change key */
   CHANGE_KEY("Change Key", (byte) 0xD8),
 
-  /* The po verify PIN */
+  /** The po verify PIN */
   VERIFY_PIN("Verify PIN", (byte) 0x20),
 
-  /* The po get data for traceability */
+  /** The po get data for traceability */
   GET_DATA_TRACE("Get Data'Trace'", (byte) 0xCA),
 
-  /* The po SV Get */
+  /** The po SV Get */
   SV_GET("SV Get", (byte) 0x7C),
 
-  /* The po SV Debit */
+  /** The po SV Debit */
   SV_DEBIT("SV Debit", (byte) 0xBA),
 
-  /* The po SV Reload */
+  /** The po SV Reload */
   SV_RELOAD("SV Reload", (byte) 0xB8),
 
-  /* The po SV Undebit */
+  /** The po SV Undebit */
   SV_UNDEBIT("SV Undebit", (byte) 0xBC),
 
-  /* The po Invalidate */
+  /** The po Invalidate */
   INVALIDATE("Invalidate", (byte) 0x04),
 
-  /* The po Rehabilitate */
+  /** The po Rehabilitate */
   REHABILITATE("Invalidate", (byte) 0x44);
 
-  /** The name. */
+  /** The command name. */
   private final String name;
 
   /** The instruction byte. */
@@ -95,6 +100,7 @@ public enum CalypsoPoCommand implements CardCommand {
    *
    * @param name the name
    * @param instructionByte the instruction byte
+   * @since 0.9
    */
   CalypsoPoCommand(String name, byte instructionByte) {
     this.name = name;
@@ -104,26 +110,29 @@ public enum CalypsoPoCommand implements CardCommand {
   /**
    * Gets the name.
    *
-   * @return the command name
+   * @return A String
+   * @since 0.9
    */
   public String getName() {
     return name;
   }
 
   /**
-   * Gets the instruction byte.
+   * Gets the instruction byte (INS).
    *
-   * @return the value of INS byte
+   * @return A byte
+   * @since 0.9
    */
   public byte getInstructionByte() {
     return instructionByte;
   }
 
   /**
-   * Get the right open-session command for a given {@link PoRevision}
+   * Get the open session command for a given {@link PoRevision}
    *
    * @param rev Command revision
    * @return Returned command
+   * @since 0.9
    */
   public static CalypsoPoCommand getOpenSessionForRev(PoRevision rev) {
     switch (rev) {

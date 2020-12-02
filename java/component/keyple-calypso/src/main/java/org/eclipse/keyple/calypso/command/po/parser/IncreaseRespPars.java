@@ -20,7 +20,11 @@ import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
-/** Increase (0032) response parser. See specs: Calypso / page 85 / 9.4.4 Increase */
+/**
+ * Parses the Increase response.
+ *
+ * @since 0.9
+ */
 public final class IncreaseRespPars extends AbstractPoResponseParser {
 
   private static final Map<Integer, StatusProperties> STATUS_TABLE;
@@ -64,6 +68,7 @@ public final class IncreaseRespPars extends AbstractPoResponseParser {
     STATUS_TABLE = m;
   }
 
+  /** {@inheritDoc} */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -74,6 +79,7 @@ public final class IncreaseRespPars extends AbstractPoResponseParser {
    *
    * @param response response to parse
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public IncreaseRespPars(ApduResponse response, IncreaseCmdBuild builder) {
     super(response, builder);
@@ -83,6 +89,7 @@ public final class IncreaseRespPars extends AbstractPoResponseParser {
    * Returns the new counter value as an int between 0
    *
    * @return the new value
+   * @since 0.9
    */
   public int getNewValue() {
     byte[] newValueBuffer = getApduResponse().getDataOut();

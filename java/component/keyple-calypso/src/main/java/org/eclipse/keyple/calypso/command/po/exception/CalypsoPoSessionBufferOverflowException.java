@@ -14,8 +14,9 @@ package org.eclipse.keyple.calypso.command.po.exception;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 
 /**
- * The exception {@code CalypsoPoSessionBufferOverflowException} indicates during a secure session
- * that the PO session buffer will overflow.
+ * Indicates during a secure session that the PO session buffer will overflow.
+ *
+ * @since 0.9
  */
 public final class CalypsoPoSessionBufferOverflowException extends CalypsoPoCommandException {
 
@@ -23,6 +24,7 @@ public final class CalypsoPoSessionBufferOverflowException extends CalypsoPoComm
    * @param message the message to identify the exception context
    * @param command the Calypso PO command
    * @param statusCode the status code
+   * @since 0.9
    */
   public CalypsoPoSessionBufferOverflowException(
       String message, CalypsoPoCommand command, Integer statusCode) {

@@ -24,8 +24,9 @@ public abstract class AbstractPoResponseParser extends AbstractApduResponseParse
    *
    * @param response response to parse
    * @param builder the reference of the builder that created the parser
+   * @since 0.9
    */
-  public AbstractPoResponseParser(
+  protected AbstractPoResponseParser(
       ApduResponse response, AbstractPoCommandBuilder<? extends AbstractPoResponseParser> builder) {
     super(response, builder);
   }

@@ -21,7 +21,11 @@ import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
-/** Open session response parser. See specs: Calypso / page 100 / 9.5.1 - Open secure session */
+/**
+ * Parses the Open session response.
+ *
+ * @since 0.9
+ */
 public abstract class AbstractOpenSessionRespPars extends AbstractPoResponseParser {
 
   private static final Map<Integer, StatusProperties> STATUS_TABLE;
@@ -73,6 +77,7 @@ public abstract class AbstractOpenSessionRespPars extends AbstractPoResponsePars
     STATUS_TABLE = m;
   }
 
+  /** {@inheritDoc} */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;

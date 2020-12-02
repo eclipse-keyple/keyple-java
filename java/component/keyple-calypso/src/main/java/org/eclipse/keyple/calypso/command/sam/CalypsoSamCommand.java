@@ -85,16 +85,16 @@ public enum CalypsoSamCommand implements CardCommand {
   /**
    * Gets the name.
    *
-   * @return the command name
+   * @return A String
    */
   public String getName() {
     return name;
   }
 
   /**
-   * Gets the instruction byte.
+   * Gets the instruction byte (INS).
    *
-   * @return the value of INS byte
+   * @return A byte
    */
   public byte getInstructionByte() {
     return instructionByte;

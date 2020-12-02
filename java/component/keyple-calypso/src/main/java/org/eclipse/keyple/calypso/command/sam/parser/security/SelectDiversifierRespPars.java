@@ -20,8 +20,9 @@ import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParamet
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
- * Select diversifier response parser. See specs: Calypso / page 54 / 7.4.2 - Session MAC
- * computation
+ * Parses the Select diversifier response.
+ *
+ * @since 0.9
  */
 public class SelectDiversifierRespPars extends AbstractSamResponseParser {
 

@@ -24,12 +24,13 @@ import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
- * SV Undebit (00BA) response parser. See specs: Calypso Stored Value balance (signed binaries'
- * coding based on the two's complement method)
+ * Parses the SV Undebit response.
  *
- * <p>balance - 3 bytes signed binary - Integer from -8,388,608 to 8,388,607
- *
- * <pre>
+ * @since 0.9
+ *     <p>See specs: Calypso Stored Value balance (signed binaries' coding based on the two's
+ *     complement method)
+ *     <p>balance - 3 bytes signed binary - Integer from -8,388,608 to 8,388,607
+ *     <pre>
  * -8,388,608           %10000000.00000000.00000000
  * -8,388,607           %10000000.00000000.00000001
  * -8,388,606           %10000000.00000000.00000010
@@ -46,12 +47,9 @@ import org.eclipse.keyple.core.card.message.ApduResponse;
  * 8,388,606           %01111111.11111111.11111110
  * 8,388,607           %01111111.11111111.11111111
  * </pre>
- *
- * amount - 2 bytes signed binary
- *
- * <p>amount for debit - Integer 0..32767 =&gt; for negative value
- *
- * <pre>
+ *     amount - 2 bytes signed binary
+ *     <p>amount for debit - Integer 0..32767 =&gt; for negative value
+ *     <pre>
  * -32767           %10000000.00000001
  * -32766           %10000000.00000010
  * -3           %11111111.11111101
@@ -61,6 +59,8 @@ import org.eclipse.keyple.core.card.message.ApduResponse;
  *
  * Notice: -32768 (%10000000.00000000) is not allowed.
  * </pre>
+ *
+ * @since 0.9
  */
 public class SvUndebitRespPars extends AbstractPoResponseParser {
 
@@ -122,6 +122,7 @@ public class SvUndebitRespPars extends AbstractPoResponseParser {
     return getApduResponse().getDataOut();
   }
 
+  /** {@inheritDoc} */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;

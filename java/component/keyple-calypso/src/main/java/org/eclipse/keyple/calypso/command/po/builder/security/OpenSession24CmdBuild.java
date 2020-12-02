@@ -18,6 +18,11 @@ import org.eclipse.keyple.calypso.command.po.parser.security.AbstractOpenSession
 import org.eclipse.keyple.calypso.command.po.parser.security.OpenSession24RespPars;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
+/**
+ * Builds the Open Session command for a PO revision 2.4.
+ *
+ * @since 0.9
+ */
 public final class OpenSession24CmdBuild
     extends AbstractOpenSessionCmdBuild<AbstractOpenSessionRespPars> {
 
@@ -34,6 +39,7 @@ public final class OpenSession24CmdBuild
    * @param recordNumber the record number to read
    * @throws IllegalArgumentException - if key index is 0 (rev 2.4)
    * @throws IllegalArgumentException - if the request is inconsistent
+   * @since 0.9
    */
   public OpenSession24CmdBuild(byte keyIndex, byte[] samChallenge, int sfi, int recordNumber) {
     super(PoRevision.REV2_4);
@@ -69,15 +75,19 @@ public final class OpenSession24CmdBuild
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public OpenSession24RespPars createResponseParser(ApduResponse apduResponse) {
     return new OpenSession24RespPars(apduResponse, this);
   }
 
   /**
-   * This command can't be executed in session and therefore doesn't uses the session buffer.
+   * {@inheritDoc}
+   *
+   * <p>This command can't be executed in session and therefore doesn't uses the session buffer.
    *
    * @return false
+   * @since 0.9
    */
   @Override
   public boolean isSessionBufferUsed() {

@@ -12,9 +12,9 @@
 package org.eclipse.keyple.calypso.transaction.exception;
 
 /**
- * The exception {@code CalypsoAuthenticationNotVerifiedException} indicates that the PO has
- * correctly closed the secure session, but that it is impossible to check the authenticity of the
- * support because the SAM is no more available (timeout, network problem,...).
+ * Indicates that the PO has correctly closed the secure session, but that it is impossible to check
+ * the authenticity of the support because the SAM is no more available (timeout, network
+ * problem,...).
  */
 public class CalypsoAuthenticationNotVerifiedException extends CalypsoPoTransactionException {
 

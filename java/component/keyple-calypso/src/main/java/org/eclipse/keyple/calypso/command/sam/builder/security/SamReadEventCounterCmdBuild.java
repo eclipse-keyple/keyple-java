@@ -17,7 +17,11 @@ import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.parser.security.SamReadEventCounterRespPars;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** Builder for the SAM Read Event Counter APDU command. */
+/**
+ * Builds the Read Event Counter APDU command.
+ *
+ * @since 0.9
+ */
 public class SamReadEventCounterCmdBuild
     extends AbstractSamCommandBuilder<SamReadEventCounterRespPars> {
   /** The command reference. */
@@ -27,8 +31,11 @@ public class SamReadEventCounterCmdBuild
 
   public static final int MAX_COUNTER_REC_NUMB = 3;
 
+  /** Event counter operation type */
   public enum SamEventCounterOperationType {
+    /** Counter record */
     COUNTER_RECORD,
+    /** Single counter */
     SINGLE_COUNTER
   }
 
@@ -38,6 +45,7 @@ public class SamReadEventCounterCmdBuild
    * @param revision revision of the SAM
    * @param operationType the counter operation type
    * @param index the counter index
+   * @since 0.9
    */
   public SamReadEventCounterCmdBuild(
       SamRevision revision, SamEventCounterOperationType operationType, int index) {
@@ -68,6 +76,7 @@ public class SamReadEventCounterCmdBuild
     request = setApduRequest(cla, command, (byte) 0x00, p2, null, (byte) 0x00);
   }
 
+  /** {@inheritDoc} */
   @Override
   public SamReadEventCounterRespPars createResponseParser(ApduResponse apduResponse) {
     return new SamReadEventCounterRespPars(apduResponse, this);

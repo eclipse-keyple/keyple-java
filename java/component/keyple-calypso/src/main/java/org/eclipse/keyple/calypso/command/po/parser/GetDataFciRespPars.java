@@ -29,9 +29,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Extracts information from the FCI data returned is response to the selection application command.
+ * Parses the FCI data returned is response to the selection application command.
  *
  * <p>Provides getter methods for all relevant information.
+ *
+ * @since 0.9
  */
 public final class GetDataFciRespPars extends AbstractPoResponseParser {
   private static final Logger logger = LoggerFactory.getLogger(GetDataFciRespPars.class);
@@ -58,6 +60,7 @@ public final class GetDataFciRespPars extends AbstractPoResponseParser {
     STATUS_TABLE = m;
   }
 
+  /** {@inheritDoc} */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;

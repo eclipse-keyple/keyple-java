@@ -14,8 +14,9 @@ package org.eclipse.keyple.calypso.command.sam.exception;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 
 /**
- * The exception {@code CalypsoSamUnknownException} indicates that the status code is not
- * referenced.
+ * Indicates that the status code is not referenced.
+ *
+ * @since 0.9
  */
 public final class CalypsoSamUnknownStatusException extends CalypsoSamCommandException {
 
@@ -23,6 +24,7 @@ public final class CalypsoSamUnknownStatusException extends CalypsoSamCommandExc
    * @param message the message to identify the exception context
    * @param command the Calypso SAM command
    * @param statusCode the status code
+   * @since 0.9
    */
   public CalypsoSamUnknownStatusException(
       String message, CalypsoSamCommand command, Integer statusCode) {

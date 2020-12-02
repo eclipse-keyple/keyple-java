@@ -18,8 +18,9 @@ import org.eclipse.keyple.calypso.command.po.parser.security.InvalidateRespPars;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
- * The Class {@link InvalidateCmdBuild}. This class provides the dedicated constructor to build the
- * PO Invalidate command.
+ * Builds the Invalidate command.
+ *
+ * @since 0.9
  */
 public final class InvalidateCmdBuild extends AbstractPoCommandBuilder<InvalidateRespPars> {
 
@@ -29,6 +30,7 @@ public final class InvalidateCmdBuild extends AbstractPoCommandBuilder<Invalidat
    * Instantiates a new InvalidateCmdBuild.
    *
    * @param poClass indicates which CLA byte should be used for the Apdu
+   * @since 0.9
    */
   public InvalidateCmdBuild(PoClass poClass) {
     super(command, null);
@@ -39,15 +41,19 @@ public final class InvalidateCmdBuild extends AbstractPoCommandBuilder<Invalidat
     this.request = setApduRequest(poClass.getValue(), command, p1, p2, null, null);
   }
 
+  /** {@inheritDoc} */
   @Override
   public InvalidateRespPars createResponseParser(ApduResponse apduResponse) {
     return new InvalidateRespPars(apduResponse, this);
   }
 
   /**
-   * This command modified the contents of the PO and therefore uses the session buffer.
+   * {@inheritDoc}
+   *
+   * <p>This command modified the contents of the PO and therefore uses the session buffer.
    *
    * @return true
+   * @since 0.9
    */
   @Override
   public boolean isSessionBufferUsed() {

@@ -21,8 +21,9 @@ import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIncorrectInput
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
- * Digest update multiple response parser. See specs: Calypso / page 54 / 7.4.2 - Session MAC
- * computation
+ * Parses the Digest update multiple response.
+ *
+ * @since 0.9
  */
 public class DigestUpdateMultipleRespPars extends AbstractSamResponseParser {
 

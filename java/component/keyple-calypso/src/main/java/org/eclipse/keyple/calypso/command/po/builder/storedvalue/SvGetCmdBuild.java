@@ -18,8 +18,9 @@ import org.eclipse.keyple.calypso.transaction.PoTransaction.SvSettings;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
- * The Class SvGetCmdBuild. This class provides the dedicated constructor to build the SV Get
- * command.
+ * Builds the SV Get command.
+ *
+ * @since 0.9
  */
 public final class SvGetCmdBuild extends AbstractPoCommandBuilder<SvGetRespPars> {
 
@@ -36,6 +37,7 @@ public final class SvGetCmdBuild extends AbstractPoCommandBuilder<SvGetRespPars>
    * @param poRevision the PO revision
    * @param svOperation the desired SV operation
    * @throws IllegalArgumentException - if the command is inconsistent
+   * @since 0.9
    */
   public SvGetCmdBuild(PoClass poClass, PoRevision poRevision, SvSettings.Operation svOperation) {
     super(command, null);
@@ -60,16 +62,27 @@ public final class SvGetCmdBuild extends AbstractPoCommandBuilder<SvGetRespPars>
    * Gets the request SV operation (used to check the SV command sequence)
    *
    * @return the current SvSettings.Operation enum value
+   * @since 0.9
    */
   public SvSettings.Operation getSvOperation() {
     return svOperation;
   }
 
+  /** {@inheritDoc} */
   @Override
   public SvGetRespPars createResponseParser(ApduResponse apduResponse) {
     return new SvGetRespPars(header, apduResponse, this);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>This command doesn't modify the contents of the PO and therefore doesn't uses the session
+   * buffer.
+   *
+   * @return false
+   * @since 0.9
+   */
   @Override
   public boolean isSessionBufferUsed() {
     return false;

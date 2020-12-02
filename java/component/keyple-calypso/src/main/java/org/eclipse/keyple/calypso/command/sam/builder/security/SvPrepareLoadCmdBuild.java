@@ -17,7 +17,11 @@ import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.parser.security.SvPrepareOperationRespPars;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** Builder for the SAM SV Prepare Load APDU command. */
+/**
+ * Builds the SV Prepare Load APDU command.
+ *
+ * @since 0.9
+ */
 public class SvPrepareLoadCmdBuild extends AbstractSamCommandBuilder<SvPrepareOperationRespPars> {
   /** The command reference. */
   private static final CalypsoSamCommand command = CalypsoSamCommand.SV_PREPARE_LOAD;
@@ -32,6 +36,7 @@ public class SvPrepareLoadCmdBuild extends AbstractSamCommandBuilder<SvPrepareOp
    * @param svGetHeader the SV Get command header
    * @param svGetData a byte array containing the data from the SV get command and response
    * @param svReloadCmdBuildData the SV reload command builder data
+   * @since 0.9
    */
   public SvPrepareLoadCmdBuild(
       SamRevision samRevision, byte[] svGetHeader, byte[] svGetData, byte[] svReloadCmdBuildData) {
@@ -50,6 +55,7 @@ public class SvPrepareLoadCmdBuild extends AbstractSamCommandBuilder<SvPrepareOp
     request = setApduRequest(cla, command, p1, p2, data, null);
   }
 
+  /** {@inheritDoc} */
   @Override
   public SvPrepareOperationRespPars createResponseParser(ApduResponse apduResponse) {
     return new SvPrepareOperationRespPars(apduResponse, this);

@@ -19,7 +19,11 @@ import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCounterOverflo
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** SAM read event counter. */
+/**
+ * Parses the Read event counter.
+ *
+ * @since 0.9
+ */
 public class SamReadEventCounterRespPars extends AbstractSamResponseParser {
 
   private static final Map<Integer, StatusProperties> STATUS_TABLE;

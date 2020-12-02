@@ -19,6 +19,11 @@ import org.eclipse.keyple.calypso.command.po.exception.*;
 import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
+/**
+ * Parses the ChangeKey response.
+ *
+ * @since 0.9
+ */
 public class ChangeKeyRespPars extends AbstractPoResponseParser {
   private static final Map<Integer, StatusProperties> STATUS_TABLE;
 
@@ -71,6 +76,7 @@ public class ChangeKeyRespPars extends AbstractPoResponseParser {
     super(response, builder);
   }
 
+  /** {@inheritDoc} */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;

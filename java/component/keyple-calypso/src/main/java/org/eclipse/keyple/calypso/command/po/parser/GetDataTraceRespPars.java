@@ -21,9 +21,11 @@ import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
- * Returns the traceability data obtained from the Get Data command response.
+ * Parses the Get Data command response.
  *
  * <p>Provides getter methods for all relevant information.
+ *
+ * @since 0.9
  */
 public final class GetDataTraceRespPars extends AbstractPoResponseParser {
 
@@ -60,6 +62,7 @@ public final class GetDataTraceRespPars extends AbstractPoResponseParser {
     super(response, builder);
   }
 
+  /** {@inheritDoc} */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;

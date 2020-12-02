@@ -20,6 +20,11 @@ import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParamet
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamSecurityDataException;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
+/**
+ * Parses the SV Check response.
+ *
+ * @since 0.9
+ */
 public class SvCheckRespPars extends AbstractSamResponseParser {
   private static final Map<Integer, StatusProperties> STATUS_TABLE;
 

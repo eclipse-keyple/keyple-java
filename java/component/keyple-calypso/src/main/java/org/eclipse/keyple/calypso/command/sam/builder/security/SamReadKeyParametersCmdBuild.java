@@ -17,7 +17,11 @@ import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.parser.security.SamReadKeyParametersRespPars;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** Builder for the SAM Read Key Parameters APDU command. */
+/**
+ * Builds the Read Key Parameters APDU command.
+ *
+ * @since 0.9
+ */
 public class SamReadKeyParametersCmdBuild
     extends AbstractSamCommandBuilder<SamReadKeyParametersRespPars> {
   /** The command reference. */
@@ -25,13 +29,19 @@ public class SamReadKeyParametersCmdBuild
 
   public static final int MAX_WORK_KEY_REC_NUMB = 126;
 
+  /** Source reference */
   public enum SourceRef {
+    /** Work key */
     WORK_KEY,
+    /** System key */
     SYSTEM_KEY
   }
 
+  /** Navigation control */
   public enum NavControl {
+    /** First */
     FIRST,
+    /** Next */
     NEXT
   }
 
@@ -152,6 +162,7 @@ public class SamReadKeyParametersCmdBuild
     request = setApduRequest(cla, command, (byte) 0x00, p2, sourceKeyId, (byte) 0x00);
   }
 
+  /** {@inheritDoc} */
   @Override
   public SamReadKeyParametersRespPars createResponseParser(ApduResponse apduResponse) {
     return new SamReadKeyParametersRespPars(apduResponse, this);

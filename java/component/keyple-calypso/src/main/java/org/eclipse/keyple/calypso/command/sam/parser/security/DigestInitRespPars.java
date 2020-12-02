@@ -21,7 +21,11 @@ import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamDataAccessExce
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** Digest init response parser. See specs: Calypso / page 54 / 7.4.2 - Session MAC computation */
+/**
+ * Parses the Digest init response.
+ *
+ * @since 0.9
+ */
 public class DigestInitRespPars extends AbstractSamResponseParser {
 
   private static final Map<Integer, StatusProperties> STATUS_TABLE;

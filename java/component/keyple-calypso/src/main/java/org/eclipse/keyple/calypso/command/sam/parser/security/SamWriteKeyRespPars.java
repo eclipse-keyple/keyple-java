@@ -18,7 +18,11 @@ import org.eclipse.keyple.calypso.command.sam.builder.security.SamWriteKeyCmdBui
 import org.eclipse.keyple.calypso.command.sam.exception.*;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** SAM Write Key response parser. */
+/**
+ * Parses the Write Key response.
+ *
+ * @since 0.9
+ */
 public class SamWriteKeyRespPars extends AbstractSamResponseParser {
 
   private static final Map<Integer, StatusProperties> STATUS_TABLE;

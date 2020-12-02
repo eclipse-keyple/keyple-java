@@ -22,7 +22,11 @@ import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoSessionBufferOve
 import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** Invalidate response parser. */
+/**
+ * Parses the Invalidate response.
+ *
+ * @since 0.9
+ */
 public final class InvalidateRespPars extends AbstractPoResponseParser {
 
   private static final Map<Integer, StatusProperties> STATUS_TABLE;
@@ -59,6 +63,7 @@ public final class InvalidateRespPars extends AbstractPoResponseParser {
     super(response, builder);
   }
 
+  /** {@inheritDoc} */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;

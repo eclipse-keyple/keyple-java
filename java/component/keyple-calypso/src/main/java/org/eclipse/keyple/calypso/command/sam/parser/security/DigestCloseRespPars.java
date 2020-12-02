@@ -18,7 +18,11 @@ import org.eclipse.keyple.calypso.command.sam.builder.security.DigestCloseCmdBui
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamAccessForbiddenException;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** Digest close response parser. See specs: Calypso / page 54 / 7.4.2 - Session MAC computation */
+/**
+ * Parses the Digest close response.
+ *
+ * @since 0.9
+ */
 public class DigestCloseRespPars extends AbstractSamResponseParser {
 
   private static final Map<Integer, StatusProperties> STATUS_TABLE;
