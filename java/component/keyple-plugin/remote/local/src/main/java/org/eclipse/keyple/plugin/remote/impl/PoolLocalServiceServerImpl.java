@@ -34,11 +34,9 @@ final class PoolLocalServiceServerImpl extends AbstractLocalService
 
   private static Map<String, PoolLocalServiceServerImpl> serviceInstances;
   private final String[] poolPluginNames;
-  private final String serviceName;
 
-  private PoolLocalServiceServerImpl(String serviceName, String[] poolPluginNames) {
+  private PoolLocalServiceServerImpl(String[] poolPluginNames) {
     this.poolPluginNames = poolPluginNames;
-    this.serviceName = serviceName;
   }
 
   /**
@@ -53,8 +51,7 @@ final class PoolLocalServiceServerImpl extends AbstractLocalService
     if (serviceInstances == null) {
       serviceInstances = new HashMap<String, PoolLocalServiceServerImpl>();
     }
-    PoolLocalServiceServerImpl instance =
-        new PoolLocalServiceServerImpl(serviceName, poolPluginNames);
+    PoolLocalServiceServerImpl instance = new PoolLocalServiceServerImpl(poolPluginNames);
     serviceInstances.put(serviceName, instance);
     return instance;
   }

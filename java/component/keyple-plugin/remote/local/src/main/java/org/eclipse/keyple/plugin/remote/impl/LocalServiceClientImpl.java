@@ -43,19 +43,16 @@ final class LocalServiceClientImpl extends AbstractLocalService
   private final boolean withReaderObservation;
   private final ObservableReaderEventFilter eventFilter;
   private final Map<String, String> remoteReaders;
-  private final String serviceName;
   /**
    * (private)<br>
    * Constructor
    *
-   * @param serviceName identifier of the service
    * @param withReaderObservation Indicates if reader observation should be activated.
    * @param eventFilter The event filter to use if reader observation should is activated.
    */
   private LocalServiceClientImpl(
-      String serviceName, boolean withReaderObservation, ObservableReaderEventFilter eventFilter) {
+      boolean withReaderObservation, ObservableReaderEventFilter eventFilter) {
     super();
-    this.serviceName = serviceName;
     this.withReaderObservation = withReaderObservation;
     this.eventFilter = eventFilter;
     this.remoteReaders = new HashMap<String, String>();
@@ -76,7 +73,7 @@ final class LocalServiceClientImpl extends AbstractLocalService
       serviceInstances = new HashMap<String, LocalServiceClientImpl>();
     }
     LocalServiceClientImpl localService =
-        new LocalServiceClientImpl(serviceName, withReaderObservation, eventFilter);
+        new LocalServiceClientImpl(withReaderObservation, eventFilter);
     serviceInstances.put(serviceName, localService);
     return localService;
   }
