@@ -30,6 +30,9 @@ public class AsyncScenario extends BaseScenario {
   private static final Logger logger = LoggerFactory.getLogger(AsyncScenario.class);
   private static StubAsyncEndpointServer serverEndpoint;
 
+  private static final String localServiceName = "AsyncServiceLocalService";
+  private static final String pluginName = "AsyncServicePluginName";
+
   @BeforeClass
   public static void globalSetUp() {
 
@@ -39,7 +42,7 @@ public class AsyncScenario extends BaseScenario {
      *   <li>create an isntance of the serverEndpoint</li>
      * </ul>
      */
-    serverEndpoint = new StubAsyncEndpointServer();
+    serverEndpoint = new StubAsyncEndpointServer(pluginName);
   }
 
   @Before
@@ -52,7 +55,7 @@ public class AsyncScenario extends BaseScenario {
      *   <li>attach the plugin observer</li>
      * </ul>
      */
-    initRemotePluginWithAsyncNode(serverEndpoint);
+    initRemotePluginWithAsyncNode(pluginName, serverEndpoint);
 
     /*
      * Client side :
@@ -64,7 +67,7 @@ public class AsyncScenario extends BaseScenario {
      * </ul>
      */
     initNativeStubPlugin();
-    clientEndpoint = new StubAsyncEndpointClient(serverEndpoint, false);
+    clientEndpoint = new StubAsyncEndpointClient(serverEndpoint, localServiceName, false);
     user1 = new UserInput().setUserId(UUID.randomUUID().toString());
     device1 = new DeviceInput().setDeviceId(DEVICE_ID);
   }
@@ -77,7 +80,7 @@ public class AsyncScenario extends BaseScenario {
 
   @AfterClass
   public static void globalTearDown() {
-    unRegisterRemotePlugin();
+    unRegisterRemotePlugin(pluginName);
   }
 
   /** {@inheritDoc} */
@@ -87,6 +90,7 @@ public class AsyncScenario extends BaseScenario {
 
     localService =
         LocalServiceClientFactory.builder()
+            .withServiceName(localServiceName)
             .withAsyncNode(clientEndpoint)
             .usingDefaultTimeout()
             .withoutReaderObservation()
@@ -102,6 +106,7 @@ public class AsyncScenario extends BaseScenario {
 
     localService =
         LocalServiceClientFactory.builder()
+            .withServiceName(localServiceName)
             .withAsyncNode(clientEndpoint)
             .usingDefaultTimeout()
             .withoutReaderObservation()
@@ -118,6 +123,7 @@ public class AsyncScenario extends BaseScenario {
 
     localService =
         LocalServiceClientFactory.builder()
+            .withServiceName(localServiceName)
             .withAsyncNode(clientEndpoint)
             .usingDefaultTimeout()
             .withoutReaderObservation()
@@ -132,6 +138,7 @@ public class AsyncScenario extends BaseScenario {
   public void execute_transaction_closeSession_card_error() {
     localService =
         LocalServiceClientFactory.builder()
+            .withServiceName(localServiceName)
             .withAsyncNode(clientEndpoint)
             .usingDefaultTimeout()
             .withoutReaderObservation()
@@ -144,10 +151,11 @@ public class AsyncScenario extends BaseScenario {
   @Test(expected = StubNetworkConnectionException.class)
   @Override
   public void execute_transaction_host_network_error() {
-    clientEndpoint = new StubAsyncEndpointClient(serverEndpoint, true);
+    clientEndpoint = new StubAsyncEndpointClient(serverEndpoint, localServiceName, true);
 
     localService =
         LocalServiceClientFactory.builder()
+            .withServiceName(localServiceName)
             .withAsyncNode(clientEndpoint)
             .usingDefaultTimeout()
             .withoutReaderObservation()
@@ -162,6 +170,7 @@ public class AsyncScenario extends BaseScenario {
     serverEndpoint.setSimulateConnectionError(true);
     localService =
         LocalServiceClientFactory.builder()
+            .withServiceName(localServiceName)
             .withAsyncNode(clientEndpoint)
             .usingTimeout(2)
             .withoutReaderObservation()
@@ -176,6 +185,7 @@ public class AsyncScenario extends BaseScenario {
   public void execute_transaction_slowSe_success() {
     localService =
         LocalServiceClientFactory.builder()
+            .withServiceName(localServiceName)
             .withAsyncNode(clientEndpoint)
             .usingDefaultTimeout()
             .withoutReaderObservation()
@@ -191,6 +201,7 @@ public class AsyncScenario extends BaseScenario {
 
     localService =
         LocalServiceClientFactory.builder()
+            .withServiceName(localServiceName)
             .withAsyncNode(clientEndpoint)
             .usingDefaultTimeout()
             .withReaderObservation(eventFilter)
@@ -208,6 +219,7 @@ public class AsyncScenario extends BaseScenario {
 
     localService =
         LocalServiceClientFactory.builder()
+            .withServiceName(localServiceName)
             .withAsyncNode(clientEndpoint)
             .usingDefaultTimeout()
             .withReaderObservation(eventFilter)

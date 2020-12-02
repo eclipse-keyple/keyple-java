@@ -44,6 +44,8 @@ public class PoolRemotePluginClientTest {
   String groupReference = "groupReference1";
   String serverNodeId = "serverNodeId";
 
+  String pluginName = "pluginName";
+
   @Before
   public void setUp() {
     asyncEndpoint = Mockito.mock(AsyncEndpointClient.class);
@@ -55,7 +57,7 @@ public class PoolRemotePluginClientTest {
     try {
       // unregister plugin
       SmartCardService.getInstance()
-          .unregisterPlugin(PoolRemotePluginClientUtils.getRemotePlugin().getName());
+          .unregisterPlugin(PoolRemotePluginClientUtils.getRemotePlugin(pluginName).getName());
     } catch (KeyplePluginNotFoundException e) {
       // plugin not found, was not register
     }
@@ -63,29 +65,38 @@ public class PoolRemotePluginClientTest {
 
   @Test
   public void factory_withSyncEndpoint_shouldCreate_PluginWith_SyncNode() {
-    SmartCardService.getInstance()
-        .registerPlugin(PoolRemotePluginClientFactory.builder().withSyncNode(syncEndpoint).build());
-    assertThat(PoolRemotePluginClientUtils.getRemotePlugin()).isNotNull();
+    remotePoolPlugin =
+        (PoolRemotePluginClientImpl)
+            SmartCardService.getInstance()
+                .registerPlugin(
+                    PoolRemotePluginClientFactory.builder()
+                        .withPluginName(pluginName)
+                        .withSyncNode(syncEndpoint)
+                        .build());
+    assertThat(PoolRemotePluginClientUtils.getRemotePlugin(pluginName)).isNotNull();
 
     // unregister plugin
     SmartCardService.getInstance()
-        .unregisterPlugin(PoolRemotePluginClientUtils.getRemotePlugin().getName());
+        .unregisterPlugin(PoolRemotePluginClientUtils.getRemotePlugin(pluginName).getName());
   }
 
   @Test
   public void factory_withAsyncEndpoint_shouldCreate_PluginWith_AsyncNode() {
-    SmartCardService.getInstance()
-        .registerPlugin(
-            PoolRemotePluginClientFactory.builder()
-                .withAsyncNode(asyncEndpoint)
-                .usingDefaultTimeout()
-                .build());
-    assertThat(PoolRemotePluginClientUtils.getRemotePlugin()).isNotNull();
-    assertThat(PoolRemotePluginClientUtils.getAsyncNode()).isNotNull();
+    remotePoolPlugin =
+        (PoolRemotePluginClientImpl)
+            SmartCardService.getInstance()
+                .registerPlugin(
+                    PoolRemotePluginClientFactory.builder()
+                        .withPluginName(pluginName)
+                        .withAsyncNode(asyncEndpoint)
+                        .usingDefaultTimeout()
+                        .build());
+    assertThat(PoolRemotePluginClientUtils.getRemotePlugin(pluginName)).isNotNull();
+    assertThat(PoolRemotePluginClientUtils.getAsyncNode(pluginName)).isNotNull();
 
     // unregister plugin
     SmartCardService.getInstance()
-        .unregisterPlugin(PoolRemotePluginClientUtils.getRemotePlugin().getName());
+        .unregisterPlugin(PoolRemotePluginClientUtils.getRemotePlugin(pluginName).getName());
   }
 
   @Test
@@ -93,7 +104,11 @@ public class PoolRemotePluginClientTest {
     syncEndpoint = new MockSyncEndpoint();
     remotePoolPlugin =
         (PoolRemotePluginClientImpl)
-            PoolRemotePluginClientFactory.builder().withSyncNode(syncEndpoint).build().getPlugin();
+            PoolRemotePluginClientFactory.builder()
+                .withPluginName(pluginName)
+                .withSyncNode(syncEndpoint)
+                .build()
+                .getPlugin();
     remoteReader = remotePoolPlugin.allocateReader(groupReference);
     assertThat(remotePoolPlugin.getReader(remoteReader.getName())).isNotNull();
   }
@@ -104,7 +119,11 @@ public class PoolRemotePluginClientTest {
         new MockSyncEndpoint().setException(new KeypleAllocationNoReaderException("msg"));
     remotePoolPlugin =
         (PoolRemotePluginClientImpl)
-            PoolRemotePluginClientFactory.builder().withSyncNode(syncEndpoint).build().getPlugin();
+            PoolRemotePluginClientFactory.builder()
+                .withPluginName(pluginName)
+                .withSyncNode(syncEndpoint)
+                .build()
+                .getPlugin();
     remotePoolPlugin.allocateReader(groupReference);
   }
 
@@ -113,7 +132,11 @@ public class PoolRemotePluginClientTest {
     syncEndpoint = new MockSyncEndpoint();
     remotePoolPlugin =
         (PoolRemotePluginClientImpl)
-            PoolRemotePluginClientFactory.builder().withSyncNode(syncEndpoint).build().getPlugin();
+            PoolRemotePluginClientFactory.builder()
+                .withPluginName(pluginName)
+                .withSyncNode(syncEndpoint)
+                .build()
+                .getPlugin();
     remoteReader = remotePoolPlugin.allocateReader(groupReference);
     remotePoolPlugin.releaseReader(remoteReader);
     assertThat(remotePoolPlugin.getReaders()).isEmpty();
@@ -124,7 +147,11 @@ public class PoolRemotePluginClientTest {
     syncEndpoint = new MockSyncEndpoint().setException(new KeypleReaderNotFoundException("msg"));
     remotePoolPlugin =
         (PoolRemotePluginClientImpl)
-            PoolRemotePluginClientFactory.builder().withSyncNode(syncEndpoint).build().getPlugin();
+            PoolRemotePluginClientFactory.builder()
+                .withPluginName(pluginName)
+                .withSyncNode(syncEndpoint)
+                .build()
+                .getPlugin();
     remoteReader = remotePoolPlugin.allocateReader(groupReference);
     remotePoolPlugin.releaseReader(remoteReader);
   }
@@ -138,7 +165,11 @@ public class PoolRemotePluginClientTest {
     syncEndpoint = new MockSyncEndpoint().setException(new KeypleReaderNotFoundException("msg"));
     remotePoolPlugin =
         (PoolRemotePluginClientImpl)
-            PoolRemotePluginClientFactory.builder().withSyncNode(syncEndpoint).build().getPlugin();
+            PoolRemotePluginClientFactory.builder()
+                .withPluginName(pluginName)
+                .withSyncNode(syncEndpoint)
+                .build()
+                .getPlugin();
     remotePoolPlugin.releaseReader(reader);
   }
 
@@ -147,7 +178,11 @@ public class PoolRemotePluginClientTest {
     syncEndpoint = new MockSyncEndpoint();
     remotePoolPlugin =
         (PoolRemotePluginClientImpl)
-            PoolRemotePluginClientFactory.builder().withSyncNode(syncEndpoint).build().getPlugin();
+            PoolRemotePluginClientFactory.builder()
+                .withPluginName(pluginName)
+                .withSyncNode(syncEndpoint)
+                .build()
+                .getPlugin();
     SortedSet groupReferences = remotePoolPlugin.getReaderGroupReferences();
     assertThat(groupReferences).containsExactly(groupReference);
   }
@@ -157,7 +192,11 @@ public class PoolRemotePluginClientTest {
     syncEndpoint = new MockSyncEndpoint().setException(new KeyplePluginNotFoundException("hsm"));
     remotePoolPlugin =
         (PoolRemotePluginClientImpl)
-            PoolRemotePluginClientFactory.builder().withSyncNode(syncEndpoint).build().getPlugin();
+            PoolRemotePluginClientFactory.builder()
+                .withPluginName(pluginName)
+                .withSyncNode(syncEndpoint)
+                .build()
+                .getPlugin();
     remotePoolPlugin.getReaderGroupReferences();
   }
 
@@ -169,6 +208,7 @@ public class PoolRemotePluginClientTest {
             SmartCardService.getInstance()
                 .registerPlugin(
                     PoolRemotePluginClientFactory.builder()
+                        .withPluginName(pluginName)
                         .withAsyncNode(asyncEndpoint)
                         .usingDefaultTimeout()
                         .build());
@@ -185,6 +225,7 @@ public class PoolRemotePluginClientTest {
             SmartCardService.getInstance()
                 .registerPlugin(
                     PoolRemotePluginClientFactory.builder()
+                        .withPluginName(pluginName)
                         .withAsyncNode(asyncEndpoint)
                         .usingDefaultTimeout()
                         .build());
@@ -206,7 +247,7 @@ public class PoolRemotePluginClientTest {
 
     @Override
     public void openSession(String sessionId) {
-      PoolRemotePluginClientUtils.getAsyncNode().onOpen(sessionId);
+      PoolRemotePluginClientUtils.getAsyncNode(pluginName).onOpen(sessionId);
     }
 
     @Override
@@ -215,7 +256,8 @@ public class PoolRemotePluginClientTest {
               new Runnable() {
                 @Override
                 public void run() {
-                  PoolRemotePluginClientUtils.getAsyncNode().onMessage(getResponse(msg, exception));
+                  PoolRemotePluginClientUtils.getAsyncNode(pluginName)
+                      .onMessage(getResponse(msg, exception));
                 }
               })
           .start();
@@ -223,7 +265,7 @@ public class PoolRemotePluginClientTest {
 
     @Override
     public void closeSession(String sessionId) {
-      PoolRemotePluginClientUtils.getAsyncNode().onClose(sessionId);
+      PoolRemotePluginClientUtils.getAsyncNode(pluginName).onClose(sessionId);
     }
   }
 

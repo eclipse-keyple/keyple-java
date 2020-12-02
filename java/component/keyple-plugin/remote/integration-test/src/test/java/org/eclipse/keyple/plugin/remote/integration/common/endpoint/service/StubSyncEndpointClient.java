@@ -38,10 +38,12 @@ public class StubSyncEndpointClient implements SyncEndpointClient {
   private static final ExecutorService taskPool =
       Executors.newCachedThreadPool(new NamedThreadFactory("syncPool"));;
   private final Boolean simulateConnectionError;
+  private final String pluginName;
   private int messageSent = 0;
 
-  public StubSyncEndpointClient(Boolean simulateConnectionError) {
+  public StubSyncEndpointClient(String pluginName, Boolean simulateConnectionError) {
     this.simulateConnectionError = simulateConnectionError;
+    this.pluginName = pluginName;
   }
 
   @Override
@@ -80,7 +82,7 @@ public class StubSyncEndpointClient implements SyncEndpointClient {
 
         // Send the dto to the sync node
         List<MessageDto> responses =
-            RemotePluginServerUtils.getSyncNode().onRequest(JacksonParser.fromJson(data));
+            RemotePluginServerUtils.getSyncNode(pluginName).onRequest(JacksonParser.fromJson(data));
 
         return JacksonParser.toJson(responses);
       }

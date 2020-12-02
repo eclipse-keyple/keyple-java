@@ -53,7 +53,7 @@ public final class RemotePluginServerFactory implements PluginFactory {
    * @return next configuration step
    * @since 1.0
    */
-  public static NodeStep builder() {
+  public static NameStep builder() {
     return new Builder();
   }
 
@@ -67,6 +67,26 @@ public final class RemotePluginServerFactory implements PluginFactory {
   @Override
   public Plugin getPlugin() {
     return plugin;
+  }
+
+  public interface NameStep {
+    /**
+     * Configures the plugin with a specific name.
+     *
+     * @param pluginName specific plugin name.
+     * @return next configuration step
+     * @since 1.0
+     */
+    NodeStep withPluginName(String pluginName);
+
+    /**
+     * Configures the plugin with the default name. Note that only one plugin of this type with the
+     * default name can be registered.
+     *
+     * @return next configuration step
+     * @since 1.0
+     */
+    NodeStep withDefaultPluginName();
   }
 
   public interface NodeStep {
@@ -140,11 +160,27 @@ public final class RemotePluginServerFactory implements PluginFactory {
 
   /** The builder pattern to create the factory instance. */
   private static class Builder
-      implements NodeStep, PluginObserverStep, EventNotificationPoolStep, BuilderStep {
+      implements NameStep, NodeStep, PluginObserverStep, EventNotificationPoolStep, BuilderStep {
 
     private AsyncEndpointServer asyncEndpoint;
     private ExecutorService eventNotificationPool;
     private ObservablePlugin.PluginObserver observer;
+    private String pluginName;
+
+    /** {@inheritDoc} */
+    @Override
+    public NodeStep withPluginName(String pluginName) {
+      Assert.getInstance().notNull(pluginName, "plugin name");
+      this.pluginName = pluginName;
+      return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public NodeStep withDefaultPluginName() {
+      this.pluginName = DEFAULT_PLUGIN_NAME;
+      return this;
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -187,8 +223,7 @@ public final class RemotePluginServerFactory implements PluginFactory {
     @Override
     public RemotePluginServerFactory build() {
 
-      RemotePluginServerImpl plugin =
-          new RemotePluginServerImpl(DEFAULT_PLUGIN_NAME, eventNotificationPool);
+      RemotePluginServerImpl plugin = new RemotePluginServerImpl(pluginName, eventNotificationPool);
 
       if (asyncEndpoint != null) {
         logger.info("Create a new RemotePluginServer with a AsyncNodeServer");

@@ -31,29 +31,31 @@ import org.slf4j.LoggerFactory;
 
 /**
  * (package-private)<br>
- * Singleton instance of the {@link LocalServiceClient} implementation
+ * Instances of the {@link LocalServiceClient} implementation
  */
 final class LocalServiceClientImpl extends AbstractLocalService
     implements ObservableReader.ReaderObserver, LocalServiceClient {
 
   private static final Logger logger = LoggerFactory.getLogger(LocalServiceClientImpl.class);
 
-  private static LocalServiceClientImpl uniqueInstance;
+  private static Map<String, LocalServiceClientImpl> serviceInstances;
 
   private final boolean withReaderObservation;
   private final ObservableReaderEventFilter eventFilter;
   private final Map<String, String> remoteReaders;
-
+  private final String serviceName;
   /**
    * (private)<br>
    * Constructor
    *
+   * @param serviceName identifier of the service
    * @param withReaderObservation Indicates if reader observation should be activated.
    * @param eventFilter The event filter to use if reader observation should is activated.
    */
   private LocalServiceClientImpl(
-      boolean withReaderObservation, ObservableReaderEventFilter eventFilter) {
+      String serviceName, boolean withReaderObservation, ObservableReaderEventFilter eventFilter) {
     super();
+    this.serviceName = serviceName;
     this.withReaderObservation = withReaderObservation;
     this.eventFilter = eventFilter;
     this.remoteReaders = new HashMap<String, String>();
@@ -61,25 +63,32 @@ final class LocalServiceClientImpl extends AbstractLocalService
 
   /**
    * (package-private)<br>
-   * Create an instance of this singleton service
+   * Create an instance of the service. If a service exists with the same name, the service is
+   * overridden.
    *
+   * @param serviceName identifier of the local service
    * @param withReaderObservation true if reader observation should be activated
    * @return a not null instance of the singleton
    */
   static LocalServiceClientImpl createInstance(
-      boolean withReaderObservation, ObservableReaderEventFilter eventFilter) {
-    uniqueInstance = new LocalServiceClientImpl(withReaderObservation, eventFilter);
-    return uniqueInstance;
+      String serviceName, boolean withReaderObservation, ObservableReaderEventFilter eventFilter) {
+    if (serviceInstances == null) {
+      serviceInstances = new HashMap<String, LocalServiceClientImpl>();
+    }
+    LocalServiceClientImpl localService =
+        new LocalServiceClientImpl(serviceName, withReaderObservation, eventFilter);
+    serviceInstances.put(serviceName, localService);
+    return localService;
   }
 
   /**
    * (package-private)<br>
-   * Retrieve the instance of this singleton service
+   * Retrieve the service associated by its serviceName
    *
-   * @return a not null instance
+   * @return a nullable instance
    */
-  static LocalServiceClientImpl getInstance() {
-    return uniqueInstance;
+  static LocalServiceClientImpl getInstance(String serviceName) {
+    return serviceInstances.get(serviceName);
   }
 
   /** {@inheritDoc} */

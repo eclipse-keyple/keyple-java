@@ -33,14 +33,18 @@ public class SyncScenario extends BaseScenario {
 
   private static final Logger logger = LoggerFactory.getLogger(SyncScenario.class);
 
+  private final String localServiceName = "SyncPoolLocalService";
+  private final String pluginName = "SyncPoolPluginName";
+
   @Before
   public void setUp() {
     initNativePoolStubPlugin();
 
-    SyncEndpointClient clientEndpoint = new StubSyncEndpointClient();
+    SyncEndpointClient clientEndpoint = new StubSyncEndpointClient(localServiceName);
 
     poolLocalServiceServer =
         PoolLocalServiceServerFactory.builder()
+            .withServiceName(localServiceName)
             .withSyncNode()
             .withPoolPlugins(localPoolPlugin.getName())
             .getService();
@@ -49,7 +53,10 @@ public class SyncScenario extends BaseScenario {
         (PoolRemotePluginClient)
             SmartCardService.getInstance()
                 .registerPlugin(
-                    PoolRemotePluginClientFactory.builder().withSyncNode(clientEndpoint).build());
+                    PoolRemotePluginClientFactory.builder()
+                        .withPluginName(pluginName)
+                        .withSyncNode(clientEndpoint)
+                        .build());
   }
 
   @Test

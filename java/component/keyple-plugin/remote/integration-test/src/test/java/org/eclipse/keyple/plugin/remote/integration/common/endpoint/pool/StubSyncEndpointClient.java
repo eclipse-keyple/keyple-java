@@ -35,8 +35,11 @@ public class StubSyncEndpointClient implements SyncEndpointClient {
   private static final Logger logger = LoggerFactory.getLogger(StubSyncEndpointClient.class);
   private static final ExecutorService taskPool =
       Executors.newCachedThreadPool(new NamedThreadFactory("syncPool"));;
+  private final String pluginName;
 
-  public StubSyncEndpointClient() {}
+  public StubSyncEndpointClient(String pluginName) {
+    this.pluginName = pluginName;
+  }
 
   @Override
   public List<MessageDto> sendRequest(MessageDto msg) {
@@ -68,7 +71,8 @@ public class StubSyncEndpointClient implements SyncEndpointClient {
       public String call() throws Exception {
         // Send the dto to the sync node
         List<MessageDto> responses =
-            PoolLocalServiceServerUtils.getSyncNode().onRequest(JacksonParser.fromJson(data));
+            PoolLocalServiceServerUtils.getSyncNode(pluginName)
+                .onRequest(JacksonParser.fromJson(data));
 
         return JacksonParser.toJson(responses);
       }

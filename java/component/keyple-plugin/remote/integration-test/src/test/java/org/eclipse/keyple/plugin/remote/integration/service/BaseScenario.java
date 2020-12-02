@@ -131,9 +131,9 @@ public abstract class BaseScenario {
   ExecutorService clientPool = Executors.newCachedThreadPool(new NamedThreadFactory("client-pool"));
   ExecutorService serverPool = Executors.newCachedThreadPool(new NamedThreadFactory("remote-pool"));
 
-  public static void unRegisterRemotePlugin() {
+  public static void unRegisterRemotePlugin(String pluginName) {
     try {
-      RemotePluginServer oldPlugin = RemotePluginServerUtils.getRemotePlugin();
+      RemotePluginServer oldPlugin = RemotePluginServerUtils.getRemotePlugin(pluginName);
       SmartCardService.getInstance().unregisterPlugin(oldPlugin.getName());
     } catch (KeyplePluginNotFoundException e) {
       // no plugin to unregister
@@ -182,15 +182,16 @@ public abstract class BaseScenario {
   }
 
   /** Init a Sync Remote Server Plugin (ie. http server) */
-  void initRemotePluginWithSyncNode() {
+  void initRemotePluginWithSyncNode(String pluginName) {
     try {
-      remotePlugin = RemotePluginServerUtils.getRemotePlugin();
+      remotePlugin = RemotePluginServerUtils.getRemotePlugin(pluginName);
     } catch (KeyplePluginNotFoundException e) {
       remotePlugin =
           (RemotePluginServer)
               SmartCardService.getInstance()
                   .registerPlugin(
                       RemotePluginServerFactory.builder()
+                          .withPluginName(pluginName)
                           .withSyncNode()
                           .withPluginObserver(new RemotePluginServerObserver())
                           // .usingDefaultEventNotificationPool()
@@ -200,9 +201,9 @@ public abstract class BaseScenario {
   }
 
   /** Init a Async Remote Server Plugin with an async server endpoint */
-  void initRemotePluginWithAsyncNode(AsyncEndpointServer serverEndpoint) {
+  void initRemotePluginWithAsyncNode(String pluginName, AsyncEndpointServer serverEndpoint) {
     try {
-      remotePlugin = RemotePluginServerUtils.getRemotePlugin();
+      remotePlugin = RemotePluginServerUtils.getRemotePlugin(pluginName);
       logger.info("RemotePluginServer already registered, reusing it");
     } catch (KeyplePluginNotFoundException e) {
       remotePlugin =
@@ -210,6 +211,7 @@ public abstract class BaseScenario {
               SmartCardService.getInstance()
                   .registerPlugin(
                       RemotePluginServerFactory.builder()
+                          .withPluginName(pluginName)
                           .withAsyncNode(serverEndpoint)
                           .withPluginObserver(new RemotePluginServerObserver())
                           .usingEventNotificationPool(serverPool)

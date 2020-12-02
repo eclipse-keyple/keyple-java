@@ -50,6 +50,8 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
   final String sessionId = "session1";
   final SortedSet<String> groupReferences = Sets.newTreeSet(groupReference);
   final String poolPluginName = "poolPluginMock";
+  String syncLocalServiceName = "syncServiceName";
+  String asyncLocalServiceName = "asyncServiceName";
   MessageDto response;
 
   PoolLocalServiceServerImpl service;
@@ -73,16 +75,18 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
 
   @Test
   public void buildService_withAsyncNode() {
+    String asyncLocalService = "PoolLocalServiceServerImpl";
     // test
     service =
         (PoolLocalServiceServerImpl)
             PoolLocalServiceServerFactory.builder()
+                .withServiceName(asyncLocalService)
                 .withAsyncNode(asyncServer)
                 .withPoolPlugins(poolPluginMock.getName())
                 .getService();
 
     assertThat(service).isNotNull();
-    assertThat(service).isEqualTo(PoolLocalServiceServerImpl.getInstance());
+    assertThat(service).isEqualTo(PoolLocalServiceServerImpl.getInstance(asyncLocalService));
   }
 
   @Test
@@ -91,12 +95,13 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
     service =
         (PoolLocalServiceServerImpl)
             PoolLocalServiceServerFactory.builder()
+                .withServiceName(syncLocalServiceName)
                 .withSyncNode()
                 .withPoolPlugins(poolPluginMock.getName())
                 .getService();
 
     assertThat(service).isNotNull();
-    assertThat(service).isEqualTo(PoolLocalServiceServerImpl.getInstance());
+    assertThat(service).isEqualTo(PoolLocalServiceServerImpl.getInstance(syncLocalServiceName));
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -105,6 +110,7 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
     service =
         (PoolLocalServiceServerImpl)
             PoolLocalServiceServerFactory.builder()
+                .withServiceName(asyncLocalServiceName)
                 .withAsyncNode(null)
                 .withPoolPlugins(poolPluginMock.getName())
                 .getService();
@@ -116,6 +122,7 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
     service =
         (PoolLocalServiceServerImpl)
             PoolLocalServiceServerFactory.builder()
+                .withServiceName(syncLocalServiceName)
                 .withAsyncNode(null)
                 .withPoolPlugins()
                 .getService();
@@ -143,6 +150,7 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
     service =
         (PoolLocalServiceServerImpl)
             PoolLocalServiceServerFactory.builder()
+                .withServiceName(syncLocalServiceName)
                 .withAsyncNode(null)
                 .withPoolPlugins(poolPluginMock.getName(), readerMockName)
                 .getService();
@@ -151,7 +159,7 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
   @Test
   public void onAllocateReader_shouldPropagate_toLocalPoolPlugin() {
     MessageDto request = getAllocateReaderDto();
-    PoolLocalServiceServerUtils.getAsyncNode().onMessage(getAllocateReaderDto());
+    PoolLocalServiceServerUtils.getAsyncNode(asyncLocalServiceName).onMessage(getAllocateReaderDto());
     response = captureResponse();
     assertMetadataMatches(request, response);
     assertThat(readerMocked.getName()).isEqualTo(response.getLocalReaderName());
@@ -162,7 +170,7 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
     KeypleAllocationReaderException e = new KeypleAllocationReaderException("");
     doThrow(e).when(poolPluginMock).allocateReader(groupReference);
     MessageDto request = getAllocateReaderDto();
-    PoolLocalServiceServerUtils.getAsyncNode().onMessage(getAllocateReaderDto());
+    PoolLocalServiceServerUtils.getAsyncNode(asyncLocalServiceName).onMessage(getAllocateReaderDto());
     response = captureResponse();
     assertMetadataMatches(request, response);
     assertThat(e).isEqualToComparingFieldByFieldRecursively(getExceptionFromDto(response));
@@ -172,7 +180,7 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
   public void onAllocateReader_withNoPlugin_shouldThrow_KPNFE() {
     SmartCardService.getInstance().unregisterPlugin(poolPluginName);
     MessageDto request = getAllocateReaderDto();
-    PoolLocalServiceServerUtils.getAsyncNode().onMessage(getAllocateReaderDto());
+    PoolLocalServiceServerUtils.getAsyncNode(asyncLocalServiceName).onMessage(getAllocateReaderDto());
 
     response = captureResponse();
     assertMetadataMatches(request, response);
@@ -182,7 +190,7 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
   @Test
   public void onReleaseReader_shouldPropagate_toLocalPoolPlugin() {
     MessageDto request = getReleaseReaderDto();
-    PoolLocalServiceServerUtils.getAsyncNode().onMessage(request);
+    PoolLocalServiceServerUtils.getAsyncNode(asyncLocalServiceName).onMessage(request);
     verify(poolPluginMock, times(1)).releaseReader(readerMocked);
   }
 
@@ -190,7 +198,7 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
   public void onReleaseReader_withNoPlugin_shouldThrow_KPNFE() {
     doReturn(Sets.newTreeSet()).when(poolPluginMock).getReaderNames();
     MessageDto request = getReleaseReaderDto();
-    PoolLocalServiceServerUtils.getAsyncNode().onMessage(request);
+    PoolLocalServiceServerUtils.getAsyncNode(asyncLocalServiceName).onMessage(request);
 
     response = captureResponse();
     assertMetadataMatches(request, response);
@@ -200,7 +208,7 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
   @Test
   public void onGroupReferences_shouldPropagate_toLocalPoolPlugin() {
     MessageDto request = getGroupReferencesDto();
-    PoolLocalServiceServerUtils.getAsyncNode().onMessage(request);
+    PoolLocalServiceServerUtils.getAsyncNode(asyncLocalServiceName).onMessage(request);
 
     response = captureResponse();
     assertMetadataMatches(request, response);
@@ -210,7 +218,7 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
   @Test
   public void onGroupReferences_shouldPropagate_AllocationError() {
     MessageDto request = getGroupReferencesDto();
-    PoolLocalServiceServerUtils.getAsyncNode().onMessage(request);
+    PoolLocalServiceServerUtils.getAsyncNode(asyncLocalServiceName).onMessage(request);
 
     response = captureResponse();
     assertMetadataMatches(request, response);
@@ -220,7 +228,7 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
   @Test
   public void onIsPresent_shouldPropagate_toLocalPoolPlugin() {
     MessageDto request = getIsCardPresentDto(sessionId);
-    PoolLocalServiceServerUtils.getAsyncNode().onMessage(request);
+    PoolLocalServiceServerUtils.getAsyncNode(asyncLocalServiceName).onMessage(request);
 
     response = captureResponse();
     MessageDto response = responseCaptor.getValue();
@@ -257,6 +265,7 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
     service =
         (PoolLocalServiceServerImpl)
             PoolLocalServiceServerFactory.builder()
+                .withServiceName(asyncLocalServiceName)
                 .withAsyncNode(asyncServer)
                 .withPoolPlugins(poolPluginMock.getName())
                 .getService();

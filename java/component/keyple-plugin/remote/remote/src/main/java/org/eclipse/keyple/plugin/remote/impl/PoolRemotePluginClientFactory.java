@@ -52,7 +52,7 @@ public final class PoolRemotePluginClientFactory implements PluginFactory {
    * @return next configuration step
    * @since 1.0
    */
-  public static NodeStep builder() {
+  public static NameStep builder() {
     return new Builder();
   }
 
@@ -66,6 +66,26 @@ public final class PoolRemotePluginClientFactory implements PluginFactory {
   @Override
   public Plugin getPlugin() {
     return plugin;
+  }
+
+  public interface NameStep {
+    /**
+     * Configures the plugin with a specific name.
+     *
+     * @param pluginName specific plugin name.
+     * @return next configuration step
+     * @since 1.0
+     */
+    NodeStep withPluginName(String pluginName);
+
+    /**
+     * Configures the plugin with the default name. Note that only one plugin of this type with the
+     * default name can be register.
+     *
+     * @return next configuration step
+     * @since 1.0
+     */
+    NodeStep withDefaultPluginName();
   }
 
   public interface NodeStep {
@@ -127,11 +147,27 @@ public final class PoolRemotePluginClientFactory implements PluginFactory {
   }
 
   /** The builder pattern to create the factory instance. */
-  private static class Builder implements NodeStep, BuilderStep, TimeoutStep {
+  private static class Builder implements NameStep, NodeStep, BuilderStep, TimeoutStep {
 
     private AsyncEndpointClient asyncEndpoint;
     private SyncEndpointClient syncEndpoint;
     private int timeoutInSec;
+    private String pluginName;
+
+    /** {@inheritDoc} */
+    @Override
+    public NodeStep withPluginName(String pluginName) {
+      Assert.getInstance().notNull(pluginName, "plugin name");
+      this.pluginName = pluginName;
+      return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public NodeStep withDefaultPluginName() {
+      this.pluginName = DEFAULT_PLUGIN_NAME;
+      return this;
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -167,7 +203,7 @@ public final class PoolRemotePluginClientFactory implements PluginFactory {
     @Override
     public PoolRemotePluginClientFactory build() {
 
-      PoolRemotePluginClientImpl plugin = new PoolRemotePluginClientImpl(DEFAULT_PLUGIN_NAME);
+      PoolRemotePluginClientImpl plugin = new PoolRemotePluginClientImpl(pluginName);
 
       if (asyncEndpoint != null) {
         logger.info("Create a new PoolRemotePluginClient with a AsyncNodeClient");

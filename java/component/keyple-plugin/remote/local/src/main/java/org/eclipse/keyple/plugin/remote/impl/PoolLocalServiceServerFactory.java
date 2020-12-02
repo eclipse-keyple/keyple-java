@@ -29,6 +29,8 @@ public final class PoolLocalServiceServerFactory {
 
   private static final Logger logger = LoggerFactory.getLogger(PoolLocalServiceServerFactory.class);
 
+  private static final String DEFAULT_SERVICE_NAME = "defaultPoolLocalServiceServer";
+
   /**
    * (private)<br>
    * Constructor
@@ -41,7 +43,7 @@ public final class PoolLocalServiceServerFactory {
    * @return next configuration step
    * @since 1.0
    */
-  public static NodeStep builder() {
+  public static NameStep builder() {
     return new PoolLocalServiceServerFactory.Step();
   }
 
@@ -53,6 +55,26 @@ public final class PoolLocalServiceServerFactory {
      * @since 1.0
      */
     PoolLocalServiceServer getService();
+  }
+
+  public interface NameStep {
+    /**
+     * Configures the local service with a specific name.
+     *
+     * @param serviceName identifier of the local service
+     * @return next configuration step
+     * @since 1.0
+     */
+    NodeStep withServiceName(String serviceName);
+
+    /**
+     * Configures the local service with the a specific service name. Note that if the service
+     * already exists, it will be overridden
+     *
+     * @return next configuration step
+     * @since 1.0
+     */
+    NodeStep withDefaultServiceName();
   }
 
   public interface NodeStep {
@@ -84,12 +106,28 @@ public final class PoolLocalServiceServerFactory {
     BuilderStep withPoolPlugins(String... poolPluginNames);
   }
 
-  private static class Step implements NodeStep, BuilderStep, PluginStep {
+  private static class Step implements NameStep, NodeStep, BuilderStep, PluginStep {
 
     private AsyncEndpointServer asyncEndpoint;
     private String[] poolPluginNames;
+    private String serviceName;
 
     private Step() {}
+
+    /** {@inheritDoc} */
+    @Override
+    public NodeStep withServiceName(String serviceName) {
+      Assert.getInstance().notNull(serviceName, "service name");
+      this.serviceName = serviceName;
+      return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public NodeStep withDefaultServiceName() {
+      this.serviceName = DEFAULT_SERVICE_NAME;
+      return this;
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -127,7 +165,7 @@ public final class PoolLocalServiceServerFactory {
     @Override
     public PoolLocalServiceServer getService() {
       PoolLocalServiceServerImpl poolLocalServiceServerImpl =
-          PoolLocalServiceServerImpl.createInstance(poolPluginNames);
+          PoolLocalServiceServerImpl.createInstance(serviceName, poolPluginNames);
       if (asyncEndpoint != null) {
         poolLocalServiceServerImpl.bindAsyncNodeServer(asyncEndpoint);
         logger.info("Create a new PoolLocalServiceServer with a AsyncNodeServer");
