@@ -26,7 +26,18 @@ import org.eclipse.keyple.plugin.remote.SyncNodeServer;
 public final class RemotePluginServerUtils {
 
   /**
-   * Gets a {@link RemotePluginServer} plugin by its name.
+   * Gets the plugin having the default name.
+   *
+   * @return a not null reference
+   * @throws KeyplePluginNotFoundException if the plugin is not registered.
+   * @since 1.0
+   */
+  public static RemotePluginServer getRemotePlugin() {
+    return getRemotePlugin(RemotePluginServerFactory.DEFAULT_PLUGIN_NAME);
+  }
+
+  /**
+   * Gets a plugin by its name.
    *
    * @param pluginName plugin name.
    * @return a not null reference
@@ -36,6 +47,19 @@ public final class RemotePluginServerUtils {
   public static RemotePluginServer getRemotePlugin(String pluginName) {
     Assert.getInstance().notNull(pluginName, "plugin name");
     return (RemotePluginServer) SmartCardService.getInstance().getPlugin(pluginName);
+  }
+
+  /**
+   * Gets the {@link AsyncNodeServer} node associated to the plugin having the default name.
+   *
+   * @return a not null reference
+   * @throws KeyplePluginNotFoundException if the plugin is not registered.
+   * @throws IllegalStateException if the plugin is not configured with a {@link AsyncNodeServer}
+   *     node.
+   * @since 1.0
+   */
+  public static AsyncNodeServer getAsyncNode() {
+    return getAsyncNode(RemotePluginServerFactory.DEFAULT_PLUGIN_NAME);
   }
 
   /**
@@ -56,6 +80,19 @@ public final class RemotePluginServerUtils {
     }
     throw new IllegalStateException(
         "The RemotePluginServer is not configured with a AsyncNodeServer");
+  }
+
+  /**
+   * Gets the {@link SyncNodeServer} node associated to the plugin having the default name.
+   *
+   * @return a not null reference
+   * @throws KeyplePluginNotFoundException if the plugin is not registered.
+   * @throws IllegalStateException if the plugin is not configured with a {@link SyncNodeServer}
+   *     node.
+   * @since 1.0
+   */
+  public static SyncNodeServer getSyncNode() {
+    return getSyncNode(RemotePluginServerFactory.DEFAULT_PLUGIN_NAME);
   }
 
   /**

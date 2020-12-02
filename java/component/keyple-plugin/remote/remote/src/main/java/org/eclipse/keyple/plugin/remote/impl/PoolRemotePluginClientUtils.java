@@ -25,7 +25,19 @@ import org.eclipse.keyple.plugin.remote.PoolRemotePluginClient;
 public final class PoolRemotePluginClientUtils {
 
   /**
-   * Gets a PoolRemotePluginClient plugin by its name.
+   * Gets the plugin having the default name.
+   *
+   * @return a not null reference
+   * @throws KeyplePluginNotFoundException if the plugin is not registered.
+   * @since 1.0
+   */
+  public static PoolRemotePluginClient getRemotePlugin() {
+    return (PoolRemotePluginClient)
+        SmartCardService.getInstance().getPlugin(PoolRemotePluginClientFactory.DEFAULT_PLUGIN_NAME);
+  }
+
+  /**
+   * Gets the plugin by its name.
    *
    * @param pluginName plugin name
    * @return a not null reference
@@ -38,7 +50,20 @@ public final class PoolRemotePluginClientUtils {
   }
 
   /**
-   * Gets the {@link AsyncNodeClient} node associated with a {@link PoolRemotePluginClient} plugin..
+   * Gets the {@link AsyncNodeClient} node associated to the plugin having the default name.
+   *
+   * @return a not null reference
+   * @throws KeyplePluginNotFoundException if the plugin is not registered.
+   * @throws IllegalStateException if the plugin is not configured with a {@link AsyncNodeClient}
+   *     node.
+   * @since 1.0
+   */
+  public static AsyncNodeClient getAsyncNode() {
+    return getAsyncNode(PoolRemotePluginClientFactory.DEFAULT_PLUGIN_NAME);
+  }
+
+  /**
+   * Gets the {@link AsyncNodeClient} node associated with a {@link PoolRemotePluginClient} plugin.
    *
    * @param pluginName name of the plugin associated with the SyncNodeServer.
    * @return a not null reference

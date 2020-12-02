@@ -29,7 +29,7 @@ public final class PoolLocalServiceServerFactory {
 
   private static final Logger logger = LoggerFactory.getLogger(PoolLocalServiceServerFactory.class);
 
-  private static final String DEFAULT_SERVICE_NAME = "defaultPoolLocalServiceServer";
+  static final String DEFAULT_SERVICE_NAME = "defaultPoolLocalServiceServer";
 
   /**
    * (private)<br>

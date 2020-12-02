@@ -29,7 +29,7 @@ public final class LocalServiceClientFactory {
   private static final Logger logger = LoggerFactory.getLogger(LocalServiceClientFactory.class);
   private static final int DEFAULT_TIMEOUT = 5;
 
-  private static final String DEFAULT_SERVICE_NAME = "defaultLocalServiceClient";
+  static final String DEFAULT_SERVICE_NAME = "defaultLocalServiceClient";
 
   /**
    * (private)<br>

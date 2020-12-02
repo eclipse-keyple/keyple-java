@@ -24,6 +24,18 @@ import org.eclipse.keyple.plugin.remote.SyncNodeServer;
 public final class PoolLocalServiceServerUtils {
 
   /**
+   * Gets the {@link AsyncNodeServer} node associated to the service having the default name.
+   *
+   * @return a not null reference
+   * @throws IllegalStateException if the service is not initialized or is not configured with a
+   *     {@link AsyncNodeServer} node.
+   * @since 1.0
+   */
+  public static AsyncNodeServer getAsyncNode() {
+    return getAsyncNode(PoolLocalServiceServerFactory.DEFAULT_SERVICE_NAME);
+  }
+
+  /**
    * Gets the {@link AsyncNodeServer} node associated to a local service.
    *
    * @param serviceName identifier of the local service
@@ -40,6 +52,18 @@ public final class PoolLocalServiceServerUtils {
     }
     throw new IllegalStateException(
         "The PoolLocalServiceServer is not configured with a AsyncNodeServer");
+  }
+
+  /**
+   * Gets the {@link SyncNodeServer} node associated to the service having the default name.
+   *
+   * @return a not null reference
+   * @throws IllegalStateException if the service is not initialized or is not configured with a
+   *     {@link SyncNodeServer} node.
+   * @since 1.0
+   */
+  public static SyncNodeServer getSyncNode() {
+    return getSyncNode(PoolLocalServiceServerFactory.DEFAULT_SERVICE_NAME);
   }
 
   /**
