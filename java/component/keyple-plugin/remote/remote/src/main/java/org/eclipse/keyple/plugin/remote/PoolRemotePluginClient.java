@@ -28,7 +28,7 @@ import org.eclipse.keyple.plugin.remote.impl.PoolRemotePluginClientUtils;
  *       SmartCardService#registerPlugin(PluginFactory)} using the factory {@link
  *       PoolRemotePluginClientFactory}.
  *   <li>To <b>access</b> the plugin, use the utility method {@link
- *       PoolRemotePluginClientUtils#getRemotePlugin()}.
+ *       PoolRemotePluginClientUtils#getRemotePlugin(String)}.
  *   <li>To <b>unregister</b> the plugin, use the method {@link
  *       SmartCardService#unregisterPlugin(String)} using the plugin name.
  * </ul>
