@@ -16,6 +16,8 @@ import org.eclipse.keyple.calypso.command.po.*;
 import org.eclipse.keyple.calypso.command.po.parser.storedvalue.SvGetRespPars;
 import org.eclipse.keyple.calypso.transaction.PoTransaction.SvSettings;
 import org.eclipse.keyple.core.card.message.ApduResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Builds the SV Get command.
@@ -23,6 +25,7 @@ import org.eclipse.keyple.core.card.message.ApduResponse;
  * @since 0.9
  */
 public final class SvGetCmdBuild extends AbstractPoCommandBuilder<SvGetRespPars> {
+  private static final Logger logger = LoggerFactory.getLogger(SvGetCmdBuild.class);
 
   /** The command. */
   private static final CalypsoPoCommand command = CalypsoPoCommand.SV_GET;

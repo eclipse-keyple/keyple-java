@@ -15,8 +15,6 @@ import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.card.command.AbstractIso7816CommandBuilder;
 import org.eclipse.keyple.core.card.message.ApduRequest;
 import org.eclipse.keyple.core.card.message.ApduResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Abstract class for all PO command builders
@@ -25,9 +23,6 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractPoCommandBuilder<T extends AbstractPoResponseParser>
     extends AbstractIso7816CommandBuilder {
-
-  /** common logger for all builders */
-  protected static Logger logger = LoggerFactory.getLogger(AbstractPoCommandBuilder.class);
 
   /**
    * Constructor dedicated for the building of referenced Calypso commands

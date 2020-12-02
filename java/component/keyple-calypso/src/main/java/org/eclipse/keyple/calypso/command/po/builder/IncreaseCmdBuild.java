@@ -15,9 +15,13 @@ import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.*;
 import org.eclipse.keyple.calypso.command.po.parser.IncreaseRespPars;
 import org.eclipse.keyple.core.card.message.ApduResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Builds the Increase APDU command. */
 public final class IncreaseCmdBuild extends AbstractPoCommandBuilder<IncreaseRespPars> {
+
+  private static final Logger logger = LoggerFactory.getLogger(IncreaseCmdBuild.class);
 
   /** The command. */
   private static final CalypsoPoCommand command = CalypsoPoCommand.INCREASE;

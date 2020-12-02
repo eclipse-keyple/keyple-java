@@ -15,6 +15,8 @@ import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.*;
 import org.eclipse.keyple.calypso.command.po.parser.UpdateRecordRespPars;
 import org.eclipse.keyple.core.card.message.ApduResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Builds the Update Record APDU command.
@@ -22,6 +24,7 @@ import org.eclipse.keyple.core.card.message.ApduResponse;
  * @since 0.9
  */
 public final class UpdateRecordCmdBuild extends AbstractPoCommandBuilder<UpdateRecordRespPars> {
+  private static final Logger logger = LoggerFactory.getLogger(UpdateRecordCmdBuild.class);
 
   /** The command. */
   private static final CalypsoPoCommand command = CalypsoPoCommand.UPDATE_RECORD;

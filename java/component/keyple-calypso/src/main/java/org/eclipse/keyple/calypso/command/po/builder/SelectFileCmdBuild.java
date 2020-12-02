@@ -18,6 +18,8 @@ import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.parser.SelectFileRespPars;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Builds the Select File APDU commands.
@@ -25,6 +27,7 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
  * @since 0.9
  */
 public final class SelectFileCmdBuild extends AbstractPoCommandBuilder<SelectFileRespPars> {
+  private static final Logger logger = LoggerFactory.getLogger(SelectFileCmdBuild.class);
 
   private static final CalypsoPoCommand command = CalypsoPoCommand.SELECT_FILE;
 

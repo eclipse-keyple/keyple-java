@@ -16,9 +16,12 @@ import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.parser.WriteRecordRespPars;
 import org.eclipse.keyple.core.card.message.ApduResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Builds the Write Record APDU command. */
 public final class WriteRecordCmdBuild extends AbstractPoCommandBuilder<WriteRecordRespPars> {
+  private static final Logger logger = LoggerFactory.getLogger(WriteRecordCmdBuild.class);
 
   /** The command. */
   private static final CalypsoPoCommand command = CalypsoPoCommand.WRITE_RECORD;

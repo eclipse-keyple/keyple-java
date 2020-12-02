@@ -16,6 +16,8 @@ import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.core.card.message.ApduResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Builds the Read Records APDU command.
@@ -23,6 +25,8 @@ import org.eclipse.keyple.core.card.message.ApduResponse;
  * @since 0.9
  */
 public final class ReadRecordsCmdBuild extends AbstractPoCommandBuilder<ReadRecordsRespPars> {
+
+  private static final Logger logger = LoggerFactory.getLogger(ReadRecordsCmdBuild.class);
 
   private static final CalypsoPoCommand command = CalypsoPoCommand.READ_RECORDS;
 

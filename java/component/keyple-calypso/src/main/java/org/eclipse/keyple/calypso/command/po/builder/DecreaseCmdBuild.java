@@ -15,6 +15,8 @@ import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.*;
 import org.eclipse.keyple.calypso.command.po.parser.DecreaseRespPars;
 import org.eclipse.keyple.core.card.message.ApduResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Builds the Decrease APDU command.
@@ -22,6 +24,8 @@ import org.eclipse.keyple.core.card.message.ApduResponse;
  * @since 0.9
  */
 public final class DecreaseCmdBuild extends AbstractPoCommandBuilder<DecreaseRespPars> {
+
+  private static final Logger logger = LoggerFactory.getLogger(DecreaseCmdBuild.class);
 
   /** The command. */
   private static final CalypsoPoCommand command = CalypsoPoCommand.DECREASE;

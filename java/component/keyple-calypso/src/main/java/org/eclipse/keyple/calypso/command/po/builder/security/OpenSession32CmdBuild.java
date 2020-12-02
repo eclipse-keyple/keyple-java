@@ -17,6 +17,8 @@ import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.parser.security.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.security.OpenSession32RespPars;
 import org.eclipse.keyple.core.card.message.ApduResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Builds the Open Session command for a PO revision 3.2.
@@ -25,6 +27,8 @@ import org.eclipse.keyple.core.card.message.ApduResponse;
  */
 public final class OpenSession32CmdBuild
     extends AbstractOpenSessionCmdBuild<AbstractOpenSessionRespPars> {
+
+  private static final Logger logger = LoggerFactory.getLogger(OpenSession32CmdBuild.class);
 
   // Construction arguments used for parsing
   private final int sfi;

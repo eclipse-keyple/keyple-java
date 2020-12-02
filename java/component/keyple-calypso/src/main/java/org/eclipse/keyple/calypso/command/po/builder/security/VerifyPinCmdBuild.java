@@ -17,6 +17,8 @@ import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.parser.security.VerifyPinRespPars;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.core.card.message.ApduResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Builds the Verify PIN command.
@@ -24,6 +26,8 @@ import org.eclipse.keyple.core.card.message.ApduResponse;
  * @since 0.9
  */
 public class VerifyPinCmdBuild extends AbstractPoCommandBuilder<VerifyPinRespPars> {
+  private static final Logger logger = LoggerFactory.getLogger(VerifyPinCmdBuild.class);
+
   private static final CalypsoPoCommand command = CalypsoPoCommand.VERIFY_PIN;
 
   private final byte cla;
