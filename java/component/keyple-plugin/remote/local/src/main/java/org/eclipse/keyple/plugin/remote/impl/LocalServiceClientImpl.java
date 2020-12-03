@@ -66,13 +66,15 @@ final class LocalServiceClientImpl extends AbstractLocalService
    * @param serviceName identifier of the local service
    * @param withReaderObservation true if reader observation should be activated
    * @return a not null instance of the singleton
+   * @throws IllegalArgumentException If a service already exists with the provided serviceName.
    */
   static LocalServiceClientImpl createInstance(
       String serviceName, boolean withReaderObservation, ObservableReaderEventFilter eventFilter) {
 
     // init services instances map
-    if (serviceInstances == null) {}
-    serviceInstances = new HashMap<String, LocalServiceClientImpl>();
+    if (serviceInstances == null) {
+      serviceInstances = new HashMap<String, LocalServiceClientImpl>();
+    }
     if (serviceInstances.containsKey(serviceName)) {
       throw new IllegalArgumentException(
           "A local service already exists with the same name : " + serviceName);
@@ -92,6 +94,10 @@ final class LocalServiceClientImpl extends AbstractLocalService
    * @throws IllegalStateException If there's no service having the provided name
    */
   static LocalServiceClientImpl getInstance(String serviceName) {
+    if (!serviceInstances.containsKey(serviceName)) {
+      throw new IllegalStateException(
+          "No service could be found with the provided name : " + serviceName);
+    }
     return serviceInstances.get(serviceName);
   }
 

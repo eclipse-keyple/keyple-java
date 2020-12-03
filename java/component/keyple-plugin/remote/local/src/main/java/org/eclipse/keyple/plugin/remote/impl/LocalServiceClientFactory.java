@@ -53,6 +53,7 @@ public final class LocalServiceClientFactory {
      *
      * @return singleton instance of the service
      * @since 1.0
+     * @throws IllegalArgumentException if a service already exists * with the same name.
      */
     LocalServiceClient getService();
   }
@@ -63,8 +64,7 @@ public final class LocalServiceClientFactory {
      *
      * @param serviceName identifier of the local service
      * @return next configuration step
-     * @throws IllegalArgumentException If the service name is null or if a service already exists
-     *     with the same name.
+     * @throws IllegalArgumentException If the service name is null.
      * @since 1.0
      */
     NodeStep withServiceName(String serviceName);

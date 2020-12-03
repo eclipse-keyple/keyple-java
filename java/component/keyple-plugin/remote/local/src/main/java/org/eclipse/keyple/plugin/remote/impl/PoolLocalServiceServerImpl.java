@@ -46,6 +46,7 @@ final class PoolLocalServiceServerImpl extends AbstractLocalService
    * @param serviceName identifier of the local service
    * @param poolPluginNames name(s) of the pool plugin(s) associated with this service
    * @return a not null instance of the singleton
+   * @throws IllegalArgumentException If a service already exists with the provided serviceName.
    */
   static PoolLocalServiceServerImpl createInstance(String serviceName, String[] poolPluginNames) {
     // init services instances map
@@ -69,6 +70,10 @@ final class PoolLocalServiceServerImpl extends AbstractLocalService
    * @return a not null instance
    */
   static PoolLocalServiceServerImpl getInstance(String serviceName) {
+    if (!serviceInstances.containsKey(serviceName)) {
+      throw new IllegalStateException(
+          "No service could be found with the provided name : " + serviceName);
+    }
     return serviceInstances.get(serviceName);
   }
 

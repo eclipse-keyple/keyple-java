@@ -51,7 +51,8 @@ public final class PoolLocalServiceServerFactory {
     /**
      * Builds and gets the service.
      *
-     * @return singleton instance of the service
+     * @return singleton instance of the service *
+     * @throws IllegalArgumentException if a service already exists with the same name.
      * @since 1.0
      */
     PoolLocalServiceServer getService();
@@ -63,8 +64,7 @@ public final class PoolLocalServiceServerFactory {
      *
      * @param serviceName identifier of the local service
      * @return next configuration step *
-     * @throws IllegalArgumentException If the service name is null or if a service already exists
-     *     with the same name.
+     * @throws IllegalArgumentException If the service name is null.
      * @since 1.0
      */
     NodeStep withServiceName(String serviceName);
