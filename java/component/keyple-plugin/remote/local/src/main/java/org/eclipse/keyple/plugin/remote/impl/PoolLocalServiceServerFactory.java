@@ -62,16 +62,19 @@ public final class PoolLocalServiceServerFactory {
      * Configures the local service with a specific name.
      *
      * @param serviceName identifier of the local service
-     * @return next configuration step
+     * @return next configuration step *
+     * @throws IllegalArgumentException If the service name is null or if a service already exists
+     *     with the same name.
      * @since 1.0
      */
     NodeStep withServiceName(String serviceName);
 
     /**
-     * Configures the local service with the a specific service name. Note that if the service
-     * already exists, it will be overridden
+     * Configures the local service with the a specific service name : {@value
+     * DEFAULT_SERVICE_NAME}.
      *
      * @return next configuration step
+     * @throws IllegalArgumentException If a service already exists with the default name.
      * @since 1.0
      */
     NodeStep withDefaultServiceName();
@@ -118,6 +121,11 @@ public final class PoolLocalServiceServerFactory {
     @Override
     public NodeStep withServiceName(String serviceName) {
       Assert.getInstance().notNull(serviceName, "service name");
+      if (serviceName.equals(DEFAULT_SERVICE_NAME)) {
+        throw new IllegalArgumentException(
+            "serviceName should be different of the default service name : "
+                + DEFAULT_SERVICE_NAME);
+      }
       this.serviceName = serviceName;
       return this;
     }

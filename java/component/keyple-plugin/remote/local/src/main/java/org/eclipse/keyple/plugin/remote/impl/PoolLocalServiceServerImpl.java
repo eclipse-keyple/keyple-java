@@ -48,8 +48,13 @@ final class PoolLocalServiceServerImpl extends AbstractLocalService
    * @return a not null instance of the singleton
    */
   static PoolLocalServiceServerImpl createInstance(String serviceName, String[] poolPluginNames) {
+    // init services instances map
     if (serviceInstances == null) {
       serviceInstances = new HashMap<String, PoolLocalServiceServerImpl>();
+    }
+    if (serviceInstances.containsKey(serviceName)) {
+      throw new IllegalArgumentException(
+          "A local service already exists with the same name : " + serviceName);
     }
     PoolLocalServiceServerImpl instance = new PoolLocalServiceServerImpl(poolPluginNames);
     serviceInstances.put(serviceName, instance);

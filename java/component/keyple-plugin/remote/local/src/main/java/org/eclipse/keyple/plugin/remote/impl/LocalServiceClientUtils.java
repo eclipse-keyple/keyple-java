@@ -85,14 +85,11 @@ public final class LocalServiceClientUtils {
    *
    * @param serviceName identifier of the local service
    * @return a not null reference
-   * @throws IllegalStateException if the service is not initialized.
+   * @throws IllegalStateException If there's no service having the provided name
    */
   private static LocalServiceClientImpl getServiceImpl(String serviceName) {
     Assert.getInstance().notNull(serviceName, "service name");
     LocalServiceClientImpl service = LocalServiceClientImpl.getInstance(serviceName);
-    if (service == null) {
-      throw new IllegalStateException("The LocalServiceClient is not initialized");
-    }
     return service;
   }
 }

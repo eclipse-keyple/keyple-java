@@ -91,13 +91,9 @@ public final class PoolLocalServiceServerUtils {
    *
    * @param serviceName identifier of the local service
    * @return a not null reference
-   * @throws IllegalStateException if the service is not initialized.
    */
   private static PoolLocalServiceServerImpl getServiceImpl(String serviceName) {
     PoolLocalServiceServerImpl service = PoolLocalServiceServerImpl.getInstance(serviceName);
-    if (service == null) {
-      throw new IllegalStateException("The PoolLocalServiceServer is not initialized");
-    }
     return service;
   }
 }

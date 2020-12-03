@@ -69,12 +69,18 @@ final class LocalServiceClientImpl extends AbstractLocalService
    */
   static LocalServiceClientImpl createInstance(
       String serviceName, boolean withReaderObservation, ObservableReaderEventFilter eventFilter) {
-    if (serviceInstances == null) {
-      serviceInstances = new HashMap<String, LocalServiceClientImpl>();
+
+    // init services instances map
+    if (serviceInstances == null) {}
+    serviceInstances = new HashMap<String, LocalServiceClientImpl>();
+    if (serviceInstances.containsKey(serviceName)) {
+      throw new IllegalArgumentException(
+          "A local service already exists with the same name : " + serviceName);
     }
     LocalServiceClientImpl localService =
         new LocalServiceClientImpl(withReaderObservation, eventFilter);
     serviceInstances.put(serviceName, localService);
+
     return localService;
   }
 
@@ -82,7 +88,8 @@ final class LocalServiceClientImpl extends AbstractLocalService
    * (package-private)<br>
    * Retrieve the service associated by its serviceName
    *
-   * @return a nullable instance
+   * @return a not null instance
+   * @throws IllegalStateException If there's no service having the provided name
    */
   static LocalServiceClientImpl getInstance(String serviceName) {
     return serviceInstances.get(serviceName);
