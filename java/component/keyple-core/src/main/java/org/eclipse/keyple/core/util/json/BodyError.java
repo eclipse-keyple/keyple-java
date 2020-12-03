@@ -11,21 +11,43 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.util.json;
 
-/** Helper POJO used to serialize and deserialize a {@link RuntimeException} into a String */
+/**
+ * POJO used to transports the content of a {@link RuntimeException} into a String
+ *
+ * @since 1.0
+ */
 public class BodyError {
 
   private final String code;
   private final RuntimeException exception;
 
+  /**
+   * Constructor.
+   *
+   * @param exception The runtime exception.
+   * @since 1.0
+   */
   public BodyError(RuntimeException exception) {
     this.exception = exception;
     this.code = exception.getClass().getName();
   }
 
+  /**
+   * Gets the exception class name.
+   *
+   * @return a not null value.
+   * @since 1.0
+   */
   public String getCode() {
     return code;
   }
 
+  /**
+   * Gets the associated runtime exception.
+   *
+   * @return a not null reference.
+   * @since 1.0
+   */
   public RuntimeException getException() {
     return exception;
   }

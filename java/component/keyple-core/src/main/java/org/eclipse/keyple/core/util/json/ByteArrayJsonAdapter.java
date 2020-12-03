@@ -11,20 +11,27 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.util.json;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
+import com.google.gson.*;
 import java.lang.reflect.Type;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 
-/** Serialize only the message field for all Throwable */
-public class ThrowableSerializer implements JsonSerializer<Throwable> {
+/**
+ * Serializer/Deserializer of a byte array to an hex string.
+ *
+ * @since 1.0
+ */
+public class ByteArrayJsonAdapter implements JsonSerializer<byte[]>, JsonDeserializer<byte[]> {
 
+  /** {@inheritDoc} */
   @Override
-  public JsonElement serialize(
-      Throwable exception, Type type, JsonSerializationContext jsonSerializationContext) {
-    JsonObject json = new JsonObject();
-    json.addProperty("message", exception.getMessage());
-    return json;
+  public JsonElement serialize(byte[] data, Type typeOfSrc, JsonSerializationContext context) {
+    return new JsonPrimitive(ByteArrayUtil.toHex(data));
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public byte[] deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+      throws JsonParseException {
+    return ByteArrayUtil.fromHex(json.getAsString());
   }
 }

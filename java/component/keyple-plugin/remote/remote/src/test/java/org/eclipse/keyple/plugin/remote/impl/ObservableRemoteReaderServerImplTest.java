@@ -22,7 +22,7 @@ import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.util.json.KeypleJsonParser;
+import org.eclipse.keyple.core.util.json.KeypleGsonParser;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -275,7 +275,7 @@ public class ObservableRemoteReaderServerImplTest extends RemoteServerBaseTest {
     MyMatchingCard matchingCard =
         new MyMatchingCard(SampleFactory.getCompleteResponseList().get(0));
 
-    String initialCardContentJson = KeypleJsonParser.getParser().toJson(matchingCard);
+    String initialCardContentJson = KeypleGsonParser.getParser().toJson(matchingCard);
 
     reader =
         new ObservableRemoteReaderServerImpl(

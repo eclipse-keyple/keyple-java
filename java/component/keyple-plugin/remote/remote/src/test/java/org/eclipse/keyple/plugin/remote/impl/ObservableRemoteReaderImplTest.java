@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.core.card.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
-import org.eclipse.keyple.core.util.json.KeypleJsonParser;
+import org.eclipse.keyple.core.util.json.KeypleGsonParser;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.junit.Before;
 import org.junit.Test;
@@ -109,9 +109,9 @@ public class ObservableRemoteReaderImplTest {
     verify(node).sendRequest(messageArgumentCaptor.capture());
     MessageDto request = messageArgumentCaptor.getValue();
     assertThat(request.getAction()).isEqualTo(MessageDto.Action.SET_DEFAULT_SELECTION.name());
-    JsonObject body = KeypleJsonParser.getParser().fromJson(request.getBody(), JsonObject.class);
+    JsonObject body = KeypleGsonParser.getParser().fromJson(request.getBody(), JsonObject.class);
     assertThat(
-            KeypleJsonParser.getParser()
+            KeypleGsonParser.getParser()
                 .fromJson(body.get("defaultSelectionsRequest"), DefaultSelectionsRequest.class))
         .isEqualToComparingFieldByFieldRecursively(abstractDefaultSelectionsRequest);
     assertThat(
@@ -137,9 +137,9 @@ public class ObservableRemoteReaderImplTest {
     verify(node).sendRequest(messageArgumentCaptor.capture());
     MessageDto request = messageArgumentCaptor.getValue();
     assertThat(request.getAction()).isEqualTo(MessageDto.Action.START_CARD_DETECTION.name());
-    JsonObject body = KeypleJsonParser.getParser().fromJson(request.getBody(), JsonObject.class);
+    JsonObject body = KeypleGsonParser.getParser().fromJson(request.getBody(), JsonObject.class);
     assertThat(
-            KeypleJsonParser.getParser()
+            KeypleGsonParser.getParser()
                 .fromJson(
                     body.get("pollingMode").getAsString(), ObservableReader.PollingMode.class))
         .isEqualToComparingFieldByFieldRecursively(pollingMode);
@@ -151,7 +151,7 @@ public class ObservableRemoteReaderImplTest {
     verify(node).sendRequest(messageArgumentCaptor.capture());
     MessageDto request = messageArgumentCaptor.getValue();
     assertThat(request.getAction()).isEqualTo(MessageDto.Action.STOP_CARD_DETECTION.name());
-    JsonObject body = KeypleJsonParser.getParser().fromJson(request.getBody(), JsonObject.class);
+    JsonObject body = KeypleGsonParser.getParser().fromJson(request.getBody(), JsonObject.class);
     assertThat(body).isNull();
   }
 
@@ -161,7 +161,7 @@ public class ObservableRemoteReaderImplTest {
     verify(node).sendRequest(messageArgumentCaptor.capture());
     MessageDto request = messageArgumentCaptor.getValue();
     assertThat(request.getAction()).isEqualTo(MessageDto.Action.FINALIZE_CARD_PROCESSING.name());
-    JsonObject body = KeypleJsonParser.getParser().fromJson(request.getBody(), JsonObject.class);
+    JsonObject body = KeypleGsonParser.getParser().fromJson(request.getBody(), JsonObject.class);
     assertThat(body).isNull();
   }
 

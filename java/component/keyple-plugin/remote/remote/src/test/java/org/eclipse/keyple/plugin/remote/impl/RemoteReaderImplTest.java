@@ -21,7 +21,7 @@ import org.eclipse.keyple.core.card.message.*;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.util.json.BodyError;
-import org.eclipse.keyple.core.util.json.KeypleJsonParser;
+import org.eclipse.keyple.core.util.json.KeypleGsonParser;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.NodeCommunicationException;
 import org.junit.Before;
@@ -64,7 +64,7 @@ public class RemoteReaderImplTest {
             .setAction(MessageDto.Action.TRANSMIT.name()) //
             .setRemoteReaderName(reader.getName()) //
             .setLocalReaderName(reader.getLocalReaderName()) //
-            .setBody(KeypleJsonParser.getParser().toJson(cardResponse, CardResponse.class));
+            .setBody(KeypleGsonParser.getParser().toJson(cardResponse, CardResponse.class));
 
     doReturn(responseDto).when(node).sendRequest(any(MessageDto.class));
 
@@ -121,7 +121,7 @@ public class RemoteReaderImplTest {
             .setRemoteReaderName(reader.getName()) //
             .setLocalReaderName(reader.getLocalReaderName()) //
             .setBody(
-                KeypleJsonParser.getParser()
+                KeypleGsonParser.getParser()
                     .toJson(cardResponses, new TypeToken<ArrayList<CardResponse>>() {}.getType()));
 
     doReturn(responseDto).when(node).sendRequest(any(MessageDto.class));
@@ -178,7 +178,7 @@ public class RemoteReaderImplTest {
             .setAction(MessageDto.Action.IS_CARD_PRESENT.name()) //
             .setRemoteReaderName(reader.getName()) //
             .setLocalReaderName(reader.getLocalReaderName()) //
-            .setBody(KeypleJsonParser.getParser().toJson(true, Boolean.class));
+            .setBody(KeypleGsonParser.getParser().toJson(true, Boolean.class));
 
     doReturn(responseDto).when(node).sendRequest(any(MessageDto.class));
 
@@ -214,7 +214,7 @@ public class RemoteReaderImplTest {
             .setAction(MessageDto.Action.IS_READER_CONTACTLESS.name()) //
             .setRemoteReaderName(reader.getName()) //
             .setLocalReaderName(reader.getLocalReaderName()) //
-            .setBody(KeypleJsonParser.getParser().toJson(true, Boolean.class));
+            .setBody(KeypleGsonParser.getParser().toJson(true, Boolean.class));
 
     doReturn(responseDto).when(node).sendRequest(any(MessageDto.class));
 
@@ -302,7 +302,7 @@ public class RemoteReaderImplTest {
             .setAction(MessageDto.Action.ERROR.name()) //
             .setRemoteReaderName(reader.getName()) //
             .setLocalReaderName(reader.getLocalReaderName()) //
-            .setBody(KeypleJsonParser.getParser().toJson(new BodyError(error)));
+            .setBody(KeypleGsonParser.getParser().toJson(new BodyError(error)));
 
     doReturn(responseDto).when(node).sendRequest(any(MessageDto.class));
   }

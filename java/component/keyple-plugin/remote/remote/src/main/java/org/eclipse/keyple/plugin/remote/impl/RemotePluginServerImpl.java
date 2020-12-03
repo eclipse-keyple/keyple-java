@@ -23,7 +23,7 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.Assert;
-import org.eclipse.keyple.core.util.json.KeypleJsonParser;
+import org.eclipse.keyple.core.util.json.KeypleGsonParser;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.ObservableRemoteReaderServer;
 import org.eclipse.keyple.plugin.remote.RemotePluginServer;
@@ -91,9 +91,9 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
 
         // notify observers of this event
         ReaderEvent readerEvent =
-            KeypleJsonParser.getParser()
+            KeypleGsonParser.getParser()
                 .fromJson(
-                    KeypleJsonParser.getParser()
+                    KeypleGsonParser.getParser()
                         .fromJson(message.getBody(), JsonObject.class)
                         .get("readerEvent"),
                     ReaderEvent.class);
@@ -147,7 +147,7 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
     }
 
     JsonObject body = new JsonObject();
-    body.addProperty("userOutputData", KeypleJsonParser.getParser().toJson(userOutputData));
+    body.addProperty("userOutputData", KeypleGsonParser.getParser().toJson(userOutputData));
     body.addProperty("unregisterRemoteReader", unregisterRemoteReader);
 
     // Build the message
@@ -237,7 +237,7 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
   private AbstractRemoteReaderServer createMasterReader(MessageDto message) {
 
     final JsonObject body =
-        KeypleJsonParser.getParser().fromJson(message.getBody(), JsonObject.class);
+        KeypleGsonParser.getParser().fromJson(message.getBody(), JsonObject.class);
     final String serviceId = body.get("serviceId").getAsString();
     final String userInputData =
         body.has("userInputData") ? body.get("userInputData").toString() : null;
@@ -284,7 +284,7 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
     final ObservableRemoteReaderServerImpl observableRemoteReaderServer =
         (ObservableRemoteReaderServerImpl) getReader(message.getRemoteReaderName());
     final JsonObject body =
-        KeypleJsonParser.getParser().fromJson(message.getBody(), JsonObject.class);
+        KeypleGsonParser.getParser().fromJson(message.getBody(), JsonObject.class);
 
     String userInputData = body.has("userInputData") ? body.get("userInputData").toString() : null;
 

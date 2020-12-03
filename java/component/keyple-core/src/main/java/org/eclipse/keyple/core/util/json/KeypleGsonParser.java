@@ -17,17 +17,22 @@ import org.eclipse.keyple.core.card.command.CardCommand;
 import org.eclipse.keyple.core.card.command.exception.KeypleCardCommandException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 
-/** Json Parser for Keyple DTO and Keyple DTO body */
-public final class KeypleJsonParser {
+/**
+ * GSON Parser of Keyple objects.
+ *
+ * @since 1.0
+ */
+public final class KeypleGsonParser {
 
   private static volatile Gson parser;
   private static final GsonBuilder gsonBuilder = initGsonBuilder();
 
   /**
-   * Get the singleton instance of the keyple gson parser. If not created yet, a default keyple gson
-   * parser instance is created
+   * Gets the singleton instance of the parser.
    *
-   * @return singleton instance of gson
+   * <p>If not created yet, a default instance is created.
+   *
+   * @return a not null instance.
    */
   public static Gson getParser() {
     if (parser == null) {
@@ -37,40 +42,46 @@ public final class KeypleJsonParser {
     return parser;
   }
 
-  private KeypleJsonParser() {}
+  /**
+   * (private)<br>
+   * Constructor.
+   */
+  private KeypleGsonParser() {}
 
   /**
+   * (private)<br>
    * Initialize and personalize the gson parser used in Keyple.
    *
-   * @return builder instance
+   * @return a not null builder instance.
    */
   private static GsonBuilder initGsonBuilder() {
     GsonBuilder init = new GsonBuilder();
-    // init keyple default adapter
-    init.registerTypeAdapter(byte[].class, new HexArrayTypeAdapter())
-        .registerTypeAdapter(CardCommand.class, new CardCommandTypeAdapter())
-        .registerTypeAdapter(BodyError.class, new BodyErrorSerializer())
-        .registerTypeHierarchyAdapter(Throwable.class, new ThrowableSerializer())
-        .registerTypeAdapter(KeypleReaderIOException.class, new KeypleReaderIOExceptionSerializer())
+    init.registerTypeAdapter(byte[].class, new ByteArrayJsonAdapter())
+        .registerTypeAdapter(CardCommand.class, new CardCommandJsonAdapter())
+        .registerTypeAdapter(BodyError.class, new BodyErrorJsonSerializer())
+        .registerTypeHierarchyAdapter(Throwable.class, new ThrowableJsonSerializer())
+        .registerTypeAdapter(
+            KeypleReaderIOException.class, new KeypleReaderIOExceptionJsonSerializer())
         .registerTypeHierarchyAdapter(
-            KeypleCardCommandException.class, new KeypleSeCommandExceptionSerializer());
-
+            KeypleCardCommandException.class, new KeypleCardCommandExceptionJsonSerializer());
     return init;
   }
 
   /**
-   * Register a new type adapter
+   * Registers a new type adapter and returns the updated parser.
    *
-   * @param matchingClass non nullable instance of the type to be registered
-   * @param adapter non nullable of the type adapter to be registered (should implement {@link
-   *     com.google.gson.JsonSerializer} and/or {@link com.google.gson.JsonDeserializer})
-   * @param withSubclass apply this adapter to subclass of matchingClass also
-   * @return updated gson instance
+   * @param matchingClass The type to be registered.
+   * @param adapter The type adapter to be registered (should implement {@link
+   *     com.google.gson.JsonSerializer} and/or {@link com.google.gson.JsonDeserializer}).
+   * @param withSubclasses Apply this adapter to subclasses of matchingClass also.
+   * @return a not null reference.
+   * @since 1.0
    */
   public static Gson registerTypeAdapter(
-      Class matchingClass, Object adapter, Boolean withSubclass) {
+      Class<?> matchingClass, Object adapter, boolean withSubclasses) {
+
     // init custom types after allowing the user to overwrite keyple default adapter
-    if (withSubclass) {
+    if (withSubclasses) {
       gsonBuilder.registerTypeHierarchyAdapter(matchingClass, adapter);
     } else {
       gsonBuilder.registerTypeAdapter(matchingClass, adapter);

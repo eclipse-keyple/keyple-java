@@ -24,7 +24,7 @@ import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.card.message.SelectionStatus;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.core.util.json.KeypleJsonParser;
+import org.eclipse.keyple.core.util.json.KeypleGsonParser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -558,9 +558,9 @@ public class CalypsoPoTest {
   @Test
   public void json_fromJson_shouldReturnCopy() {
     loadPo();
-    String json = KeypleJsonParser.getParser().toJson(po);
+    String json = KeypleGsonParser.getParser().toJson(po);
     logger.debug(json);
-    CalypsoPo target = KeypleJsonParser.getParser().fromJson(json, CalypsoPo.class);
+    CalypsoPo target = KeypleGsonParser.getParser().fromJson(json, CalypsoPo.class);
     assertThat(target).isEqualToComparingFieldByFieldRecursively(po);
   }
 

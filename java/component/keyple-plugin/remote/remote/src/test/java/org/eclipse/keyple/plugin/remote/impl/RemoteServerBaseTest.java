@@ -25,7 +25,7 @@ import org.eclipse.keyple.core.service.event.ObservablePlugin;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.PluginEvent;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
-import org.eclipse.keyple.core.util.json.KeypleJsonParser;
+import org.eclipse.keyple.core.util.json.KeypleGsonParser;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.ObservableRemoteReaderServer;
 import org.eclipse.keyple.plugin.remote.RemoteReaderServer;
@@ -127,7 +127,7 @@ public class RemoteServerBaseTest {
     body.addProperty("userInputData", "anyObject");
     body.add(
         "readerEvent",
-        KeypleJsonParser.getParser()
+        KeypleGsonParser.getParser()
             .toJsonTree(
                 new ReaderEvent(
                     localPluginName,
@@ -176,9 +176,9 @@ public class RemoteServerBaseTest {
     assertThat(terminateServiceMsg.getAction())
         .isEqualTo(MessageDto.Action.TERMINATE_SERVICE.name());
     JsonObject body =
-        KeypleJsonParser.getParser().fromJson(terminateServiceMsg.getBody(), JsonObject.class);
+        KeypleGsonParser.getParser().fromJson(terminateServiceMsg.getBody(), JsonObject.class);
     MockUserOutputData userOutputResponse =
-        KeypleJsonParser.getParser()
+        KeypleGsonParser.getParser()
             .fromJson(body.get("userOutputData").getAsString(), MockUserOutputData.class);
     boolean unregisterRemoteReader = body.get("unregisterRemoteReader").getAsBoolean();
     assertThat(userOutputData).isEqualToComparingFieldByFieldRecursively(userOutputResponse);

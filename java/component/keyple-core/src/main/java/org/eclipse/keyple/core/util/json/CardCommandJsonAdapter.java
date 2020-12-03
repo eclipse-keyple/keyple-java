@@ -16,9 +16,28 @@ import java.lang.reflect.Type;
 import org.eclipse.keyple.core.card.command.CardCommand;
 import org.eclipse.keyple.core.util.Assert;
 
-public class CardCommandTypeAdapter
+/**
+ * Serializer/Deserializer of a {@link CardCommand}.
+ *
+ * @since 1.0
+ */
+public class CardCommandJsonAdapter
     implements JsonSerializer<CardCommand>, JsonDeserializer<CardCommand> {
 
+  /** {@inheritDoc} */
+  @Override
+  public JsonElement serialize(
+      CardCommand cardCommand, Type type, JsonSerializationContext jsonSerializationContext) {
+
+    JsonObject output = new JsonObject();
+    Assert.getInstance()
+        .isTrue(cardCommand.getClass().isEnum(), "CardCommandJsonAdapter works only with enum");
+    output.addProperty("name", ((Enum) cardCommand).name());
+    output.addProperty("class", cardCommand.getClass().getName());
+    return output;
+  }
+
+  /** {@inheritDoc} */
   @Override
   public CardCommand deserialize(
       JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext)
@@ -31,18 +50,7 @@ public class CardCommandTypeAdapter
       return (CardCommand) Enum.valueOf((Class<? extends Enum>) Class.forName(className), name);
     } catch (ClassNotFoundException e) {
       throw new JsonParseException(
-          "Can not parse jsonElement as a SeCommand " + jsonElement.toString());
+          "Can not parse jsonElement as a CardCommand " + jsonElement.toString());
     }
-  }
-
-  @Override
-  public JsonElement serialize(
-      CardCommand seCommand, Type type, JsonSerializationContext jsonSerializationContext) {
-    JsonObject output = new JsonObject();
-    Assert.getInstance()
-        .isTrue(seCommand.getClass().isEnum(), "CardCommandAdapter works only with enum");
-    output.addProperty("name", ((Enum) seCommand).name());
-    output.addProperty("class", seCommand.getClass().getName());
-    return output;
   }
 }

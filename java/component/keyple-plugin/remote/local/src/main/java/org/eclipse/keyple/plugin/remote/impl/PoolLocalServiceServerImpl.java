@@ -20,7 +20,7 @@ import org.eclipse.keyple.core.service.exception.KeypleAllocationReaderException
 import org.eclipse.keyple.core.service.exception.KeypleException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.json.BodyError;
-import org.eclipse.keyple.core.util.json.KeypleJsonParser;
+import org.eclipse.keyple.core.util.json.KeypleGsonParser;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.PoolLocalServiceServer;
 
@@ -87,7 +87,7 @@ final class PoolLocalServiceServerImpl extends AbstractLocalService
       switch (MessageDto.Action.valueOf(msg.getAction())) {
         case ALLOCATE_READER:
           String groupReference =
-              KeypleJsonParser.getParser()
+              KeypleGsonParser.getParser()
                   .fromJson(msg.getBody(), JsonObject.class)
                   .get("groupReference")
                   .getAsString();
@@ -103,7 +103,7 @@ final class PoolLocalServiceServerImpl extends AbstractLocalService
           SortedSet<String> groupReferences = getAllGroupReferences();
           JsonObject body = new JsonObject();
           body.add(
-              "readerGroupReferences", KeypleJsonParser.getParser().toJsonTree(groupReferences));
+              "readerGroupReferences", KeypleGsonParser.getParser().toJsonTree(groupReferences));
           response = new MessageDto(msg).setBody(body.toString());
           break;
         default:
@@ -115,7 +115,7 @@ final class PoolLocalServiceServerImpl extends AbstractLocalService
       response =
           new MessageDto(msg) //
               .setAction(MessageDto.Action.ERROR.name()) //
-              .setBody(KeypleJsonParser.getParser().toJson(new BodyError(e)));
+              .setBody(KeypleGsonParser.getParser().toJson(new BodyError(e)));
     }
     node.sendMessage(response);
   }

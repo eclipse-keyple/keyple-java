@@ -16,23 +16,23 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
-import org.eclipse.keyple.core.card.command.CardCommand;
-import org.eclipse.keyple.core.card.command.exception.KeypleCardCommandException;
 
-/** Force the command field to be serialized as a SeCommand.class */
-public class KeypleSeCommandExceptionSerializer
-    implements JsonSerializer<KeypleCardCommandException> {
+/**
+ * Serializer of a {@link java.lang.Throwable}.
+ *
+ * <p>Only the field "message" is serialized during the process.
+ *
+ * @since 1.0
+ */
+public class ThrowableJsonSerializer implements JsonSerializer<Throwable> {
 
+  /** {@inheritDoc} */
   @Override
   public JsonElement serialize(
-      KeypleCardCommandException exception,
-      Type type,
-      JsonSerializationContext jsonSerializationContext) {
-    JsonObject jsonObject = new JsonObject();
-    jsonObject.add(
-        "command", jsonSerializationContext.serialize(exception.getCommand(), CardCommand.class));
-    jsonObject.addProperty("statusCode", exception.getStatusCode());
-    jsonObject.addProperty("message", exception.getMessage());
-    return jsonObject;
+      Throwable exception, Type type, JsonSerializationContext jsonSerializationContext) {
+
+    JsonObject json = new JsonObject();
+    json.addProperty("message", exception.getMessage());
+    return json;
   }
 }

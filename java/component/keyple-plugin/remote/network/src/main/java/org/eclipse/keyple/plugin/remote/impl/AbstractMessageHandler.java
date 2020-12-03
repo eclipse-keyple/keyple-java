@@ -13,7 +13,7 @@ package org.eclipse.keyple.plugin.remote.impl;
 
 import java.util.UUID;
 import org.eclipse.keyple.core.util.json.BodyError;
-import org.eclipse.keyple.core.util.json.KeypleJsonParser;
+import org.eclipse.keyple.core.util.json.KeypleGsonParser;
 import org.eclipse.keyple.plugin.remote.*;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
@@ -106,7 +106,7 @@ abstract class AbstractMessageHandler {
    */
   void checkError(MessageDto message) {
     if (message.getAction().equals(MessageDto.Action.ERROR.name())) {
-      BodyError body = KeypleJsonParser.getParser().fromJson(message.getBody(), BodyError.class);
+      BodyError body = KeypleGsonParser.getParser().fromJson(message.getBody(), BodyError.class);
       throw body.getException();
     }
   }

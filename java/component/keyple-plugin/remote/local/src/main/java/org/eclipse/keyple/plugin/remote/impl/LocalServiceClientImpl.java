@@ -20,7 +20,7 @@ import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.util.Assert;
-import org.eclipse.keyple.core.util.json.KeypleJsonParser;
+import org.eclipse.keyple.core.util.json.KeypleGsonParser;
 import org.eclipse.keyple.plugin.remote.LocalServiceClient;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.RemoteServiceParameters;
@@ -300,7 +300,7 @@ final class LocalServiceClientImpl extends AbstractLocalService
     if (classOfT == null) {
       return null;
     }
-    Gson parser = KeypleJsonParser.getParser();
+    Gson parser = KeypleGsonParser.getParser();
     JsonObject body = parser.fromJson(msg.getBody(), JsonObject.class);
     return parser.fromJson(body.get("userOutputData").getAsString(), classOfT);
   }
@@ -313,7 +313,7 @@ final class LocalServiceClientImpl extends AbstractLocalService
    * @return true if the remote reader can be unregistered.
    */
   private boolean canUnregisterRemoteReader(MessageDto msg) {
-    Gson parser = KeypleJsonParser.getParser();
+    Gson parser = KeypleGsonParser.getParser();
     JsonObject body = parser.fromJson(msg.getBody(), JsonObject.class);
     return parser.fromJson(body.get("unregisterRemoteReader"), Boolean.class);
   }
@@ -335,12 +335,12 @@ final class LocalServiceClientImpl extends AbstractLocalService
 
     Object userInputData = parameters.getUserInputData();
     if (userInputData != null) {
-      body.add("userInputData", KeypleJsonParser.getParser().toJsonTree(userInputData));
+      body.add("userInputData", KeypleGsonParser.getParser().toJsonTree(userInputData));
     }
 
     AbstractSmartCard initialCardContent = parameters.getInitialCardContent();
     if (initialCardContent != null) {
-      body.add("initialCardContent", KeypleJsonParser.getParser().toJsonTree(initialCardContent));
+      body.add("initialCardContent", KeypleGsonParser.getParser().toJsonTree(initialCardContent));
     }
 
     body.addProperty(
@@ -368,8 +368,8 @@ final class LocalServiceClientImpl extends AbstractLocalService
 
     JsonObject body = new JsonObject();
 
-    body.add("readerEvent", KeypleJsonParser.getParser().toJsonTree(readerEvent));
-    body.add("userInputData", KeypleJsonParser.getParser().toJsonTree(userInputData));
+    body.add("readerEvent", KeypleGsonParser.getParser().toJsonTree(readerEvent));
+    body.add("userInputData", KeypleGsonParser.getParser().toJsonTree(userInputData));
 
     return new MessageDto()
         .setSessionId(sessionId)

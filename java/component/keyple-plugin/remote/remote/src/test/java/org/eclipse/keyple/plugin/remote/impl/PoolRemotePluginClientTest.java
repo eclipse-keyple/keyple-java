@@ -25,7 +25,7 @@ import org.eclipse.keyple.core.service.exception.KeypleAllocationNoReaderExcepti
 import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.json.BodyError;
-import org.eclipse.keyple.core.util.json.KeypleJsonParser;
+import org.eclipse.keyple.core.util.json.KeypleGsonParser;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
@@ -289,7 +289,7 @@ public class PoolRemotePluginClientTest {
     if (exception != null) {
       return new MessageDto(msg)
           .setAction(MessageDto.Action.ERROR.name())
-          .setBody(KeypleJsonParser.getParser().toJson(new BodyError(exception)))
+          .setBody(KeypleGsonParser.getParser().toJson(new BodyError(exception)))
           .setServerNodeId(serverNodeId);
     }
 
@@ -304,10 +304,10 @@ public class PoolRemotePluginClientTest {
       case GET_READER_GROUP_REFERENCES:
         SortedSet<String> groupReferences = Sets.newTreeSet(groupReference);
         body = new JsonObject();
-        body.add("readerGroupReferences", KeypleJsonParser.getParser().toJsonTree(groupReferences));
+        body.add("readerGroupReferences", KeypleGsonParser.getParser().toJsonTree(groupReferences));
         return new MessageDto(msg).setBody(body.toString()).setServerNodeId(serverNodeId);
       case IS_CARD_PRESENT:
-        String bodyJson = KeypleJsonParser.getParser().toJson(true, Boolean.class);
+        String bodyJson = KeypleGsonParser.getParser().toJson(true, Boolean.class);
 
         return new MessageDto(msg).setBody(bodyJson).setServerNodeId(serverNodeId);
 

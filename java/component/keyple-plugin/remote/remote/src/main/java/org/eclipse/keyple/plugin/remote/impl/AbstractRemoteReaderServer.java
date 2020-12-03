@@ -16,7 +16,7 @@ import org.eclipse.keyple.core.card.message.*;
 import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
 import org.eclipse.keyple.core.util.Assert;
-import org.eclipse.keyple.core.util.json.KeypleJsonParser;
+import org.eclipse.keyple.core.util.json.KeypleGsonParser;
 import org.eclipse.keyple.plugin.remote.RemoteReaderServer;
 
 /**
@@ -78,7 +78,7 @@ abstract class AbstractRemoteReaderServer implements RemoteReaderServer, ProxyRe
   public <T> T getUserInputData(Class<T> classOfT) {
     Assert.getInstance().notNull(classOfT, "classOfT");
     return userInputDataJson != null
-        ? KeypleJsonParser.getParser().fromJson(userInputDataJson, classOfT)
+        ? KeypleGsonParser.getParser().fromJson(userInputDataJson, classOfT)
         : null;
   }
 
@@ -87,7 +87,7 @@ abstract class AbstractRemoteReaderServer implements RemoteReaderServer, ProxyRe
   public <T extends AbstractSmartCard> T getInitialCardContent(Class<T> classOfT) {
     Assert.getInstance().notNull(classOfT, "classOfT");
     return initialCardContentJson != null
-        ? KeypleJsonParser.getParser().fromJson(initialCardContentJson, classOfT)
+        ? KeypleGsonParser.getParser().fromJson(initialCardContentJson, classOfT)
         : null;
   }
 

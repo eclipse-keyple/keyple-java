@@ -26,7 +26,7 @@ import org.eclipse.keyple.core.service.exception.KeypleAllocationReaderException
 import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.json.BodyError;
-import org.eclipse.keyple.core.util.json.KeypleJsonParser;
+import org.eclipse.keyple.core.util.json.KeypleGsonParser;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
 import org.junit.After;
@@ -65,7 +65,7 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
   public void setUp() {
     this.init();
     localServiceName = testName.getMethodName();
-    parser = KeypleJsonParser.getParser();
+    parser = KeypleGsonParser.getParser();
     initMockService();
   }
 
@@ -320,16 +320,16 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
 
   private SortedSet<String> getReferenceGroupFromDto(MessageDto msg) {
     String readerGroupReferencesJson =
-        KeypleJsonParser.getParser()
+        KeypleGsonParser.getParser()
             .fromJson(msg.getBody(), JsonObject.class)
             .get("readerGroupReferences")
             .toString();
-    return KeypleJsonParser.getParser().fromJson(readerGroupReferencesJson, SortedSet.class);
+    return KeypleGsonParser.getParser().fromJson(readerGroupReferencesJson, SortedSet.class);
   }
 
   private RuntimeException getExceptionFromDto(MessageDto msg) {
     String bodyResponse = msg.getBody();
-    return KeypleJsonParser.getParser().fromJson(bodyResponse, BodyError.class).getException();
+    return KeypleGsonParser.getParser().fromJson(bodyResponse, BodyError.class).getException();
   }
 
   private MessageDto captureResponse() {

@@ -20,7 +20,7 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.Assert;
-import org.eclipse.keyple.core.util.json.KeypleJsonParser;
+import org.eclipse.keyple.core.util.json.KeypleGsonParser;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.PoolRemotePluginClient;
 
@@ -60,12 +60,12 @@ final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
 
       checkError(response);
       String readerGroupReferencesJson =
-          KeypleJsonParser.getParser()
+          KeypleGsonParser.getParser()
               .fromJson(response.getBody(), JsonObject.class)
               .get("readerGroupReferences")
               .toString();
 
-      return KeypleJsonParser.getParser().fromJson(readerGroupReferencesJson, SortedSet.class);
+      return KeypleGsonParser.getParser().fromJson(readerGroupReferencesJson, SortedSet.class);
 
     } finally {
       node.closeSessionSilently(sessionId);

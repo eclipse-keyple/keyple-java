@@ -14,21 +14,27 @@ package org.eclipse.keyple.core.util.json;
 import com.google.gson.*;
 import java.lang.reflect.Type;
 
-/** Serialize and Deserialize a {@link BodyError} that contains a RuntimeException */
-public class BodyErrorSerializer implements JsonDeserializer<BodyError> {
+/**
+ * Serializer of a {@link BodyError} that contains a {@link RuntimeException}.
+ *
+ * @since 1.0
+ */
+public class BodyErrorJsonSerializer implements JsonDeserializer<BodyError> {
 
+  /** {@inheritDoc} */
   @Override
   public BodyError deserialize(
       JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext)
       throws JsonParseException {
+
     String exceptionName = jsonElement.getAsJsonObject().get("code").getAsString();
-    JsonObject bodydException = jsonElement.getAsJsonObject().get("exception").getAsJsonObject();
+    JsonObject bodyException = jsonElement.getAsJsonObject().get("exception").getAsJsonObject();
+
     try {
       Class<RuntimeException> exceptionClass =
           (Class<RuntimeException>) Class.forName(exceptionName);
       return new BodyError(
-          (RuntimeException)
-              jsonDeserializationContext.deserialize(bodydException, exceptionClass));
+          (RuntimeException) jsonDeserializationContext.deserialize(bodyException, exceptionClass));
     } catch (Throwable e) {
       throw new JsonParseException(e);
     }

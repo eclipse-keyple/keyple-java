@@ -17,7 +17,7 @@ import com.google.gson.Gson;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.core.card.command.exception.KeypleCardCommandException;
 import org.eclipse.keyple.core.util.json.BodyError;
-import org.eclipse.keyple.core.util.json.KeypleJsonParser;
+import org.eclipse.keyple.core.util.json.KeypleGsonParser;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,7 +27,7 @@ public class SamCommandExceptionTest {
 
   @Before
   public void setUp() {
-    parser = KeypleJsonParser.getParser();
+    parser = KeypleGsonParser.getParser();
   }
 
   @Test

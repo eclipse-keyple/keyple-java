@@ -20,7 +20,7 @@ import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.util.Assert;
-import org.eclipse.keyple.core.util.json.KeypleJsonParser;
+import org.eclipse.keyple.core.util.json.KeypleGsonParser;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -163,7 +163,7 @@ final class ObservableRemoteReaderImpl extends AbstractRemoteReader
 
     body.add(
         "defaultSelectionsRequest",
-        KeypleJsonParser.getParser().toJsonTree(defaultSelectionsRequest));
+        KeypleGsonParser.getParser().toJsonTree(defaultSelectionsRequest));
 
     body.addProperty("notificationMode", notificationMode.name());
 

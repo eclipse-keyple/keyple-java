@@ -20,7 +20,7 @@ import org.eclipse.keyple.core.card.message.AnswerToReset;
 import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.card.message.SelectionStatus;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.core.util.json.KeypleJsonParser;
+import org.eclipse.keyple.core.util.json.KeypleGsonParser;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,9 +140,9 @@ public class CalypsoSamTest {
     SelectionStatus selectionStatus =
         new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR1)), null, true);
     CalypsoSam calypsoSam = new CalypsoSam(new CardSelectionResponse(selectionStatus, null));
-    String json = KeypleJsonParser.getParser().toJson(calypsoSam);
+    String json = KeypleGsonParser.getParser().toJson(calypsoSam);
     logger.debug(json);
-    Assertions.assertThat(KeypleJsonParser.getParser().fromJson(json, CalypsoSam.class))
+    Assertions.assertThat(KeypleGsonParser.getParser().fromJson(json, CalypsoSam.class))
         .isEqualToComparingFieldByFieldRecursively(calypsoSam);
   }
 }

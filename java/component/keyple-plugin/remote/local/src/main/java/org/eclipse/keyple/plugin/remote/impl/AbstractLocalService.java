@@ -23,7 +23,7 @@ import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.json.BodyError;
-import org.eclipse.keyple.core.util.json.KeypleJsonParser;
+import org.eclipse.keyple.core.util.json.KeypleGsonParser;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,7 +140,7 @@ abstract class AbstractLocalService extends AbstractMessageHandler {
         response =
             new MessageDto(msg) //
                 .setAction(MessageDto.Action.ERROR.name()) //
-                .setBody(KeypleJsonParser.getParser().toJson(new BodyError(e)));
+                .setBody(KeypleGsonParser.getParser().toJson(new BodyError(e)));
       }
       return response;
     }
@@ -156,13 +156,13 @@ abstract class AbstractLocalService extends AbstractMessageHandler {
 
       // Extract info from the message
       JsonObject bodyObject =
-          KeypleJsonParser.getParser().fromJson(msg.getBody(), JsonObject.class);
+          KeypleGsonParser.getParser().fromJson(msg.getBody(), JsonObject.class);
 
       ChannelControl channelControl =
           ChannelControl.valueOf(bodyObject.get("channelControl").getAsString());
 
       CardRequest cardRequest =
-          KeypleJsonParser.getParser()
+          KeypleGsonParser.getParser()
               .fromJson(bodyObject.get("cardRequest").getAsString(), CardRequest.class);
 
       if (logger.isTraceEnabled()) {
@@ -177,7 +177,7 @@ abstract class AbstractLocalService extends AbstractMessageHandler {
       CardResponse cardResponse = reader.transmitCardRequest(cardRequest, channelControl);
 
       // Build response
-      String body = KeypleJsonParser.getParser().toJson(cardResponse, CardResponse.class);
+      String body = KeypleGsonParser.getParser().toJson(cardResponse, CardResponse.class);
       return new MessageDto(msg).setBody(body);
     }
 
@@ -191,10 +191,10 @@ abstract class AbstractLocalService extends AbstractMessageHandler {
     private MessageDto transmitCardSelectionRequests() {
 
       // Extract info from the message
-      JsonObject bodyJsonO = KeypleJsonParser.getParser().fromJson(msg.getBody(), JsonObject.class);
+      JsonObject bodyJsonO = KeypleGsonParser.getParser().fromJson(msg.getBody(), JsonObject.class);
 
       List<CardSelectionRequest> cardSelectionRequests =
-          KeypleJsonParser.getParser()
+          KeypleGsonParser.getParser()
               .fromJson(
                   bodyJsonO.get("cardSelectionRequests").getAsString(),
                   new TypeToken<ArrayList<CardSelectionRequest>>() {}.getType());
@@ -220,7 +220,7 @@ abstract class AbstractLocalService extends AbstractMessageHandler {
 
       // Build response
       String body =
-          KeypleJsonParser.getParser()
+          KeypleGsonParser.getParser()
               .toJson(
                   cardSelectionResponses,
                   new TypeToken<ArrayList<CardSelectionResponse>>() {}.getType());
@@ -239,10 +239,10 @@ abstract class AbstractLocalService extends AbstractMessageHandler {
       ObservableReader reader = (ObservableReader) this.reader;
 
       // Extract info from the message
-      JsonObject body = KeypleJsonParser.getParser().fromJson(msg.getBody(), JsonObject.class);
+      JsonObject body = KeypleGsonParser.getParser().fromJson(msg.getBody(), JsonObject.class);
 
       DefaultSelectionsRequest defaultSelectionsRequest =
-          KeypleJsonParser.getParser()
+          KeypleGsonParser.getParser()
               .fromJson(body.get("defaultSelectionsRequest"), DefaultSelectionsRequest.class);
 
       ObservableReader.NotificationMode notificationMode =
@@ -292,7 +292,7 @@ abstract class AbstractLocalService extends AbstractMessageHandler {
       boolean isSePresent = reader.isCardPresent();
 
       // Build response
-      String body = KeypleJsonParser.getParser().toJson(isSePresent, Boolean.class);
+      String body = KeypleGsonParser.getParser().toJson(isSePresent, Boolean.class);
       return new MessageDto(msg).setBody(body);
     }
 
@@ -309,7 +309,7 @@ abstract class AbstractLocalService extends AbstractMessageHandler {
       boolean isContactless = reader.isContactless();
 
       // Build response
-      String body = KeypleJsonParser.getParser().toJson(isContactless, Boolean.class);
+      String body = KeypleGsonParser.getParser().toJson(isContactless, Boolean.class);
       return new MessageDto(msg).setBody(body);
     }
 
@@ -323,7 +323,7 @@ abstract class AbstractLocalService extends AbstractMessageHandler {
     private MessageDto startCardDetection() {
 
       // Extract info from the message
-      JsonObject body = KeypleJsonParser.getParser().fromJson(msg.getBody(), JsonObject.class);
+      JsonObject body = KeypleGsonParser.getParser().fromJson(msg.getBody(), JsonObject.class);
 
       ObservableReader.PollingMode pollingMode =
           ObservableReader.PollingMode.valueOf(body.get("pollingMode").getAsString());

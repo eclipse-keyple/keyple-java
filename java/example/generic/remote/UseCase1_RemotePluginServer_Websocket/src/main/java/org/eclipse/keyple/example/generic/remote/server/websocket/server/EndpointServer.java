@@ -16,7 +16,7 @@ import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
-import org.eclipse.keyple.core.util.json.KeypleJsonParser;
+import org.eclipse.keyple.core.util.json.KeypleGsonParser;
 import org.eclipse.keyple.example.generic.remote.server.websocket.client.EndpointClient;
 import org.eclipse.keyple.plugin.remote.AsyncNodeServer;
 import org.eclipse.keyple.plugin.remote.MessageDto;
@@ -72,7 +72,7 @@ public class EndpointServer implements AsyncEndpointServer {
     Session session = openedSessions.get(sessionId);
 
     // Serialize the message to send.
-    String data = KeypleJsonParser.getParser().toJson(messageDto);
+    String data = KeypleGsonParser.getParser().toJson(messageDto);
 
     // Send the message.
     session.getAsyncRemote().sendText(data);
@@ -89,7 +89,7 @@ public class EndpointServer implements AsyncEndpointServer {
     logger.trace("Server - Received message {} : ", data);
 
     // Deserialise the incoming message.
-    MessageDto message = KeypleJsonParser.getParser().fromJson(data, MessageDto.class);
+    MessageDto message = KeypleGsonParser.getParser().fromJson(data, MessageDto.class);
 
     // Retrieves the async node associated to the local service.
     AsyncNodeServer node = RemotePluginServerUtils.getAsyncNode();

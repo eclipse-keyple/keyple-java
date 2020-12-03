@@ -15,7 +15,7 @@ import com.google.gson.Gson;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.json.BodyError;
-import org.eclipse.keyple.core.util.json.KeypleJsonParser;
+import org.eclipse.keyple.core.util.json.KeypleGsonParser;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +23,7 @@ import org.junit.Test;
 public class AbstractMessageHandlerTest {
 
   AbstractMessageHandler handler;
-  Gson parser = KeypleJsonParser.getParser();
+  Gson parser = KeypleGsonParser.getParser();
 
   MessageDto response = new MessageDto().setAction(MessageDto.Action.SET_DEFAULT_SELECTION.name());
 

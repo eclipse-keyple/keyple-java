@@ -18,7 +18,7 @@ import org.eclipse.keyple.core.card.message.*;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
 import org.eclipse.keyple.core.plugin.AbstractReader;
 import org.eclipse.keyple.core.util.json.BodyError;
-import org.eclipse.keyple.core.util.json.KeypleJsonParser;
+import org.eclipse.keyple.core.util.json.KeypleGsonParser;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +73,7 @@ abstract class AbstractRemoteReader extends AbstractReader {
     JsonObject body = new JsonObject();
     body.addProperty(
         "cardSelectionRequests",
-        KeypleJsonParser.getParser()
+        KeypleGsonParser.getParser()
             .toJson(
                 cardSelectionRequests,
                 new TypeToken<ArrayList<CardSelectionRequest>>() {}.getType()));
@@ -84,7 +84,7 @@ abstract class AbstractRemoteReader extends AbstractReader {
     MessageDto response = sendRequest(MessageDto.Action.TRANSMIT_CARD_SELECTION, body);
 
     // Extract the response
-    return KeypleJsonParser.getParser()
+    return KeypleGsonParser.getParser()
         .fromJson(
             response.getBody(), new TypeToken<ArrayList<CardSelectionResponse>>() {}.getType());
   }
@@ -97,14 +97,14 @@ abstract class AbstractRemoteReader extends AbstractReader {
     // Build the message
     JsonObject body = new JsonObject();
     body.addProperty(
-        "cardRequest", KeypleJsonParser.getParser().toJson(cardRequest, CardRequest.class));
+        "cardRequest", KeypleGsonParser.getParser().toJson(cardRequest, CardRequest.class));
     body.addProperty("channelControl", channelControl.name());
 
     // Send the message as a request
     MessageDto response = sendRequest(MessageDto.Action.TRANSMIT, body);
 
     // Extract the response
-    return KeypleJsonParser.getParser().fromJson(response.getBody(), CardResponse.class);
+    return KeypleGsonParser.getParser().fromJson(response.getBody(), CardResponse.class);
   }
 
   /** {@inheritDoc} */
@@ -115,7 +115,7 @@ abstract class AbstractRemoteReader extends AbstractReader {
     MessageDto response = sendRequest(MessageDto.Action.IS_CARD_PRESENT, null);
 
     // Extract the response
-    return KeypleJsonParser.getParser().fromJson(response.getBody(), Boolean.class);
+    return KeypleGsonParser.getParser().fromJson(response.getBody(), Boolean.class);
   }
 
   /** {@inheritDoc} */
@@ -145,7 +145,7 @@ abstract class AbstractRemoteReader extends AbstractReader {
     MessageDto response = sendRequest(MessageDto.Action.IS_READER_CONTACTLESS, null);
 
     // Extract the response
-    return KeypleJsonParser.getParser().fromJson(response.getBody(), Boolean.class);
+    return KeypleGsonParser.getParser().fromJson(response.getBody(), Boolean.class);
   }
 
   /**
@@ -186,7 +186,7 @@ abstract class AbstractRemoteReader extends AbstractReader {
    */
   private void checkError(MessageDto message) {
     if (message.getAction().equals(MessageDto.Action.ERROR.name())) {
-      BodyError body = KeypleJsonParser.getParser().fromJson(message.getBody(), BodyError.class);
+      BodyError body = KeypleGsonParser.getParser().fromJson(message.getBody(), BodyError.class);
       throw body.getException();
     }
   }

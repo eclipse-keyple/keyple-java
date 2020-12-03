@@ -27,7 +27,7 @@ import org.eclipse.keyple.core.service.PluginFactory;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
-import org.eclipse.keyple.core.util.json.KeypleJsonParser;
+import org.eclipse.keyple.core.util.json.KeypleGsonParser;
 import org.eclipse.keyple.plugin.remote.LocalServiceClient;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.RemoteServiceParameters;
@@ -97,7 +97,7 @@ public class LocalServiceClientTest extends BaseLocalTest {
             observableReaderName, //
             ReaderEvent.EventType.CARD_INSERTED, //
             null);
-    parser = KeypleJsonParser.getParser();
+    parser = KeypleGsonParser.getParser();
 
     localServiceName = testName.getMethodName();
   }
@@ -299,9 +299,9 @@ public class LocalServiceClientTest extends BaseLocalTest {
     assertThat(dtoRequest.getAction()).isEqualTo(MessageDto.Action.READER_EVENT.name());
     assertThat(dtoRequest.getSessionId()).isNotEmpty();
     assertThat(dtoRequest.getLocalReaderName()).isEqualTo(observableReaderName);
-    JsonObject body = KeypleJsonParser.getParser().fromJson(dtoRequest.getBody(), JsonObject.class);
+    JsonObject body = KeypleGsonParser.getParser().fromJson(dtoRequest.getBody(), JsonObject.class);
     assertThat(
-            KeypleJsonParser.getParser()
+            KeypleGsonParser.getParser()
                 .fromJson(body.get("readerEvent").toString(), ReaderEvent.class))
         .isEqualToComparingFieldByField(readerEvent);
     assertThat(parser.fromJson(body.get("userInputData"), MyKeypleUserData.class))

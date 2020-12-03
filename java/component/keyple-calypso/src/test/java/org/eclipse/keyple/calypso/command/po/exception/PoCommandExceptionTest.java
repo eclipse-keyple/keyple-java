@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.google.gson.Gson;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.core.util.json.BodyError;
-import org.eclipse.keyple.core.util.json.KeypleJsonParser;
+import org.eclipse.keyple.core.util.json.KeypleGsonParser;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -30,7 +30,7 @@ public class PoCommandExceptionTest {
 
   @Before
   public void setUp() {
-    parser = KeypleJsonParser.getParser();
+    parser = KeypleGsonParser.getParser();
   }
 
   @Test

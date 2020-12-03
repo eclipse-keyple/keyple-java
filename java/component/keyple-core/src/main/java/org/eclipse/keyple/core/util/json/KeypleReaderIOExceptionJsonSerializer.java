@@ -17,14 +17,23 @@ import java.util.List;
 import org.eclipse.keyple.core.card.message.CardResponse;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 
-/** Remove Stacktrace and SupressedExceptions fields from serialization */
-public class KeypleReaderIOExceptionSerializer implements JsonSerializer<KeypleReaderIOException> {
+/**
+ * Serializer of a {@link org.eclipse.keyple.core.service.exception.KeypleReaderIOException}.
+ *
+ * <p>The stacktrace is removed during the process.
+ *
+ * @since 1.0
+ */
+public class KeypleReaderIOExceptionJsonSerializer
+    implements JsonSerializer<KeypleReaderIOException> {
 
+  /** {@inheritDoc} */
   @Override
   public JsonElement serialize(
       KeypleReaderIOException exception,
       Type type,
       JsonSerializationContext jsonSerializationContext) {
+
     JsonObject json = new JsonObject();
     json.add(
         "cardResponse",

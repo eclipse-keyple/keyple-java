@@ -19,7 +19,7 @@ import org.eclipse.keyple.core.card.message.*;
 import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.util.json.KeypleJsonParser;
+import org.eclipse.keyple.core.util.json.KeypleGsonParser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -289,7 +289,7 @@ public class RemoteReaderServerImplTest {
     // init
     MyMatchingCard matchingSe = new MyMatchingCard(SampleFactory.getCompleteResponseList().get(0));
 
-    String initialCardContentJson = KeypleJsonParser.getParser().toJson(matchingSe);
+    String initialCardContentJson = KeypleGsonParser.getParser().toJson(matchingSe);
 
     reader =
         new RemoteReaderServerImpl(

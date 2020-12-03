@@ -84,7 +84,7 @@ public class JsonParserTest {
 
     MyKeypleUserDataMockAdapter adapter = new MyKeypleUserDataMockAdapter();
     Gson parser =
-        KeypleJsonParser.registerTypeAdapter(SampleFactory.MyKeypleUserData.class, adapter, false);
+        KeypleGsonParser.registerTypeAdapter(SampleFactory.MyKeypleUserData.class, adapter, false);
     SampleFactory.MyKeypleUserData data = new SampleFactory.MyKeypleUserData("value");
     String json = parser.toJson(data);
     assertThat(json).contains(adapter.aDefinedJson);
@@ -113,7 +113,7 @@ public class JsonParserTest {
   }
 
   @Test
-  public void serialize_keypleSeCommandException() {
+  public void serialize_keypleCardCommandException() {
     KeypleCardCommandException source =
         new KeypleCardCommandUnknownStatusException(
             "message", AbstractIso7816CommandBuilderTest.CommandRef.COMMAND_1, 1);
@@ -131,7 +131,7 @@ public class JsonParserTest {
    */
 
   public static void assertSerialization(Object source, Class objectClass) {
-    Gson gson = KeypleJsonParser.getParser();
+    Gson gson = KeypleGsonParser.getParser();
     String json = gson.toJson(source);
     logger.debug("json : {}", json);
     Object target = gson.fromJson(json, objectClass);
@@ -139,7 +139,7 @@ public class JsonParserTest {
   }
 
   public static void assertSerialization_forList(Object source, Class<? extends List> objectClass) {
-    Gson gson = KeypleJsonParser.getParser();
+    Gson gson = KeypleGsonParser.getParser();
     String json = gson.toJson(source);
     logger.debug("json : {}", json);
     List target = gson.fromJson(json, objectClass);
@@ -148,7 +148,7 @@ public class JsonParserTest {
 
   public static void assertSerialization_forException(
       Object source, Class<? extends BodyError> objectClass) {
-    Gson gson = KeypleJsonParser.getParser();
+    Gson gson = KeypleGsonParser.getParser();
     String json = gson.toJson(source);
     assertThat(json).doesNotContain("suppressedExceptions");
     assertThat(json).doesNotContain("stackTrace");

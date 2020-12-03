@@ -22,7 +22,7 @@ import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
 import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.core.util.json.KeypleJsonParser;
+import org.eclipse.keyple.core.util.json.KeypleGsonParser;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.mockito.Mockito;
 
@@ -44,7 +44,7 @@ public abstract class BaseLocalTest {
   public static MessageDto getTransmitDto(String sessionId) {
     JsonObject body = new JsonObject();
     body.addProperty("channelControl", ChannelControl.CLOSE_AFTER.name());
-    body.addProperty("cardRequest", KeypleJsonParser.getParser().toJson(getACardRequest()));
+    body.addProperty("cardRequest", KeypleGsonParser.getParser().toJson(getACardRequest()));
     return new MessageDto() //
         .setSessionId(sessionId) //
         .setAction(MessageDto.Action.TRANSMIT.name()) //
@@ -57,7 +57,7 @@ public abstract class BaseLocalTest {
     JsonObject body = new JsonObject();
     body.add(
         "defaultSelectionsRequest",
-        KeypleJsonParser.getParser()
+        KeypleGsonParser.getParser()
             .toJsonTree(
                 new DefaultSelectionsRequest(
                     Lists.newArrayList(getACardSelectionRequest()),
@@ -79,7 +79,7 @@ public abstract class BaseLocalTest {
     body.addProperty("channelControl", ChannelControl.CLOSE_AFTER.name());
     body.addProperty(
         "cardSelectionRequests",
-        KeypleJsonParser.getParser().toJson(Lists.newArrayList(getACardRequest())));
+        KeypleGsonParser.getParser().toJson(Lists.newArrayList(getACardRequest())));
     body.addProperty("multiSelectionProcessing", MultiSelectionProcessing.FIRST_MATCH.name());
     return new MessageDto() //
         .setSessionId(sessionId) //

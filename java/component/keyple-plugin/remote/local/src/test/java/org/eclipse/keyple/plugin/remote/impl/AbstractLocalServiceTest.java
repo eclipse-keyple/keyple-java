@@ -25,7 +25,7 @@ import org.eclipse.keyple.core.service.*;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.json.BodyError;
-import org.eclipse.keyple.core.util.json.KeypleJsonParser;
+import org.eclipse.keyple.core.util.json.KeypleGsonParser;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.junit.After;
 import org.junit.Assert;
@@ -121,7 +121,7 @@ public class AbstractLocalServiceTest extends BaseLocalTest {
     // results
     assertMetadataMatches(requestDto, responseDto);
     assertThat(responseDto.getAction()).isEqualTo(MessageDto.Action.TRANSMIT.name());
-    assertThat(KeypleJsonParser.getParser().fromJson(responseDto.getBody(), CardResponse.class))
+    assertThat(KeypleGsonParser.getParser().fromJson(responseDto.getBody(), CardResponse.class))
         .isEqualToComparingFieldByField(cardResponse);
   }
 
@@ -139,7 +139,7 @@ public class AbstractLocalServiceTest extends BaseLocalTest {
     assertThat(responseDto.getAction()).isEqualTo(MessageDto.Action.ERROR.name());
     // check embedded cardResponses
     BodyError bodyResponse =
-        KeypleJsonParser.getParser().fromJson(responseDto.getBody(), BodyError.class);
+        KeypleGsonParser.getParser().fromJson(responseDto.getBody(), BodyError.class);
     KeypleReaderIOException error = (KeypleReaderIOException) bodyResponse.getException();
     assertThat(error.getCardSelectionResponses()).hasSameElementsAs(cardSelectionResponses);
     assertThat(error.getCardResponse()).isEqualToComparingFieldByField(cardResponse);
@@ -161,7 +161,7 @@ public class AbstractLocalServiceTest extends BaseLocalTest {
     assertMetadataMatches(requestDto, responseDto);
     assertThat(responseDto.getAction()).isEqualTo(MessageDto.Action.TRANSMIT_CARD_SELECTION.name());
     assertThat(
-            KeypleJsonParser.getParser()
+            KeypleGsonParser.getParser()
                 .fromJson(
                     responseDto.getBody(),
                     new TypeToken<List<CardSelectionResponse>>() {}.getType()))
@@ -185,7 +185,7 @@ public class AbstractLocalServiceTest extends BaseLocalTest {
     assertThat(responseDto.getAction()).isEqualTo(MessageDto.Action.ERROR.name());
     // check embedded cardResponses
     BodyError bodyResponse =
-        KeypleJsonParser.getParser().fromJson(responseDto.getBody(), BodyError.class);
+        KeypleGsonParser.getParser().fromJson(responseDto.getBody(), BodyError.class);
     KeypleReaderIOException error = (KeypleReaderIOException) bodyResponse.getException();
     assertThat(error.getCardSelectionResponses()).isNotNull();
     assertThat(error.getCardResponse()).isNotNull();
@@ -208,7 +208,7 @@ public class AbstractLocalServiceTest extends BaseLocalTest {
     assertThat(responseDto.getAction()).isEqualTo(MessageDto.Action.ERROR.name());
     // check embedded cardResponses
     BodyError bodyResponse =
-        KeypleJsonParser.getParser().fromJson(responseDto.getBody(), BodyError.class);
+        KeypleGsonParser.getParser().fromJson(responseDto.getBody(), BodyError.class);
     KeypleReaderIOException error = (KeypleReaderIOException) bodyResponse.getException();
     assertThat(error.getCardSelectionResponses()).isNull();
     assertThat(error.getCardResponse()).isEqualToComparingFieldByField(cardResponse);
@@ -231,7 +231,7 @@ public class AbstractLocalServiceTest extends BaseLocalTest {
     assertThat(responseDto.getAction()).isEqualTo(MessageDto.Action.ERROR.name());
     // check embedded cardResponses
     BodyError bodyResponse =
-        KeypleJsonParser.getParser().fromJson(responseDto.getBody(), BodyError.class);
+        KeypleGsonParser.getParser().fromJson(responseDto.getBody(), BodyError.class);
     KeypleReaderIOException error = (KeypleReaderIOException) bodyResponse.getException();
     assertThat(error.getCardSelectionResponses()).hasSameElementsAs(cardSelectionResponses);
     assertThat(error.getCardResponse()).isNull();
@@ -259,7 +259,7 @@ public class AbstractLocalServiceTest extends BaseLocalTest {
     // results
     assertMetadataMatches(requestDto, responseDto);
     assertThat(responseDto.getAction()).isEqualTo(MessageDto.Action.IS_CARD_PRESENT.name());
-    boolean bodyValue = KeypleJsonParser.getParser().fromJson(responseDto.getBody(), Boolean.class);
+    boolean bodyValue = KeypleGsonParser.getParser().fromJson(responseDto.getBody(), Boolean.class);
     assertThat(bodyValue).isTrue();
   }
 
@@ -273,7 +273,7 @@ public class AbstractLocalServiceTest extends BaseLocalTest {
     // results
     assertMetadataMatches(requestDto, responseDto);
     assertThat(responseDto.getAction()).isEqualTo(MessageDto.Action.IS_READER_CONTACTLESS.name());
-    boolean bodyValue = KeypleJsonParser.getParser().fromJson(responseDto.getBody(), Boolean.class);
+    boolean bodyValue = KeypleGsonParser.getParser().fromJson(responseDto.getBody(), Boolean.class);
     assertThat(bodyValue).isTrue();
   }
 
