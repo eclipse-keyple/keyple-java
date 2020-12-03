@@ -1285,7 +1285,7 @@ public class PoTransaction {
   }
 
   /**
-   * {@link #processVerifyPin(byte[])}  variant with the PIN supplied as an ASCII string.
+   * {@link #processVerifyPin(byte[])} variant with the PIN supplied as an ASCII string.
    *
    * <p>The provided String is converted into an array of bytes and processed with {@link
    * #processVerifyPin(byte[])}.
