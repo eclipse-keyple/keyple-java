@@ -24,8 +24,8 @@ public interface StubPlugin extends ObservablePlugin {
   /**
    * Plug a new {@link StubReader} available in the plugin
    *
-   * @param name : name of the created reader
-   * @param synchronous : should the stubreader added synchronously (without waiting for the
+   * @param name name of the created reader
+   * @param synchronous should the stubreader added synchronously (without waiting for the
    *     observation thread). A READER_CONNECTED event is raised in both cases
    * @since 1.0
    */
@@ -34,9 +34,9 @@ public interface StubPlugin extends ObservablePlugin {
   /**
    * Plug a new {@link StubReader} available in the plugin
    *
-   * @param name : name of the created reader
-   * @param isContactless : true if the created reader should be contactless, false if not.
-   * @param synchronous : should the stubreader added synchronously (without waiting for the
+   * @param name name of the created reader
+   * @param isContactless true if the created reader should be contactless, false if not.
+   * @param synchronous should the stubreader added synchronously (without waiting for the
    *     observation thread). A READER_CONNECTED event is raised in both cases
    * @since 1.0
    */
@@ -45,8 +45,8 @@ public interface StubPlugin extends ObservablePlugin {
   /**
    * Plug multiple new {@link StubReader} available in the plugin
    *
-   * @param names : names of readers to be connected
-   * @param synchronous : should the stubreader be added synchronously (without waiting for the
+   * @param names names of readers to be connected
+   * @param synchronous should the stubreader be added synchronously (without waiting for the
    *     observation thread). A READER_CONNECTED event is raised in both cases
    * @since 1.0
    */
@@ -57,7 +57,7 @@ public interface StubPlugin extends ObservablePlugin {
    *
    * @param name the name of the reader
    * @throws IllegalStateException in case of a reader exception
-   * @param synchronous : should the stubreader be removed synchronously (without waiting for the
+   * @param synchronous should the stubreader be removed synchronously (without waiting for the
    *     observation thread). A READER_DISCONNECTED event is raised in both cases
    * @since 1.0
    */
@@ -66,8 +66,8 @@ public interface StubPlugin extends ObservablePlugin {
   /**
    * Unplug a list of {@link StubReader}
    *
-   * @param names : names of the reader to be unplugged
-   * @param synchronous : should the stubreader removed synchronously (without waiting for the
+   * @param names names of the reader to be unplugged
+   * @param synchronous should the stubreader removed synchronously (without waiting for the
    *     observation thread). A READER_DISCONNECTED event is raised in both cases
    * @since 1.0
    */

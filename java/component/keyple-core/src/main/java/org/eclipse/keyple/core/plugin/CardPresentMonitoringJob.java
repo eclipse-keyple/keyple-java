@@ -37,9 +37,9 @@ class CardPresentMonitoringJob extends AbstractMonitoringJob {
   /**
    * Build a monitoring job to detect the card insertion
    *
-   * @param reader : reader that will be polled with the method isCardPresent()
-   * @param waitTimeout : wait time during two hit of the polling
-   * @param monitorInsertion : if true, polls for CARD_INSERTED, else CARD_REMOVED
+   * @param reader reader that will be polled with the method isCardPresent()
+   * @param waitTimeout wait time during two hit of the polling
+   * @param monitorInsertion if true, polls for CARD_INSERTED, else CARD_REMOVED
    */
   public CardPresentMonitoringJob(Reader reader, long waitTimeout, boolean monitorInsertion) {
     this.waitTimeout = waitTimeout;

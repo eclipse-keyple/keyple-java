@@ -52,8 +52,8 @@ public abstract class StubSmartCard {
   /**
    * Add more simulated commands to the card Stub
    *
-   * @param command : hexadecimal command to react to
-   * @param response : hexadecimal response to be sent in reaction to command
+   * @param command hexadecimal command to react to
+   * @param response hexadecimal response to be sent in reaction to command
    */
   public void addHexCommand(String command, String response) {
     if (command == null || response == null) {
@@ -66,7 +66,7 @@ public abstract class StubSmartCard {
   /**
    * Remove simulated commands from the card Stub
    *
-   * @param command : hexadecimal command to be removed
+   * @param command hexadecimal command to be removed
    */
   public void removeHexCommand(String command) {
     if (command == null) {
@@ -78,7 +78,7 @@ public abstract class StubSmartCard {
   /**
    * Return APDU Response to APDU Request
    *
-   * @param apduIn : commands to be processed
+   * @param apduIn commands to be processed
    * @return APDU response
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    */

@@ -55,7 +55,7 @@ public final class SmartCardService {
   /**
    * Register a new plugin to be available in the platform if not registered yet
    *
-   * @param pluginFactory : plugin factory to instantiate plugin to be added
+   * @param pluginFactory plugin factory to instantiate plugin to be added
    * @throws KeyplePluginInstantiationException if instantiation failed
    * @return Plugin : registered reader plugin
    * @throws IllegalStateException if the plugin has already been registered.
@@ -88,7 +88,7 @@ public final class SmartCardService {
   /**
    * Unregister plugin from platform
    *
-   * @param pluginName : plugin name
+   * @param pluginName plugin name
    * @throws IllegalStateException if the plugin or his reader(s) are already unregistered
    */
   public void unregisterPlugin(String pluginName) {
@@ -111,7 +111,7 @@ public final class SmartCardService {
   /**
    * Check weither a plugin is already registered to the platform or not
    *
-   * @param pluginName : name of the plugin to be checked
+   * @param pluginName name of the plugin to be checked
    * @return true if a plugin with matching name has been registered
    */
   public synchronized boolean isRegistered(String pluginName) {

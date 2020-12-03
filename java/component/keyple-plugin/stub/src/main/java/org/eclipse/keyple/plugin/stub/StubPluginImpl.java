@@ -35,7 +35,7 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
   /**
    * Constructor
    *
-   * @param pluginName : custom name for the plugin
+   * @param pluginName custom name for the plugin
    */
   StubPluginImpl(
       String pluginName,
