@@ -37,8 +37,8 @@ public class RemoteServerBaseTest {
 
   static String clientId = "client1";
   static String localReaderName = "localReaderName1";
-  static String remotePluginName = RemotePluginServerFactory.DEFAULT_PLUGIN_NAME;
   static String localPluginName = "localPluginName1";
+  static String remotePluginName = "RemoteServerBaseName";
   static String serviceId = "1";
   static RemotePluginServerImplTest.MockUserOutputData userOutputData =
       new RemotePluginServerImplTest.MockUserOutputData();
@@ -189,6 +189,7 @@ public class RemoteServerBaseTest {
     SmartCardService.getInstance()
         .registerPlugin(
             RemotePluginServerFactory.builder()
+                .withPluginName(remotePluginName)
                 .withSyncNode()
                 .withPluginObserver(pluginObserver)
                 .usingDefaultEventNotificationPool()

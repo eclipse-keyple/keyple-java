@@ -31,19 +31,18 @@ import org.slf4j.LoggerFactory;
 
 /**
  * (package-private)<br>
- * Singleton instance of the {@link LocalServiceClient} implementation
+ * Instances of the {@link LocalServiceClient} implementation
  */
 final class LocalServiceClientImpl extends AbstractLocalService
     implements ObservableReader.ReaderObserver, LocalServiceClient {
 
   private static final Logger logger = LoggerFactory.getLogger(LocalServiceClientImpl.class);
 
-  private static LocalServiceClientImpl uniqueInstance;
+  private static Map<String, LocalServiceClientImpl> serviceInstances;
 
   private final boolean withReaderObservation;
   private final ObservableReaderEventFilter eventFilter;
   private final Map<String, String> remoteReaders;
-
   /**
    * (private)<br>
    * Constructor
@@ -61,25 +60,45 @@ final class LocalServiceClientImpl extends AbstractLocalService
 
   /**
    * (package-private)<br>
-   * Create an instance of this singleton service
+   * Create an instance of the service. If a service exists with the same name, the service is
+   * overridden.
    *
+   * @param serviceName identifier of the local service
    * @param withReaderObservation true if reader observation should be activated
    * @return a not null instance of the singleton
+   * @throws IllegalArgumentException If a service already exists with the provided serviceName.
    */
   static LocalServiceClientImpl createInstance(
-      boolean withReaderObservation, ObservableReaderEventFilter eventFilter) {
-    uniqueInstance = new LocalServiceClientImpl(withReaderObservation, eventFilter);
-    return uniqueInstance;
+      String serviceName, boolean withReaderObservation, ObservableReaderEventFilter eventFilter) {
+
+    // init services instances map
+    if (serviceInstances == null) {
+      serviceInstances = new HashMap<String, LocalServiceClientImpl>();
+    }
+    if (serviceInstances.containsKey(serviceName)) {
+      throw new IllegalArgumentException(
+          "A local service already exists with the same name : " + serviceName);
+    }
+    LocalServiceClientImpl localService =
+        new LocalServiceClientImpl(withReaderObservation, eventFilter);
+    serviceInstances.put(serviceName, localService);
+
+    return localService;
   }
 
   /**
    * (package-private)<br>
-   * Retrieve the instance of this singleton service
+   * Retrieve the service associated by its serviceName
    *
    * @return a not null instance
+   * @throws IllegalStateException If there's no service having the provided name
    */
-  static LocalServiceClientImpl getInstance() {
-    return uniqueInstance;
+  static LocalServiceClientImpl getInstance(String serviceName) {
+    if (!serviceInstances.containsKey(serviceName)) {
+      throw new IllegalStateException(
+          "No service could be found with the provided name : " + serviceName);
+    }
+    return serviceInstances.get(serviceName);
   }
 
   /** {@inheritDoc} */

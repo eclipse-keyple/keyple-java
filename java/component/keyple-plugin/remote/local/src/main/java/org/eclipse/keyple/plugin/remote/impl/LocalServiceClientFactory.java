@@ -29,6 +29,8 @@ public final class LocalServiceClientFactory {
   private static final Logger logger = LoggerFactory.getLogger(LocalServiceClientFactory.class);
   private static final int DEFAULT_TIMEOUT = 5;
 
+  static final String DEFAULT_SERVICE_NAME = "defaultLocalServiceClient";
+
   /**
    * (private)<br>
    * Constructor
@@ -41,7 +43,7 @@ public final class LocalServiceClientFactory {
    * @return next configuration step
    * @since 1.0
    */
-  public static NodeStep builder() {
+  public static NameStep builder() {
     return new Step();
   }
 
@@ -51,8 +53,30 @@ public final class LocalServiceClientFactory {
      *
      * @return singleton instance of the service
      * @since 1.0
+     * @throws IllegalStateException if a service already exists with the same name.
      */
     LocalServiceClient getService();
+  }
+
+  public interface NameStep {
+    /**
+     * Configures the service with a specific name.
+     *
+     * @param serviceName identifier of the local service
+     * @return next configuration step
+     * @throws IllegalArgumentException If the service name is null.
+     * @since 1.0
+     */
+    NodeStep withServiceName(String serviceName);
+
+    /**
+     * Configures the service with the default service name : {@value DEFAULT_SERVICE_NAME}.
+     *
+     * @return next configuration step
+     * @throws IllegalArgumentException If a service already exists with the default name.
+     * @since 1.0
+     */
+    NodeStep withDefaultServiceName();
   }
 
   public interface NodeStep {
@@ -119,15 +143,36 @@ public final class LocalServiceClientFactory {
     BuilderStep withoutReaderObservation();
   }
 
-  private static class Step implements NodeStep, ReaderStep, BuilderStep, TimeoutStep {
+  private static class Step implements NameStep, NodeStep, ReaderStep, BuilderStep, TimeoutStep {
 
     private AsyncEndpointClient asyncEndpoint;
     private SyncEndpointClient syncEndpoint;
     private Boolean withReaderObservation;
     private ObservableReaderEventFilter eventFilter;
     private int timeoutInSec;
+    private String serviceName;
 
     private Step() {}
+
+    /** {@inheritDoc} */
+    @Override
+    public NodeStep withServiceName(String serviceName) {
+      Assert.getInstance().notNull(serviceName, "service name");
+      if (serviceName.equals(DEFAULT_SERVICE_NAME)) {
+        throw new IllegalArgumentException(
+            "serviceName should be different of the default service name : "
+                + DEFAULT_SERVICE_NAME);
+      }
+      this.serviceName = serviceName;
+      return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public NodeStep withDefaultServiceName() {
+      this.serviceName = DEFAULT_SERVICE_NAME;
+      return this;
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -167,7 +212,7 @@ public final class LocalServiceClientFactory {
 
       // create the service
       LocalServiceClientImpl service =
-          LocalServiceClientImpl.createInstance(withReaderObservation, eventFilter);
+          LocalServiceClientImpl.createInstance(serviceName, withReaderObservation, eventFilter);
 
       // bind the service to the node
       if (asyncEndpoint != null) {

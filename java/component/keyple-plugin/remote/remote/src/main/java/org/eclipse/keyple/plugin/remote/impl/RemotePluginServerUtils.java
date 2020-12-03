@@ -13,6 +13,7 @@ package org.eclipse.keyple.plugin.remote.impl;
 
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remote.AsyncNodeServer;
 import org.eclipse.keyple.plugin.remote.RemotePluginServer;
 import org.eclipse.keyple.plugin.remote.SyncNodeServer;
@@ -32,8 +33,21 @@ public final class RemotePluginServerUtils {
    * @since 1.0
    */
   public static RemotePluginServer getRemotePlugin() {
-    return (RemotePluginServer)
-        SmartCardService.getInstance().getPlugin(RemotePluginServerFactory.DEFAULT_PLUGIN_NAME);
+    return getRemotePlugin(RemotePluginServerFactory.DEFAULT_PLUGIN_NAME);
+  }
+
+  /**
+   * Gets a plugin by its name.
+   *
+   * @param pluginName plugin name.
+   * @return a not null reference
+   * @throws KeyplePluginNotFoundException if the plugin is not registered.
+   * @throws IllegalArgumentException if the plugin name is null.
+   * @since 1.0
+   */
+  public static RemotePluginServer getRemotePlugin(String pluginName) {
+    Assert.getInstance().notNull(pluginName, "plugin name");
+    return (RemotePluginServer) SmartCardService.getInstance().getPlugin(pluginName);
   }
 
   /**
@@ -46,7 +60,23 @@ public final class RemotePluginServerUtils {
    * @since 1.0
    */
   public static AsyncNodeServer getAsyncNode() {
-    RemotePluginServerImpl plugin = (RemotePluginServerImpl) getRemotePlugin();
+    return getAsyncNode(RemotePluginServerFactory.DEFAULT_PLUGIN_NAME);
+  }
+
+  /**
+   * Gets the {@link AsyncNodeServer} node associated with a {@link RemotePluginServer} plugin.
+   *
+   * @param pluginName name of the plugin associated with the SyncNodeServer.
+   * @return a not null reference
+   * @throws KeyplePluginNotFoundException if the plugin is not registered.
+   * @throws IllegalStateException if the plugin is not configured with a {@link AsyncNodeServer}
+   *     node.
+   * @throws IllegalArgumentException if the plugin name is null.
+   * @since 1.0
+   */
+  public static AsyncNodeServer getAsyncNode(String pluginName) {
+    Assert.getInstance().notNull(pluginName, "plugin name");
+    RemotePluginServerImpl plugin = (RemotePluginServerImpl) getRemotePlugin(pluginName);
     if (plugin.node instanceof AsyncNodeServer) {
       return (AsyncNodeServer) plugin.node;
     }
@@ -64,7 +94,23 @@ public final class RemotePluginServerUtils {
    * @since 1.0
    */
   public static SyncNodeServer getSyncNode() {
-    RemotePluginServerImpl plugin = (RemotePluginServerImpl) getRemotePlugin();
+    return getSyncNode(RemotePluginServerFactory.DEFAULT_PLUGIN_NAME);
+  }
+
+  /**
+   * Gets the {@link SyncNodeServer} node associated with a {@link RemotePluginServer} plugin.
+   *
+   * @param pluginName name of the plugin associated with the SyncNodeServer.
+   * @return a not null reference
+   * @throws KeyplePluginNotFoundException if the plugin is not registered.
+   * @throws IllegalStateException if the plugin is not configured with a {@link SyncNodeServer}
+   *     node.
+   * @throws IllegalArgumentException if the plugin name is null.
+   * @since 1.0
+   */
+  public static SyncNodeServer getSyncNode(String pluginName) {
+    Assert.getInstance().notNull(pluginName, "plugin name");
+    RemotePluginServerImpl plugin = (RemotePluginServerImpl) getRemotePlugin(pluginName);
     if (plugin.node instanceof SyncNodeServer) {
       return (SyncNodeServer) plugin.node;
     }

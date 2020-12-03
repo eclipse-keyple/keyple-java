@@ -47,6 +47,7 @@ public class AppServer {
 
     // Init the local service using the associated factory.
     PoolLocalServiceServerFactory.builder()
+        .withDefaultServiceName()
         .withSyncNode() // HTTP webservice needs a server sync node configuration
         .withPoolPlugins(poolPlugin.getName()) // use the registered ReaderPoolPlugin
         .getService();

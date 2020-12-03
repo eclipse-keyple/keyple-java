@@ -26,7 +26,9 @@ import org.eclipse.keyple.plugin.remote.integration.common.endpoint.pool.StubAsy
 import org.eclipse.keyple.plugin.remote.integration.common.util.CalypsoUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,15 +36,20 @@ public class AsyncScenario extends BaseScenario {
 
   private static final Logger logger = LoggerFactory.getLogger(AsyncScenario.class);
 
+  @Rule public TestName testName = new TestName();
+
   @Before
   public void setUp() {
     initNativePoolStubPlugin();
 
-    StubAsyncEndpointServer serverEndpoint = new StubAsyncEndpointServer();
+    localServiceName = testName.getMethodName() + "_async";
+
+    StubAsyncEndpointServer serverEndpoint = new StubAsyncEndpointServer(localServiceName);
     StubAsyncEndpointClient clientEndpoint = new StubAsyncEndpointClient(serverEndpoint);
 
     poolLocalServiceServer =
         PoolLocalServiceServerFactory.builder()
+            .withServiceName(localServiceName)
             .withAsyncNode(serverEndpoint)
             .withPoolPlugins(localPoolPlugin.getName())
             .getService();
@@ -52,6 +59,7 @@ public class AsyncScenario extends BaseScenario {
             SmartCardService.getInstance()
                 .registerPlugin(
                     PoolRemotePluginClientFactory.builder()
+                        .withDefaultPluginName()
                         .withAsyncNode(clientEndpoint)
                         .usingDefaultTimeout()
                         .build());

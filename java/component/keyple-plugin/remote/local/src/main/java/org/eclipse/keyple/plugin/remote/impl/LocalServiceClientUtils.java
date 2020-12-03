@@ -11,6 +11,9 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.impl;
 
+import static org.eclipse.keyple.plugin.remote.impl.LocalServiceClientFactory.DEFAULT_SERVICE_NAME;
+
+import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remote.AsyncNodeClient;
 import org.eclipse.keyple.plugin.remote.LocalServiceClient;
 
@@ -29,7 +32,21 @@ public final class LocalServiceClientUtils {
    * @since 1.0
    */
   public static LocalServiceClient getLocalService() {
-    return getServiceImpl();
+    return getServiceImpl(DEFAULT_SERVICE_NAME);
+  }
+
+  /**
+   * Gets the local service by its name.
+   *
+   * @param serviceName identifier of the local service
+   * @return a not null reference
+   * @throws IllegalStateException if the service is not initialized.
+   * @throws IllegalArgumentException if the service name is null.
+   * @since 1.0
+   */
+  public static LocalServiceClient getLocalService(String serviceName) {
+    Assert.getInstance().notNull(serviceName, "service name");
+    return getServiceImpl(serviceName);
   }
 
   /**
@@ -41,7 +58,22 @@ public final class LocalServiceClientUtils {
    * @since 1.0
    */
   public static AsyncNodeClient getAsyncNode() {
-    LocalServiceClientImpl service = getServiceImpl();
+    return getAsyncNode(DEFAULT_SERVICE_NAME);
+  }
+
+  /**
+   * Gets the {@link AsyncNodeClient} node associated to a local service.
+   *
+   * @param serviceName identifier of the local service
+   * @return a not null reference
+   * @throws IllegalStateException if the service is not initialized or is not configured with a
+   *     {@link AsyncNodeClient} node.
+   * @throws IllegalArgumentException if the service name is null.
+   * @since 1.0
+   */
+  public static AsyncNodeClient getAsyncNode(String serviceName) {
+    Assert.getInstance().notNull(serviceName, "service name");
+    LocalServiceClientImpl service = getServiceImpl(serviceName);
     if (service.node instanceof AsyncNodeClient) {
       return (AsyncNodeClient) service.node;
     }
@@ -51,16 +83,14 @@ public final class LocalServiceClientUtils {
 
   /**
    * (private)<br>
-   * Gets the service implementation.
+   * Gets the service implementation by its service name.
    *
+   * @param serviceName identifier of the local service
    * @return a not null reference
-   * @throws IllegalStateException if the service is not initialized.
+   * @throws IllegalStateException If there's no service having the provided name
    */
-  private static LocalServiceClientImpl getServiceImpl() {
-    LocalServiceClientImpl service = LocalServiceClientImpl.getInstance();
-    if (service == null) {
-      throw new IllegalStateException("The LocalServiceClient is not initialized");
-    }
+  private static LocalServiceClientImpl getServiceImpl(String serviceName) {
+    LocalServiceClientImpl service = LocalServiceClientImpl.getInstance(serviceName);
     return service;
   }
 }

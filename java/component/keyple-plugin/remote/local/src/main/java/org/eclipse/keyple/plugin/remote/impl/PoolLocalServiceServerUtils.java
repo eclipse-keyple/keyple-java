@@ -11,6 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.impl;
 
+import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remote.AsyncNodeServer;
 import org.eclipse.keyple.plugin.remote.PoolLocalServiceServer;
 import org.eclipse.keyple.plugin.remote.SyncNodeServer;
@@ -31,7 +32,22 @@ public final class PoolLocalServiceServerUtils {
    * @since 1.0
    */
   public static AsyncNodeServer getAsyncNode() {
-    PoolLocalServiceServerImpl service = getServiceImpl();
+    return getAsyncNode(PoolLocalServiceServerFactory.DEFAULT_SERVICE_NAME);
+  }
+
+  /**
+   * Gets the {@link AsyncNodeServer} node associated to a local service.
+   *
+   * @param serviceName identifier of the local service
+   * @return a not null reference
+   * @throws IllegalStateException if the service is not initialized or is not configured with a
+   *     {@link AsyncNodeServer} node.
+   * @throws IllegalArgumentException if the service name is null.
+   * @since 1.0
+   */
+  public static AsyncNodeServer getAsyncNode(String serviceName) {
+    Assert.getInstance().notNull(serviceName, "service name");
+    PoolLocalServiceServerImpl service = getServiceImpl(serviceName);
     if (service.node instanceof AsyncNodeServer) {
       return (AsyncNodeServer) service.node;
     }
@@ -48,7 +64,22 @@ public final class PoolLocalServiceServerUtils {
    * @since 1.0
    */
   public static SyncNodeServer getSyncNode() {
-    PoolLocalServiceServerImpl service = getServiceImpl();
+    return getSyncNode(PoolLocalServiceServerFactory.DEFAULT_SERVICE_NAME);
+  }
+
+  /**
+   * Gets the {@link SyncNodeServer} node associated to a local service.
+   *
+   * @param serviceName identifier of the local service
+   * @return a not null reference
+   * @throws IllegalStateException if the service is not initialized or is not configured with a
+   *     {@link SyncNodeServer} node.
+   * @throws IllegalArgumentException if the service name is null.
+   * @since 1.0
+   */
+  public static SyncNodeServer getSyncNode(String serviceName) {
+    Assert.getInstance().notNull(serviceName, "service name");
+    PoolLocalServiceServerImpl service = getServiceImpl(serviceName);
     if (service.node instanceof SyncNodeServer) {
       return (SyncNodeServer) service.node;
     }
@@ -60,14 +91,11 @@ public final class PoolLocalServiceServerUtils {
    * (private)<br>
    * Gets the service implementation.
    *
+   * @param serviceName identifier of the local service
    * @return a not null reference
-   * @throws IllegalStateException if the service is not initialized.
    */
-  private static PoolLocalServiceServerImpl getServiceImpl() {
-    PoolLocalServiceServerImpl service = PoolLocalServiceServerImpl.getInstance();
-    if (service == null) {
-      throw new IllegalStateException("The PoolLocalServiceServer is not initialized");
-    }
+  private static PoolLocalServiceServerImpl getServiceImpl(String serviceName) {
+    PoolLocalServiceServerImpl service = PoolLocalServiceServerImpl.getInstance(serviceName);
     return service;
   }
 }

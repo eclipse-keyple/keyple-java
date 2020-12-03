@@ -29,6 +29,8 @@ import org.mockito.Mockito;
 
 public class RemotePluginServerImplTest extends RemoteServerBaseTest {
 
+  String pluginName = "pluginName";
+
   @Before
   public void setUp() {
     pluginObserver = new MockPluginObserver(true);
@@ -47,17 +49,19 @@ public class RemotePluginServerImplTest extends RemoteServerBaseTest {
 
   @Test
   public void registerSyncPlugin() {
+
     SmartCardService.getInstance()
         .registerPlugin(
             RemotePluginServerFactory.builder()
+                .withPluginName(pluginName)
                 .withSyncNode()
                 .withPluginObserver(pluginObserver)
                 .usingDefaultEventNotificationPool()
                 .build());
-    assertThat(RemotePluginServerUtils.getRemotePlugin()).isNotNull();
-    assertThat(RemotePluginServerUtils.getSyncNode()).isNotNull();
+    assertThat(RemotePluginServerUtils.getRemotePlugin(pluginName)).isNotNull();
+    assertThat(RemotePluginServerUtils.getSyncNode(pluginName)).isNotNull();
 
-    SmartCardService.getInstance().unregisterPlugin(RemotePluginServerFactory.DEFAULT_PLUGIN_NAME);
+    SmartCardService.getInstance().unregisterPlugin(pluginName);
   }
 
   @Test
@@ -65,14 +69,15 @@ public class RemotePluginServerImplTest extends RemoteServerBaseTest {
     SmartCardService.getInstance()
         .registerPlugin(
             RemotePluginServerFactory.builder()
+                .withPluginName(pluginName)
                 .withAsyncNode(Mockito.mock(AsyncEndpointServer.class))
                 .withPluginObserver(pluginObserver)
                 .usingDefaultEventNotificationPool()
                 .build());
-    assertThat(RemotePluginServerUtils.getRemotePlugin()).isNotNull();
-    assertThat(RemotePluginServerUtils.getAsyncNode()).isNotNull();
+    assertThat(RemotePluginServerUtils.getRemotePlugin(pluginName)).isNotNull();
+    assertThat(RemotePluginServerUtils.getAsyncNode(pluginName)).isNotNull();
 
-    SmartCardService.getInstance().unregisterPlugin(RemotePluginServerFactory.DEFAULT_PLUGIN_NAME);
+    SmartCardService.getInstance().unregisterPlugin(pluginName);
   }
 
   @Test

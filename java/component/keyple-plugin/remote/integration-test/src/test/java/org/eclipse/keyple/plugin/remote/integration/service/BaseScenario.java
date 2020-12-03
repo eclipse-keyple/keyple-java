@@ -119,6 +119,7 @@ public abstract class BaseScenario {
   public static String DEVICE_ID = "Xo99";
 
   LocalServiceClient localService;
+  String localServiceName;
   StubPlugin localPlugin;
   StubReader localReader;
   StubReader localReader2;
@@ -191,6 +192,7 @@ public abstract class BaseScenario {
               SmartCardService.getInstance()
                   .registerPlugin(
                       RemotePluginServerFactory.builder()
+                          .withDefaultPluginName()
                           .withSyncNode()
                           .withPluginObserver(new RemotePluginServerObserver())
                           // .usingDefaultEventNotificationPool()
@@ -210,6 +212,7 @@ public abstract class BaseScenario {
               SmartCardService.getInstance()
                   .registerPlugin(
                       RemotePluginServerFactory.builder()
+                          .withDefaultPluginName()
                           .withAsyncNode(serverEndpoint)
                           .withPluginObserver(new RemotePluginServerObserver())
                           .usingEventNotificationPool(serverPool)

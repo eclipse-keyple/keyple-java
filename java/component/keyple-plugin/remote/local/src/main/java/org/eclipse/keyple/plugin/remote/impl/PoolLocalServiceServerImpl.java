@@ -32,7 +32,7 @@ import org.eclipse.keyple.plugin.remote.PoolLocalServiceServer;
 final class PoolLocalServiceServerImpl extends AbstractLocalService
     implements PoolLocalServiceServer {
 
-  private static PoolLocalServiceServerImpl uniqueInstance;
+  private static Map<String, PoolLocalServiceServerImpl> serviceInstances;
   private final String[] poolPluginNames;
 
   private PoolLocalServiceServerImpl(String[] poolPluginNames) {
@@ -43,22 +43,38 @@ final class PoolLocalServiceServerImpl extends AbstractLocalService
    * (package-private)<br>
    * Create an instance of this singleton service
    *
+   * @param serviceName identifier of the local service
    * @param poolPluginNames name(s) of the pool plugin(s) associated with this service
    * @return a not null instance of the singleton
+   * @throws IllegalArgumentException If a service already exists with the provided serviceName.
    */
-  static PoolLocalServiceServerImpl createInstance(String[] poolPluginNames) {
-    uniqueInstance = new PoolLocalServiceServerImpl(poolPluginNames);
-    return uniqueInstance;
+  static PoolLocalServiceServerImpl createInstance(String serviceName, String[] poolPluginNames) {
+    // init services instances map
+    if (serviceInstances == null) {
+      serviceInstances = new HashMap<String, PoolLocalServiceServerImpl>();
+    }
+    if (serviceInstances.containsKey(serviceName)) {
+      throw new IllegalArgumentException(
+          "A local service already exists with the same name : " + serviceName);
+    }
+    PoolLocalServiceServerImpl instance = new PoolLocalServiceServerImpl(poolPluginNames);
+    serviceInstances.put(serviceName, instance);
+    return instance;
   }
 
   /**
    * (package-private)<br>
-   * Retrieve the instance of this singleton service
+   * Retrieve a local service by its name
    *
+   * @param serviceName identifier of the local service
    * @return a not null instance
    */
-  static PoolLocalServiceServerImpl getInstance() {
-    return uniqueInstance;
+  static PoolLocalServiceServerImpl getInstance(String serviceName) {
+    if (!serviceInstances.containsKey(serviceName)) {
+      throw new IllegalStateException(
+          "No service could be found with the provided name : " + serviceName);
+    }
+    return serviceInstances.get(serviceName);
   }
 
   /** {@inheritDoc} */

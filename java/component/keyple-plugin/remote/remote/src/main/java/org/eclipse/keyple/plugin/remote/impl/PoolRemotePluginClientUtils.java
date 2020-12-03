@@ -13,6 +13,7 @@ package org.eclipse.keyple.plugin.remote.impl;
 
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remote.AsyncNodeClient;
 import org.eclipse.keyple.plugin.remote.PoolRemotePluginClient;
 
@@ -36,6 +37,20 @@ public final class PoolRemotePluginClientUtils {
   }
 
   /**
+   * Gets the plugin by its name.
+   *
+   * @param pluginName plugin name
+   * @return a not null reference
+   * @throws KeyplePluginNotFoundException if the plugin is not registered.
+   * @throws IllegalArgumentException if the plugin name is null.
+   * @since 1.0
+   */
+  public static PoolRemotePluginClient getRemotePlugin(String pluginName) {
+    Assert.getInstance().notNull(pluginName, "plugin name");
+    return (PoolRemotePluginClient) SmartCardService.getInstance().getPlugin(pluginName);
+  }
+
+  /**
    * Gets the {@link AsyncNodeClient} node associated to the plugin having the default name.
    *
    * @return a not null reference
@@ -45,7 +60,23 @@ public final class PoolRemotePluginClientUtils {
    * @since 1.0
    */
   public static AsyncNodeClient getAsyncNode() {
-    PoolRemotePluginClientImpl plugin = (PoolRemotePluginClientImpl) getRemotePlugin();
+    return getAsyncNode(PoolRemotePluginClientFactory.DEFAULT_PLUGIN_NAME);
+  }
+
+  /**
+   * Gets the {@link AsyncNodeClient} node associated with a {@link PoolRemotePluginClient} plugin.
+   *
+   * @param pluginName name of the plugin associated with the SyncNodeServer.
+   * @return a not null reference
+   * @throws KeyplePluginNotFoundException if the plugin is not registered.
+   * @throws IllegalStateException if the plugin is not configured with a {@link AsyncNodeClient}
+   *     node.
+   * @throws IllegalArgumentException if the plugin name is null.
+   * @since 1.0
+   */
+  public static AsyncNodeClient getAsyncNode(String pluginName) {
+    Assert.getInstance().notNull(pluginName, "plugin name");
+    PoolRemotePluginClientImpl plugin = (PoolRemotePluginClientImpl) getRemotePlugin(pluginName);
     if (plugin.node instanceof AsyncNodeClient) {
       return (AsyncNodeClient) plugin.node;
     }

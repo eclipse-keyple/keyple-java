@@ -24,8 +24,11 @@ import org.eclipse.keyple.plugin.remote.impl.PoolRemotePluginClientFactory;
 import org.eclipse.keyple.plugin.remote.integration.common.endpoint.pool.StubSyncEndpointClient;
 import org.eclipse.keyple.plugin.remote.integration.common.util.CalypsoUtils;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
+import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,14 +36,19 @@ public class SyncScenario extends BaseScenario {
 
   private static final Logger logger = LoggerFactory.getLogger(SyncScenario.class);
 
+  @Rule public TestName testName = new TestName();
+
   @Before
   public void setUp() {
     initNativePoolStubPlugin();
 
-    SyncEndpointClient clientEndpoint = new StubSyncEndpointClient();
+    localServiceName = testName.getMethodName() + "_sync";
+
+    SyncEndpointClient clientEndpoint = new StubSyncEndpointClient(localServiceName);
 
     poolLocalServiceServer =
         PoolLocalServiceServerFactory.builder()
+            .withServiceName(localServiceName)
             .withSyncNode()
             .withPoolPlugins(localPoolPlugin.getName())
             .getService();
@@ -49,7 +57,16 @@ public class SyncScenario extends BaseScenario {
         (PoolRemotePluginClient)
             SmartCardService.getInstance()
                 .registerPlugin(
-                    PoolRemotePluginClientFactory.builder().withSyncNode(clientEndpoint).build());
+                    PoolRemotePluginClientFactory.builder()
+                        .withDefaultPluginName()
+                        .withSyncNode(clientEndpoint)
+                        .build());
+  }
+
+  @After
+  public void tearDown() {
+
+    SmartCardService.getInstance().unregisterPlugin(poolRemotePluginClient.getName());
   }
 
   @Test
