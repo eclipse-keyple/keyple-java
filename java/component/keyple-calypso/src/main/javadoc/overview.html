@@ -3,11 +3,16 @@
 <p>The Keyple Calypso module is dedicated to the management of Calypso products: cards (or smartphones) carried by
     end-users (PO) as well as security modules integrated into the equipments (SAM).
 <p>The CalypsoPo class is the core of this module. An instance is created at the end of the selection process and will
-    be used for transactions to centralize the result of all the commands made on the card.<br>
+    be used for transactions to centralize the result of all the commands executed by the card.
+<p>
     Symmetrically, CalypsoSam contains the SAM-related elements but will have little or no visibility to the
-    application.<br>
+    application.
+<p>
     These classes are located in the transaction sub-package next to the classes used to carry out selections and
-    transactions.<br>
+    transactions.
+<p>
+    The two main services to start with Keyple Calypso are PoSelection and PoTransaction.
+<p>
     The other classes of this package allow you to build the commands and analyze their responses.
 </body>
 </html>

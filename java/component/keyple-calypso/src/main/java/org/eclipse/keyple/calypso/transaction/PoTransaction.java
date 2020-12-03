@@ -1222,14 +1222,17 @@ public class PoTransaction {
    * Performs a PIN verification, in order to authenticate the card holder and/or unlock access to
    * certain PO files.
    *
-   * <p>This command can be performed both in and out of a secure session.<br>
-   * The PIN code can be transmitted in plain text or encrypted according to the parameter set in
-   * PoSecuritySettings (by default the transmission is encrypted).<br>
-   * If the execution is done out of session but an encrypted transmission is requested, then
-   * PoTransaction must be constructed with {@link PoSecuritySettings}<br>
-   * If PoTransaction is constructed without {@link PoSecuritySettings} the transmission in done in
-   * plain.<br>
-   * The PO channel is closed if prepareReleasePoChannel is called before this command.
+   * <p>This command can be performed both in and out of a secure session. The PIN code can be
+   * transmitted in plain text or encrypted according to the parameter set in PoSecuritySettings (by
+   * default the transmission is encrypted).
+   *
+   * <p>If the execution is done out of session but an encrypted transmission is requested, then
+   * PoTransaction must be constructed with {@link PoSecuritySettings}
+   *
+   * <p>If PoTransaction is constructed without {@link PoSecuritySettings} the transmission in done
+   * in plain.
+   *
+   * <p>The PO channel is closed if prepareReleasePoChannel is called before this command.
    *
    * @param pin the PIN code value (4-byte long byte array)
    * @throws CalypsoPoTransactionException if a functional error occurs (including PO and SAM IO
@@ -1285,7 +1288,8 @@ public class PoTransaction {
   }
 
   /**
-   * Invokes {@link #processVerifyPin(byte[])} with a string converted into an array of bytes as argument.
+   * Invokes {@link #processVerifyPin(byte[])} with a string converted into an array of bytes as
+   * argument.
    *
    * <p>The provided String is converted into an array of bytes and processed with {@link
    * #processVerifyPin(byte[])}.
@@ -1450,10 +1454,12 @@ public class PoTransaction {
    *
    * <p>If this command is called before a "process" command (except for processOpening) then the
    * last transmission to the PO will be associated with the indication CLOSE_AFTER in order to
-   * close the PO channel.<br>
-   * Important: this command must imperatively be called at the end of any transaction, whether it
-   * ended normally or not.<br>
-   * In case the transaction was interrupted (exception), an additional call to processPoCommands
+   * close the PO channel.
+   *
+   * <p>Note: this command must imperatively be called at the end of any transaction, whether it
+   * ended normally or not.
+   *
+   * <p>In case the transaction was interrupted (exception), an additional call to processPoCommands
    * must be made to effectively close the channel.
    *
    * @since 0.9
@@ -1497,10 +1503,11 @@ public class PoTransaction {
    * Schedules the execution of a <b>Read Records</b> command to read a single record from the
    * indicated EF.
    *
-   * <p>Once this command is processed, the result is available in {@link CalypsoPo}.<br>
-   * See the method {@link CalypsoPo#getFileBySfi(byte)}, the objects {@link ElementaryFile}, {@link
-   * FileData} and their specialized methods according to the type of expected data: e.g. {@link
-   * FileData#getContent(int)}.
+   * <p>Once this command is processed, the result is available in {@link CalypsoPo}.
+   *
+   * <p>See the method {@link CalypsoPo#getFileBySfi(byte)}, the objects {@link ElementaryFile},
+   * {@link FileData} and their specialized methods according to the type of expected data: e.g.
+   * {@link FileData#getContent(int)}.
    *
    * @param sfi the SFI of the EF to read
    * @param recordNumber the record number to read
@@ -1517,10 +1524,11 @@ public class PoTransaction {
    * Schedules the execution of a <b>Read Records</b> command to read one or more records from the
    * indicated EF.
    *
-   * <p>Once this command is processed, the result is available in {@link CalypsoPo}.<br>
-   * See the method {@link CalypsoPo#getFileBySfi(byte)}, the objects {@link ElementaryFile}, {@link
-   * FileData} and their specialized methods according to the type of expected data: e.g. {@link
-   * FileData#getContent()}.
+   * <p>Once this command is processed, the result is available in {@link CalypsoPo}.
+   *
+   * <p>See the method {@link CalypsoPo#getFileBySfi(byte)}, the objects {@link ElementaryFile},
+   * {@link FileData} and their specialized methods according to the type of expected data: e.g.
+   * {@link FileData#getContent()}.
    *
    * @param sfi the SFI of the EF
    * @param firstRecordNumber the record number to read (or first record to read in case of several
@@ -1592,10 +1600,11 @@ public class PoTransaction {
    * <p>The record will be read up to the counter location indicated in parameter.<br>
    * Thus all previous counters will also be read.
    *
-   * <p>Once this command is processed, the result is available in {@link CalypsoPo}.<br>
-   * See the method {@link CalypsoPo#getFileBySfi(byte)}, the objects {@link ElementaryFile}, {@link
-   * FileData} and their specialized methods according to the type of expected data: e.g. {@link
-   * FileData#getAllCountersValue()} (int)}.
+   * <p>Once this command is processed, the result is available in {@link CalypsoPo}.
+   *
+   * <p>See the method {@link CalypsoPo#getFileBySfi(byte)}, the objects {@link ElementaryFile},
+   * {@link FileData} and their specialized methods according to the type of expected data: e.g.
+   * {@link FileData#getAllCountersValue()} (int)}.
    *
    * @param sfi the SFI of the EF
    * @param countersNumber the number of the last counter to be read
@@ -1755,12 +1764,11 @@ public class PoTransaction {
    * <ul>
    *   <li>the counter value has been read before,
    *   <li>the type of session (and associated access rights) is consistent with the requested
-   *       operation.
+   *       operation: reload session if the counter is to be incremented, debit if it is to be
+   *       decremented.<br>
+   *       No control is performed on this point by this method; the closing of the session will
+   *       determine the success of the operation..
    * </ul>
-   *
-   * (reload session if the counter is incremented, debit if it is decremented). No control is
-   * performed on this point by this method; it is the closing of the session that will determine
-   * the success of the operation..
    *
    * @param counterNumber {@code >=} 01h: Counters file, number of the counter. 00h: Simulated
    *     Counter file.
@@ -1811,8 +1819,8 @@ public class PoTransaction {
   }
 
   /**
-   * Schedules the execution of a <b>Verify Pin</b> command without PIN presentation in order to get the
-   * attempt counter.
+   * Schedules the execution of a <b>Verify Pin</b> command without PIN presentation in order to get
+   * the attempt counter.
    *
    * <p>The PIN status will made available in CalypsoPo after the execution of process command.<br>
    * Adds it to the list of commands to be sent with the next process command.
@@ -1835,9 +1843,10 @@ public class PoTransaction {
    * Schedules the execution of a <b>SV Get</b> command to prepare an SV operation or simply
    * retrieves the current SV status.
    *
-   * <p>Once this command is processed, the result is available in {@link CalypsoPo}.<br>
-   * See the methods {@link CalypsoPo#getSvBalance()}, {@link CalypsoPo#getSvLoadLogRecord()} ()},
-   * {@link CalypsoPo#getSvDebitLogLastRecord()}, {@link CalypsoPo#getSvDebitLogAllRecords()}.
+   * <p>Once this command is processed, the result is available in {@link CalypsoPo}.
+   *
+   * <p>See the methods {@link CalypsoPo#getSvBalance()}, {@link CalypsoPo#getSvLoadLogRecord()}
+   * ()}, {@link CalypsoPo#getSvDebitLogLastRecord()}, {@link CalypsoPo#getSvDebitLogAllRecords()}.
    *
    * @param svOperation informs about the nature of the intended operation: debit or reload
    * @param svAction the type of action: DO a debit or a positive reload, UNDO an undebit or a
@@ -2044,9 +2053,12 @@ public class PoTransaction {
    *
    * <p>Note #3: the key used is the reload key.The information fields such as date and time are set
    * to 0. The extraInfo field propagated in Logs are automatically generated with the type of
-   * transaction and amount.<br>
-   * Operations that would result in a negative balance are forbidden (SV Exception raised). <br>
-   * Note: the key used is the debit key
+   * transaction and amount.
+   *
+   * <p>Note #4: operations that would result in a negative balance are forbidden (SV Exception
+   * raised).
+   *
+   * <p>Note #5: the key used is the debit key
    *
    * @param amount the amount to be subtracted or added, positive integer in the range 0..32767 when
    *     subtracted and 0..32768 when added.
@@ -2060,16 +2072,22 @@ public class PoTransaction {
   /**
    * Schedules the execution of <b>Read Records</b> commands to read all SV logs.
    *
-   * <p>The SV transaction logs are contained in two files with fixed identifiers.<br>
-   * The file whose SFI is 0x14 contains 1 record containing the unique reload log.<br>
-   * The file whose SFI is 0x15 contains 3 records containing the last three debit logs.<br>
-   * At the end of this reading operation, the data will be accessible in CalypsoPo in raw format
+   * <p>The SV transaction logs are contained in two files with fixed identifiers:
+   *
+   * <ul>
+   *   <li>The file whose SFI is 0x14 contains 1 record containing the unique reload log.
+   *   <li>The file whose SFI is 0x15 contains 3 records containing the last three debit logs.
+   * </ul>
+   *
+   * <p>At the end of this reading operation, the data will be accessible in CalypsoPo in raw format
    * via the standard commands for accessing read files or in the form of dedicated objects (see
    * {@link CalypsoPo#getSvLoadLogRecord()} and {@link CalypsoPo#getSvDebitLogAllRecords()})
    *
-   * <p>Once this command is processed, the result is available in {@link CalypsoPo}.<br>
-   * See the methods {@link CalypsoPo#getSvBalance()}, {@link CalypsoPo#getSvLoadLogRecord()} ()},
-   * {@link CalypsoPo#getSvDebitLogLastRecord()}, {@link CalypsoPo#getSvDebitLogAllRecords()}. *
+   * <p>Once this command is processed, the result is available in {@link CalypsoPo}.
+   *
+   * <p>See the methods {@link CalypsoPo#getSvBalance()}, {@link CalypsoPo#getSvLoadLogRecord()}
+   * ()}, {@link CalypsoPo#getSvDebitLogLastRecord()}, {@link CalypsoPo#getSvDebitLogAllRecords()}.
+   * *
    *
    * @since 0.9
    */

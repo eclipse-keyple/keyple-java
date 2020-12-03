@@ -21,10 +21,8 @@ import org.eclipse.keyple.core.card.selection.CardResource;
 /**
  * Manages the security settings involved in Calypso secure sessions.
  *
- * <p>The object provides default values when instantiated, they can be modified with the putKeyInfo
- * method.
- *
- * <p>The getKeyInfo method returns the specified setting value.
+ * <p>The object provides default values when instantiated, a fluent builder to adjust the settings
+ * to the application needs.
  *
  * @since 0.9
  */
