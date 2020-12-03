@@ -1285,12 +1285,12 @@ public class PoTransaction {
   }
 
   /**
-   * {@link #processVerifyPin(byte[])} variant with the PIN supplied as an ASCII string.
+   * Invokes {@link #processVerifyPin(byte[])} with a string converted into an array of bytes as argument.
    *
    * <p>The provided String is converted into an array of bytes and processed with {@link
    * #processVerifyPin(byte[])}.
    *
-   * <p>E.g. "1234" will be transmitted as { 0x31,032,0x33,0x34 }
+   * <p>E.g. "1234" will be transmitted as { 0x31,0x32,0x33,0x34 }
    *
    * @param pin an ASCII string (4-character long)
    * @see #processVerifyPin(byte[])
@@ -1811,7 +1811,7 @@ public class PoTransaction {
   }
 
   /**
-   * Schedules the execution of a VerifyPin command without PIN presentation in order to get the
+   * Schedules the execution of a <b>Verify Pin</b> command without PIN presentation in order to get the
    * attempt counter.
    *
    * <p>The PIN status will made available in CalypsoPo after the execution of process command.<br>
