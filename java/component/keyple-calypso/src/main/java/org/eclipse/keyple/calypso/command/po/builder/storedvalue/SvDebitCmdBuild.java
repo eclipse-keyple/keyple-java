@@ -131,7 +131,11 @@ public final class SvDebitCmdBuild extends AbstractPoCommandBuilder<SvDebitRespP
     return svDebitData;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public SvDebitRespPars createResponseParser(ApduResponse apduResponse) {
     return new SvDebitRespPars(apduResponse, this);

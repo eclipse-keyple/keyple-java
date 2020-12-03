@@ -41,7 +41,11 @@ public final class RehabilitateCmdBuild extends AbstractPoCommandBuilder<Rehabil
     this.request = setApduRequest(poClass.getValue(), command, p1, p2, null, null);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public RehabilitateRespPars createResponseParser(ApduResponse apduResponse) {
     return new RehabilitateRespPars(apduResponse, this);

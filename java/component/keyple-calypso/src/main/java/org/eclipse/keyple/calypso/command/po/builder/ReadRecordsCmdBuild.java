@@ -81,7 +81,11 @@ public final class ReadRecordsCmdBuild extends AbstractPoCommandBuilder<ReadReco
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public ReadRecordsRespPars createResponseParser(ApduResponse apduResponse) {
     return new ReadRecordsRespPars(apduResponse, this);

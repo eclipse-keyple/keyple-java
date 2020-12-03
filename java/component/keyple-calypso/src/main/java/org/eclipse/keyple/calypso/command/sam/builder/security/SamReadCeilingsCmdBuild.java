@@ -80,7 +80,11 @@ public class SamReadCeilingsCmdBuild extends AbstractSamCommandBuilder<SamReadCe
     request = setApduRequest(cla, command, p1, p2, null, (byte) 0x00);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public SamReadCeilingsRespPars createResponseParser(ApduResponse apduResponse) {
     return new SamReadCeilingsRespPars(apduResponse, this);

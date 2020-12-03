@@ -55,7 +55,11 @@ public class SvPrepareLoadCmdBuild extends AbstractSamCommandBuilder<SvPrepareOp
     request = setApduRequest(cla, command, p1, p2, data, null);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public SvPrepareOperationRespPars createResponseParser(ApduResponse apduResponse) {
     return new SvPrepareOperationRespPars(apduResponse, this);

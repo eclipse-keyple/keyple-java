@@ -60,7 +60,11 @@ public final class WriteRecordCmdBuild extends AbstractPoCommandBuilder<WriteRec
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public WriteRecordRespPars createResponseParser(ApduResponse apduResponse) {
     return new WriteRecordRespPars(apduResponse, this);

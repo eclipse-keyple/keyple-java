@@ -40,7 +40,11 @@ public abstract class AbstractSamResponseParser extends AbstractApduResponsePars
     STATUS_TABLE = m;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -58,13 +62,21 @@ public abstract class AbstractSamResponseParser extends AbstractApduResponsePars
     super(response, builder);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public final AbstractSamCommandBuilder<AbstractSamResponseParser> getBuilder() {
     return (AbstractSamCommandBuilder<AbstractSamResponseParser>) super.getBuilder();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected final KeypleCardCommandException buildCommandException(
       Class<? extends KeypleCardCommandException> exceptionClass,
@@ -94,7 +106,11 @@ public abstract class AbstractSamResponseParser extends AbstractApduResponsePars
     return e;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public void checkStatus() {
     try {

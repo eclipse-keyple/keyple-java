@@ -41,7 +41,11 @@ public final class InvalidateCmdBuild extends AbstractPoCommandBuilder<Invalidat
     this.request = setApduRequest(poClass.getValue(), command, p1, p2, null, null);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public InvalidateRespPars createResponseParser(ApduResponse apduResponse) {
     return new InvalidateRespPars(apduResponse, this);

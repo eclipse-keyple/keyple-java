@@ -42,7 +42,11 @@ public final class GetDataTraceCmdBuild extends AbstractPoCommandBuilder<GetData
         setApduRequest(poClass.getValue(), command, (byte) 0x01, (byte) 0x85, null, (byte) 0x00);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public GetDataTraceRespPars createResponseParser(ApduResponse apduResponse) {
     return new GetDataTraceRespPars(apduResponse, this);

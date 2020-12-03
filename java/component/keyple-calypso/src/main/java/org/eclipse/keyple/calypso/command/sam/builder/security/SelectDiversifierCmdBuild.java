@@ -52,7 +52,11 @@ public class SelectDiversifierCmdBuild
     request = setApduRequest(cla, command, p1, p2, diversifier, null);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public SelectDiversifierRespPars createResponseParser(ApduResponse apduResponse) {
     return new SelectDiversifierRespPars(apduResponse, this);

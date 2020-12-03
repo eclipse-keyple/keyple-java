@@ -63,7 +63,11 @@ public final class UpdateRecordCmdBuild extends AbstractPoCommandBuilder<UpdateR
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public UpdateRecordRespPars createResponseParser(ApduResponse apduResponse) {
     return new UpdateRecordRespPars(apduResponse, this);

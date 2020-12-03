@@ -570,7 +570,11 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
     this.stateService.onEvent(event);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public final void finalizeCardProcessing() {
     if (logger.isTraceEnabled()) {

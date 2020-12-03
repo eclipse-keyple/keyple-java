@@ -74,7 +74,11 @@ public final class DecreaseCmdBuild extends AbstractPoCommandBuilder<DecreaseRes
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public DecreaseRespPars createResponseParser(ApduResponse apduResponse) {
     return new DecreaseRespPars(apduResponse, this);

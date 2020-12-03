@@ -54,7 +54,11 @@ public class SamWriteKeyCmdBuild extends AbstractSamCommandBuilder<SamWriteKeyRe
     request = setApduRequest(cla, command, writingMode, keyReference, keyData, null);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public SamWriteKeyRespPars createResponseParser(ApduResponse apduResponse) {
     return new SamWriteKeyRespPars(apduResponse, this);

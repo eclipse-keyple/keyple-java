@@ -55,7 +55,11 @@ public class DigestAuthenticateCmdBuild
     request = setApduRequest(cla, command, p1, p2, signature, null);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public DigestAuthenticateRespPars createResponseParser(ApduResponse apduResponse) {
     return new DigestAuthenticateRespPars(apduResponse, this);

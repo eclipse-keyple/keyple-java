@@ -53,7 +53,11 @@ public class UnlockCmdBuild extends AbstractSamCommandBuilder<UnlockRespPars> {
     request = setApduRequest(cla, command, p1, p2, unlockData, null);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public UnlockRespPars createResponseParser(ApduResponse apduResponse) {
     return new UnlockRespPars(apduResponse, this);

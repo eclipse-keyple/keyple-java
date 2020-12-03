@@ -80,7 +80,11 @@ public class CardGenerateKeyCmdBuild extends AbstractSamCommandBuilder<CardGener
     request = setApduRequest(cla, command, p1, p2, data, null);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public CardGenerateKeyRespPars createResponseParser(ApduResponse apduResponse) {
     return new CardGenerateKeyRespPars(apduResponse, this);

@@ -76,7 +76,11 @@ public class SamReadEventCounterCmdBuild
     request = setApduRequest(cla, command, (byte) 0x00, p2, null, (byte) 0x00);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public SamReadEventCounterRespPars createResponseParser(ApduResponse apduResponse) {
     return new SamReadEventCounterRespPars(apduResponse, this);

@@ -51,7 +51,11 @@ public class SamGetChallengeCmdBuild extends AbstractSamCommandBuilder<SamGetCha
     request = setApduRequest(cla, command, p1, p2, null, expectedResponseLength);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public SamGetChallengeRespPars createResponseParser(ApduResponse apduResponse) {
     return new SamGetChallengeRespPars(apduResponse, this);

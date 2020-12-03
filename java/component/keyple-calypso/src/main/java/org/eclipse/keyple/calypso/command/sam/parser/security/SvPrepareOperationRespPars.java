@@ -51,7 +51,11 @@ public class SvPrepareOperationRespPars extends AbstractSamResponseParser {
     STATUS_TABLE = m;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;

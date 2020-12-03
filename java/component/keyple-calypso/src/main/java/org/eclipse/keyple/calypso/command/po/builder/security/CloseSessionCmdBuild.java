@@ -73,7 +73,11 @@ public final class CloseSessionCmdBuild extends AbstractPoCommandBuilder<CloseSe
     request = setApduRequest(poClass.getValue(), command, (byte) 0x00, (byte) 0x00, null, (byte) 0);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public CloseSessionRespPars createResponseParser(ApduResponse apduResponse) {
     return new CloseSessionRespPars(apduResponse, this);

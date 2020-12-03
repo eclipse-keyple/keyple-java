@@ -72,17 +72,29 @@ public final class DefaultSelectionsRequest extends AbstractDefaultSelectionsReq
     this.channelControl = channelControl;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   public final MultiSelectionProcessing getMultiSelectionProcessing() {
     return multiSelectionProcessing;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   public final ChannelControl getChannelControl() {
     return channelControl;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   public final List<CardSelectionRequest> getCardSelectionRequests() {
     return cardSelectionRequests;
   }

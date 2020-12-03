@@ -127,7 +127,11 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
         "Plugged new readers with readerNames:{} synchronously:{}", readerNames, synchronous);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public void unplugReader(String readerName, Boolean synchronous) {
 

@@ -334,6 +334,7 @@ public class PoSecuritySettings {
    *
    * @param kvc to be tested
    * @return true if the kvc is authorized
+   * @since 0.9
    */
   boolean isSessionKvcAuthorized(byte kvc) {
     return authorizedKvcList == null || authorizedKvcList.contains(kvc);
@@ -343,6 +344,7 @@ public class PoSecuritySettings {
    * (package-private)<br>
    *
    * @return the default key reference to be used for PIN encryption
+   * @since 0.9
    */
   KeyReference getDefaultPinCipheringKey() {
     return defaultPinCipheringKey;
@@ -352,6 +354,7 @@ public class PoSecuritySettings {
    * (package-private)<br>
    *
    * @return how SV logs are read, indicating whether or not all SV logs are needed
+   * @since 0.9
    */
   PoTransaction.SvSettings.LogRead getSvGetLogReadMode() {
     return svGetLogReadMode;
@@ -361,6 +364,7 @@ public class PoSecuritySettings {
    * (package-private)<br>
    *
    * @return an indication of whether negative balances are allowed or not
+   * @since 0.9
    */
   PoTransaction.SvSettings.NegativeBalance getSvNegativeBalance() {
     return svNegativeBalance;

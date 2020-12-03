@@ -48,7 +48,11 @@ public final class SelectFileRespPars extends AbstractPoResponseParser {
 
   private byte[] proprietaryInformation;
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;

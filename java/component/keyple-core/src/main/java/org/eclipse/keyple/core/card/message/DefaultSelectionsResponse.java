@@ -55,7 +55,11 @@ public final class DefaultSelectionsResponse extends AbstractDefaultSelectionsRe
     this.cardSelectionResponses = cardSelectionResponses;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   public final List<CardSelectionResponse> getCardSelectionResponses() {
     return cardSelectionResponses;
   }

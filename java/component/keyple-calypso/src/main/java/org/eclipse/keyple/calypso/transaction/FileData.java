@@ -28,6 +28,8 @@ public class FileData implements Serializable {
   /**
    * (package-private)<br>
    * Constructor
+   *
+   * @since 0.9
    */
   FileData() {}
 
@@ -36,6 +38,7 @@ public class FileData implements Serializable {
    * Constructor used to create a clone of the provided file file data.
    *
    * @param source the header to be cloned
+   * @since 0.9
    */
   FileData(FileData source) {
     SortedMap<Integer, byte[]> sourceContent = source.getAllRecordsContent();
@@ -196,6 +199,7 @@ public class FileData implements Serializable {
    *
    * @param numRecord the record number (should be {@code >=} 1)
    * @param content the content (should be not empty)
+   * @since 0.9
    */
   void setContent(int numRecord, byte[] content) {
     records.put(numRecord, content);
@@ -207,6 +211,7 @@ public class FileData implements Serializable {
    *
    * @param numCounter the counter number (should be {@code >=} 1)
    * @param content the counter value (should be not null and 3 bytes length)
+   * @since 0.9
    */
   void setCounter(int numCounter, byte[] content) {
     setContent(1, content, (numCounter - 1) * 3);
@@ -222,6 +227,7 @@ public class FileData implements Serializable {
    * @param numRecord the record number (should be {@code >=} 1)
    * @param content the content (should be not empty)
    * @param offset the offset (should be {@code >=} 0)
+   * @since 0.9
    */
   void setContent(int numRecord, byte[] content, int offset) {
     byte[] newContent;
@@ -251,6 +257,7 @@ public class FileData implements Serializable {
    *
    * @param numRecord the record number (should be {@code >=} 1)
    * @param content the content (should be not empty)
+   * @since 0.9
    */
   void fillContent(int numRecord, byte[] content) {
     byte[] actualContent = records.get(numRecord);
@@ -276,6 +283,7 @@ public class FileData implements Serializable {
    * Note that records are infinitely shifted.
    *
    * @param content the content (should be not empty)
+   * @since 0.9
    */
   void addCyclicContent(byte[] content) {
     ArrayList<Integer> descendingKeys = new ArrayList<Integer>(records.descendingKeySet());

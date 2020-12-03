@@ -61,7 +61,11 @@ public final class AppendRecordCmdBuild extends AbstractPoCommandBuilder<AppendR
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public AppendRecordRespPars createResponseParser(ApduResponse apduResponse) {
     return new AppendRecordRespPars(apduResponse, this);

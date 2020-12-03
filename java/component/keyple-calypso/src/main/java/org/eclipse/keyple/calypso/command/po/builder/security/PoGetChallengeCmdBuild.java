@@ -42,7 +42,11 @@ public final class PoGetChallengeCmdBuild extends AbstractPoCommandBuilder<PoGet
     this.request = setApduRequest(poClass.getValue(), command, p1, p2, null, le);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public PoGetChallengeRespPars createResponseParser(ApduResponse apduResponse) {
     return new PoGetChallengeRespPars(apduResponse, this);

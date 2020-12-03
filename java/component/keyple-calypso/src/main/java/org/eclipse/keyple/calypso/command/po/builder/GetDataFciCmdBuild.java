@@ -42,7 +42,11 @@ public final class GetDataFciCmdBuild extends AbstractPoCommandBuilder<GetDataFc
         setApduRequest(poClass.getValue(), command, (byte) 0x00, (byte) 0x6F, null, (byte) 0x00);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public GetDataFciRespPars createResponseParser(ApduResponse apduResponse) {
     return new GetDataFciRespPars(apduResponse, this);

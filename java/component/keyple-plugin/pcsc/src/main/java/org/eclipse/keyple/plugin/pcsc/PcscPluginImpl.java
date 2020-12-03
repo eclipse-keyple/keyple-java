@@ -66,7 +66,11 @@ final class PcscPluginImpl extends AbstractPcscPlugin {
     return instance;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   protected CardTerminals getCardTerminals() {
     return TerminalFactory.getDefault().terminals();
   }

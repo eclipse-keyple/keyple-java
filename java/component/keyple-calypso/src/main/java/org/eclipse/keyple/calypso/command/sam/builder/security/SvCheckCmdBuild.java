@@ -59,7 +59,11 @@ public class SvCheckCmdBuild extends AbstractSamCommandBuilder<AbstractSamRespon
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public SvCheckRespPars createResponseParser(ApduResponse apduResponse) {
     return new SvCheckRespPars(apduResponse, this);

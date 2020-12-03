@@ -86,7 +86,11 @@ public class VerifyPinCmdBuild extends AbstractPoCommandBuilder<VerifyPinRespPar
 
     readCounterOnly = true;
   }
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public VerifyPinRespPars createResponseParser(ApduResponse apduResponse) {
     return new VerifyPinRespPars(apduResponse, this);

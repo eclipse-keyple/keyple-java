@@ -71,7 +71,11 @@ public final class SvGetCmdBuild extends AbstractPoCommandBuilder<SvGetRespPars>
     return svOperation;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public SvGetRespPars createResponseParser(ApduResponse apduResponse) {
     return new SvGetRespPars(header, apduResponse, this);

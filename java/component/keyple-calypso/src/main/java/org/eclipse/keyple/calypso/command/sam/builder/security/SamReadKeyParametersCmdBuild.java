@@ -162,7 +162,11 @@ public class SamReadKeyParametersCmdBuild
     request = setApduRequest(cla, command, (byte) 0x00, p2, sourceKeyId, (byte) 0x00);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public SamReadKeyParametersRespPars createResponseParser(ApduResponse apduResponse) {
     return new SamReadKeyParametersRespPars(apduResponse, this);

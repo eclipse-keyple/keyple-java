@@ -38,7 +38,11 @@ public abstract class AbstractSamCommandBuilder<T extends AbstractSamResponsePar
    */
   public abstract T createResponseParser(ApduResponse apduResponse);
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public CalypsoSamCommand getCommandRef() {
     return (CalypsoSamCommand) commandRef;

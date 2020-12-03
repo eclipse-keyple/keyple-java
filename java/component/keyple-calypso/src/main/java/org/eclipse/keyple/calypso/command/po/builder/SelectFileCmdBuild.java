@@ -103,7 +103,11 @@ public final class SelectFileCmdBuild extends AbstractPoCommandBuilder<SelectFil
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public SelectFileRespPars createResponseParser(ApduResponse apduResponse) {
     return new SelectFileRespPars(apduResponse, this);

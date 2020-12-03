@@ -36,13 +36,21 @@ public abstract class AbstractPoResponseParser extends AbstractApduResponseParse
     super(response, builder);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public final AbstractPoCommandBuilder<AbstractPoResponseParser> getBuilder() {
     return (AbstractPoCommandBuilder<AbstractPoResponseParser>) super.getBuilder();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected final KeypleCardCommandException buildCommandException(
       Class<? extends KeypleCardCommandException> exceptionClass,
@@ -78,7 +86,11 @@ public abstract class AbstractPoResponseParser extends AbstractApduResponseParse
     return e;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public void checkStatus() {
     try {

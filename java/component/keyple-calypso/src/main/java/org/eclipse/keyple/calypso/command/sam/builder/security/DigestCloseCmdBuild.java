@@ -52,7 +52,11 @@ public class DigestCloseCmdBuild extends AbstractSamCommandBuilder<DigestCloseRe
     request = setApduRequest(cla, command, p1, p2, null, expectedResponseLength);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public DigestCloseRespPars createResponseParser(ApduResponse apduResponse) {
     return new DigestCloseRespPars(apduResponse, this);

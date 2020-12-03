@@ -52,7 +52,11 @@ public class GiveRandomCmdBuild extends AbstractSamCommandBuilder<GiveRandomResp
     request = setApduRequest(cla, command, p1, p2, random, null);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public GiveRandomRespPars createResponseParser(ApduResponse apduResponse) {
     return new GiveRandomRespPars(apduResponse, this);

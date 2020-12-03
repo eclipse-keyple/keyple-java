@@ -53,7 +53,11 @@ public class DigestUpdateMultipleCmdBuild
     request = setApduRequest(cla, command, p1, p2, digestData, null);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public DigestUpdateMultipleRespPars createResponseParser(ApduResponse apduResponse) {
     return new DigestUpdateMultipleRespPars(apduResponse, this);

@@ -78,7 +78,11 @@ public final class OpenSession32CmdBuild
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public OpenSession32RespPars createResponseParser(ApduResponse apduResponse) {
     return new OpenSession32RespPars(apduResponse, this);
@@ -97,13 +101,21 @@ public final class OpenSession32CmdBuild
     return false;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public int getSfi() {
     return sfi;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public int getRecordNumber() {
     return recordNumber;

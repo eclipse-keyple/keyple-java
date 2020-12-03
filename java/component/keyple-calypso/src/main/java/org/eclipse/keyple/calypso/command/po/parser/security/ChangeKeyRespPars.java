@@ -77,7 +77,11 @@ public class ChangeKeyRespPars extends AbstractPoResponseParser {
     super(response, builder);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;

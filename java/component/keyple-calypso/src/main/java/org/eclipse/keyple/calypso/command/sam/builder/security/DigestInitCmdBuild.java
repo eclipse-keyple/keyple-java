@@ -89,7 +89,11 @@ public class DigestInitCmdBuild extends AbstractSamCommandBuilder<DigestInitResp
     request = setApduRequest(cla, CalypsoSamCommand.DIGEST_INIT, p1, p2, dataIn, null);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public DigestInitRespPars createResponseParser(ApduResponse apduResponse) {
     return new DigestInitRespPars(apduResponse, this);

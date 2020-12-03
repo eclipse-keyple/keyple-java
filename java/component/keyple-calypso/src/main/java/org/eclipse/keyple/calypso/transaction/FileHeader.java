@@ -43,7 +43,11 @@ public class FileHeader implements Serializable {
     this.sharedReference = builder.sharedReference;
   }
 
-  /** The EF type enum */
+  /**
+   * The EF type enum
+   *
+   * @since 0.9
+   */
   public enum FileType {
     LINEAR,
     BINARY,
@@ -55,6 +59,8 @@ public class FileHeader implements Serializable {
   /**
    * (package-private)<br>
    * Builder pattern
+   *
+   * @since 0.9
    */
   static final class FileHeaderBuilder {
 
@@ -76,6 +82,7 @@ public class FileHeader implements Serializable {
      *
      * @param lid the LID
      * @return the builder instance
+     * @since 0.9
      */
     FileHeaderBuilder lid(short lid) {
       this.lid = lid;
@@ -88,6 +95,7 @@ public class FileHeader implements Serializable {
      *
      * @param recordsNumber the number of records (should be {@code >=} 1)
      * @return the builder instance
+     * @since 0.9
      */
     FileHeaderBuilder recordsNumber(int recordsNumber) {
       this.recordsNumber = recordsNumber;
@@ -100,6 +108,7 @@ public class FileHeader implements Serializable {
      *
      * @param recordSize the size of a record (should be {@code >=} 1)
      * @return the builder instance
+     * @since 0.9
      */
     FileHeaderBuilder recordSize(int recordSize) {
       this.recordSize = recordSize;
@@ -112,6 +121,7 @@ public class FileHeader implements Serializable {
      *
      * @param type the file type (should be not null)
      * @return the builder instance
+     * @since 0.9
      */
     FileHeaderBuilder type(FileType type) {
       this.type = type;
@@ -124,6 +134,7 @@ public class FileHeader implements Serializable {
      *
      * @param accessConditions the access conditions (should be not null and 4 bytes length)
      * @return the builder instance
+     * @since 0.9
      */
     FileHeaderBuilder accessConditions(byte[] accessConditions) {
       this.accessConditions = accessConditions;
@@ -136,6 +147,7 @@ public class FileHeader implements Serializable {
      *
      * @param keyIndexes the key indexes (should be not null and 4 bytes length)
      * @return the builder instance
+     * @since 0.9
      */
     FileHeaderBuilder keyIndexes(byte[] keyIndexes) {
       this.keyIndexes = keyIndexes;
@@ -148,6 +160,7 @@ public class FileHeader implements Serializable {
      *
      * @param dfStatus the DF status (byte)
      * @return the builder instance
+     * @since 0.9
      */
     FileHeaderBuilder dfStatus(byte dfStatus) {
       this.dfStatus = dfStatus;
@@ -160,6 +173,7 @@ public class FileHeader implements Serializable {
      *
      * @param sharedReference the shared reference
      * @return the builder instance
+     * @since 0.9
      */
     FileHeaderBuilder sharedReference(short sharedReference) {
       this.sharedReference = sharedReference;
@@ -171,6 +185,7 @@ public class FileHeader implements Serializable {
      * Build a new {@code FileHeader}.
      *
      * @return a new instance
+     * @since 0.9
      */
     FileHeader build() {
       return new FileHeader(this);
@@ -284,6 +299,7 @@ public class FileHeader implements Serializable {
    * Gets a new builder.
    *
    * @return a new builder instance
+   * @since 0.9
    */
   static FileHeaderBuilder builder() {
     return new FileHeaderBuilder();
@@ -294,6 +310,7 @@ public class FileHeader implements Serializable {
    * Constructor used to create a clone of the provided file header.
    *
    * @param source the header to be cloned
+   * @since 0.9
    */
   FileHeader(FileHeader source) {
     this.lid = source.getLid();

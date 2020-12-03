@@ -84,7 +84,11 @@ public class CardCipherPinCmdBuild extends AbstractSamCommandBuilder<CardCipherP
     request = setApduRequest(cla, command, p1, p2, data, null);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public CardCipherPinRespPars createResponseParser(ApduResponse apduResponse) {
     return new CardCipherPinRespPars(apduResponse, this);

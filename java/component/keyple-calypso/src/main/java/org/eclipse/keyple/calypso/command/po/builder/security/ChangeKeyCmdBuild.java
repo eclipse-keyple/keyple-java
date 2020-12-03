@@ -47,7 +47,11 @@ public class ChangeKeyCmdBuild extends AbstractPoCommandBuilder<ChangeKeyRespPar
     this.request = setApduRequest(cla, command, p1, p2, cryptogram, null);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public ChangeKeyRespPars createResponseParser(ApduResponse apduResponse) {
     return new ChangeKeyRespPars(apduResponse, this);

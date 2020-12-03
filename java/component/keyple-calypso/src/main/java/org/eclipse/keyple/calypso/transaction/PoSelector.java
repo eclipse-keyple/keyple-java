@@ -67,19 +67,31 @@ public final class PoSelector extends CardSelector {
       return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 0.9
+     */
     @Override
     public PoSelectorBuilder cardProtocol(String cardProtocol) {
       return (PoSelectorBuilder) super.cardProtocol(cardProtocol);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 0.9
+     */
     @Override
     public PoSelectorBuilder atrFilter(AtrFilter atrFilter) {
       return (PoSelectorBuilder) super.atrFilter(atrFilter);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 0.9
+     */
     @Override
     public PoSelectorBuilder aidSelector(AidSelector aidSelector) {
       return (PoSelectorBuilder) super.aidSelector(aidSelector);

@@ -70,7 +70,11 @@ public final class IncreaseCmdBuild extends AbstractPoCommandBuilder<IncreaseRes
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public IncreaseRespPars createResponseParser(ApduResponse apduResponse) {
     return new IncreaseRespPars(apduResponse, this);

@@ -115,7 +115,11 @@ public final class SvReloadRespPars extends AbstractPoResponseParser {
     return getApduResponse().getDataOut();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
