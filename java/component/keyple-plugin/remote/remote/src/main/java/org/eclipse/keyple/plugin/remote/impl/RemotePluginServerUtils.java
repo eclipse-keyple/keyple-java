@@ -42,6 +42,7 @@ public final class RemotePluginServerUtils {
    * @param pluginName plugin name.
    * @return a not null reference
    * @throws KeyplePluginNotFoundException if the plugin is not registered.
+   * @throws IllegalArgumentException if the plugin name is null.
    * @since 1.0
    */
   public static RemotePluginServer getRemotePlugin(String pluginName) {
@@ -70,6 +71,7 @@ public final class RemotePluginServerUtils {
    * @throws KeyplePluginNotFoundException if the plugin is not registered.
    * @throws IllegalStateException if the plugin is not configured with a {@link AsyncNodeServer}
    *     node.
+   * @throws IllegalArgumentException if the plugin name is null.
    * @since 1.0
    */
   public static AsyncNodeServer getAsyncNode(String pluginName) {
@@ -103,6 +105,7 @@ public final class RemotePluginServerUtils {
    * @throws KeyplePluginNotFoundException if the plugin is not registered.
    * @throws IllegalStateException if the plugin is not configured with a {@link SyncNodeServer}
    *     node.
+   * @throws IllegalArgumentException if the plugin name is null.
    * @since 1.0
    */
   public static SyncNodeServer getSyncNode(String pluginName) {

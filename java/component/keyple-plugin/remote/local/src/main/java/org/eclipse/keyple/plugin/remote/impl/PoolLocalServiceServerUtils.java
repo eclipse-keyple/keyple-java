@@ -42,6 +42,7 @@ public final class PoolLocalServiceServerUtils {
    * @return a not null reference
    * @throws IllegalStateException if the service is not initialized or is not configured with a
    *     {@link AsyncNodeServer} node.
+   * @throws IllegalArgumentException if the service name is null.
    * @since 1.0
    */
   public static AsyncNodeServer getAsyncNode(String serviceName) {
@@ -73,6 +74,7 @@ public final class PoolLocalServiceServerUtils {
    * @return a not null reference
    * @throws IllegalStateException if the service is not initialized or is not configured with a
    *     {@link SyncNodeServer} node.
+   * @throws IllegalArgumentException if the service name is null.
    * @since 1.0
    */
   public static SyncNodeServer getSyncNode(String serviceName) {

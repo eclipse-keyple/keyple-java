@@ -79,8 +79,8 @@ public final class PoolRemotePluginClientFactory implements PluginFactory {
     NodeStep withPluginName(String pluginName);
 
     /**
-     * Configures the plugin with the default name. Note that only one plugin of this type with the
-     * default name can be register.
+     * Configures the plugin with the default name : {@value DEFAULT_PLUGIN_NAME} . Note that only
+     * one plugin of this type with the default name can be register.
      *
      * @return next configuration step
      * @since 1.0

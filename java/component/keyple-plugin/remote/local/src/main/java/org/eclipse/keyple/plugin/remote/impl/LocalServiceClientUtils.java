@@ -41,6 +41,7 @@ public final class LocalServiceClientUtils {
    * @param serviceName identifier of the local service
    * @return a not null reference
    * @throws IllegalStateException if the service is not initialized.
+   * @throws IllegalArgumentException if the service name is null.
    * @since 1.0
    */
   public static LocalServiceClient getLocalService(String serviceName) {
@@ -67,6 +68,7 @@ public final class LocalServiceClientUtils {
    * @return a not null reference
    * @throws IllegalStateException if the service is not initialized or is not configured with a
    *     {@link AsyncNodeClient} node.
+   * @throws IllegalArgumentException if the service name is null.
    * @since 1.0
    */
   public static AsyncNodeClient getAsyncNode(String serviceName) {
@@ -88,7 +90,6 @@ public final class LocalServiceClientUtils {
    * @throws IllegalStateException If there's no service having the provided name
    */
   private static LocalServiceClientImpl getServiceImpl(String serviceName) {
-    Assert.getInstance().notNull(serviceName, "service name");
     LocalServiceClientImpl service = LocalServiceClientImpl.getInstance(serviceName);
     return service;
   }

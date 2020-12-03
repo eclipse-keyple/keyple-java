@@ -42,6 +42,7 @@ public final class PoolRemotePluginClientUtils {
    * @param pluginName plugin name
    * @return a not null reference
    * @throws KeyplePluginNotFoundException if the plugin is not registered.
+   * @throws IllegalArgumentException if the plugin name is null.
    * @since 1.0
    */
   public static PoolRemotePluginClient getRemotePlugin(String pluginName) {
@@ -70,6 +71,7 @@ public final class PoolRemotePluginClientUtils {
    * @throws KeyplePluginNotFoundException if the plugin is not registered.
    * @throws IllegalStateException if the plugin is not configured with a {@link AsyncNodeClient}
    *     node.
+   * @throws IllegalArgumentException if the plugin name is null.
    * @since 1.0
    */
   public static AsyncNodeClient getAsyncNode(String pluginName) {

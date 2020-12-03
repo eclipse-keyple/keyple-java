@@ -75,13 +75,14 @@ public final class RemotePluginServerFactory implements PluginFactory {
      *
      * @param pluginName specific plugin name.
      * @return next configuration step
+     * @throws IllegalArgumentException if the plugin name is null.
      * @since 1.0
      */
     NodeStep withPluginName(String pluginName);
 
     /**
-     * Configures the plugin with the default name. Note that only one plugin of this type with the
-     * default name can be registered.
+     * Configures the plugin with the default name : {@value DEFAULT_PLUGIN_NAME}. Note that only
+     * one plugin of this type with the default name can be registered.
      *
      * @return next configuration step
      * @since 1.0
