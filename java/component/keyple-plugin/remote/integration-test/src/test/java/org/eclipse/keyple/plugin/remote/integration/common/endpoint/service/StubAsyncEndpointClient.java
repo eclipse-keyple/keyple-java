@@ -35,6 +35,7 @@ public class StubAsyncEndpointClient implements AsyncEndpointClient {
   private final ExecutorService taskPool;
   private final Boolean simulateConnectionError;
   private final AtomicInteger messageSent = new AtomicInteger();
+  private final String localServiceName;
 
   /**
    * Constructor
@@ -42,11 +43,13 @@ public class StubAsyncEndpointClient implements AsyncEndpointClient {
    * @param server
    * @param simulateConnectionError
    */
-  public StubAsyncEndpointClient(StubAsyncEndpointServer server, Boolean simulateConnectionError) {
+  public StubAsyncEndpointClient(
+      StubAsyncEndpointServer server, Boolean simulateConnectionError, String localServiceName) {
     this.server = server;
     this.taskPool = Executors.newCachedThreadPool(new NamedThreadFactory("client-async-pool"));
     this.simulateConnectionError = simulateConnectionError;
     messageSent.set(0);
+    this.localServiceName = localServiceName;
   }
 
   /**
@@ -62,14 +65,14 @@ public class StubAsyncEndpointClient implements AsyncEndpointClient {
             // creer task
             logger.trace("Data received from server : {}", data);
             MessageDto message = JacksonParser.fromJson(data);
-            LocalServiceClientUtils.getAsyncNode().onMessage(message);
+            LocalServiceClientUtils.getAsyncNode(localServiceName).onMessage(message);
           }
         });
   }
 
   @Override
   public void openSession(String sessionId) {
-    LocalServiceClientUtils.getAsyncNode().onOpen(sessionId);
+    LocalServiceClientUtils.getAsyncNode(localServiceName).onOpen(sessionId);
   }
 
   @Override
@@ -95,6 +98,6 @@ public class StubAsyncEndpointClient implements AsyncEndpointClient {
     logger.trace("Close session {} to server", sessionId);
     server.close(sessionId);
     // currentSessionIds.remove(sessionId);
-    LocalServiceClientUtils.getAsyncNode().onClose(sessionId);
+    LocalServiceClientUtils.getAsyncNode(localServiceName).onClose(sessionId);
   }
 }

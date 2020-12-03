@@ -119,6 +119,7 @@ public abstract class BaseScenario {
   public static String DEVICE_ID = "Xo99";
 
   LocalServiceClient localService;
+  String localServiceName;
   StubPlugin localPlugin;
   StubReader localReader;
   StubReader localReader2;

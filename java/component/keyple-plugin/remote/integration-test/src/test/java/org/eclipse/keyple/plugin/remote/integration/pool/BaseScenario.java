@@ -33,6 +33,8 @@ public abstract class BaseScenario {
   protected PoolLocalServiceServer poolLocalServiceServer;
   protected PoolRemotePluginClient poolRemotePluginClient;
 
+  protected String localServiceName;
+
   abstract void execute_transaction_on_pool_reader();
 
   /** Init local stub plugin that can work with {@link StubSmartCard} */

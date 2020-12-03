@@ -37,7 +37,9 @@ import org.eclipse.keyple.plugin.remote.spi.ObservableReaderEventFilter;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -61,7 +63,9 @@ public class LocalServiceClientTest extends BaseLocalTest {
   String remoteReaderName = "remoteReaderName";
   Gson parser;
 
-  String localServiceName = "serviceName";
+  String localServiceName;
+
+  @Rule public TestName testName = new TestName();
 
   @Before
   public void setUp() {
@@ -94,6 +98,8 @@ public class LocalServiceClientTest extends BaseLocalTest {
             ReaderEvent.EventType.CARD_INSERTED, //
             null);
     parser = KeypleJsonParser.getParser();
+
+    localServiceName = testName.getMethodName();
   }
 
   @After
@@ -136,7 +142,7 @@ public class LocalServiceClientTest extends BaseLocalTest {
     syncClientEndpoint = new SyncEndpointClientMock(1);
     final LocalServiceClient localServiceClient =
         LocalServiceClientFactory.builder()
-            .withDefaultServiceName()
+            .withServiceName(localServiceName)
             .withSyncNode(syncClientEndpoint)
             .withoutReaderObservation()
             .getService();
@@ -149,7 +155,7 @@ public class LocalServiceClientTest extends BaseLocalTest {
     syncClientEndpoint = new SyncEndpointClientMock(1);
     LocalServiceClient localServiceClient =
         LocalServiceClientFactory.builder()
-            .withDefaultServiceName()
+            .withServiceName(localServiceName)
             .withSyncNode(syncClientEndpoint)
             .withoutReaderObservation()
             .getService();
@@ -166,7 +172,7 @@ public class LocalServiceClientTest extends BaseLocalTest {
     // init
     syncClientEndpoint = new SyncEndpointClientMock(1);
     LocalServiceClientFactory.builder()
-        .withDefaultServiceName()
+        .withServiceName(localServiceName)
         .withSyncNode(syncClientEndpoint)
         .withReaderObservation(null)
         .getService();
@@ -178,7 +184,7 @@ public class LocalServiceClientTest extends BaseLocalTest {
     syncClientEndpoint = new SyncEndpointClientMock(1);
     LocalServiceClient localServiceClient =
         LocalServiceClientFactory.builder()
-            .withDefaultServiceName()
+            .withServiceName(localServiceName)
             .withSyncNode(syncClientEndpoint)
             .withReaderObservation(eventFilter)
             .getService();
@@ -200,7 +206,7 @@ public class LocalServiceClientTest extends BaseLocalTest {
     syncClientEndpoint = new SyncEndpointClientMock(1);
     LocalServiceClient localServiceClient =
         LocalServiceClientFactory.builder()
-            .withDefaultServiceName()
+            .withServiceName(localServiceName)
             .withSyncNode(syncClientEndpoint)
             .withReaderObservation(eventFilter)
             .getService();
@@ -220,7 +226,7 @@ public class LocalServiceClientTest extends BaseLocalTest {
     syncClientEndpoint = new SyncEndpointClientMock(2);
     LocalServiceClient localServiceClient =
         LocalServiceClientFactory.builder() //
-            .withDefaultServiceName()
+            .withServiceName(localServiceName)
             .withSyncNode(syncClientEndpoint) //
             .withoutReaderObservation() //
             .getService();
@@ -260,7 +266,7 @@ public class LocalServiceClientTest extends BaseLocalTest {
     LocalServiceClientImpl localClientService =
         (LocalServiceClientImpl)
             LocalServiceClientFactory.builder() //
-                .withDefaultServiceName()
+                .withServiceName(localServiceName)
                 .withSyncNode(syncClientEndpoint) //
                 .withReaderObservation(new MyEventFilter(false)) //
                 .getService();
@@ -279,7 +285,7 @@ public class LocalServiceClientTest extends BaseLocalTest {
     LocalServiceClientImpl localClientService =
         (LocalServiceClientImpl)
             LocalServiceClientFactory.builder() //
-                .withDefaultServiceName()
+                .withServiceName(localServiceName)
                 .withSyncNode(syncClientEndpoint) //
                 .withReaderObservation(new MyEventFilter(true)) //
                 .getService();

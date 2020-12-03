@@ -20,18 +20,18 @@ import org.eclipse.keyple.plugin.remote.integration.common.model.DeviceInput;
 import org.eclipse.keyple.plugin.remote.integration.common.model.UserInput;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
 import org.junit.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.junit.rules.TestName;
 
 public class SyncScenario extends BaseScenario {
 
-  private static final Logger logger = LoggerFactory.getLogger(SyncScenario.class);
-
   SyncEndpointClient clientSyncEndpoint;
+
+  @Rule public TestName testName = new TestName();
 
   @Before
   public void setUp() {
 
+    localServiceName = testName.getMethodName() + "_sync";
     /*
      * Server side :
      * <ul>
@@ -62,10 +62,6 @@ public class SyncScenario extends BaseScenario {
   public void tearDown() {
     /* Unplug the local reader */
     clearNativeReader();
-  }
-
-  @AfterClass
-  public static void globalTearDown() {
     unRegisterRemotePlugin();
   }
 
@@ -76,7 +72,7 @@ public class SyncScenario extends BaseScenario {
 
     localService =
         LocalServiceClientFactory.builder()
-            .withDefaultServiceName()
+            .withServiceName(localServiceName)
             .withSyncNode(clientSyncEndpoint)
             .withoutReaderObservation()
             .getService();
@@ -91,7 +87,7 @@ public class SyncScenario extends BaseScenario {
 
     localService =
         LocalServiceClientFactory.builder()
-            .withDefaultServiceName()
+            .withServiceName(localServiceName)
             .withSyncNode(clientSyncEndpoint)
             .withoutReaderObservation()
             .getService();
@@ -106,7 +102,7 @@ public class SyncScenario extends BaseScenario {
 
     localService =
         LocalServiceClientFactory.builder()
-            .withDefaultServiceName()
+            .withServiceName(localServiceName)
             .withSyncNode(clientSyncEndpoint)
             .withoutReaderObservation()
             .getService();
@@ -120,7 +116,7 @@ public class SyncScenario extends BaseScenario {
   public void execute_transaction_closeSession_card_error() {
     localService =
         LocalServiceClientFactory.builder()
-            .withDefaultServiceName()
+            .withServiceName(localServiceName)
             .withSyncNode(clientSyncEndpoint)
             .withoutReaderObservation()
             .getService();
@@ -136,7 +132,7 @@ public class SyncScenario extends BaseScenario {
 
     localService =
         LocalServiceClientFactory.builder()
-            .withDefaultServiceName()
+            .withServiceName(localServiceName)
             .withSyncNode(clientSyncEndpoint)
             .withoutReaderObservation()
             .getService();
@@ -157,7 +153,7 @@ public class SyncScenario extends BaseScenario {
   public void execute_transaction_slowSe_success() {
     localService =
         LocalServiceClientFactory.builder()
-            .withDefaultServiceName()
+            .withServiceName(localServiceName)
             .withSyncNode(clientSyncEndpoint)
             .withoutReaderObservation()
             .getService();
@@ -172,7 +168,7 @@ public class SyncScenario extends BaseScenario {
 
     localService =
         LocalServiceClientFactory.builder()
-            .withDefaultServiceName()
+            .withServiceName(localServiceName)
             .withSyncNode(clientSyncEndpoint)
             .withReaderObservation(eventFilter)
             .getService();
@@ -188,7 +184,7 @@ public class SyncScenario extends BaseScenario {
 
     localService =
         LocalServiceClientFactory.builder()
-            .withDefaultServiceName()
+            .withServiceName(localServiceName)
             .withSyncNode(clientSyncEndpoint)
             .withReaderObservation(eventFilter)
             .getService();

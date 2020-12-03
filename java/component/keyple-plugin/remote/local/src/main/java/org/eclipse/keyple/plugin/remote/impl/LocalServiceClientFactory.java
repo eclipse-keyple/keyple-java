@@ -53,7 +53,7 @@ public final class LocalServiceClientFactory {
      *
      * @return singleton instance of the service
      * @since 1.0
-     * @throws IllegalArgumentException if a service already exists * with the same name.
+     * @throws IllegalStateException if a service already exists with the same name.
      */
     LocalServiceClient getService();
   }
