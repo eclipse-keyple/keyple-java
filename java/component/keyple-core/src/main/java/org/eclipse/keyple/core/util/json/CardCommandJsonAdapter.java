@@ -24,7 +24,11 @@ import org.eclipse.keyple.core.util.Assert;
 public class CardCommandJsonAdapter
     implements JsonSerializer<CardCommand>, JsonDeserializer<CardCommand> {
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public JsonElement serialize(
       CardCommand cardCommand, Type type, JsonSerializationContext jsonSerializationContext) {
@@ -37,7 +41,11 @@ public class CardCommandJsonAdapter
     return output;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public CardCommand deserialize(
       JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext)

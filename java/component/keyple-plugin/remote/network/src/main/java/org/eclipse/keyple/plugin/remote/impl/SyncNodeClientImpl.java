@@ -25,6 +25,8 @@ import org.slf4j.LoggerFactory;
 /**
  * (package-private)<br>
  * Sync Node Client implementation.
+ *
+ * @since 1.0
  */
 final class SyncNodeClientImpl extends AbstractNode implements SyncNodeClient {
 
@@ -34,7 +36,6 @@ final class SyncNodeClientImpl extends AbstractNode implements SyncNodeClient {
 
   /**
    * (package-private)<br>
-   * Constructor.
    *
    * @param handler The associated handler (must be not null).
    * @param endpoint The user client sync endpoint (must be not null).
@@ -43,6 +44,7 @@ final class SyncNodeClientImpl extends AbstractNode implements SyncNodeClient {
    *     This parameter can be used only for <b>Remote Plugin Client</b> use case.
    * @param readerObservationStrategy The server push event strategy associated to the reader
    *     observation (null if must not be activate).<br>
+   * @since 1.0
    */
   SyncNodeClientImpl(
       AbstractMessageHandler handler,
@@ -65,13 +67,21 @@ final class SyncNodeClientImpl extends AbstractNode implements SyncNodeClient {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   void openSession(String sessionId) {
     // NOP
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   MessageDto sendRequest(MessageDto msg) {
 
@@ -97,14 +107,22 @@ final class SyncNodeClientImpl extends AbstractNode implements SyncNodeClient {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   void sendMessage(MessageDto msg) {
     msg.setClientNodeId(nodeId);
     endpoint.sendRequest(msg);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   void closeSession(String sessionId) {
     // NOP

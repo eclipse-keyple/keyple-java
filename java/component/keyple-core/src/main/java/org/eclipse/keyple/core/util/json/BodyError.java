@@ -22,7 +22,7 @@ public class BodyError {
   private final RuntimeException exception;
 
   /**
-   * Constructor.
+   * Builds an instance from an exception reference.
    *
    * @param exception The runtime exception.
    * @since 1.0

@@ -33,7 +33,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * (package-private)<br>
- * Implementation of RemotePluginServer
+ * Implementation of the {@link RemotePluginServer}.
+ *
+ * @since 1.0
  */
 final class RemotePluginServerImpl extends AbstractRemotePlugin implements RemotePluginServer {
 
@@ -46,7 +48,6 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
 
   /**
    * (package-private)<br>
-   * Constructor.
    *
    * <ul>
    *   <li>Instantiates a new RemotePluginServer.
@@ -57,6 +58,7 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
    *
    * @param name The name of the plugin.
    * @throws KeypleReaderException when an issue is raised with reader
+   * @since 1.0
    */
   RemotePluginServerImpl(String name, ExecutorService eventNotificationPool) {
     super(name);
@@ -64,13 +66,21 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
     this.observers = new ArrayList<PluginObserver>();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   ConcurrentMap<String, Reader> initNativeReaders() throws KeypleReaderIOException {
     return new ConcurrentHashMap<String, Reader>();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   void onMessage(MessageDto message) {
     switch (MessageDto.Action.valueOf(message.getAction())) {
@@ -111,7 +121,11 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void terminateService(String remoteReaderName, Object userOutputData) {
 
@@ -163,7 +177,11 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
     node.sendMessage(message);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public RemoteReaderServer getReader(String name) throws KeypleReaderNotFoundException {
     Assert.getInstance().notNull(name, "reader name");
@@ -174,7 +192,11 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
     return seReader;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void addObserver(PluginObserver observer) {
     Assert.getInstance().notNull(observer, "Plugin Observer");
@@ -184,7 +206,11 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void removeObserver(PluginObserver observer) {
     Assert.getInstance().notNull(observer, "Plugin Observer");
@@ -194,7 +220,11 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void clearObservers() {
     observers.clear();
@@ -203,7 +233,11 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public int countObservers() {
     return observers.size();

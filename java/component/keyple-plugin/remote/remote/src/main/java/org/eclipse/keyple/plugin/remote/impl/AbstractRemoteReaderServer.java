@@ -23,6 +23,8 @@ import org.eclipse.keyple.plugin.remote.RemoteReaderServer;
  * (package-private)<br>
  * Abstract Remote Reader Server class.<br>
  * This class is a decorator of a {@link AbstractRemoteReader}.
+ *
+ * @since 1.0
  */
 abstract class AbstractRemoteReaderServer implements RemoteReaderServer, ProxyReader {
 
@@ -33,12 +35,12 @@ abstract class AbstractRemoteReaderServer implements RemoteReaderServer, ProxyRe
 
   /**
    * (package-private)<br>
-   * Constructor
    *
    * @param reader The reader to decorate (must be not null).
    * @param serviceId The service id (must be not null).
    * @param userInputDataJson The user input data as a JSON string (optional).
    * @param initialCardContentJson The initial card content as a JSON string (optional).
+   * @since 1.0
    */
   AbstractRemoteReaderServer(
       AbstractRemoteReader reader,
@@ -51,7 +53,11 @@ abstract class AbstractRemoteReaderServer implements RemoteReaderServer, ProxyRe
     this.initialCardContentJson = initialCardContentJson;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public List<CardSelectionResponse> transmitCardSelectionRequests(
       List<CardSelectionRequest> cardSelectionRequests,
@@ -61,19 +67,31 @@ abstract class AbstractRemoteReaderServer implements RemoteReaderServer, ProxyRe
         cardSelectionRequests, multiSelectionProcessing, channelControl);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public CardResponse transmitCardRequest(CardRequest cardRequest, ChannelControl channelControl) {
     return reader.transmitCardRequest(cardRequest, channelControl);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public String getServiceId() {
     return serviceId;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public <T> T getUserInputData(Class<T> classOfT) {
     Assert.getInstance().notNull(classOfT, "classOfT");
@@ -82,7 +100,11 @@ abstract class AbstractRemoteReaderServer implements RemoteReaderServer, ProxyRe
         : null;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public <T extends AbstractSmartCard> T getInitialCardContent(Class<T> classOfT) {
     Assert.getInstance().notNull(classOfT, "classOfT");
@@ -91,13 +113,21 @@ abstract class AbstractRemoteReaderServer implements RemoteReaderServer, ProxyRe
         : null;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public boolean isCardPresent() {
     return reader.isCardPresent();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public String getName() {
     return reader.getName();
@@ -121,27 +151,43 @@ abstract class AbstractRemoteReaderServer implements RemoteReaderServer, ProxyRe
     return reader.getClientNodeId();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void releaseChannel() {
     reader.releaseChannel();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void activateProtocol(String readerProtocolName, String applicationProtocolName) {
     throw new UnsupportedOperationException(
         "activateProtocol method is not implemented in plugin remote, use it only locally");
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void deactivateProtocol(String readerProtocolName) {
     throw new UnsupportedOperationException(
         "deactivateProtocol method is not implemented in plugin remote, use it only locally");
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public boolean isContactless() {
     return reader.isContactless();

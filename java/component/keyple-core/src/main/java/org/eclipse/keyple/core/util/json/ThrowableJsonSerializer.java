@@ -26,7 +26,11 @@ import java.lang.reflect.Type;
  */
 public class ThrowableJsonSerializer implements JsonSerializer<Throwable> {
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public JsonElement serialize(
       Throwable exception, Type type, JsonSerializationContext jsonSerializationContext) {

@@ -153,21 +153,21 @@ package "org.eclipse.keyple.plugin.remote.impl" as packImpl {
             - LocalServiceClientImpl (\n    boolean withReaderObservation,\n    ObservableReaderEventFilter eventFilter)
             ..
             ~ {static} LocalServiceClientImpl createInstance (\n    String serviceName,\n    boolean withReaderObservation,\n    ObservableReaderEventFilter eventFilter)
-            ~ {static} LocalServiceClientImpl getInstance ()
+            ~ {static} LocalServiceClientImpl getInstance (String serviceName)
         }
         ~class "<<<back:orange>ReaderObserver</back>>>\n<<<back:yellow>LocalServiceServer</back>>>\n**final** LocalServiceServerImpl" as LocalServiceServerImpl extends AbstractLocalService {
             --
             - LocalServiceServerImpl ()
             ..
             ~ {static} LocalServiceServerImpl createInstance (String serviceName)
-            ~ {static} LocalServiceServerImpl getInstance ()
+            ~ {static} LocalServiceServerImpl getInstance (String serviceName)
         }
         ~class "<<<back:yellow>PoolLocalServiceServer</back>>>\n**final** PoolLocalServiceServerImpl" as PoolLocalServiceServerImpl extends AbstractLocalService {
             --
             - PoolLocalServiceServerImpl (String[] poolPluginNames)
             ..
             ~ {static} PoolLocalServiceServerImpl createInstance (\n    String serviceName,\n    String[] poolPluginNames)
-            ~ {static} PoolLocalServiceServerImpl getInstance ()
+            ~ {static} PoolLocalServiceServerImpl getInstance (String serviceName)
         }
 
     }

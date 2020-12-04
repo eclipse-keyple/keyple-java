@@ -24,10 +24,10 @@ import org.eclipse.keyple.plugin.remote.SyncNodeServer;
 public final class PoolLocalServiceServerUtils {
 
   /**
-   * Gets the {@link AsyncNodeServer} node associated to the service having the default name.
+   * Gets the {@link AsyncNodeServer} node associated to the local service having the default name.
    *
-   * @return a not null reference
-   * @throws IllegalStateException if the service is not initialized or is not configured with a
+   * @return A not null reference.
+   * @throws IllegalStateException If the service is not initialized or is not configured with a
    *     {@link AsyncNodeServer} node.
    * @since 1.0
    */
@@ -36,13 +36,13 @@ public final class PoolLocalServiceServerUtils {
   }
 
   /**
-   * Gets the {@link AsyncNodeServer} node associated to a local service.
+   * Gets the {@link AsyncNodeServer} node associated to the local service having the provided name.
    *
-   * @param serviceName identifier of the local service
-   * @return a not null reference
-   * @throws IllegalStateException if the service is not initialized or is not configured with a
+   * @param serviceName The identifier of the local service.
+   * @return A not null reference.
+   * @throws IllegalArgumentException If the service name is null.
+   * @throws IllegalStateException If the service is not initialized or is not configured with a
    *     {@link AsyncNodeServer} node.
-   * @throws IllegalArgumentException if the service name is null.
    * @since 1.0
    */
   public static AsyncNodeServer getAsyncNode(String serviceName) {
@@ -56,10 +56,10 @@ public final class PoolLocalServiceServerUtils {
   }
 
   /**
-   * Gets the {@link SyncNodeServer} node associated to the service having the default name.
+   * Gets the {@link SyncNodeServer} node associated to the local service having the provided name.
    *
-   * @return a not null reference
-   * @throws IllegalStateException if the service is not initialized or is not configured with a
+   * @return A not null reference.
+   * @throws IllegalStateException If the service is not initialized or is not configured with a
    *     {@link SyncNodeServer} node.
    * @since 1.0
    */
@@ -68,13 +68,13 @@ public final class PoolLocalServiceServerUtils {
   }
 
   /**
-   * Gets the {@link SyncNodeServer} node associated to a local service.
+   * Gets the {@link SyncNodeServer} node associated to the local service having the provided name.
    *
-   * @param serviceName identifier of the local service
-   * @return a not null reference
-   * @throws IllegalStateException if the service is not initialized or is not configured with a
+   * @param serviceName The identifier of the local service.
+   * @return A not null reference.
+   * @throws IllegalArgumentException If the service name is null.
+   * @throws IllegalStateException If the service is not initialized or is not configured with a
    *     {@link SyncNodeServer} node.
-   * @throws IllegalArgumentException if the service name is null.
    * @since 1.0
    */
   public static SyncNodeServer getSyncNode(String serviceName) {
@@ -89,10 +89,11 @@ public final class PoolLocalServiceServerUtils {
 
   /**
    * (private)<br>
-   * Gets the service implementation.
+   * Gets the service implementation having the provided name.
    *
-   * @param serviceName identifier of the local service
-   * @return a not null reference
+   * @param serviceName The identifier of the local service.
+   * @return A not null reference.
+   * @throws IllegalStateException If there's no service having the provided name.
    */
   private static PoolLocalServiceServerImpl getServiceImpl(String serviceName) {
     PoolLocalServiceServerImpl service = PoolLocalServiceServerImpl.getInstance(serviceName);

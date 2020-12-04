@@ -85,7 +85,11 @@ public class AsyncScenario extends BaseScenario {
     unRegisterRemotePlugin();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   @Test
   public void execute_localselection_remoteTransaction_successful() {
@@ -101,7 +105,11 @@ public class AsyncScenario extends BaseScenario {
     localselection_remoteTransaction_successful();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   @Test
   public void execute_remoteselection_remoteTransaction_successful() {
@@ -117,7 +125,11 @@ public class AsyncScenario extends BaseScenario {
     remoteselection_remoteTransaction_successful();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   // TODO flaky
   @Test
   @Override
@@ -134,7 +146,11 @@ public class AsyncScenario extends BaseScenario {
     multipleclients_remoteselection_remoteTransaction_successful();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Test
   @Override
   public void execute_transaction_closeSession_card_error() {
@@ -149,7 +165,11 @@ public class AsyncScenario extends BaseScenario {
     transaction_closeSession_fail();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Test(expected = StubNetworkConnectionException.class)
   @Override
   public void execute_transaction_host_network_error() {
@@ -181,7 +201,11 @@ public class AsyncScenario extends BaseScenario {
     remoteselection_remoteTransaction();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Test
   @Override
   public void execute_transaction_slowSe_success() {
@@ -212,7 +236,11 @@ public class AsyncScenario extends BaseScenario {
     all_methods();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   @Test
   public void observable_defaultSelection_onMatched_transaction_successful() {

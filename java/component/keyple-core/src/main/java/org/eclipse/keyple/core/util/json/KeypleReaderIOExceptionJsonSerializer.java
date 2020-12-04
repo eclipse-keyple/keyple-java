@@ -27,7 +27,11 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 public class KeypleReaderIOExceptionJsonSerializer
     implements JsonSerializer<KeypleReaderIOException> {
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public JsonElement serialize(
       KeypleReaderIOException exception,

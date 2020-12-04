@@ -21,7 +21,11 @@ import java.lang.reflect.Type;
  */
 public class BodyErrorJsonSerializer implements JsonDeserializer<BodyError> {
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public BodyError deserialize(
       JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext)

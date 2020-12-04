@@ -310,7 +310,7 @@ public class LocalServiceClientTest extends BaseLocalTest {
     // output is verified in eventFilter
 
     // assert that remote reader is unregister as required by the terminate service
-    assertThat(getRemoteReaders(localClientService)).hasSize(0);
+    assertThat(getMapOfRemoteReaderByLocalName(localClientService)).hasSize(0);
   }
 
   /*
@@ -319,9 +319,10 @@ public class LocalServiceClientTest extends BaseLocalTest {
    *
    * */
 
-  public static Map<String, String> getRemoteReaders(LocalServiceClient service) {
+  public static Map<String, String> getMapOfRemoteReaderByLocalName(LocalServiceClient service) {
     try {
-      Field privateStringField = LocalServiceClientImpl.class.getDeclaredField("remoteReaders");
+      Field privateStringField =
+          LocalServiceClientImpl.class.getDeclaredField("remoteReaderByLocalName");
       privateStringField.setAccessible(true);
       return (Map<String, String>) privateStringField.get(service);
     } catch (IllegalAccessException e) {

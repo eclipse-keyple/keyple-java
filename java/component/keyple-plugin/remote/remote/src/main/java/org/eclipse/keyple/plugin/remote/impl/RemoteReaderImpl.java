@@ -14,18 +14,20 @@ package org.eclipse.keyple.plugin.remote.impl;
 /**
  * (package-private)<br>
  * Remote Reader
+ *
+ * @since 1.0
  */
 final class RemoteReaderImpl extends AbstractRemoteReader {
 
   /**
    * (package-private)<br>
-   * Constructor
    *
    * @param pluginName The name of the plugin (must be not null).
    * @param localReaderName The name of the local reader (must be not null).
    * @param node The associated node (must be not null).
    * @param sessionId Session Id (can be null)
    * @param clientNodeId Associated client node Id (can be null)
+   * @since 1.0
    */
   RemoteReaderImpl(
       String pluginName,

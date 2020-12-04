@@ -25,15 +25,23 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
  *
  * <p>This object behaves both as a {@link AbstractMessageHandler} and as a {@link
  * org.eclipse.keyple.core.service.Plugin}.
+ *
+ * @since 1.0
  */
 abstract class AbstractRemotePlugin extends AbstractMessageHandler implements Plugin {
 
   private final String name;
-  protected final Map<String, Reader> readers;
 
   /**
    * (package-private)<br>
-   * Constructor.
+   * Map of remote reader by remote name.
+   *
+   * @since 1.0
+   */
+  final Map<String, Reader> readers;
+
+  /**
+   * (package-private)<br>
    *
    * <ul>
    *   <li>Instantiates a new ReaderPlugin.
@@ -44,6 +52,7 @@ abstract class AbstractRemotePlugin extends AbstractMessageHandler implements Pl
    *
    * @param name The name of the plugin.
    * @throws KeypleReaderException when an issue is raised with reader
+   * @since 1.0
    */
   AbstractRemotePlugin(String name) {
     super();
@@ -51,19 +60,31 @@ abstract class AbstractRemotePlugin extends AbstractMessageHandler implements Pl
     this.readers = new ConcurrentHashMap<String, Reader>();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public final String getName() {
     return name;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public final Map<String, Reader> getReaders() {
     return readers;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public final Set<String> getReaderNames() {
     return readers.keySet();
@@ -77,7 +98,8 @@ abstract class AbstractRemotePlugin extends AbstractMessageHandler implements Pl
    * <p>this method is invoked once in the plugin constructor.
    *
    * @return a not null map.
-   * @throws KeypleReaderIOException if the communication with the reader or the Card has failed
+   * @throws KeypleReaderIOException if the communication with the reader or the Card has failed.
+   * @since 1.0
    */
   abstract Map<String, Reader> initNativeReaders() throws KeypleReaderIOException;
 }

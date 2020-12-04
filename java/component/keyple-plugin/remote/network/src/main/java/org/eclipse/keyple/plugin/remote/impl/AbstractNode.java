@@ -21,6 +21,8 @@ import org.slf4j.LoggerFactory;
 /**
  * (package-private)<br>
  * Abstract Node.
+ *
+ * @since 1.0
  */
 abstract class AbstractNode {
 
@@ -29,12 +31,16 @@ abstract class AbstractNode {
   /**
    * (package-private)<br>
    * The node id.
+   *
+   * @since 1.0
    */
   final String nodeId;
 
   /**
    * (package-private)<br>
    * The associated handler.
+   *
+   * @since 1.0
    */
   final AbstractMessageHandler handler;
 
@@ -46,10 +52,10 @@ abstract class AbstractNode {
 
   /**
    * (package-private)<br>
-   * Constructor.
    *
    * @param handler The associated handler (must be not null).
    * @param timeoutInSecond The default timeout (in seconds) to use.
+   * @since 1.0
    */
   AbstractNode(AbstractMessageHandler handler, int timeoutInSecond) {
     this.nodeId = UUID.randomUUID().toString();
@@ -62,6 +68,7 @@ abstract class AbstractNode {
    * Open a new session on the endpoint (for internal use only).
    *
    * @param sessionId The session id (must be not empty).
+   * @since 1.0
    */
   abstract void openSession(String sessionId);
 
@@ -71,6 +78,7 @@ abstract class AbstractNode {
    *
    * @param msg The message to send (must be not null).
    * @return null if there is no response.
+   * @since 1.0
    */
   abstract MessageDto sendRequest(MessageDto msg);
 
@@ -79,6 +87,7 @@ abstract class AbstractNode {
    * Send a message (for internal use only).
    *
    * @param msg The message to send (must be not null).
+   * @since 1.0
    */
   abstract void sendMessage(MessageDto msg);
 
@@ -87,6 +96,7 @@ abstract class AbstractNode {
    * Close the session having the provided session id (for internal use only).
    *
    * @param sessionId The session id (must be not empty).
+   * @since 1.0
    */
   abstract void closeSession(String sessionId);
 
@@ -95,6 +105,7 @@ abstract class AbstractNode {
    * Close the session silently (without throwing exceptions)
    *
    * @param sessionId The session id (must be not empty).
+   * @since 1.0
    */
   void closeSessionSilently(String sessionId) {
     try {
@@ -111,6 +122,8 @@ abstract class AbstractNode {
   /**
    * (package-private)<br>
    * The session manager state enum.
+   *
+   * @since 1.0
    */
   enum SessionManagerState {
     INITIALIZED, //
@@ -131,13 +144,37 @@ abstract class AbstractNode {
    * (package-private)<br>
    * The inner session manager abstract class.<br>
    * There is one manager by session id.
+   *
+   * @since 1.0
    */
   abstract class AbstractSessionManager {
 
+    /**
+     * (package-private)<br>
+     *
+     * @since 1.0
+     */
     final String sessionId;
 
+    /**
+     * (package-private)<br>
+     *
+     * @since 1.0
+     */
     volatile SessionManagerState state;
+
+    /**
+     * (package-private)<br>
+     *
+     * @since 1.0
+     */
     volatile MessageDto response;
+
+    /**
+     * (package-private)<br>
+     *
+     * @since 1.0
+     */
     volatile Throwable error;
 
     /**
@@ -145,6 +182,7 @@ abstract class AbstractNode {
      * Constructor
      *
      * @param sessionId The session id to manage.
+     * @since 1.0
      */
     AbstractSessionManager(String sessionId) {
       this.sessionId = sessionId;
@@ -159,6 +197,7 @@ abstract class AbstractNode {
      * wake up by another thread.<br>
      *
      * @param targetStates The target states.
+     * @since 1.0
      */
     void waitForState(SessionManagerState... targetStates) {
       for (SessionManagerState targetState : targetStates) {
@@ -191,6 +230,7 @@ abstract class AbstractNode {
      * current state, and then request the cancelling of the session and throws an exception.
      *
      * @throws NodeCommunicationException with the original cause if an error exists.
+     * @since 1.0
      */
     abstract void checkIfExternalErrorOccurred();
 
@@ -200,6 +240,7 @@ abstract class AbstractNode {
      *
      * @param targetStates The target states to test.
      * @throws IllegalStateException if the current state does not match any of the states provided.
+     * @since 1.0
      */
     void checkState(SessionManagerState... targetStates) {
       for (SessionManagerState targetState : targetStates) {
@@ -221,6 +262,7 @@ abstract class AbstractNode {
      * The timeout case : request the cancelling of the session and throws an exception.
      *
      * @throws NodeCommunicationException the thrown exception.
+     * @since 1.0
      */
     void timeoutOccurred() {
       state = SessionManagerState.ABORTED_SESSION;

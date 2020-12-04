@@ -57,32 +57,43 @@ public final class RemotePluginServerFactory implements PluginFactory {
     return new Builder();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public String getPluginName() {
     return plugin.getName();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public Plugin getPlugin() {
     return plugin;
   }
 
+  /**
+   * Step to configure the plugin name.
+   *
+   * @since 1.0
+   */
   public interface NameStep {
     /**
      * Configures the plugin with a specific name.
      *
-     * @param pluginName specific plugin name.
+     * @param pluginName The specific plugin name.
      * @return next configuration step
-     * @throws IllegalArgumentException if the plugin name is null.
      * @since 1.0
      */
     NodeStep withPluginName(String pluginName);
 
     /**
-     * Configures the plugin with the default name : {@value DEFAULT_PLUGIN_NAME}. Note that only
-     * one plugin of this type with the default name can be registered.
+     * Configures the plugin with the default name : {@value DEFAULT_PLUGIN_NAME}.
      *
      * @return next configuration step
      * @since 1.0
@@ -90,6 +101,11 @@ public final class RemotePluginServerFactory implements PluginFactory {
     NodeStep withDefaultPluginName();
   }
 
+  /**
+   * Step to configure the node associated with the plugin.
+   *
+   * @since 1.0
+   */
   public interface NodeStep {
     /**
      * Configures the plugin with a {@link org.eclipse.keyple.plugin.remote.AsyncNodeServer} node.
@@ -109,6 +125,11 @@ public final class RemotePluginServerFactory implements PluginFactory {
     PluginObserverStep withSyncNode();
   }
 
+  /**
+   * Step to register the observer of the plugin.
+   *
+   * @since 1.0
+   */
   public interface PluginObserverStep {
     /**
      * Sets the main observer of the plugin.
@@ -123,6 +144,11 @@ public final class RemotePluginServerFactory implements PluginFactory {
     EventNotificationPoolStep withPluginObserver(ObservablePlugin.PluginObserver observer);
   }
 
+  /**
+   * Step to choose the thread pool to use for events notification.
+   *
+   * @since 1.0
+   */
   public interface EventNotificationPoolStep {
     /**
      * Configures the plugin to use the default pool for events notification.
@@ -149,6 +175,11 @@ public final class RemotePluginServerFactory implements PluginFactory {
     BuilderStep usingEventNotificationPool(ExecutorService eventNotificationPool);
   }
 
+  /**
+   * Last step : builds the factory.
+   *
+   * @since 1.0
+   */
   public interface BuilderStep {
     /**
      * Builds the plugin factory instance.
@@ -168,22 +199,34 @@ public final class RemotePluginServerFactory implements PluginFactory {
     private ObservablePlugin.PluginObserver observer;
     private String pluginName;
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public NodeStep withPluginName(String pluginName) {
-      Assert.getInstance().notNull(pluginName, "plugin name");
+      Assert.getInstance().notNull(pluginName, "pluginName");
       this.pluginName = pluginName;
       return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public NodeStep withDefaultPluginName() {
       this.pluginName = DEFAULT_PLUGIN_NAME;
       return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public PluginObserverStep withAsyncNode(AsyncEndpointServer endpoint) {
       Assert.getInstance().notNull(endpoint, "endpoint");
@@ -191,13 +234,21 @@ public final class RemotePluginServerFactory implements PluginFactory {
       return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public PluginObserverStep withSyncNode() {
       return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public EventNotificationPoolStep withPluginObserver(ObservablePlugin.PluginObserver observer) {
       Assert.getInstance().notNull(observer, "observer");
@@ -205,14 +256,22 @@ public final class RemotePluginServerFactory implements PluginFactory {
       return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public BuilderStep usingDefaultEventNotificationPool() {
       this.eventNotificationPool = Executors.newCachedThreadPool();
       return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public BuilderStep usingEventNotificationPool(ExecutorService eventNotificationPool) {
       Assert.getInstance().notNull(eventNotificationPool, "eventNotificationPool");
@@ -220,7 +279,11 @@ public final class RemotePluginServerFactory implements PluginFactory {
       return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public RemotePluginServerFactory build() {
 

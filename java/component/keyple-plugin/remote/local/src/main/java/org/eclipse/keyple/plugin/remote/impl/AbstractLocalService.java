@@ -31,6 +31,8 @@ import org.slf4j.LoggerFactory;
 /**
  * (package-private)<br>
  * Abstract class for all Local Services.
+ *
+ * @since 1.0
  */
 abstract class AbstractLocalService extends AbstractMessageHandler {
 
@@ -43,6 +45,7 @@ abstract class AbstractLocalService extends AbstractMessageHandler {
    * @param localReaderName name of the reader to be found
    * @return a not null instance
    * @throws KeypleReaderNotFoundException if no reader is found with this name
+   * @since 1.0
    */
   ProxyReader findLocalReader(String localReaderName) {
 
@@ -74,6 +77,7 @@ abstract class AbstractLocalService extends AbstractMessageHandler {
    *
    * @param msg The message to process (must be not null).
    * @return a not null reference
+   * @since 1.0
    */
   MessageDto executeLocally(ProxyReader localReader, MessageDto msg) {
     return new LocalReaderExecutor(localReader, msg).execute();

@@ -30,6 +30,8 @@ import org.slf4j.LoggerFactory;
  * Observable Remote Reader Implementation
  *
  * <p>This object is a {@link AbstractRemoteReader} with additional ObservableReader features.
+ *
+ * @since 1.0
  */
 final class ObservableRemoteReaderImpl extends AbstractRemoteReader
     implements ObservableReaderNotifier {
@@ -41,7 +43,6 @@ final class ObservableRemoteReaderImpl extends AbstractRemoteReader
 
   /**
    * (package-private)<br>
-   * Constructor
    *
    * @param pluginName The name of the plugin (must be not null).
    * @param localReaderName The name of the local reader (must be not null).
@@ -49,6 +50,7 @@ final class ObservableRemoteReaderImpl extends AbstractRemoteReader
    * @param sessionId Associated session Id (can be null)
    * @param clientNodeId Associated client node Id (can be null)
    * @param eventNotificationPool The thread pool used to notify ReaderEvent (must be not null).
+   * @since 1.0
    */
   ObservableRemoteReaderImpl(
       String pluginName,
@@ -62,7 +64,11 @@ final class ObservableRemoteReaderImpl extends AbstractRemoteReader
     this.eventNotificationPool = eventNotificationPool;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void notifyObservers(final ReaderEvent event) {
     if (logger.isTraceEnabled()) {
@@ -87,7 +93,11 @@ final class ObservableRemoteReaderImpl extends AbstractRemoteReader
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void addObserver(ReaderObserver observer) {
     Assert.getInstance().notNull(observer, "Reader Observer");
@@ -98,7 +108,11 @@ final class ObservableRemoteReaderImpl extends AbstractRemoteReader
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void removeObserver(ReaderObserver observer) {
     Assert.getInstance().notNull(observer, "Reader Observer");
@@ -108,7 +122,11 @@ final class ObservableRemoteReaderImpl extends AbstractRemoteReader
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void clearObservers() {
     observers.clear();
@@ -117,13 +135,21 @@ final class ObservableRemoteReaderImpl extends AbstractRemoteReader
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public int countObservers() {
     return observers.size();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void startCardDetection(PollingMode pollingMode) {
     Assert.getInstance().notNull(pollingMode, "Polling Mode");
@@ -134,13 +160,21 @@ final class ObservableRemoteReaderImpl extends AbstractRemoteReader
     sendRequest(MessageDto.Action.START_CARD_DETECTION, body);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void stopCardDetection() {
     sendRequest(MessageDto.Action.STOP_CARD_DETECTION, null);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void setDefaultSelectionRequest(
       AbstractDefaultSelectionsRequest defaultSelectionsRequest,
@@ -148,7 +182,11 @@ final class ObservableRemoteReaderImpl extends AbstractRemoteReader
     setDefaultSelectionRequest(defaultSelectionsRequest, notificationMode, null);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void setDefaultSelectionRequest(
       AbstractDefaultSelectionsRequest defaultSelectionsRequest,
@@ -174,7 +212,11 @@ final class ObservableRemoteReaderImpl extends AbstractRemoteReader
     sendRequest(MessageDto.Action.SET_DEFAULT_SELECTION, body);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void finalizeCardProcessing() {
     sendRequest(MessageDto.Action.FINALIZE_CARD_PROCESSING, null);

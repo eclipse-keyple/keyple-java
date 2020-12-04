@@ -47,24 +47,35 @@ public final class LocalServiceClientFactory {
     return new Step();
   }
 
+  /**
+   * Last step : builds the service.
+   *
+   * @since 1.0
+   */
   public interface BuilderStep {
     /**
      * Builds and gets the service.
      *
      * @return singleton instance of the service
      * @since 1.0
-     * @throws IllegalStateException if a service already exists with the same name.
+     * @throws IllegalArgumentException if a service already exists with the same name.
      */
     LocalServiceClient getService();
   }
 
+  /**
+   * Step to configure the service name.
+   *
+   * @since 1.0
+   */
   public interface NameStep {
     /**
      * Configures the service with a specific name.
      *
-     * @param serviceName identifier of the local service
+     * @param serviceName The identifier of the local service.
      * @return next configuration step
-     * @throws IllegalArgumentException If the service name is null.
+     * @throws IllegalArgumentException If the service name is null or if a service already exists
+     *     with the same name.
      * @since 1.0
      */
     NodeStep withServiceName(String serviceName);
@@ -79,6 +90,11 @@ public final class LocalServiceClientFactory {
     NodeStep withDefaultServiceName();
   }
 
+  /**
+   * Step to configure the node associated with the service.
+   *
+   * @since 1.0
+   */
   public interface NodeStep {
     /**
      * Configures the service with a {@link org.eclipse.keyple.plugin.remote.AsyncNodeClient} node.
@@ -99,6 +115,11 @@ public final class LocalServiceClientFactory {
     ReaderStep withSyncNode(SyncEndpointClient endpoint);
   }
 
+  /**
+   * Step to configure the timeout associated to an async node.
+   *
+   * @since 1.0
+   */
   public interface TimeoutStep {
     /**
      * Sets the default timeout of 5 seconds.
@@ -124,6 +145,11 @@ public final class LocalServiceClientFactory {
     ReaderStep usingTimeout(int timeoutInSeconds);
   }
 
+  /**
+   * Step to configure the reader observation.
+   *
+   * @since 1.0
+   */
   public interface ReaderStep {
     /**
      * Activates the observation of the local reader events.
@@ -154,27 +180,34 @@ public final class LocalServiceClientFactory {
 
     private Step() {}
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public NodeStep withServiceName(String serviceName) {
-      Assert.getInstance().notNull(serviceName, "service name");
-      if (serviceName.equals(DEFAULT_SERVICE_NAME)) {
-        throw new IllegalArgumentException(
-            "serviceName should be different of the default service name : "
-                + DEFAULT_SERVICE_NAME);
-      }
+      Assert.getInstance().notNull(serviceName, "serviceName");
       this.serviceName = serviceName;
       return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public NodeStep withDefaultServiceName() {
       this.serviceName = DEFAULT_SERVICE_NAME;
       return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public TimeoutStep withAsyncNode(AsyncEndpointClient endpoint) {
       Assert.getInstance().notNull(endpoint, "endpoint");
@@ -182,7 +215,11 @@ public final class LocalServiceClientFactory {
       return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public ReaderStep withSyncNode(SyncEndpointClient endpoint) {
       Assert.getInstance().notNull(endpoint, "endpoint");
@@ -190,14 +227,22 @@ public final class LocalServiceClientFactory {
       return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public BuilderStep withoutReaderObservation() {
       this.withReaderObservation = false;
       return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public BuilderStep withReaderObservation(ObservableReaderEventFilter eventFilter) {
       Assert.getInstance().notNull(eventFilter, "eventFilter");
@@ -206,7 +251,11 @@ public final class LocalServiceClientFactory {
       return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public LocalServiceClient getService() {
 
@@ -229,14 +278,22 @@ public final class LocalServiceClientFactory {
       return service;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public ReaderStep usingDefaultTimeout() {
       timeoutInSec = DEFAULT_TIMEOUT;
       return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public ReaderStep usingTimeout(int timeoutInSeconds) {
       timeoutInSec = timeoutInSeconds;

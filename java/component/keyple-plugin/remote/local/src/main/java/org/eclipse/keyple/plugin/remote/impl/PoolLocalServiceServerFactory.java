@@ -47,31 +47,41 @@ public final class PoolLocalServiceServerFactory {
     return new PoolLocalServiceServerFactory.Step();
   }
 
+  /**
+   * Last step : builds the service.
+   *
+   * @since 1.0
+   */
   public interface BuilderStep {
     /**
      * Builds and gets the service.
      *
-     * @return singleton instance of the service *
+     * @return singleton instance of the service
      * @throws IllegalArgumentException if a service already exists with the same name.
      * @since 1.0
      */
     PoolLocalServiceServer getService();
   }
 
+  /**
+   * Step to configure the service name.
+   *
+   * @since 1.0
+   */
   public interface NameStep {
     /**
-     * Configures the local service with a specific name.
+     * Configures the service with a specific name.
      *
-     * @param serviceName identifier of the local service
-     * @return next configuration step *
-     * @throws IllegalArgumentException If the service name is null.
+     * @param serviceName The identifier of the local service.
+     * @return next configuration step
+     * @throws IllegalArgumentException If the service name is null or if a service already exists
+     *     with the same name.
      * @since 1.0
      */
     NodeStep withServiceName(String serviceName);
 
     /**
-     * Configures the local service with the a specific service name : {@value
-     * DEFAULT_SERVICE_NAME}.
+     * Configures the service with the default service name : {@value DEFAULT_SERVICE_NAME}.
      *
      * @return next configuration step
      * @throws IllegalArgumentException If a service already exists with the default name.
@@ -80,6 +90,11 @@ public final class PoolLocalServiceServerFactory {
     NodeStep withDefaultServiceName();
   }
 
+  /**
+   * Step to configure the node associated with the service.
+   *
+   * @since 1.0
+   */
   public interface NodeStep {
     /**
      * Configures the service with a {@link org.eclipse.keyple.plugin.remote.AsyncNodeServer} node.
@@ -99,6 +114,11 @@ public final class PoolLocalServiceServerFactory {
     PluginStep withSyncNode();
   }
 
+  /**
+   * Step to select the target plugins to manage.
+   *
+   * @since 1.0
+   */
   public interface PluginStep {
     /**
      * Configures the service with one or more {@link PoolPlugin} plugin(s).
@@ -117,27 +137,34 @@ public final class PoolLocalServiceServerFactory {
 
     private Step() {}
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public NodeStep withServiceName(String serviceName) {
-      Assert.getInstance().notNull(serviceName, "service name");
-      if (serviceName.equals(DEFAULT_SERVICE_NAME)) {
-        throw new IllegalArgumentException(
-            "serviceName should be different of the default service name : "
-                + DEFAULT_SERVICE_NAME);
-      }
+      Assert.getInstance().notNull(serviceName, "serviceName");
       this.serviceName = serviceName;
       return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public NodeStep withDefaultServiceName() {
       this.serviceName = DEFAULT_SERVICE_NAME;
       return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public PluginStep withAsyncNode(AsyncEndpointServer endpoint) {
       Assert.getInstance().notNull(endpoint, "endpoint");
@@ -145,13 +172,21 @@ public final class PoolLocalServiceServerFactory {
       return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public PluginStep withSyncNode() {
       return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public BuilderStep withPoolPlugins(String... poolPluginNames) {
       Assert.getInstance().notNull(poolPluginNames, "poolPluginNames");
@@ -169,7 +204,11 @@ public final class PoolLocalServiceServerFactory {
       return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public PoolLocalServiceServer getService() {
       PoolLocalServiceServerImpl poolLocalServiceServerImpl =

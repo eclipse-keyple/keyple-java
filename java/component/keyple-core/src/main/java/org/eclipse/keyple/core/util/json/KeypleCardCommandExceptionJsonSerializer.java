@@ -31,7 +31,11 @@ import org.eclipse.keyple.core.card.command.exception.KeypleCardCommandException
 public class KeypleCardCommandExceptionJsonSerializer
     implements JsonSerializer<KeypleCardCommandException> {
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public JsonElement serialize(
       KeypleCardCommandException exception,

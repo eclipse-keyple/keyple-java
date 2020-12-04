@@ -23,6 +23,8 @@ import org.slf4j.LoggerFactory;
 /**
  * (package-private)<br>
  * Async Node Client implementation.
+ *
+ * @since 1.0
  */
 final class AsyncNodeClientImpl extends AbstractNode implements AsyncNodeClient {
 
@@ -33,11 +35,11 @@ final class AsyncNodeClientImpl extends AbstractNode implements AsyncNodeClient 
 
   /**
    * (package-private)<br>
-   * Constructor.
    *
    * @param handler The associated handler (must be not null).
    * @param endpoint The user client async endpoint (must be not null).
    * @param timeoutInSecond The default timeout (in seconds) to use.
+   * @since 1.0
    */
   AsyncNodeClientImpl(
       AbstractMessageHandler handler, AsyncEndpointClient endpoint, int timeoutInSecond) {
@@ -46,7 +48,11 @@ final class AsyncNodeClientImpl extends AbstractNode implements AsyncNodeClient 
     this.sessionManagers = new HashMap<String, SessionManager>();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   void openSession(String sessionId) {
     SessionManager manager = new SessionManager(sessionId);
@@ -54,7 +60,11 @@ final class AsyncNodeClientImpl extends AbstractNode implements AsyncNodeClient 
     manager.openSession();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void onOpen(String sessionId) {
     Assert.getInstance().notEmpty(sessionId, "sessionId");
@@ -64,7 +74,11 @@ final class AsyncNodeClientImpl extends AbstractNode implements AsyncNodeClient 
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   MessageDto sendRequest(MessageDto msg) {
     msg.setClientNodeId(nodeId);
@@ -72,7 +86,11 @@ final class AsyncNodeClientImpl extends AbstractNode implements AsyncNodeClient 
     return manager.sendRequest(msg);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   void sendMessage(MessageDto msg) {
     msg.setClientNodeId(nodeId);
@@ -80,7 +98,11 @@ final class AsyncNodeClientImpl extends AbstractNode implements AsyncNodeClient 
     manager.sendMessage(msg);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void onMessage(MessageDto msg) {
 
@@ -105,7 +127,11 @@ final class AsyncNodeClientImpl extends AbstractNode implements AsyncNodeClient 
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   void closeSession(String sessionId) {
     SessionManager manager = sessionManagers.get(sessionId);
@@ -116,7 +142,11 @@ final class AsyncNodeClientImpl extends AbstractNode implements AsyncNodeClient 
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void onClose(String sessionId) {
     Assert.getInstance().notEmpty(sessionId, "sessionId");
@@ -126,7 +156,11 @@ final class AsyncNodeClientImpl extends AbstractNode implements AsyncNodeClient 
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void onError(String sessionId, Throwable error) {
     Assert.getInstance().notEmpty(sessionId, "sessionId").notNull(error, "error");
@@ -170,7 +204,11 @@ final class AsyncNodeClientImpl extends AbstractNode implements AsyncNodeClient 
       super(sessionId);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     void checkIfExternalErrorOccurred() {
       if (state == SessionManagerState.EXTERNAL_ERROR_OCCURRED) {

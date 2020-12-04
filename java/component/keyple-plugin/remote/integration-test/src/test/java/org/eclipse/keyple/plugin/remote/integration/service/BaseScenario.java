@@ -258,7 +258,7 @@ public abstract class BaseScenario {
     };
   }
 
-  Callable<Boolean> seRemoved(final Reader seReader) {
+  Callable<Boolean> cardRemoved(final Reader seReader) {
     return new Callable<Boolean>() {
       @Override
       public Boolean call() throws Exception {
@@ -421,7 +421,7 @@ public abstract class BaseScenario {
         eventFilter.user.getUserId());
     await().atMost(10, TimeUnit.SECONDS).until(verifyUserTransaction(eventFilter, user1, true));
     localReader.removeCard();
-    await().atMost(1, TimeUnit.SECONDS).until(seRemoved(localReader));
+    await().atMost(1, TimeUnit.SECONDS).until(cardRemoved(localReader));
 
     /*
      * user2 inserts card ,
@@ -437,13 +437,13 @@ public abstract class BaseScenario {
         eventFilter.user.getUserId());
     await().atMost(10, TimeUnit.SECONDS).until(verifyUserTransaction(eventFilter, user2, true));
     localReader.removeCard();
-    await().atMost(1, TimeUnit.SECONDS).until(seRemoved(localReader));
+    await().atMost(1, TimeUnit.SECONDS).until(cardRemoved(localReader));
 
     /*
      * on the 2nd event, the remote reader should be cleaned on local and remote environment
      */
     assertThat(remotePlugin.getReaders()).isEmpty();
-    assertThat(LocalServiceClientTest.getRemoteReaders(localService)).isEmpty();
+    assertThat(LocalServiceClientTest.getMapOfRemoteReaderByLocalName(localService)).isEmpty();
   }
 
   void remoteselection_remoteTransaction() {

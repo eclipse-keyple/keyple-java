@@ -25,10 +25,10 @@ import org.eclipse.keyple.plugin.remote.PoolRemotePluginClient;
 public final class PoolRemotePluginClientUtils {
 
   /**
-   * Gets the plugin having the default name.
+   * Gets the remote plugin having the default name.
    *
-   * @return a not null reference
-   * @throws KeyplePluginNotFoundException if the plugin is not registered.
+   * @return A not null reference.
+   * @throws KeyplePluginNotFoundException If the plugin is not registered.
    * @since 1.0
    */
   public static PoolRemotePluginClient getRemotePlugin() {
@@ -37,25 +37,25 @@ public final class PoolRemotePluginClientUtils {
   }
 
   /**
-   * Gets the plugin by its name.
+   * Gets the remote plugin having the provided name.
    *
-   * @param pluginName plugin name
-   * @return a not null reference
-   * @throws KeyplePluginNotFoundException if the plugin is not registered.
-   * @throws IllegalArgumentException if the plugin name is null.
+   * @param pluginName The plugin name.
+   * @return A not null reference.
+   * @throws IllegalArgumentException If the plugin name is null.
+   * @throws KeyplePluginNotFoundException If the plugin is not registered.
    * @since 1.0
    */
   public static PoolRemotePluginClient getRemotePlugin(String pluginName) {
-    Assert.getInstance().notNull(pluginName, "plugin name");
+    Assert.getInstance().notNull(pluginName, "pluginName");
     return (PoolRemotePluginClient) SmartCardService.getInstance().getPlugin(pluginName);
   }
 
   /**
-   * Gets the {@link AsyncNodeClient} node associated to the plugin having the default name.
+   * Gets the {@link AsyncNodeClient} node associated to the remote plugin having the default name.
    *
-   * @return a not null reference
-   * @throws KeyplePluginNotFoundException if the plugin is not registered.
-   * @throws IllegalStateException if the plugin is not configured with a {@link AsyncNodeClient}
+   * @return A not null reference.
+   * @throws KeyplePluginNotFoundException If the plugin is not registered.
+   * @throws IllegalStateException If the plugin is not configured with a {@link AsyncNodeClient}
    *     node.
    * @since 1.0
    */
@@ -64,14 +64,14 @@ public final class PoolRemotePluginClientUtils {
   }
 
   /**
-   * Gets the {@link AsyncNodeClient} node associated with a {@link PoolRemotePluginClient} plugin.
+   * Gets the {@link AsyncNodeClient} node associated to the remote plugin having the provided name.
    *
-   * @param pluginName name of the plugin associated with the SyncNodeServer.
-   * @return a not null reference
-   * @throws KeyplePluginNotFoundException if the plugin is not registered.
-   * @throws IllegalStateException if the plugin is not configured with a {@link AsyncNodeClient}
+   * @param pluginName The name of the remote plugin.
+   * @return A not null reference.
+   * @throws IllegalArgumentException If the plugin name is null.
+   * @throws KeyplePluginNotFoundException If the plugin is not registered.
+   * @throws IllegalStateException If the plugin is not configured with a {@link AsyncNodeClient}
    *     node.
-   * @throws IllegalArgumentException if the plugin name is null.
    * @since 1.0
    */
   public static AsyncNodeClient getAsyncNode(String pluginName) {

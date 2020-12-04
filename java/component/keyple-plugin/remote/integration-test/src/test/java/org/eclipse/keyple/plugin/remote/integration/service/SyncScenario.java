@@ -65,7 +65,11 @@ public class SyncScenario extends BaseScenario {
     unRegisterRemotePlugin();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   @Test
   public void execute_localselection_remoteTransaction_successful() {
@@ -80,7 +84,11 @@ public class SyncScenario extends BaseScenario {
     localselection_remoteTransaction_successful();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   @Test
   public void execute_remoteselection_remoteTransaction_successful() {
@@ -95,7 +103,11 @@ public class SyncScenario extends BaseScenario {
     remoteselection_remoteTransaction_successful();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   @Test
   public void execute_multiclient_remoteselection_remoteTransaction_successful() {
@@ -110,7 +122,11 @@ public class SyncScenario extends BaseScenario {
     multipleclients_remoteselection_remoteTransaction_successful();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   @Test
   public void execute_transaction_closeSession_card_error() {
@@ -124,7 +140,11 @@ public class SyncScenario extends BaseScenario {
     transaction_closeSession_fail();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   @Test(expected = StubNetworkConnectionException.class)
   public void execute_transaction_host_network_error() {
@@ -147,7 +167,11 @@ public class SyncScenario extends BaseScenario {
     // not needed for sync node
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   @Test
   public void execute_transaction_slowSe_success() {
@@ -175,7 +199,11 @@ public class SyncScenario extends BaseScenario {
     all_methods();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   @Test
   public void observable_defaultSelection_onMatched_transaction_successful() {

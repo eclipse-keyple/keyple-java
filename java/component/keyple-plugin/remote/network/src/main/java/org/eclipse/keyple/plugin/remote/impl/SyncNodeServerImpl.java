@@ -23,6 +23,8 @@ import org.slf4j.LoggerFactory;
 /**
  * (package-private)<br>
  * Sync Node Server implementation.
+ *
+ * @since 1.0
  */
 final class SyncNodeServerImpl extends AbstractNode implements SyncNodeServer {
 
@@ -35,10 +37,10 @@ final class SyncNodeServerImpl extends AbstractNode implements SyncNodeServer {
 
   /**
    * (package-private)<br>
-   * Constructor.
    *
    * @param handler The associated handler (must be not null).
    * @param timeoutInSecond The default timeout (in seconds) to use.
+   * @since 1.0
    */
   SyncNodeServerImpl(AbstractMessageHandler handler, int timeoutInSecond) {
     super(handler, timeoutInSecond);
@@ -48,13 +50,21 @@ final class SyncNodeServerImpl extends AbstractNode implements SyncNodeServer {
     this.readerManagers = new HashMap<String, ServerPushEventManager>();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   void openSession(String sessionId) {
     throw new UnsupportedOperationException("openSession");
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public List<MessageDto> onRequest(MessageDto msg) {
 
@@ -112,7 +122,11 @@ final class SyncNodeServerImpl extends AbstractNode implements SyncNodeServer {
     return response != null ? Collections.singletonList(response) : null;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   MessageDto sendRequest(MessageDto msg) {
     msg.setServerNodeId(nodeId);
@@ -125,7 +139,11 @@ final class SyncNodeServerImpl extends AbstractNode implements SyncNodeServer {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   void sendMessage(MessageDto msg) {
     msg.setServerNodeId(nodeId);
@@ -142,7 +160,11 @@ final class SyncNodeServerImpl extends AbstractNode implements SyncNodeServer {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   void closeSession(String sessionId) {
     throw new UnsupportedOperationException("closeSession");
@@ -215,7 +237,11 @@ final class SyncNodeServerImpl extends AbstractNode implements SyncNodeServer {
       super(sessionId);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     void checkIfExternalErrorOccurred() {
       // NOP

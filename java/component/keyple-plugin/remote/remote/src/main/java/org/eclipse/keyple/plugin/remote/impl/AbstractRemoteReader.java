@@ -28,6 +28,8 @@ import org.slf4j.LoggerFactory;
  * Abstract Remote Reader
  *
  * <p>This object is a {@link AbstractReader} with additional features.
+ *
+ * @since 1.0
  */
 abstract class AbstractRemoteReader extends AbstractReader {
 
@@ -41,13 +43,13 @@ abstract class AbstractRemoteReader extends AbstractReader {
 
   /**
    * (package-private)<br>
-   * Constructor
    *
    * @param pluginName The name of the plugin (must be not null).
    * @param localReaderName The name of the local reader (must be not null).
    * @param node The associated node (must be not null).
    * @param sessionId Session Id (can be null)
    * @param clientNodeId Client node Id (can be null)
+   * @since 1.0
    */
   AbstractRemoteReader(
       String pluginName,
@@ -62,7 +64,11 @@ abstract class AbstractRemoteReader extends AbstractReader {
     this.clientNodeId = clientNodeId;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   protected List<CardSelectionResponse> processCardSelectionRequests(
       List<CardSelectionRequest> cardSelectionRequests,
@@ -89,7 +95,11 @@ abstract class AbstractRemoteReader extends AbstractReader {
             response.getBody(), new TypeToken<ArrayList<CardSelectionResponse>>() {}.getType());
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   protected CardResponse processCardRequest(
       CardRequest cardRequest, ChannelControl channelControl) {
@@ -107,7 +117,11 @@ abstract class AbstractRemoteReader extends AbstractReader {
     return KeypleGsonParser.getParser().fromJson(response.getBody(), CardResponse.class);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public boolean isCardPresent() {
 
@@ -118,28 +132,44 @@ abstract class AbstractRemoteReader extends AbstractReader {
     return KeypleGsonParser.getParser().fromJson(response.getBody(), Boolean.class);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void releaseChannel() {
     // Send the message as a request even if no return is expected
     sendRequest(MessageDto.Action.RELEASE_CHANNEL, null);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void activateProtocol(String readerProtocolName, String applicationProtocolName) {
     throw new UnsupportedOperationException(
         "activateProtocol method is not implemented in plugin remote, use it only locally");
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void deactivateProtocol(String readerProtocolName) {
     throw new UnsupportedOperationException(
         "activateProtocol method is not implemented in plugin remote, use it only locally");
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public boolean isContactless() {
     MessageDto response = sendRequest(MessageDto.Action.IS_READER_CONTACTLESS, null);
@@ -150,6 +180,7 @@ abstract class AbstractRemoteReader extends AbstractReader {
 
   /**
    * (package-private)<br>
+   * Sends a request.
    * <li>Build the message using the provided action and body.
    * <li>Send it as a request.
    * <li>If an error is contained in the response, then throw an exception.
@@ -157,6 +188,7 @@ abstract class AbstractRemoteReader extends AbstractReader {
    * @param action The action (must be not null).
    * @param body The body (optional).
    * @return a not null reference.
+   * @since 1.0
    */
   MessageDto sendRequest(MessageDto.Action action, JsonObject body) {
 
@@ -196,6 +228,7 @@ abstract class AbstractRemoteReader extends AbstractReader {
    * Gets the current session id
    *
    * @return a nullable value.
+   * @since 1.0
    */
   String getSessionId() {
     return sessionId;
@@ -206,6 +239,7 @@ abstract class AbstractRemoteReader extends AbstractReader {
    * Gets the current client id
    *
    * @return a nullable value.
+   * @since 1.0
    */
   String getClientNodeId() {
     return clientNodeId;
@@ -216,6 +250,7 @@ abstract class AbstractRemoteReader extends AbstractReader {
    * Gets the local reader name
    *
    * @return non null instance of a localReaderName
+   * @since 1.0
    */
   String getLocalReaderName() {
     return localReaderName;

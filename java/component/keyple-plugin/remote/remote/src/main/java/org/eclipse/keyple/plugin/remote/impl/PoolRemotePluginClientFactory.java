@@ -56,31 +56,43 @@ public final class PoolRemotePluginClientFactory implements PluginFactory {
     return new Builder();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public String getPluginName() {
     return plugin.getName();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public Plugin getPlugin() {
     return plugin;
   }
 
+  /**
+   * Step to configure the plugin name.
+   *
+   * @since 1.0
+   */
   public interface NameStep {
     /**
      * Configures the plugin with a specific name.
      *
-     * @param pluginName specific plugin name.
+     * @param pluginName The specific plugin name.
      * @return next configuration step
      * @since 1.0
      */
     NodeStep withPluginName(String pluginName);
 
     /**
-     * Configures the plugin with the default name : {@value DEFAULT_PLUGIN_NAME} . Note that only
-     * one plugin of this type with the default name can be register.
+     * Configures the plugin with the default name : {@value DEFAULT_PLUGIN_NAME}.
      *
      * @return next configuration step
      * @since 1.0
@@ -88,6 +100,11 @@ public final class PoolRemotePluginClientFactory implements PluginFactory {
     NodeStep withDefaultPluginName();
   }
 
+  /**
+   * Step to configure the node associated with the plugin.
+   *
+   * @since 1.0
+   */
   public interface NodeStep {
     /**
      * Configures the plugin with a {@link org.eclipse.keyple.plugin.remote.AsyncNodeClient} node.
@@ -108,6 +125,11 @@ public final class PoolRemotePluginClientFactory implements PluginFactory {
     BuilderStep withSyncNode(SyncEndpointClient endpoint);
   }
 
+  /**
+   * Step to configure the timeout associated to an async node.
+   *
+   * @since 1.0
+   */
   public interface TimeoutStep {
     /**
      * Sets the default timeout of 5 seconds.
@@ -133,6 +155,11 @@ public final class PoolRemotePluginClientFactory implements PluginFactory {
     BuilderStep usingTimeout(int timeoutInSeconds);
   }
 
+  /**
+   * Last step : builds the factory.
+   *
+   * @since 1.0
+   */
   public interface BuilderStep {
     /**
      * Build the plugin factory instance.
@@ -154,22 +181,34 @@ public final class PoolRemotePluginClientFactory implements PluginFactory {
     private int timeoutInSec;
     private String pluginName;
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public NodeStep withPluginName(String pluginName) {
-      Assert.getInstance().notNull(pluginName, "plugin name");
+      Assert.getInstance().notNull(pluginName, "pluginName");
       this.pluginName = pluginName;
       return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public NodeStep withDefaultPluginName() {
       this.pluginName = DEFAULT_PLUGIN_NAME;
       return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public TimeoutStep withAsyncNode(AsyncEndpointClient endpoint) {
       Assert.getInstance().notNull(endpoint, "endpoint");
@@ -177,7 +216,11 @@ public final class PoolRemotePluginClientFactory implements PluginFactory {
       return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public BuilderStep withSyncNode(SyncEndpointClient endpoint) {
       Assert.getInstance().notNull(endpoint, "endpoint");
@@ -185,21 +228,33 @@ public final class PoolRemotePluginClientFactory implements PluginFactory {
       return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public BuilderStep usingDefaultTimeout() {
       timeoutInSec = DEFAULT_TIMEOUT;
       return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public BuilderStep usingTimeout(int timeoutInSeconds) {
       timeoutInSec = timeoutInSeconds;
       return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public PoolRemotePluginClientFactory build() {
 

@@ -21,6 +21,8 @@ import org.eclipse.keyple.plugin.remote.ObservableRemoteReaderServer;
  * (package-private)<br>
  * Observable Remote Reader Server Implementation.<br>
  * This object is a decorator of a {@link ObservableRemoteReaderImpl}.
+ *
+ * @since 1.0
  */
 final class ObservableRemoteReaderServerImpl extends AbstractRemoteReaderServer
     implements ObservableRemoteReaderServer, ObservableReaderNotifier {
@@ -30,12 +32,12 @@ final class ObservableRemoteReaderServerImpl extends AbstractRemoteReaderServer
 
   /**
    * (package-private)<br>
-   * Constructor
    *
    * @param reader The reader to decorate (must be not null).
    * @param serviceId The service id (nullable only if this instance is a slave reader).
    * @param userInputDataJson The user input data as a JSON string (optional).
    * @param initialCardContentJson The initial card content as a JSON string (optional).
+   * @since 1.0
    */
   ObservableRemoteReaderServerImpl(
       ObservableRemoteReaderImpl reader,
@@ -48,7 +50,11 @@ final class ObservableRemoteReaderServerImpl extends AbstractRemoteReaderServer
     this.masterReader = masterReader;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void notifyObservers(ReaderEvent event) {
     if (masterReader != null) {
@@ -58,7 +64,11 @@ final class ObservableRemoteReaderServerImpl extends AbstractRemoteReaderServer
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void addObserver(ReaderObserver observer) {
     Assert.getInstance().notNull(observer, "observer");
@@ -69,7 +79,11 @@ final class ObservableRemoteReaderServerImpl extends AbstractRemoteReaderServer
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void removeObserver(ReaderObserver observer) {
     Assert.getInstance().notNull(observer, "observer");
@@ -80,7 +94,11 @@ final class ObservableRemoteReaderServerImpl extends AbstractRemoteReaderServer
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void clearObservers() {
     if (masterReader != null) {
@@ -90,7 +108,11 @@ final class ObservableRemoteReaderServerImpl extends AbstractRemoteReaderServer
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public int countObservers() {
     if (masterReader != null) {
@@ -100,19 +122,31 @@ final class ObservableRemoteReaderServerImpl extends AbstractRemoteReaderServer
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void startCardDetection(PollingMode pollingMode) {
     reader.startCardDetection(pollingMode);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void stopCardDetection() {
     reader.stopCardDetection();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void setDefaultSelectionRequest(
       AbstractDefaultSelectionsRequest defaultSelectionsRequest,
@@ -120,7 +154,11 @@ final class ObservableRemoteReaderServerImpl extends AbstractRemoteReaderServer
     reader.setDefaultSelectionRequest(defaultSelectionsRequest, notificationMode);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void setDefaultSelectionRequest(
       AbstractDefaultSelectionsRequest defaultSelectionsRequest,
@@ -129,13 +167,21 @@ final class ObservableRemoteReaderServerImpl extends AbstractRemoteReaderServer
     reader.setDefaultSelectionRequest(defaultSelectionsRequest, notificationMode, pollingMode);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void finalizeCardProcessing() {
     reader.finalizeCardProcessing();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public boolean isContactless() {
     return reader.isContactless();
@@ -143,9 +189,10 @@ final class ObservableRemoteReaderServerImpl extends AbstractRemoteReaderServer
 
   /**
    * (package-private)<br>
-   * Return the master reader if any, null if none
+   * Gets the master reader if any, null if none
    *
    * @return nullable instance of a master reader
+   * @since 1.0
    */
   ObservableRemoteReaderServerImpl getMasterReader() {
     return masterReader;

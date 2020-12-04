@@ -17,7 +17,7 @@ import org.eclipse.keyple.core.util.Assert;
 
 /**
  * This POJO contains the <b>parameters</b> of the method {@link
- * LocalServiceClient#executeRemoteService(RemoteServiceParameters, Class)} :
+ * LocalServiceClient#executeRemoteService(RemoteServiceParameters, Class)}.
  *
  * <ul>
  *   <li><b>serviceId</b> : The ticketing service id. It will permit to indicate to the server which

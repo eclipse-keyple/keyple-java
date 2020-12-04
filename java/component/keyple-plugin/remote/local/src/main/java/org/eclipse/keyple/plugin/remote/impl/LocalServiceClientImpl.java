@@ -31,77 +31,84 @@ import org.slf4j.LoggerFactory;
 
 /**
  * (package-private)<br>
- * Instances of the {@link LocalServiceClient} implementation
+ * Implementation of the {@link LocalServiceClient}.
+ *
+ * @since 1.0
  */
 final class LocalServiceClientImpl extends AbstractLocalService
     implements ObservableReader.ReaderObserver, LocalServiceClient {
 
   private static final Logger logger = LoggerFactory.getLogger(LocalServiceClientImpl.class);
 
-  private static Map<String, LocalServiceClientImpl> serviceInstances;
+  private static Map<String, LocalServiceClientImpl> serviceByName;
 
   private final boolean withReaderObservation;
   private final ObservableReaderEventFilter eventFilter;
-  private final Map<String, String> remoteReaders;
+  private final Map<String, String> remoteReaderByLocalName;
+
   /**
    * (private)<br>
-   * Constructor
    *
    * @param withReaderObservation Indicates if reader observation should be activated.
    * @param eventFilter The event filter to use if reader observation should is activated.
+   * @since 1.0
    */
   private LocalServiceClientImpl(
       boolean withReaderObservation, ObservableReaderEventFilter eventFilter) {
     super();
     this.withReaderObservation = withReaderObservation;
     this.eventFilter = eventFilter;
-    this.remoteReaders = new HashMap<String, String>();
+    this.remoteReaderByLocalName = new HashMap<String, String>();
   }
 
   /**
    * (package-private)<br>
-   * Create an instance of the service. If a service exists with the same name, the service is
-   * overridden.
+   * Creates an instance of the service.
    *
-   * @param serviceName identifier of the local service
-   * @param withReaderObservation true if reader observation should be activated
-   * @return a not null instance of the singleton
+   * @param serviceName The identifier of the local service.
+   * @param withReaderObservation Indicates if the reader observation should be activated.
+   * @return A not null instance.
    * @throws IllegalArgumentException If a service already exists with the provided serviceName.
+   * @since 1.0
    */
   static LocalServiceClientImpl createInstance(
       String serviceName, boolean withReaderObservation, ObservableReaderEventFilter eventFilter) {
 
-    // init services instances map
-    if (serviceInstances == null) {
-      serviceInstances = new HashMap<String, LocalServiceClientImpl>();
+    if (serviceByName == null) {
+      serviceByName = new HashMap<String, LocalServiceClientImpl>();
     }
-    if (serviceInstances.containsKey(serviceName)) {
+    if (serviceByName.containsKey(serviceName)) {
       throw new IllegalArgumentException(
-          "A local service already exists with the same name : " + serviceName);
+          "A LocalServiceClient already exists with the same name : " + serviceName);
     }
     LocalServiceClientImpl localService =
         new LocalServiceClientImpl(withReaderObservation, eventFilter);
-    serviceInstances.put(serviceName, localService);
-
+    serviceByName.put(serviceName, localService);
     return localService;
   }
 
   /**
    * (package-private)<br>
-   * Retrieve the service associated by its serviceName
+   * Retrieves the service having the provided service name.
    *
-   * @return a not null instance
-   * @throws IllegalStateException If there's no service having the provided name
+   * @param serviceName The identifier of the local service.
+   * @return A not null reference.
+   * @throws IllegalStateException If there's no service having the provided name.
+   * @since 1.0
    */
   static LocalServiceClientImpl getInstance(String serviceName) {
-    if (!serviceInstances.containsKey(serviceName)) {
+    if (!serviceByName.containsKey(serviceName)) {
       throw new IllegalStateException(
-          "No service could be found with the provided name : " + serviceName);
+          "No LocalServiceClient could be found with the provided name : " + serviceName);
     }
-    return serviceInstances.get(serviceName);
+    return serviceByName.get(serviceName);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public <T> T executeRemoteService(RemoteServiceParameters parameters, Class<T> classOfT) {
 
@@ -140,7 +147,7 @@ final class LocalServiceClientImpl extends AbstractLocalService
         if (localReader instanceof ObservableReader) {
 
           // Register the remote reader associated to the local reader.
-          remoteReaders.put(localReader.getName(), receivedDto.getRemoteReaderName());
+          remoteReaderByLocalName.put(localReader.getName(), receivedDto.getRemoteReaderName());
 
           try {
             // Start the observation.
@@ -158,11 +165,11 @@ final class LocalServiceClientImpl extends AbstractLocalService
 
             // Verify if the remote reader can be unregistered.
             if (canUnregisterRemoteReader(receivedDto)) {
-              remoteReaders.remove(localReader.getName());
+              remoteReaderByLocalName.remove(localReader.getName());
             }
           } catch (RuntimeException e) {
             // Unregister the associated remote reader.
-            remoteReaders.remove(localReader.getName());
+            remoteReaderByLocalName.remove(localReader.getName());
             throw e;
           }
         } else {
@@ -186,7 +193,11 @@ final class LocalServiceClientImpl extends AbstractLocalService
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   void onMessage(MessageDto msg) {
     throw new UnsupportedOperationException("onMessage");
@@ -240,7 +251,7 @@ final class LocalServiceClientImpl extends AbstractLocalService
 
         // Verify if the remote reader can be unregistered.
         if (canUnregisterRemoteReader(receivedDto)) {
-          remoteReaders.remove(localReader.getName());
+          remoteReaderByLocalName.remove(localReader.getName());
         }
 
         // invoke callback
@@ -253,7 +264,7 @@ final class LocalServiceClientImpl extends AbstractLocalService
 
     } catch (RuntimeException e) {
       // Unregister the associated remote reader.
-      remoteReaders.remove(event.getReaderName());
+      remoteReaderByLocalName.remove(event.getReaderName());
       throw e;
     }
   }
@@ -375,7 +386,7 @@ final class LocalServiceClientImpl extends AbstractLocalService
         .setSessionId(sessionId)
         .setAction(MessageDto.Action.READER_EVENT.name())
         .setLocalReaderName(readerEvent.getReaderName())
-        .setRemoteReaderName(remoteReaders.get(readerEvent.getReaderName()))
+        .setRemoteReaderName(remoteReaderByLocalName.get(readerEvent.getReaderName()))
         .setBody(body.toString());
   }
 }

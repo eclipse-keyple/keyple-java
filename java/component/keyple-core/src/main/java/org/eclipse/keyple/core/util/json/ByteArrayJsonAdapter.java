@@ -22,13 +22,21 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
  */
 public class ByteArrayJsonAdapter implements JsonSerializer<byte[]>, JsonDeserializer<byte[]> {
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public JsonElement serialize(byte[] data, Type typeOfSrc, JsonSerializationContext context) {
     return new JsonPrimitive(ByteArrayUtil.toHex(data));
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public byte[] deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {

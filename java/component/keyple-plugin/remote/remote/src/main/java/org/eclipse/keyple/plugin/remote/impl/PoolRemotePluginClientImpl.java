@@ -26,23 +26,29 @@ import org.eclipse.keyple.plugin.remote.PoolRemotePluginClient;
 
 /**
  * (package-private)<br>
- * Implementation of the {@link PoolRemotePluginClient}
+ * Implementation of the {@link PoolRemotePluginClient}.
+ *
+ * @since 1.0
  */
 final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
     implements PoolRemotePluginClient {
 
   /**
    * (package-private)<br>
-   * Constructor.
    *
    * @param name The name of the plugin.
    * @throws KeypleReaderException when an issue is raised with reader
+   * @since 1.0
    */
   PoolRemotePluginClientImpl(String name) {
     super(name);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public SortedSet<String> getReaderGroupReferences() {
     String sessionId = generateSessionId();
@@ -72,7 +78,11 @@ final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public Reader allocateReader(String groupReference) {
     String sessionId = generateSessionId();
@@ -108,7 +118,11 @@ final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void releaseReader(Reader reader) {
     Assert.getInstance().notNull(reader, "reader");
@@ -141,7 +155,11 @@ final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public Reader getReader(String name) {
     Assert.getInstance().notNull(name, "reader name");
@@ -163,7 +181,11 @@ final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
     throw new UnsupportedOperationException("onMessage method is not supported by this plugin");
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   Map<String, Reader> initNativeReaders() throws KeypleReaderIOException {
     return new HashMap<String, Reader>();

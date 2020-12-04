@@ -26,13 +26,14 @@ import org.eclipse.keyple.plugin.remote.PoolLocalServiceServer;
 
 /**
  * (package-private)<br>
- * Implementation of the {@link PoolLocalServiceServer}. This object is a singleton created by the
- * {@link PoolLocalServiceServerFactory}
+ * Implementation of the {@link PoolLocalServiceServer}.
+ *
+ * @since 1.0
  */
 final class PoolLocalServiceServerImpl extends AbstractLocalService
     implements PoolLocalServiceServer {
 
-  private static Map<String, PoolLocalServiceServerImpl> serviceInstances;
+  private static Map<String, PoolLocalServiceServerImpl> serviceByName;
   private final String[] poolPluginNames;
 
   private PoolLocalServiceServerImpl(String[] poolPluginNames) {
@@ -41,43 +42,49 @@ final class PoolLocalServiceServerImpl extends AbstractLocalService
 
   /**
    * (package-private)<br>
-   * Create an instance of this singleton service
+   * Creates an instance of the service.
    *
-   * @param serviceName identifier of the local service
-   * @param poolPluginNames name(s) of the pool plugin(s) associated with this service
-   * @return a not null instance of the singleton
+   * @param serviceName The identifier of the local service.
+   * @param poolPluginNames The name(s) of the pool plugin(s) associated with this service.
+   * @return A not null instance.
    * @throws IllegalArgumentException If a service already exists with the provided serviceName.
+   * @since 1.0
    */
   static PoolLocalServiceServerImpl createInstance(String serviceName, String[] poolPluginNames) {
-    // init services instances map
-    if (serviceInstances == null) {
-      serviceInstances = new HashMap<String, PoolLocalServiceServerImpl>();
+    if (serviceByName == null) {
+      serviceByName = new HashMap<String, PoolLocalServiceServerImpl>();
     }
-    if (serviceInstances.containsKey(serviceName)) {
+    if (serviceByName.containsKey(serviceName)) {
       throw new IllegalArgumentException(
-          "A local service already exists with the same name : " + serviceName);
+          "A PoolLocalServiceServer already exists with the same name : " + serviceName);
     }
     PoolLocalServiceServerImpl instance = new PoolLocalServiceServerImpl(poolPluginNames);
-    serviceInstances.put(serviceName, instance);
+    serviceByName.put(serviceName, instance);
     return instance;
   }
 
   /**
    * (package-private)<br>
-   * Retrieve a local service by its name
+   * Retrieves the service having the provided service name.
    *
-   * @param serviceName identifier of the local service
-   * @return a not null instance
+   * @param serviceName The identifier of the local service.
+   * @return A not null reference.
+   * @throws IllegalStateException If there's no service having the provided name.
+   * @since 1.0
    */
   static PoolLocalServiceServerImpl getInstance(String serviceName) {
-    if (!serviceInstances.containsKey(serviceName)) {
+    if (!serviceByName.containsKey(serviceName)) {
       throw new IllegalStateException(
-          "No service could be found with the provided name : " + serviceName);
+          "No PoolLocalServiceServer could be found with the provided name : " + serviceName);
     }
-    return serviceInstances.get(serviceName);
+    return serviceByName.get(serviceName);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   void onMessage(MessageDto msg) {
     MessageDto response;
