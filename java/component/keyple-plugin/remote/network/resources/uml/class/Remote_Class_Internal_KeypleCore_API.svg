@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="1002px" preserveAspectRatio="none" style="width:2368px;height:1002px;" version="1.1" viewBox="0 0 2368 1002" width="2368px" zoomAndPan="magnify"><defs/><g><text fill="#000000" font-family="sans-serif" font-size="36" lengthAdjust="spacingAndGlyphs" textLength="992" x="675" y="37.3711">Keyple Remote Plugins - Keyple Core API - 1.0.0 (24/11/2020)</text><!--MD5=[f18367e0c7898c91c0228998294394f1]
+cluster packCore--><polygon fill="#F8F9F9" points="32,57.2813,374,57.2813,388,104.5,2334,104.5,2334,989.2813,32,989.2813,32,57.2813" style="stroke: #000000; stroke-width: 3.0;"/><line style="stroke: #000000; stroke-width: 3.0;" x1="32" x2="388" y1="104.5" y2="104.5"/><text fill="#000000" font-family="sans-serif" font-size="28" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="330" x="40" y="90.3477">org.eclipse.keyple.core</text><!--MD5=[52e27caeb6023b025b7854eaa29ab4b2]
+cluster packMessage--><polygon fill="#F2F3F4" points="1990,389.2813,2198,389.2813,2212,436.5,2286,436.5,2286,617.2813,1990,617.2813,1990,389.2813" style="stroke: #000000; stroke-width: 3.0;"/><line style="stroke: #000000; stroke-width: 3.0;" x1="1990" x2="2212" y1="436.5" y2="436.5"/><text fill="#000000" font-family="sans-serif" font-size="28" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="196" x="1998" y="422.3477">card.message</text><!--MD5=[7579d5565d2521d5936cec86ed3dadee]
+cluster service--><polygon fill="#F2F3F4" points="80,145.2813,198,145.2813,212,192.5,1942,192.5,1942,941.2813,80,941.2813,80,145.2813" style="stroke: #000000; stroke-width: 3.0;"/><line style="stroke: #000000; stroke-width: 3.0;" x1="80" x2="212" y1="192.5" y2="192.5"/><text fill="#000000" font-family="sans-serif" font-size="28" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="106" x="88" y="178.3477">service</text><!--MD5=[2e31800f208179cab94650aeb782e4d8]
+cluster event--><polygon fill="#E5E7E9" points="356,389.2813,450,389.2813,464,436.5,1076,436.5,1076,893.2813,356,893.2813,356,389.2813" style="stroke: #000000; stroke-width: 3.0;"/><line style="stroke: #000000; stroke-width: 3.0;" x1="356" x2="464" y1="436.5" y2="436.5"/><text fill="#000000" font-family="sans-serif" font-size="28" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="82" x="364" y="422.3477">event</text><!--MD5=[6ad7c0b688d9e902153dd4de2b6da276]
+cluster plugin--><polygon fill="#E5E7E9" points="1124,665.2813,1224,665.2813,1238,712.5,1894,712.5,1894,893.2813,1124,893.2813,1124,665.2813" style="stroke: #000000; stroke-width: 3.0;"/><line style="stroke: #000000; stroke-width: 3.0;" x1="1124" x2="1238" y1="712.5" y2="712.5"/><text fill="#000000" font-family="sans-serif" font-size="28" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="88" x="1132" y="698.3477">plugin</text><!--MD5=[96a4004012a1c08588eb87adf87ec875]
+class ProxyReader--><rect codeLine="110" fill="#E59866" height="123.6719" id="ProxyReader" style="stroke: #2C3E50; stroke-width: 3.0;" width="230" x="2023" y="461.2813"/><ellipse cx="2053" cy="493.2813" fill="#B4A7E5" rx="22" ry="22" style="stroke: #B4A7E5; stroke-width: 2.0;"/><path d="M2055,487.2813 L2055,499.2813 L2059,499.2813 L2059.9688,499.2813 L2061,500.5313 L2061,501.2813 L2061,502.0313 L2059.9688,503.2813 L2059,503.2813 L2047,503.2813 L2046.0313,503.2813 L2045,502.0313 L2045,501.2813 L2045,500.5313 L2046.0313,499.2813 L2047,499.2813 L2051,499.2813 L2051,487.2813 L2047,487.2813 L2046.0313,487.2813 L2045,486.0313 L2045,485.2813 L2045,484.5313 L2046.0313,483.2813 L2047,483.2813 L2059,483.2813 L2059.9688,483.2813 L2061,484.5313 L2061,485.2813 L2061,486.0313 L2059.9688,487.2813 L2059,487.2813 L2055,487.2813 Z " fill="#000000"/><ellipse cx="2091" cy="492.2813" fill="#84BE84" rx="6" ry="6" style="stroke: #038048; stroke-width: 2.0;"/><text fill="#000000" font-family="sans-serif" font-size="24" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="144" x="2103" y="503.1016">ProxyReader</text><line style="stroke: #2C3E50; stroke-width: 3.0;" x1="2025" x2="2251" y1="525.2813" y2="525.2813"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacingAndGlyphs" textLength="18" x="2035" y="556.1191">...</text><line style="stroke: #2C3E50; stroke-width: 3.0;" x1="2025" x2="2251" y1="568.9531" y2="568.9531"/><!--MD5=[5c68026ea752d2e8f1e184b2d7c89ced]
+class PluginFactory--><rect codeLine="106" fill="#E59866" height="123.6719" id="PluginFactory" style="stroke: #2C3E50; stroke-width: 3.0;" width="236" x="1516" y="217.2813"/><ellipse cx="1546" cy="249.2813" fill="#B4A7E5" rx="22" ry="22" style="stroke: #B4A7E5; stroke-width: 2.0;"/><path d="M1548,243.2813 L1548,255.2813 L1552,255.2813 L1552.9688,255.2813 L1554,256.5313 L1554,257.2813 L1554,258.0313 L1552.9688,259.2813 L1552,259.2813 L1540,259.2813 L1539.0313,259.2813 L1538,258.0313 L1538,257.2813 L1538,256.5313 L1539.0313,255.2813 L1540,255.2813 L1544,255.2813 L1544,243.2813 L1540,243.2813 L1539.0313,243.2813 L1538,242.0313 L1538,241.2813 L1538,240.5313 L1539.0313,239.2813 L1540,239.2813 L1552,239.2813 L1552.9688,239.2813 L1554,240.5313 L1554,241.2813 L1554,242.0313 L1552.9688,243.2813 L1552,243.2813 L1548,243.2813 Z " fill="#000000"/><ellipse cx="1584" cy="248.2813" fill="#84BE84" rx="6" ry="6" style="stroke: #038048; stroke-width: 2.0;"/><text fill="#000000" font-family="sans-serif" font-size="24" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="150" x="1596" y="259.1016">PluginFactory</text><line style="stroke: #2C3E50; stroke-width: 3.0;" x1="1518" x2="1750" y1="281.2813" y2="281.2813"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacingAndGlyphs" textLength="18" x="1528" y="312.1191">...</text><line style="stroke: #2C3E50; stroke-width: 3.0;" x1="1518" x2="1750" y1="324.9531" y2="324.9531"/><!--MD5=[b628511dd50102041730ee0512f882c8]
+class Plugin--><rect codeLine="107" fill="#E59866" height="123.6719" id="Plugin" style="stroke: #2C3E50; stroke-width: 3.0;" width="156" x="296" y="217.2813"/><ellipse cx="326" cy="249.2813" fill="#B4A7E5" rx="22" ry="22" style="stroke: #B4A7E5; stroke-width: 2.0;"/><path d="M328,243.2813 L328,255.2813 L332,255.2813 L332.9688,255.2813 L334,256.5313 L334,257.2813 L334,258.0313 L332.9688,259.2813 L332,259.2813 L320,259.2813 L319.0313,259.2813 L318,258.0313 L318,257.2813 L318,256.5313 L319.0313,255.2813 L320,255.2813 L324,255.2813 L324,243.2813 L320,243.2813 L319.0313,243.2813 L318,242.0313 L318,241.2813 L318,240.5313 L319.0313,239.2813 L320,239.2813 L332,239.2813 L332.9688,239.2813 L334,240.5313 L334,241.2813 L334,242.0313 L332.9688,243.2813 L332,243.2813 L328,243.2813 Z " fill="#000000"/><ellipse cx="364" cy="248.2813" fill="#84BE84" rx="6" ry="6" style="stroke: #038048; stroke-width: 2.0;"/><text fill="#000000" font-family="sans-serif" font-size="24" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="70" x="376" y="259.1016">Plugin</text><line style="stroke: #2C3E50; stroke-width: 3.0;" x1="298" x2="450" y1="281.2813" y2="281.2813"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacingAndGlyphs" textLength="18" x="308" y="312.1191">...</text><line style="stroke: #2C3E50; stroke-width: 3.0;" x1="298" x2="450" y1="324.9531" y2="324.9531"/><!--MD5=[c8cbac6d6d9e600bce6d5400427f5af6]
+class PoolPlugin--><rect codeLine="108" fill="#E59866" height="123.6719" id="PoolPlugin" style="stroke: #2C3E50; stroke-width: 3.0;" width="206" x="113" y="461.2813"/><ellipse cx="143" cy="493.2813" fill="#B4A7E5" rx="22" ry="22" style="stroke: #B4A7E5; stroke-width: 2.0;"/><path d="M145,487.2813 L145,499.2813 L149,499.2813 L149.9688,499.2813 L151,500.5313 L151,501.2813 L151,502.0313 L149.9688,503.2813 L149,503.2813 L137,503.2813 L136.0313,503.2813 L135,502.0313 L135,501.2813 L135,500.5313 L136.0313,499.2813 L137,499.2813 L141,499.2813 L141,487.2813 L137,487.2813 L136.0313,487.2813 L135,486.0313 L135,485.2813 L135,484.5313 L136.0313,483.2813 L137,483.2813 L149,483.2813 L149.9688,483.2813 L151,484.5313 L151,485.2813 L151,486.0313 L149.9688,487.2813 L149,487.2813 L145,487.2813 Z " fill="#000000"/><ellipse cx="181" cy="492.2813" fill="#84BE84" rx="6" ry="6" style="stroke: #038048; stroke-width: 2.0;"/><text fill="#000000" font-family="sans-serif" font-size="24" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="120" x="193" y="503.1016">PoolPlugin</text><line style="stroke: #2C3E50; stroke-width: 3.0;" x1="115" x2="317" y1="525.2813" y2="525.2813"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacingAndGlyphs" textLength="18" x="125" y="556.1191">...</text><line style="stroke: #2C3E50; stroke-width: 3.0;" x1="115" x2="317" y1="568.9531" y2="568.9531"/><!--MD5=[e86a4777f2c0372cf9fb3cd047e1466e]
+class Reader--><rect codeLine="109" fill="#E59866" height="123.6719" id="Reader" style="stroke: #2C3E50; stroke-width: 3.0;" width="168" x="966" y="217.2813"/><ellipse cx="996" cy="249.2813" fill="#B4A7E5" rx="22" ry="22" style="stroke: #B4A7E5; stroke-width: 2.0;"/><path d="M998,243.2813 L998,255.2813 L1002,255.2813 L1002.9688,255.2813 L1004,256.5313 L1004,257.2813 L1004,258.0313 L1002.9688,259.2813 L1002,259.2813 L990,259.2813 L989.0313,259.2813 L988,258.0313 L988,257.2813 L988,256.5313 L989.0313,255.2813 L990,255.2813 L994,255.2813 L994,243.2813 L990,243.2813 L989.0313,243.2813 L988,242.0313 L988,241.2813 L988,240.5313 L989.0313,239.2813 L990,239.2813 L1002,239.2813 L1002.9688,239.2813 L1004,240.5313 L1004,241.2813 L1004,242.0313 L1002.9688,243.2813 L1002,243.2813 L998,243.2813 Z " fill="#000000"/><ellipse cx="1034" cy="248.2813" fill="#84BE84" rx="6" ry="6" style="stroke: #038048; stroke-width: 2.0;"/><text fill="#000000" font-family="sans-serif" font-size="24" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="82" x="1046" y="259.1016">Reader</text><line style="stroke: #2C3E50; stroke-width: 3.0;" x1="968" x2="1132" y1="281.2813" y2="281.2813"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacingAndGlyphs" textLength="18" x="978" y="312.1191">...</text><line style="stroke: #2C3E50; stroke-width: 3.0;" x1="968" x2="1132" y1="324.9531" y2="324.9531"/><!--MD5=[1fa9a61019755e60a0cb03f0bc3590aa]
+class ObservablePlugin--><rect codeLine="112" fill="#E59866" height="123.6719" id="ObservablePlugin" style="stroke: #2C3E50; stroke-width: 3.0;" width="286" x="389" y="461.2813"/><ellipse cx="419" cy="493.2813" fill="#B4A7E5" rx="22" ry="22" style="stroke: #B4A7E5; stroke-width: 2.0;"/><path d="M421,487.2813 L421,499.2813 L425,499.2813 L425.9688,499.2813 L427,500.5313 L427,501.2813 L427,502.0313 L425.9688,503.2813 L425,503.2813 L413,503.2813 L412.0313,503.2813 L411,502.0313 L411,501.2813 L411,500.5313 L412.0313,499.2813 L413,499.2813 L417,499.2813 L417,487.2813 L413,487.2813 L412.0313,487.2813 L411,486.0313 L411,485.2813 L411,484.5313 L412.0313,483.2813 L413,483.2813 L425,483.2813 L425.9688,483.2813 L427,484.5313 L427,485.2813 L427,486.0313 L425.9688,487.2813 L425,487.2813 L421,487.2813 Z " fill="#000000"/><ellipse cx="457" cy="492.2813" fill="#84BE84" rx="6" ry="6" style="stroke: #038048; stroke-width: 2.0;"/><text fill="#000000" font-family="sans-serif" font-size="24" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="200" x="469" y="503.1016">ObservablePlugin</text><line style="stroke: #2C3E50; stroke-width: 3.0;" x1="391" x2="673" y1="525.2813" y2="525.2813"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacingAndGlyphs" textLength="18" x="401" y="556.1191">...</text><line style="stroke: #2C3E50; stroke-width: 3.0;" x1="391" x2="673" y1="568.9531" y2="568.9531"/><!--MD5=[e2341a3d5316e117132fc49473ae3219]
+class ObservableReader--><rect codeLine="113" fill="#E59866" height="123.6719" id="ObservableReader" style="stroke: #2C3E50; stroke-width: 3.0;" width="298" x="745" y="461.2813"/><ellipse cx="775" cy="493.2813" fill="#B4A7E5" rx="22" ry="22" style="stroke: #B4A7E5; stroke-width: 2.0;"/><path d="M777,487.2813 L777,499.2813 L781,499.2813 L781.9688,499.2813 L783,500.5313 L783,501.2813 L783,502.0313 L781.9688,503.2813 L781,503.2813 L769,503.2813 L768.0313,503.2813 L767,502.0313 L767,501.2813 L767,500.5313 L768.0313,499.2813 L769,499.2813 L773,499.2813 L773,487.2813 L769,487.2813 L768.0313,487.2813 L767,486.0313 L767,485.2813 L767,484.5313 L768.0313,483.2813 L769,483.2813 L781,483.2813 L781.9688,483.2813 L783,484.5313 L783,485.2813 L783,486.0313 L781.9688,487.2813 L781,487.2813 L777,487.2813 Z " fill="#000000"/><ellipse cx="813" cy="492.2813" fill="#84BE84" rx="6" ry="6" style="stroke: #038048; stroke-width: 2.0;"/><text fill="#000000" font-family="sans-serif" font-size="24" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="212" x="825" y="503.1016">ObservableReader</text><line style="stroke: #2C3E50; stroke-width: 3.0;" x1="747" x2="1041" y1="525.2813" y2="525.2813"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacingAndGlyphs" textLength="18" x="757" y="556.1191">...</text><line style="stroke: #2C3E50; stroke-width: 3.0;" x1="747" x2="1041" y1="568.9531" y2="568.9531"/><!--MD5=[35b709ead7a86e7b2780a25fdb99ded4]
+class ReaderObserver--><rect codeLine="115" fill="#E59866" height="123.6719" id="ReaderObserver" style="stroke: #2C3E50; stroke-width: 3.0;" width="270" x="759" y="737.2813"/><ellipse cx="789" cy="769.2813" fill="#B4A7E5" rx="22" ry="22" style="stroke: #B4A7E5; stroke-width: 2.0;"/><path d="M791,763.2813 L791,775.2813 L795,775.2813 L795.9688,775.2813 L797,776.5313 L797,777.2813 L797,778.0313 L795.9688,779.2813 L795,779.2813 L783,779.2813 L782.0313,779.2813 L781,778.0313 L781,777.2813 L781,776.5313 L782.0313,775.2813 L783,775.2813 L787,775.2813 L787,763.2813 L783,763.2813 L782.0313,763.2813 L781,762.0313 L781,761.2813 L781,760.5313 L782.0313,759.2813 L783,759.2813 L795,759.2813 L795.9688,759.2813 L797,760.5313 L797,761.2813 L797,762.0313 L795.9688,763.2813 L795,763.2813 L791,763.2813 Z " fill="#000000"/><ellipse cx="827" cy="768.2813" fill="#84BE84" rx="6" ry="6" style="stroke: #038048; stroke-width: 2.0;"/><text fill="#000000" font-family="sans-serif" font-size="24" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="184" x="839" y="779.1016">ReaderObserver</text><line style="stroke: #2C3E50; stroke-width: 3.0;" x1="761" x2="1027" y1="801.2813" y2="801.2813"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacingAndGlyphs" textLength="18" x="771" y="832.1191">...</text><line style="stroke: #2C3E50; stroke-width: 3.0;" x1="761" x2="1027" y1="844.9531" y2="844.9531"/><!--MD5=[c8b9470c9f0bc9bc22cc394204c1ec26]
+class AbstractReader--><rect codeLine="111" fill="#E59866" height="123.6719" id="AbstractReader" style="stroke: #2C3E50; stroke-width: 3.0;" width="258" x="1603" y="737.2813"/><ellipse cx="1633" cy="769.2813" fill="#A9DCDF" rx="22" ry="22" style="stroke: #A9DCDF; stroke-width: 2.0;"/><path d="M1636.5,772.2813 L1629.9063,772.2813 L1629.0313,774.2813 L1629.0313,774.2813 L1629.9688,774.2813 L1631,775.5313 L1631,776.2813 L1631,777.0313 L1629.9688,778.2813 L1629.0313,778.2813 L1625.25,778.2813 L1624.0313,778.2813 L1623,777.0313 L1623,776.2813 L1623,775.5313 L1624.0313,774.2813 L1625.25,774.2813 L1629.875,762.2813 L1628.125,762.2813 L1626.0313,762.2813 L1625,761.0313 L1625,760.2813 L1625,759.5313 L1626.0313,758.2813 L1628.125,758.2813 L1635.4688,758.2813 L1640.8438,774.2813 L1641.9688,774.2813 L1641.9688,774.2813 L1643,775.5313 L1643,776.2813 L1643,777.0313 L1641.9688,778.2813 L1640.8438,778.2813 L1637.0625,778.2813 L1636.0313,778.2813 L1635,777.0313 L1635,776.2813 L1635,775.5313 L1636.0313,774.2813 L1637.0625,774.2813 L1637.0625,774.2813 L1636.5,772.2813 Z M1635.4063,768.2813 L1633,761.125 L1630.9375,768.2813 L1635.4063,768.2813 Z " fill="#000000"/><ellipse cx="1671" cy="768.2813" fill="#84BE84" rx="6" ry="6" style="stroke: #038048; stroke-width: 2.0;"/><text fill="#000000" font-family="sans-serif" font-size="24" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="172" x="1683" y="779.1016">AbstractReader</text><line style="stroke: #2C3E50; stroke-width: 3.0;" x1="1605" x2="1859" y1="801.2813" y2="801.2813"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacingAndGlyphs" textLength="18" x="1615" y="832.1191">...</text><line style="stroke: #2C3E50; stroke-width: 3.0;" x1="1605" x2="1859" y1="844.9531" y2="844.9531"/><!--MD5=[b940e63541cb3de023976f6bd0dc6a31]
+class ObservableReaderNotifier--><rect codeLine="114" fill="#E59866" height="123.6719" id="ObservableReaderNotifier" style="stroke: #2C3E50; stroke-width: 3.0;" width="376" x="1156" y="737.2813"/><ellipse cx="1186" cy="769.2813" fill="#B4A7E5" rx="22" ry="22" style="stroke: #B4A7E5; stroke-width: 2.0;"/><path d="M1188,763.2813 L1188,775.2813 L1192,775.2813 L1192.9688,775.2813 L1194,776.5313 L1194,777.2813 L1194,778.0313 L1192.9688,779.2813 L1192,779.2813 L1180,779.2813 L1179.0313,779.2813 L1178,778.0313 L1178,777.2813 L1178,776.5313 L1179.0313,775.2813 L1180,775.2813 L1184,775.2813 L1184,763.2813 L1180,763.2813 L1179.0313,763.2813 L1178,762.0313 L1178,761.2813 L1178,760.5313 L1179.0313,759.2813 L1180,759.2813 L1192,759.2813 L1192.9688,759.2813 L1194,760.5313 L1194,761.2813 L1194,762.0313 L1192.9688,763.2813 L1192,763.2813 L1188,763.2813 Z " fill="#000000"/><ellipse cx="1224" cy="768.2813" fill="#84BE84" rx="6" ry="6" style="stroke: #038048; stroke-width: 2.0;"/><text fill="#000000" font-family="sans-serif" font-size="24" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="290" x="1236" y="779.1016">ObservableReaderNotifier</text><line style="stroke: #2C3E50; stroke-width: 3.0;" x1="1158" x2="1530" y1="801.2813" y2="801.2813"/><text fill="#000000" font-family="sans-serif" font-size="22" lengthAdjust="spacingAndGlyphs" textLength="18" x="1168" y="832.1191">...</text><line style="stroke: #2C3E50; stroke-width: 3.0;" x1="1158" x2="1530" y1="844.9531" y2="844.9531"/><!--MD5=[2219806bdc996f946b60beec9aa5725f]
+reverse link Plugin to PoolPlugin--><path d="M312.06,375.3673 C293.156,404.0812 272.884,434.8753 255.858,460.7392 " fill="none" id="Plugin-backto-PoolPlugin" style="stroke: #A80036; stroke-width: 2.0;"/><polygon fill="none" points="300.442,367.5553,334.13,341.8433,323.828,382.9512,300.442,367.5553" style="stroke: #A80036; stroke-width: 2.0;"/><!--MD5=[550a12816f88094ca7e979a72eedae9c]
+reverse link Plugin to ObservablePlugin--><path d="M435.94,375.3673 C454.844,404.0812 475.116,434.8753 492.142,460.7392 " fill="none" id="Plugin-backto-ObservablePlugin" style="stroke: #A80036; stroke-width: 2.0;"/><polygon fill="none" points="424.172,382.9512,413.87,341.8433,447.558,367.5553,424.172,382.9512" style="stroke: #A80036; stroke-width: 2.0;"/><!--MD5=[495ccb80ac82bdc45a1b0288016f2c00]
+reverse link Reader to ObservableReader--><path d="M988.228,376.3153 C969.74,404.7573 949.98,435.1593 933.352,460.7392 " fill="none" id="Reader-backto-ObservableReader" style="stroke: #A80036; stroke-width: 2.0;"/><polygon fill="none" points="977.096,367.7513,1010.634,341.8433,1000.574,383.0113,977.096,367.7513" style="stroke: #A80036; stroke-width: 2.0;"/><!--MD5=[625475b96d083cf26f5f0b5bf24282c2]
+reverse link ProxyReader to AbstractReader--><path d="M2014.4,608.0833 C1952.396,649.6273 1878.652,699.0313 1822.074,736.9373 " fill="none" id="ProxyReader-backto-AbstractReader" style="stroke: #A80036; stroke-width: 2.0; stroke-dasharray: 7.0,7.0;"/><polygon fill="none" points="2007.38,595.9413,2048.4,585.3093,2022.96,619.2033,2007.38,595.9413" style="stroke: #A80036; stroke-width: 2.0;"/><!--MD5=[77be2c078e34aa2dfe5639fff6304c16]
+reverse link ObservableReader to ObservableReaderNotifier--><path d="M1028.12,606.3493 C1097.434,648.2473 1180.58,698.5033 1244.166,736.9373 " fill="none" id="ObservableReader-backto-ObservableReaderNotifier" style="stroke: #A80036; stroke-width: 2.0;"/><polygon fill="none" points="1020.302,617.9833,993.312,585.3093,1034.786,594.0193,1020.302,617.9833" style="stroke: #A80036; stroke-width: 2.0;"/><!--MD5=[064f265580e30d9d90190d8c0a6130d8]
+reverse link Reader to ProxyReader--><path codeLine="95" d="M1173.862,308.6033 C1386.004,355.3993 1815.916,450.2333 2022.32,495.7613 " fill="none" id="Reader-backto-ProxyReader" style="stroke: #A80036; stroke-width: 2.0;"/><polygon fill="none" points="1170.514,322.2012,1134.468,299.9132,1176.544,294.8593,1170.514,322.2012" style="stroke: #A80036; stroke-width: 2.0;"/><!--MD5=[49138a1ae57008717e97dd6304bf9aa6]
+reverse link ObservableReader to ReaderObserver--><path codeLine="96" d="M894,616.0353 C894,655.8693 894,701.5493 894,737.0853 " fill="none" id="ObservableReader-backto-ReaderObserver" style="stroke: #3498DB; stroke-width: 2.0;"/><ellipse cx="894" cy="601.6473" fill="#FFFFFF" rx="16" ry="16" style="stroke: #3498DB; stroke-width: 2.0;"/><line style="stroke: #3498DB; stroke-width: 2.0;" x1="894" x2="894" y1="617.6473" y2="585.6473"/><line style="stroke: #3498DB; stroke-width: 2.0;" x1="878" x2="910" y1="601.6473" y2="601.6473"/><!--MD5=[0640c08104b63cdd51a9f1a889eea89a]
+@startuml
+title
+    Keyple Remote Plugins - Keyple Core API - 1.0.0 (24/11/2020)
+end title
+
+' == THEME ==
+
+'Couleurs issues de : https://htmlcolorcodes.com/fr/tableau-de-couleur/tableau-de-couleur-design-plat/
+!define C_GREY1 F8F9F9
+!define C_GREY2 F2F3F4
+!define C_GREY3 E5E7E9
+!define C_GREY4 D7DBDD
+!define C_GREY5 CACFD2
+!define C_GREY6 BDC3C7
+!define C_LINK 3498DB
+!define C_USE 27AE60
+
+skinparam Shadowing false
+skinparam ClassFontStyle italic
+skinparam ClassBorderColor #D4AC0D
+skinparam stereotypeABorderColor #A9DCDF
+skinparam stereotypeIBorderColor #B4A7E5
+skinparam stereotypeCBorderColor #ADD1B2
+skinparam stereotypeEBorderColor #EB93DF
+' Red
+skinparam ClassBackgroundColor<<red>> #FDEDEC
+skinparam ClassBorderColor<<red>> #E74C3C
+hide <<red>> stereotype
+' Purple
+skinparam ClassBackgroundColor<<purple>> #F4ECF7
+skinparam ClassBorderColor<<purple>> #8E44AD
+hide <<purple>> stereotype
+' blue
+skinparam ClassBackgroundColor<<blue>> #EBF5FB
+skinparam ClassBorderColor<<blue>> #3498DB
+hide <<blue>> stereotype
+' Green
+skinparam ClassBackgroundColor<<green>> #E9F7EF
+skinparam ClassBorderColor<<green>> #27AE60
+hide <<green>> stereotype
+' Grey
+skinparam ClassBackgroundColor<<grey>> #EAECEE
+skinparam ClassBorderColor<<grey>> #2C3E50
+hide <<grey>> stereotype
+
+' == CONTENT ==
+
+package "org.eclipse.keyple.core" as packCore {
+
+    package "card.message" as packMessage {
+        +interface ProxyReader {
+            ...
+        }
+    }
+
+    package service {
+
+        +interface PluginFactory {
+            ...
+        }
+        +interface Plugin {
+            ...
+        }
+        +interface PoolPlugin extends Plugin {
+            ...
+        }
+        +interface Reader {
+            ...
+        }
+
+        package event {
+            +interface ObservablePlugin extends Plugin {
+                ...
+            }
+            +interface ObservableReader extends Reader {
+                ...
+            }
+            +interface ReaderObserver {
+                ...
+            }
+        }
+
+        package plugin {
+            +abstract AbstractReader implements ProxyReader {
+                ...
+            }
+            +interface ObservableReaderNotifier extends ObservableReader {
+                ...
+            }
+        }
+
+    }
+}
+
+' Associations
+Reader <|- - ProxyReader
+ObservableReader +- - ReaderObserver #C_LINK
+
+' == STYLE ==
+
+package packCore #C_GREY1 {}
+package packMessage #C_GREY2 {}
+package service #C_GREY2 {}
+package event #C_GREY3 {}
+package plugin #C_GREY3 {}
+
+interface PluginFactory <<grey>> #E59866
+interface Plugin <<grey>> #E59866
+interface PoolPlugin <<grey>> #E59866
+interface Reader <<grey>> #E59866
+interface ProxyReader <<grey>> #E59866
+abstract AbstractReader <<grey>> #E59866
+interface ObservablePlugin <<grey>> #E59866
+interface ObservableReader <<grey>> #E59866
+interface ObservableReaderNotifier <<grey>> #E59866
+interface ReaderObserver <<grey>> #E59866
+
+@enduml
+
+@startuml
+title
+    Keyple Remote Plugins - Keyple Core API - 1.0.0 (24/11/2020)
+end title
+
+
+
+skinparam Shadowing false
+skinparam ClassFontStyle italic
+skinparam ClassBorderColor #D4AC0D
+skinparam stereotypeABorderColor #A9DCDF
+skinparam stereotypeIBorderColor #B4A7E5
+skinparam stereotypeCBorderColor #ADD1B2
+skinparam stereotypeEBorderColor #EB93DF
+skinparam ClassBackgroundColor<<red>> #FDEDEC
+skinparam ClassBorderColor<<red>> #E74C3C
+hide <<red>> stereotype
+skinparam ClassBackgroundColor<<purple>> #F4ECF7
+skinparam ClassBorderColor<<purple>> #8E44AD
+hide <<purple>> stereotype
+skinparam ClassBackgroundColor<<blue>> #EBF5FB
+skinparam ClassBorderColor<<blue>> #3498DB
+hide <<blue>> stereotype
+skinparam ClassBackgroundColor<<green>> #E9F7EF
+skinparam ClassBorderColor<<green>> #27AE60
+hide <<green>> stereotype
+skinparam ClassBackgroundColor<<grey>> #EAECEE
+skinparam ClassBorderColor<<grey>> #2C3E50
+hide <<grey>> stereotype
+
+
+package "org.eclipse.keyple.core" as packCore {
+
+    package "card.message" as packMessage {
+        +interface ProxyReader {
+            ...
+        }
+    }
+
+    package service {
+
+        +interface PluginFactory {
+            ...
+        }
+        +interface Plugin {
+            ...
+        }
+        +interface PoolPlugin extends Plugin {
+            ...
+        }
+        +interface Reader {
+            ...
+        }
+
+        package event {
+            +interface ObservablePlugin extends Plugin {
+                ...
+            }
+            +interface ObservableReader extends Reader {
+                ...
+            }
+            +interface ReaderObserver {
+                ...
+            }
+        }
+
+        package plugin {
+            +abstract AbstractReader implements ProxyReader {
+                ...
+            }
+            +interface ObservableReaderNotifier extends ObservableReader {
+                ...
+            }
+        }
+
+    }
+}
+
+Reader <|- - ProxyReader
+ObservableReader +- - ReaderObserver #3498DB
+
+
+package packCore #F8F9F9 {}
+package packMessage #F2F3F4 {}
+package service #F2F3F4 {}
+package event #E5E7E9 {}
+package plugin #E5E7E9 {}
+
+interface PluginFactory <<grey>> #E59866
+interface Plugin <<grey>> #E59866
+interface PoolPlugin <<grey>> #E59866
+interface Reader <<grey>> #E59866
+interface ProxyReader <<grey>> #E59866
+abstract AbstractReader <<grey>> #E59866
+interface ObservablePlugin <<grey>> #E59866
+interface ObservableReader <<grey>> #E59866
+interface ObservableReaderNotifier <<grey>> #E59866
+interface ReaderObserver <<grey>> #E59866
+
+@enduml
+
+PlantUML version 1.2020.20(Sat Nov 21 11:02:45 CET 2020)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: Cp1252
+Language: fr
+Country: FR
+--></g></svg>

@@ -1,0 +1,227 @@
+apply plugin: 'java'
+apply plugin: 'java-library'
+apply plugin: 'maven'
+apply plugin: 'org.eclipse.keyple'
+apply plugin: 'jacoco'
+apply plugin: 'org.sonarqube'
+
+sourceCompatibility = 1.6
+archivesBaseName = "keyple-plugin-remote-network"
+project.description ='Keyple Remote Plugins (Network Lib)'
+
+//copy license file from root folder to each generated artifact
+task copyLICENSEplugin(type: Copy) {
+    from file("${projectDir}/../../../../../LICENSE")
+    into file("${buildDir}/resources/main/META-INF/")
+}
+
+//copy notice file from root folder to each generated artifact
+task copyNOTICEplugin(type: Copy) {
+    from file("${projectDir}/../../../../../NOTICE.md")
+    into file("${buildDir}/resources/main/META-INF/")
+}
+
+classes.dependsOn copyLICENSEplugin, copyNOTICEplugin
+
+//declare manifest
+jar {
+    manifest {
+        attributes 'Implementation-Title': project.description,
+                'Implementation-Version': project.version
+    }
+}
+
+//generate sources jar
+task sourcesJar(type: Jar, dependsOn : classes) {
+    classifier = 'sources'
+    from sourceSets.main.output, sourceSets.main.java
+}
+
+// Javadoc generation
+// Copy static custom files (logo)
+javadoc {
+    doLast {
+        copy {
+            from "src/main/javadoc/images"
+            into "$project.buildDir/docs/javadoc/images"
+            include "*.png"
+        }
+    }
+}
+// Generate javadoc jar
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    javadoc.options.encoding = 'UTF-8'
+    from javadoc.destinationDir
+    javadoc.options.overview = "src/main/javadoc/overview.html"
+    javadoc.options.setUse(true) // adds the "use" link to the navigation bar
+    javadoc.options.setStylesheetFile(file("src/main/javadoc/keyple-stylesheet.css"))
+    javadoc.options.setWindowTitle("Keyple Remote Plugins - Network API - " + version)
+    javadoc.options.setDocTitle("Keyple Remote Plugins - Network API - " + version)
+    javadoc.options.setHeader("<a target=\"_parent\" href=\"https://keyple.org/\"><img src=\"{@docRoot}/images/keyple.png\" height=\"20px\" style=\"background-color: white; padding: 3px; margin: 0 10px -7px 3px;\"/></a><span style=\"line-height: 30px\"> REMOTE PLUGINS - NETWORK API - " + version + "</span>")
+    javadoc.options.setFooter("Copyright &copy; Eclipse Foundation, Inc. All Rights Reserved.")
+}
+
+//publish javadoc, sources and jar
+artifacts {
+    archives sourcesJar, javadocJar
+}
+
+//sign if needed (based on the doSign variable)
+if (project.getProperties().containsKey("doSign") && doSign=="true") {
+    apply plugin: 'signing'
+
+    ext."signing.keyId" = "0C140E36"
+    //other properties are defined in the gradle.properties
+    signing {
+        sign configurations.archives
+    }
+}
+
+//define local or remote upload repository (based on the doSign variable)
+/* from https://central.sonatype.org/pages/gradle.html
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            if (project.getProperties().containsKey("doSign") && doSign=="true") {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+            }else {
+                repository(url: mavenLocal().url)
+            }
+        }
+    }
+}
+ */
+
+//overwrite pom definition values
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            if (project.getProperties().containsKey("doSign") && doSign=="true") {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+            }else {
+                repository(url: mavenLocal().url)
+            }
+
+            pom.project {
+                name project.description
+                description project.description
+                url "https://projects.eclipse.org/projects/iot.keyple"
+
+                organization("Eclipse Keyple"){
+                    name "Eclipse Keyple"
+                    url "https://projects.eclipse.org/projects/iot.keyple"
+                }
+
+                scm {
+                    connection 'scm:git:git://github.com/eclipse/keyple-java.git'
+                    developerConnection 'scm:git:https://github.com/eclipse/keyple-java.git'
+                    url 'http://github.com/eclipse/keyple-java/tree/master'
+                }
+
+
+                licenses {
+                    license {
+                        name 'Eclipse Public License - v 2.0'
+                        url 'https://www.eclipse.org/legal/epl-2.0/'
+                    }
+                }
+
+                developers {
+                    developer {
+                        name 'Andrei Cristea'
+                        email 'andrei.cristea019@gmail.com'
+                    }
+                    developer {
+                        name 'Olivier Delcroix'
+                        email 'odelcroi@gmail.com'
+                    }
+                    developer {
+                        name 'Jean-Pierre Fortune'
+                        email 'jean-pierre.fortune@ialto.com'
+                    }
+                    developer {
+                        name 'Pierre Terrée'
+                        email 'pierre.terree@calypsonet.org'
+                    }
+                }
+
+                //dependencies mapping is defined manually
+                pom.scopeMappings.with {
+                    mappings.clear()
+                    addMapping(1, configurations.api, 'compile')
+                    addMapping(2, configurations.implementation, 'compile')
+                    addMapping(3, configurations.testImplementation, 'test')
+                }
+
+            }
+        }
+    }
+}
+
+task installPlugin{
+    group 'keyple'
+    description 'Builds and installs the ' + project.description + ' into maven local repository'
+    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-network:uploadArchives'
+
+    doLast {
+        println project.description + ' has been installed into maven local repo at path : ' + project.getRepositories().get(0).getAt("url")
+    }
+}
+
+dependencies {
+
+    // Keyple Core Lib
+    //api project(path:':java:component:keyple-core')
+    api group: 'org.eclipse.keyple', name: 'keyple-java-core', version: project.version
+
+    implementation "com.google.code.gson:gson:${gson_version}"
+
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+    api "org.slf4j:slf4j-api:${slf4japi_version}"
+
+    /*
+    Test
+     */
+
+    // https://mvnrepository.com/artifact/junit/junit
+    testImplementation "junit:junit:${junit_version}"
+
+    // https://search.maven.org/artifact/org.assertj/assertj-core/2.9.1/bundle
+    testImplementation "org.assertj:assertj-core:${assertj_version}"
+
+    // https://mvnrepository.com/artifact/org.mockito/mockito-core
+    testImplementation "org.mockito:mockito-core:${mockitocore_version}"
+
+    //add slf4j simple logger implementation
+    testImplementation "org.slf4j:slf4j-simple:${slf4jsimple_version}"
+
+    // https://github.com/awaitility/awaitility
+    testImplementation 'org.awaitility:awaitility:4.0.3'
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        csv.enabled false
+        html.enabled false
+    }
+}
+
+test.finalizedBy jacocoTestReport

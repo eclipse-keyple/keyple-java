@@ -43,7 +43,7 @@ public class StubPoolPluginTest extends BaseStubTest {
 
   /** Plug a pool reader */
   @Test
-  public void plugStubPoolReader_success() {
+  public void plugPoolReader_success() {
     StubPoolPluginImpl stubPoolPlugin =
         (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME, null, null).getPlugin();
 
@@ -59,7 +59,7 @@ public class StubPoolPluginTest extends BaseStubTest {
 
   /** Unplug a pool reader */
   @Test
-  public void unplugStubPoolReader_success() throws Exception {
+  public void unplugPoolReader_success() throws Exception {
     StubPoolPluginImpl stubPoolPlugin =
         (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME, null, null).getPlugin();
 

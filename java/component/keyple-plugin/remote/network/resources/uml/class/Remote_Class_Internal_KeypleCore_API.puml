@@ -1,0 +1,118 @@
+@startuml
+title
+    Keyple Remote Plugins - Keyple Core API - 1.0.0 (24/11/2020)
+end title
+
+' == THEME ==
+
+'Couleurs issues de : https://htmlcolorcodes.com/fr/tableau-de-couleur/tableau-de-couleur-design-plat/
+!define C_GREY1 F8F9F9
+!define C_GREY2 F2F3F4
+!define C_GREY3 E5E7E9
+!define C_GREY4 D7DBDD
+!define C_GREY5 CACFD2
+!define C_GREY6 BDC3C7
+!define C_LINK 3498DB
+!define C_USE 27AE60
+
+skinparam Shadowing false
+skinparam ClassFontStyle italic
+skinparam ClassBorderColor #D4AC0D
+skinparam stereotypeABorderColor #A9DCDF
+skinparam stereotypeIBorderColor #B4A7E5
+skinparam stereotypeCBorderColor #ADD1B2
+skinparam stereotypeEBorderColor #EB93DF
+' Red
+skinparam ClassBackgroundColor<<red>> #FDEDEC
+skinparam ClassBorderColor<<red>> #E74C3C
+hide <<red>> stereotype
+' Purple
+skinparam ClassBackgroundColor<<purple>> #F4ECF7
+skinparam ClassBorderColor<<purple>> #8E44AD
+hide <<purple>> stereotype
+' blue
+skinparam ClassBackgroundColor<<blue>> #EBF5FB
+skinparam ClassBorderColor<<blue>> #3498DB
+hide <<blue>> stereotype
+' Green
+skinparam ClassBackgroundColor<<green>> #E9F7EF
+skinparam ClassBorderColor<<green>> #27AE60
+hide <<green>> stereotype
+' Grey
+skinparam ClassBackgroundColor<<grey>> #EAECEE
+skinparam ClassBorderColor<<grey>> #2C3E50
+hide <<grey>> stereotype
+
+' == CONTENT ==
+
+package "org.eclipse.keyple.core" as packCore {
+
+    package "card.message" as packMessage {
+        +interface ProxyReader {
+            ...
+        }
+    }
+
+    package service {
+
+        +interface PluginFactory {
+            ...
+        }
+        +interface Plugin {
+            ...
+        }
+        +interface PoolPlugin extends Plugin {
+            ...
+        }
+        +interface Reader {
+            ...
+        }
+
+        package event {
+            +interface ObservablePlugin extends Plugin {
+                ...
+            }
+            +interface ObservableReader extends Reader {
+                ...
+            }
+            +interface ReaderObserver {
+                ...
+            }
+        }
+
+        package plugin {
+            +abstract AbstractReader implements ProxyReader {
+                ...
+            }
+            +interface ObservableReaderNotifier extends ObservableReader {
+                ...
+            }
+        }
+
+    }
+}
+
+' Associations
+Reader <|-- ProxyReader
+ObservableReader +-- ReaderObserver #C_LINK
+
+' == STYLE ==
+
+package packCore #C_GREY1 {}
+package packMessage #C_GREY2 {}
+package service #C_GREY2 {}
+package event #C_GREY3 {}
+package plugin #C_GREY3 {}
+
+interface PluginFactory <<grey>> #E59866
+interface Plugin <<grey>> #E59866
+interface PoolPlugin <<grey>> #E59866
+interface Reader <<grey>> #E59866
+interface ProxyReader <<grey>> #E59866
+abstract AbstractReader <<grey>> #E59866
+interface ObservablePlugin <<grey>> #E59866
+interface ObservableReader <<grey>> #E59866
+interface ObservableReaderNotifier <<grey>> #E59866
+interface ReaderObserver <<grey>> #E59866
+
+@enduml

@@ -161,7 +161,7 @@ public class AbstractIso7816CommandBuilderTest extends CoreBaseTest {
     Assert.assertArrayEquals(ByteArrayUtil.fromHex("CC11B1B2041122334400"), apduRequest.getBytes());
   }
 
-  private enum CommandRef implements CardCommand {
+  public enum CommandRef implements CardCommand {
     COMMAND_1("COMMAND_1", (byte) 0x11),
     COMMAND_2("COMMAND_2", (byte) 0x22);
 

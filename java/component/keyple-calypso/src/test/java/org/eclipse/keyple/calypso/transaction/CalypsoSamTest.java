@@ -15,13 +15,18 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Java6Assertions.shouldHaveThrown;
 import static org.eclipse.keyple.calypso.command.sam.SamRevision.*;
 
+import org.assertj.core.api.Assertions;
 import org.eclipse.keyple.core.card.message.AnswerToReset;
 import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 import org.eclipse.keyple.core.card.message.SelectionStatus;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.core.util.json.KeypleGsonParser;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CalypsoSamTest {
+  private static final Logger logger = LoggerFactory.getLogger(CalypsoSamTest.class);
 
   public static String ATR1 = "3B001122805A0180D002030411223344829000";
   public static String ATR2 = "3B001122805A0180D102030411223344829000";
@@ -128,5 +133,16 @@ public class CalypsoSamTest {
         new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex("")), null, true);
     CalypsoSam calypsoSam = new CalypsoSam(new CardSelectionResponse(selectionStatus, null));
     shouldHaveThrown(IllegalArgumentException.class);
+  }
+
+  @Test
+  public void json_fromJson() {
+    SelectionStatus selectionStatus =
+        new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR1)), null, true);
+    CalypsoSam calypsoSam = new CalypsoSam(new CardSelectionResponse(selectionStatus, null));
+    String json = KeypleGsonParser.getParser().toJson(calypsoSam);
+    logger.debug(json);
+    Assertions.assertThat(KeypleGsonParser.getParser().fromJson(json, CalypsoSam.class))
+        .isEqualToComparingFieldByFieldRecursively(calypsoSam);
   }
 }

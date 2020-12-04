@@ -28,6 +28,10 @@ public final class GenericCardSelectionRequest extends AbstractCardSelection {
       public GenericSmartCard(CardSelectionResponse cardSelectionResponse) {
         super(cardSelectionResponse);
       }
+
+      public String toJson() {
+        return "{}";
+      }
     }
     return new GenericSmartCard(cardSelectionResponse);
   }

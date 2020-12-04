@@ -1,0 +1,147 @@
+@startuml
+title
+    Keyple Remote Plugins - Package "org.eclipse.keyple.plugin.remote" - 1.0.0 (06/11/2020)
+end title
+
+' == THEME ==
+
+'Couleurs issues de : https://htmlcolorcodes.com/fr/tableau-de-couleur/tableau-de-couleur-design-plat/
+!define C_GREY1 F8F9F9
+!define C_GREY2 F2F3F4
+!define C_GREY3 E5E7E9
+!define C_GREY4 D7DBDD
+!define C_GREY5 CACFD2
+!define C_GREY6 BDC3C7
+!define C_LINK 3498DB
+!define C_USE 27AE60
+
+skinparam Shadowing false
+skinparam ClassFontStyle italic
+skinparam ClassBorderColor #D4AC0D
+skinparam stereotypeABorderColor #A9DCDF
+skinparam stereotypeIBorderColor #B4A7E5
+skinparam stereotypeCBorderColor #ADD1B2
+skinparam stereotypeEBorderColor #EB93DF
+' Red
+skinparam ClassBackgroundColor<<red>> #FDEDEC
+skinparam ClassBorderColor<<red>> #E74C3C
+hide <<red>> stereotype
+' Purple
+skinparam ClassBackgroundColor<<purple>> #F4ECF7
+skinparam ClassBorderColor<<purple>> #8E44AD
+hide <<purple>> stereotype
+' blue
+skinparam ClassBackgroundColor<<blue>> #EBF5FB
+skinparam ClassBorderColor<<blue>> #3498DB
+hide <<blue>> stereotype
+' Green
+skinparam ClassBackgroundColor<<green>> #E9F7EF
+skinparam ClassBorderColor<<green>> #27AE60
+hide <<green>> stereotype
+' Grey
+skinparam ClassBackgroundColor<<grey>> #EAECEE
+skinparam ClassBorderColor<<grey>> #2C3E50
+hide <<grey>> stereotype
+
+' == CONTENT ==
+
+package "org.eclipse.keyple.plugin.remote" as packRemote {
+
+    together {
+
+        ' Nodes
+        +interface AsyncNodeClient {
+            +void onOpen (String sessionId)
+            +void onMessage (MessageDto msg)
+            +void onClose (String sessionId)
+            +void onError (String sessionId, Throwable error)
+        }
+        +interface AsyncNodeServer {
+            +void onMessage (MessageDto msg)
+            +void onError (String sessionId, Throwable error)
+        }
+        +interface SyncNodeClient {
+        }
+        +interface SyncNodeServer {
+            +List<MessageDto> onRequest (MessageDto msg)
+        }
+
+        ' DTO
+        +class MessageDto {
+            + String sessionId
+            + String action
+            + String clientNodeId
+            + String serverNodeId
+            + String localReaderName
+            + String RemoteReaderImplName
+            + String body
+        }
+
+    }
+    together {
+
+        +interface LocalServiceServer {
+        }
+        +interface PoolLocalServiceServer {
+        }
+        +interface LocalServiceClient {
+            +<T> T executeRemoteService (RemoteServiceParameters parameters, Class<T> classOfT)
+        }
+        +class RemoteServiceParameters {
+            +{static} Builder builder (String serviceId, Reader localReader)
+        }
+        +class "Builder" as RemoteServiceParametersBuilder {
+            +Builder withUserInputData (Object userInputData)
+            +Builder withInitialCardContent (AbstractSmartCard smartCard)
+            +RemoteServiceParameters build ()
+        }
+
+    }
+    together {
+
+        ' Remote Handlers
+        +interface "<<<back:orange>Plugin</back>>>\nRemotePluginClient" as RemotePluginClient {
+        }
+        +interface "<<<back:orange>ObservablePlugin</back>>>\nObservableRemotePluginClient" as ObservableRemotePluginClient extends RemotePluginClient {
+        }
+        +interface "<<<back:orange>PoolPlugin</back>>>\nPoolRemotePluginClient" as PoolRemotePluginClient {
+        }
+        +interface "<<<back:orange>ObservablePlugin</back>>>\nRemotePluginServer" as RemotePluginServer {
+            +RemoteReaderServer getReader (String name)
+            +void terminateService (String RemoteReaderImplName, Object userOutputData)
+        }
+
+        ' Remote Readers
+        +interface "<<<back:orange>Reader</back>>>\nRemoteReaderServer" as RemoteReaderServer {
+            +String getServiceId ()
+            +<T> T getUserInputData (Class<T> classOfT)
+            +<T extends AbstractSmartCard> T getInitialCardContent (Class<T> classOfSmartCard)
+        }
+        +interface "<<<back:orange>ObservableReader</back>>>\nObservableRemoteReaderServer" as ObservableRemoteReaderServer extends RemoteReaderServer {
+        }
+
+    }
+
+}
+
+' Associations
+RemotePluginServer *--> "1..N" RemoteReaderServer #C_LINK : readers
+LocalServiceClient --> RemoteServiceParameters #C_LINK : use >
+RemoteServiceParameters +-- RemoteServiceParametersBuilder #C_LINK
+
+' == LAYOUT ==
+
+ObservableRemoteReaderServer -[hidden]- RemotePluginClient
+ObservableRemotePluginClient -[hidden]- PoolRemotePluginClient
+RemoteServiceParametersBuilder -[hidden]- LocalServiceServer
+LocalServiceServer -[hidden]- PoolLocalServiceServer
+SyncNodeServer -[hidden]- SyncNodeClient
+SyncNodeClient -[hidden]- MessageDto
+MessageDto -[hidden]- AsyncNodeServer
+AsyncNodeServer -[hidden]- AsyncNodeClient
+
+' == STYLE ==
+
+package packRemote #C_GREY1 {}
+
+@enduml

@@ -135,7 +135,7 @@ Release train components:
  
 ### keyple-java-core 0.8
 * Se Proxy API
-  * Plugins need to be registered to the SeProxyService with an AbstractPluginFactory with a unique plugin name
+  * Plugins need to be registered to the SeProxyService with an PluginFactory with a unique plugin name
 * Reader monitoring
   * Redesign of the abstract classes inherited by plugin objects
   * Fix for a clean stop of the observation when removing a reader
