@@ -16,17 +16,25 @@ import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.core.card.message.ApduResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ReadRecordsCmdBuild} class provides the dedicated constructor to build the Read
- * Records APDU command.
+ * Builds the Read Records APDU command.
+ *
+ * @since 0.9
  */
 public final class ReadRecordsCmdBuild extends AbstractPoCommandBuilder<ReadRecordsRespPars> {
 
+  private static final Logger logger = LoggerFactory.getLogger(ReadRecordsCmdBuild.class);
+
   private static final CalypsoPoCommand command = CalypsoPoCommand.READ_RECORDS;
 
+  /** Indicates if one or multiple records */
   public enum ReadMode {
+    /** read one record */
     ONE_RECORD,
+    /** read multiple records */
     MULTIPLE_RECORD
   }
 
@@ -46,6 +54,7 @@ public final class ReadRecordsCmdBuild extends AbstractPoCommandBuilder<ReadReco
    * @param expectedLength the expected length of the record(s)
    * @throws IllegalArgumentException - if record number &lt; 1
    * @throws IllegalArgumentException - if the request is inconsistent
+   * @since 0.9
    */
   public ReadRecordsCmdBuild(
       PoClass poClass, int sfi, int firstRecordNumber, ReadMode readMode, int expectedLength) {
@@ -72,29 +81,50 @@ public final class ReadRecordsCmdBuild extends AbstractPoCommandBuilder<ReadReco
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public ReadRecordsRespPars createResponseParser(ApduResponse apduResponse) {
     return new ReadRecordsRespPars(apduResponse, this);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * <p>This command doesn't modify the contents of the PO and therefore doesn't uses the session
+   * buffer.
+   *
+   * @return false
+   * @since 0.9
+   */
   @Override
   public boolean isSessionBufferUsed() {
     return false;
   }
 
-  /** @return the SFI of the accessed file */
+  /**
+   * @return the SFI of the accessed file
+   * @since 0.9
+   */
   public int getSfi() {
     return sfi;
   }
 
-  /** @return the number of the first record to read */
+  /**
+   * @return the number of the first record to read
+   * @since 0.9
+   */
   public int getFirstRecordNumber() {
     return firstRecordNumber;
   }
 
-  /** @return the readJustOneRecord flag */
+  /**
+   * @return the readJustOneRecord flag
+   * @since 0.9
+   */
   public ReadMode getReadMode() {
     return readMode;
   }

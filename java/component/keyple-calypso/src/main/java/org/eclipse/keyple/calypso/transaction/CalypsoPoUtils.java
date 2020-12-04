@@ -42,7 +42,14 @@ import org.eclipse.keyple.calypso.command.po.parser.storedvalue.SvGetRespPars;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.util.Assert;
 
-/** Utility class used to check Calypso specific data. */
+/**
+ * (package-private)<br>
+ * Utility class used to check Calypso specific data.
+ *
+ * <p>Helps the preparation and the analysis of Calypso Po commands.
+ *
+ * @since 0.9
+ */
 final class CalypsoPoUtils {
   public static final int MASK_3_BITS = 0x7; // 7
   public static final int MASK_4_BITS = 0xF; // 15

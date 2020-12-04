@@ -17,7 +17,11 @@ import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.parser.security.DigestCloseRespPars;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** Builder for the SAM Digest Close APDU command. */
+/**
+ * Builds the Digest Close APDU command.
+ *
+ * @since 0.9
+ */
 public class DigestCloseCmdBuild extends AbstractSamCommandBuilder<DigestCloseRespPars> {
 
   /** The command. */
@@ -29,6 +33,7 @@ public class DigestCloseCmdBuild extends AbstractSamCommandBuilder<DigestCloseRe
    * @param revision of the SAM
    * @param expectedResponseLength the expected response length
    * @throws IllegalArgumentException - if the expected response length is wrong.
+   * @since 0.9
    */
   public DigestCloseCmdBuild(SamRevision revision, byte expectedResponseLength) {
     super(command, null);
@@ -47,6 +52,11 @@ public class DigestCloseCmdBuild extends AbstractSamCommandBuilder<DigestCloseRe
     request = setApduRequest(cla, command, p1, p2, null, expectedResponseLength);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public DigestCloseRespPars createResponseParser(ApduResponse apduResponse) {
     return new DigestCloseRespPars(apduResponse, this);

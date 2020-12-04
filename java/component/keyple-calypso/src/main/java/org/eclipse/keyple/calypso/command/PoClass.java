@@ -11,17 +11,36 @@
  ************************************************************************************** */
 package org.eclipse.keyple.calypso.command;
 
-/* Class for the Calypso command: LEGACY for REV1 / BPRIME type PO, ISO for REV2/3 / B type */
+/**
+ * Defines the two existing ISO7816 class bytes for a Calypso PO command.: LEGACY for REV1 / BPRIME
+ * type PO, ISO for REV2/3 / B type
+ *
+ * @since 0.9
+ */
 public enum PoClass {
+
+  /** Calypso revision 1 / B Prime protocol */
   LEGACY((byte) 0x94),
+  /** Calypso revision 2 and higher */
   ISO((byte) 0x00);
 
   private final byte cla;
 
+  /**
+   * Gets the class byte.
+   *
+   * @return A byte
+   * @since 0.9
+   */
   public byte getValue() {
     return cla;
   }
 
+  /**
+   * Constructor
+   *
+   * @param cla class byte value
+   */
   PoClass(byte cla) {
     this.cla = cla;
   }

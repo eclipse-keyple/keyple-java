@@ -12,9 +12,8 @@
 package org.eclipse.keyple.calypso.transaction.exception;
 
 /**
- * The exception {@code CalypsoSessionAuthenticationException} indicates that the PO has correctly
- * closed the secure session, but the support is not authentic because the signature of the PO is
- * incorrect.
+ * Indicates that the PO has correctly closed the secure session, but the support is not authentic
+ * because the signature of the PO is incorrect.
  */
 public class CalypsoSessionAuthenticationException extends CalypsoPoTransactionException {
 

@@ -14,8 +14,7 @@ package org.eclipse.keyple.calypso.transaction.exception;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
 
 /**
- * The exception {@code CalypsoPoCloseSecureSessionException} indicates that the PO has refused the
- * secure session closing.<br>
+ * Indicates that the PO has refused the secure session closing.<br>
  * This is usually due to an incorrect SAM signature, or that the secure session has been altered by
  * other APDU commands that would have interfered with it.<br>
  * In this case, the PO has rollbacked the data set by cancelling all updates except for PIN

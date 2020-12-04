@@ -34,6 +34,9 @@ pre {
     font-family: monospace;
     font-size:14px;
 }
+li>pre {
+    font-weight: bold;
+}
 h1 {
     font-size:20px;
 }
@@ -67,6 +70,10 @@ dt code {
     font-family: monospace;
     font-size:14px;
     padding-top:4px;
+}
+dd>code:first-of-type {
+    background-color: #F8F8F8;
+    padding: 0 5px;
 }
 table tr td dt code {
     font-family: monospace;
@@ -130,7 +137,7 @@ Navigation bar styles
     height:2.8em;
     padding-top:10px;
     overflow:hidden;
-    font-size:12px; 
+    font-size:12px;
 }
 .bottomNav {
     margin-top:10px;
@@ -284,9 +291,8 @@ Page layout container styles
     color:#4E4E4E;
 }
 .contentContainer .description dl dd, .contentContainer .details dl dd, .serializedFormContainer dl dd {
-    margin:5px 0 10px 0px;
+    margin:5px 0 10px 20px;
     font-size:14px;
-    font-family:monospace;
 }
 .serializedFormContainer dl.nameValue dt {
     margin-left:1px;
@@ -330,7 +336,7 @@ ul.blockList li.blockList, ul.blockListLast li.blockList {
 }
 ul.blockList ul.blockList li.blockList, ul.blockList ul.blockListLast li.blockList {
     padding:0px 20px 5px 10px;
-    border:1px solid #ededed; 
+    border:1px solid #ededed;
     background-color:#f8f8f8;
 }
 ul.blockList ul.blockList ul.blockList li.blockList, ul.blockList ul.blockList ul.blockListLast li.blockList {
@@ -358,9 +364,9 @@ Table styles
 */
 .overviewSummary, .memberSummary, .typeSummary, .useSummary, .constantsSummary, .deprecatedSummary {
     width:100%;
-    border-left:1px solid #EEE; 
-    border-right:1px solid #EEE; 
-    border-bottom:1px solid #EEE; 
+    border-left:1px solid #EEE;
+    border-right:1px solid #EEE;
+    border-bottom:1px solid #EEE;
 }
 .overviewSummary, .memberSummary  {
     padding:0px;
@@ -445,7 +451,7 @@ Table styles
     display:none;
     width:5px;
     margin-right:3px;
-    position:relative; 
+    position:relative;
     float:left;
     background-color:#F8981D;
 }

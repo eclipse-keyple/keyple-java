@@ -74,8 +74,8 @@ abstract class AbstractObservableState {
   /**
    * Create a new state with a state identifier
    *
-   * @param reader : observable reader this currentState is attached to
-   * @param state : name of the currentState
+   * @param reader observable reader this currentState is attached to
+   * @param state name of the currentState
    * @since 0.9
    */
   protected AbstractObservableState(MonitoringState state, AbstractObservableLocalReader reader) {

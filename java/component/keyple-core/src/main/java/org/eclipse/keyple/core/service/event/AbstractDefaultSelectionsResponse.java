@@ -15,7 +15,7 @@ import java.util.List;
 import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 
 /**
- * This abstract class defines the POJO used to carry the response to a default selection request.
+ * Abstract POJO used to carry the response to a default selection request.
  *
  * <p>The response to a default selection is obtained from an observable reader and analyzed by the
  * selection class that created the selection request.

@@ -24,7 +24,18 @@ import org.eclipse.keyple.core.card.selection.AbstractCardSelection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Specialized selection request to manage the specific characteristics of Calypso POs */
+/**
+ * This service extends {@link AbstractCardSelection} to manage specific features of Calypso POs
+ * during the selection step.
+ *
+ * <p>The prefixed "prepare" methods allow to feed the global selection process by sending APDU
+ * orders to the PO after the card selection. These APUDs will be sent to the PO in the order in
+ * which they were prepared.
+ *
+ * <p>The parse method creates a {@link CalypsoPo} from the {@link CardSelectionResponse} received.
+ *
+ * @since 0.9
+ */
 public class PoSelection
     extends AbstractCardSelection<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> {
   private static final Logger logger = LoggerFactory.getLogger(PoSelection.class);
@@ -33,7 +44,10 @@ public class PoSelection
   /**
    * Constructor.
    *
-   * @param poSelector the selector to target a particular card
+   * <p>The {@link PoSelector} provided contains the selection data to target a particular PO.
+   *
+   * @param poSelector A reference to a {@link PoSelector}
+   * @since 0.9
    */
   public PoSelection(PoSelector poSelector) {
 
@@ -52,31 +66,33 @@ public class PoSelection
   }
 
   /**
-   * Read a single record from the indicated EF
+   * Adds a command APDU to read a single record from the indicated EF.
    *
    * @param sfi the SFI of the EF to read
    * @param recordNumber the record number to read
    * @throws IllegalArgumentException if one of the provided argument is out of range
+   * @since 0.9
    */
   public final void prepareReadRecordFile(byte sfi, int recordNumber) {
     addCommandBuilder(CalypsoPoUtils.prepareReadRecordFile(poClass, sfi, recordNumber));
   }
 
   /**
-   * Prepare a select file ApduRequest to be executed following the selection.
+   * Adds a command APDU to select file with an LID provided as a 2-byte byte array.
    *
    * @param lid LID of the EF to select as a byte array
    * @throws IllegalArgumentException if the argument is not an array of 2 bytes
+   * @since 0.9
    */
   public void prepareSelectFile(byte[] lid) {
     addCommandBuilder(CalypsoPoUtils.prepareSelectFile(poClass, lid));
   }
 
   /**
-   * Prepare a select file ApduRequest to be executed following the selection.
+   * Adds a command APDU to select file with an LID provided as a short.
    *
-   * @param lid LID of the EF to select as a byte array
-   * @throws IllegalArgumentException if the argument is not an array of 2 bytes
+   * @param lid A short
+   * @since 0.9
    */
   public void prepareSelectFile(short lid) {
     byte[] bLid =
@@ -87,19 +103,24 @@ public class PoSelection
   }
 
   /**
-   * Prepare a select file ApduRequest to be executed following the selection.
+   * Adds a command APDU to select file according to the provided {@link SelectFileControl} enum
+   * entry indicating the navigation case: FIRST, NEXT or CURRENT.
    *
-   * @param selectControl provides the navigation case: FIRST, NEXT or CURRENT
+   * @param selectControl A {@link SelectFileControl} enum entry
+   * @since 0.9
    */
   public void prepareSelectFile(SelectFileControl selectControl) {
     addCommandBuilder(CalypsoPoUtils.prepareSelectFile(poClass, selectControl));
   }
 
   /**
-   * Create a CalypsoPo object containing the selection data received from the plugin
+   * Parses the provided {@link CardSelectionResponse} and create a {@link CalypsoPo} object.
    *
-   * @param cardSelectionResponse the card response received
-   * @return a {@link CalypsoPo}
+   * <p>The {@link CalypsoPo} is filled with the PO identification data from the FCI and the
+   * possible responses to additional APDU commands executed after the selection.
+   *
+   * @param cardSelectionResponse A reference to a {@link CardSelectionResponse}
+   * @return A new {@link CalypsoPo}
    * @throws CalypsoDesynchronizedExchangesException if the number of responses is different from
    *     the number of requests
    * @throws CalypsoPoCommandException if a response from the PO was unexpected

@@ -19,10 +19,9 @@ import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
- * Read Records (00B2) response parser. See specs: Calypso / page 89 / 9.4.7 Read Records The {@link
- * ReadRecordsRespPars} class holds the data resulting from a Read Records command. It provides
- * methods to retrieve these data according to the file structure profile specified in the command
- * preparation step: SINGLE or MULTIPLE RECORD or COUNTER.
+ * Parses the Read Records response.
+ *
+ * @since 0.9
  */
 public final class ReadRecordsRespPars extends AbstractPoResponseParser {
 
@@ -61,6 +60,11 @@ public final class ReadRecordsRespPars extends AbstractPoResponseParser {
     STATUS_TABLE = m;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -71,6 +75,7 @@ public final class ReadRecordsRespPars extends AbstractPoResponseParser {
    *
    * @param apduResponse the response from the PO
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public ReadRecordsRespPars(ApduResponse apduResponse, ReadRecordsCmdBuild builder) {
     super(apduResponse, builder);
@@ -85,6 +90,7 @@ public final class ReadRecordsRespPars extends AbstractPoResponseParser {
    * <p>An empty map is returned if no data is available.
    *
    * @return a map of records
+   * @since 0.9
    */
   public SortedMap<Integer, byte[]> getRecords() {
     SortedMap<Integer, byte[]> records = new TreeMap<Integer, byte[]>();

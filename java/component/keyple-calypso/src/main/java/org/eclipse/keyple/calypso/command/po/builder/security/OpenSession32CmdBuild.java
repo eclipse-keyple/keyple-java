@@ -17,9 +17,18 @@ import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.parser.security.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.security.OpenSession32RespPars;
 import org.eclipse.keyple.core.card.message.ApduResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * Builds the Open Session command for a PO revision 3.2.
+ *
+ * @since 0.9
+ */
 public final class OpenSession32CmdBuild
     extends AbstractOpenSessionCmdBuild<AbstractOpenSessionRespPars> {
+
+  private static final Logger logger = LoggerFactory.getLogger(OpenSession32CmdBuild.class);
 
   // Construction arguments used for parsing
   private final int sfi;
@@ -33,6 +42,7 @@ public final class OpenSession32CmdBuild
    * @param sfi the sfi to select
    * @param recordNumber the record number to read
    * @throws IllegalArgumentException - if the request is inconsistent
+   * @since 0.9
    */
   public OpenSession32CmdBuild(byte keyIndex, byte[] samChallenge, int sfi, int recordNumber) {
     super(PoRevision.REV3_2);
@@ -68,28 +78,44 @@ public final class OpenSession32CmdBuild
     }
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public OpenSession32RespPars createResponseParser(ApduResponse apduResponse) {
     return new OpenSession32RespPars(apduResponse, this);
   }
 
   /**
-   * This command can't be executed in session and therefore doesn't uses the session buffer.
+   * {@inheritDoc}
+   *
+   * <p>This command can't be executed in session and therefore doesn't uses the session buffer.
    *
    * @return false
+   * @since 0.9
    */
   @Override
   public boolean isSessionBufferUsed() {
     return false;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public int getSfi() {
     return sfi;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public int getRecordNumber() {
     return recordNumber;

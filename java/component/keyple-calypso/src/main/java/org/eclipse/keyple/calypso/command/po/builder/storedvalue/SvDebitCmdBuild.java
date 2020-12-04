@@ -17,9 +17,12 @@ import org.eclipse.keyple.calypso.command.po.parser.storedvalue.SvDebitRespPars;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
- * The Class SvDebitCmdBuild. This class provides the dedicated constructor to build the SV Debit
- * command. Note: {@link SvDebitCmdBuild} and {@link SvUndebitCmdBuild} shares the same parser
- * {@link SvDebitRespPars}
+ * Builds the SV Debit command.
+ *
+ * <p>Note: {@link SvDebitCmdBuild} and {@link SvUndebitCmdBuild} shares the same parser {@link
+ * SvDebitRespPars}
+ *
+ * @since 0.9
  */
 public final class SvDebitCmdBuild extends AbstractPoCommandBuilder<SvDebitRespPars> {
 
@@ -41,6 +44,7 @@ public final class SvDebitCmdBuild extends AbstractPoCommandBuilder<SvDebitRespP
    * @param date debit date (not checked by the PO)
    * @param time debit time (not checked by the PO)
    * @throws IllegalArgumentException - if the command is inconsistent
+   * @since 0.9
    */
   public SvDebitCmdBuild(
       PoClass poClass, PoRevision poRevision, int amount, byte kvc, byte[] date, byte[] time) {
@@ -91,6 +95,7 @@ public final class SvDebitCmdBuild extends AbstractPoCommandBuilder<SvDebitRespP
    * <p>5 or 10 byte signature (hi part)
    *
    * @param debitComplementaryData the data out from the SvPrepareDebit SAM command
+   * @since 0.9
    */
   public void finalizeBuilder(byte[] debitComplementaryData) {
     if ((poRevision == PoRevision.REV3_2 && debitComplementaryData.length != 20)
@@ -113,6 +118,7 @@ public final class SvDebitCmdBuild extends AbstractPoCommandBuilder<SvDebitRespP
    * Gets the SV Debit part of the data to include in the SAM SV Prepare Debit command
    *
    * @return a byte array containing the SV debit data
+   * @since 0.9
    */
   public byte[] getSvDebitData() {
     byte[] svDebitData = new byte[12];
@@ -125,13 +131,26 @@ public final class SvDebitCmdBuild extends AbstractPoCommandBuilder<SvDebitRespP
     return svDebitData;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public SvDebitRespPars createResponseParser(ApduResponse apduResponse) {
     return new SvDebitRespPars(apduResponse, this);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>This command modified the contents of the PO and therefore uses the session buffer.
+   *
+   * @return true
+   * @since 0.9
+   */
   @Override
   public boolean isSessionBufferUsed() {
-    return false;
+    return true;
   }
 }

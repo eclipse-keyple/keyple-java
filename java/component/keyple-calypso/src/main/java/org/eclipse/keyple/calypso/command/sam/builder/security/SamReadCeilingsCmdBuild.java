@@ -17,7 +17,11 @@ import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.parser.security.SamReadCeilingsRespPars;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** Builder for the SAM Read Ceilings APDU command. */
+/**
+ * Builds the Read Ceilings APDU command.
+ *
+ * @since 0.9
+ */
 public class SamReadCeilingsCmdBuild extends AbstractSamCommandBuilder<SamReadCeilingsRespPars> {
   /** The command reference. */
   private static final CalypsoSamCommand command = CalypsoSamCommand.READ_CEILINGS;
@@ -26,8 +30,11 @@ public class SamReadCeilingsCmdBuild extends AbstractSamCommandBuilder<SamReadCe
 
   public static final int MAX_CEILING_REC_NUMB = 3;
 
+  /** Ceiling operation type */
   public enum CeilingsOperationType {
+    /** Ceiling record */
     CEILING_RECORD,
+    /** Single ceiling */
     SINGLE_CEILING
   }
 
@@ -37,6 +44,7 @@ public class SamReadCeilingsCmdBuild extends AbstractSamCommandBuilder<SamReadCe
    * @param revision revision of the SAM
    * @param operationType the counter operation type
    * @param index the counter index
+   * @since 0.9
    */
   public SamReadCeilingsCmdBuild(
       SamRevision revision, CeilingsOperationType operationType, int index) {
@@ -72,6 +80,11 @@ public class SamReadCeilingsCmdBuild extends AbstractSamCommandBuilder<SamReadCe
     request = setApduRequest(cla, command, p1, p2, null, (byte) 0x00);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public SamReadCeilingsRespPars createResponseParser(ApduResponse apduResponse) {
     return new SamReadCeilingsRespPars(apduResponse, this);

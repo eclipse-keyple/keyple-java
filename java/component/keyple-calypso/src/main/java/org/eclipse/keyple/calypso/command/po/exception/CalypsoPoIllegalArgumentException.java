@@ -14,15 +14,17 @@ package org.eclipse.keyple.calypso.command.po.exception;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 
 /**
- * The exception {@code CalypsoPoIllegalArgumentException} indicates that the input user data do not
- * allow to build a syntactically correct command (e.g. SFI too large, record number out of
- * bounds,...).
+ * Indicates that the input user data do not allow to build a syntactically correct command (e.g.
+ * SFI too large, record number out of bounds,...).
+ *
+ * @since 0.9
  */
 public final class CalypsoPoIllegalArgumentException extends CalypsoPoCommandException {
 
   /**
    * @param message the message to identify the exception context
    * @param command the Calypso PO command
+   * @since 0.9
    */
   public CalypsoPoIllegalArgumentException(String message, CalypsoPoCommand command) {
     super(message, command, null);

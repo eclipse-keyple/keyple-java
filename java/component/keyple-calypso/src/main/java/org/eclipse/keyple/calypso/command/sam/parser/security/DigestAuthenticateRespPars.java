@@ -21,8 +21,9 @@ import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamSecurityDataEx
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
- * Digest authentication response parser. See specs: Calypso / page 54 / 7.4.2 - Session MAC
- * computation
+ * Parses the Digest authentication response
+ *
+ * @since 0.9
  */
 public class DigestAuthenticateRespPars extends AbstractSamResponseParser {
 
@@ -42,6 +43,11 @@ public class DigestAuthenticateRespPars extends AbstractSamResponseParser {
     STATUS_TABLE = m;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -52,6 +58,7 @@ public class DigestAuthenticateRespPars extends AbstractSamResponseParser {
    *
    * @param response from the SAM DigestAuthenticateCmdBuild
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public DigestAuthenticateRespPars(ApduResponse response, DigestAuthenticateCmdBuild builder) {
     super(response, builder);

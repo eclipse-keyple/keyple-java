@@ -13,56 +13,68 @@ package org.eclipse.keyple.calypso.command.sam;
 
 import org.eclipse.keyple.core.card.command.CardCommand;
 
+/**
+ * Defines all supported Calypso SAM APDU commands.
+ *
+ * @since 0.9
+ */
 public enum CalypsoSamCommand implements CardCommand {
 
-  /** The sam select diversifier. */
+  /** select diversifier. */
   SELECT_DIVERSIFIER("Select Diversifier", (byte) 0x14),
 
-  /** The sam get challenge. */
+  /** get challenge. */
   GET_CHALLENGE("Get Challenge", (byte) 0x84),
 
-  /** The sam digest init. */
+  /** digest init. */
   DIGEST_INIT("Digest Init", (byte) 0x8A),
 
-  /** The sam digest update. */
+  /** digest update. */
   DIGEST_UPDATE("Digest Update", (byte) 0x8C),
 
-  /** The sam digest update multiple. */
+  /** digest update multiple. */
   DIGEST_UPDATE_MULTIPLE("Digest Update Multiple", (byte) 0x8C),
 
-  /** The sam digest close. */
+  /** digest close. */
   DIGEST_CLOSE("Digest Close", (byte) 0x8E),
 
-  /** The sam digest authenticate. */
+  /** digest authenticate. */
   DIGEST_AUTHENTICATE("Digest Authenticate", (byte) 0x82),
 
-  /** The sam digest authenticate. */
+  /** digest authenticate. */
   GIVE_RANDOM("Give Random", (byte) 0x86),
 
-  /** The sam digest authenticate. */
+  /** digest authenticate. */
   CARD_GENERATE_KEY("Card Generate Key", (byte) 0x12),
 
-  /** The sam card cipher PIN. */
+  /** card cipher PIN. */
   CARD_CIPHER_PIN("Card Cipher PIN", (byte) 0x12),
 
-  /** The sam unlock. */
+  /** unlock. */
   UNLOCK("Unlock", (byte) 0x20),
 
-  /** The sam write key command. */
+  /** write key. */
   WRITE_KEY("Write Key", (byte) 0x1A),
 
+  /** read key parameters. */
   READ_KEY_PARAMETERS("Read Key Parameters", (byte) 0xBC),
 
+  /** read event counter. */
   READ_EVENT_COUNTER("Read Event Counter", (byte) 0xBE),
 
+  /** read ceilings. */
   READ_CEILINGS("Read Ceilings", (byte) 0xBE),
 
+  /** SV check. */
   SV_CHECK("SV Check", (byte) 0x58),
 
+  /** SV prepare debit. */
   SV_PREPARE_DEBIT("SV Prepare Debit", (byte) 0x54),
 
+  /** SV prepare load. */
   SV_PREPARE_LOAD("SV Prepare Load", (byte) 0x56),
 
+  /** SV prepare undebit. */
   SV_PREPARE_UNDEBIT("SV Prepare Undebit", (byte) 0x5C);
 
   /** The name. */
@@ -76,6 +88,7 @@ public enum CalypsoSamCommand implements CardCommand {
    *
    * @param name the name
    * @param instructionByte the instruction byte
+   * @since 0.9
    */
   CalypsoSamCommand(String name, byte instructionByte) {
     this.name = name;
@@ -85,16 +98,18 @@ public enum CalypsoSamCommand implements CardCommand {
   /**
    * Gets the name.
    *
-   * @return the command name
+   * @return A String
+   * @since 0.9
    */
   public String getName() {
     return name;
   }
 
   /**
-   * Gets the instruction byte.
+   * Gets the instruction byte (INS).
    *
-   * @return the value of INS byte
+   * @return A byte
+   * @since 0.9
    */
   public byte getInstructionByte() {
     return instructionByte;

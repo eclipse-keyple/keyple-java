@@ -17,7 +17,11 @@ import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.parser.security.DigestAuthenticateRespPars;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** Builder for the Digest Authenticate APDU command. */
+/**
+ * Builds the Digest Authenticate APDU command.
+ *
+ * @since 0.9
+ */
 public class DigestAuthenticateCmdBuild
     extends AbstractSamCommandBuilder<DigestAuthenticateRespPars> {
 
@@ -30,6 +34,7 @@ public class DigestAuthenticateCmdBuild
    * @param revision of the SAM
    * @param signature the signature
    * @throws IllegalArgumentException - if the signature is null or has a wrong length.
+   * @since 0.9
    */
   public DigestAuthenticateCmdBuild(SamRevision revision, byte[] signature) {
     super(command, null);
@@ -50,6 +55,11 @@ public class DigestAuthenticateCmdBuild
     request = setApduRequest(cla, command, p1, p2, signature, null);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public DigestAuthenticateRespPars createResponseParser(ApduResponse apduResponse) {
     return new DigestAuthenticateRespPars(apduResponse, this);

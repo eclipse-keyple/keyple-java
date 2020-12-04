@@ -18,7 +18,11 @@ import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.parser.security.SvCheckRespPars;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** Builder for the SAM SV Check APDU command. */
+/**
+ * Builds the SV Check APDU command.
+ *
+ * @since 0.9
+ */
 public class SvCheckCmdBuild extends AbstractSamCommandBuilder<AbstractSamResponseParser> {
   /** The command reference. */
   private static final CalypsoSamCommand command = CalypsoSamCommand.SV_CHECK;
@@ -29,6 +33,7 @@ public class SvCheckCmdBuild extends AbstractSamCommandBuilder<AbstractSamRespon
    * @param revision of the SAM
    * @param svPoSignature null if the operation is to abort the SV transaction, a 3 or 6-byte array
    *     containing the PO signature from SV Debit, SV Load or SV Undebit.
+   * @since 0.9
    */
   public SvCheckCmdBuild(SamRevision revision, byte[] svPoSignature) {
     super(command, null);
@@ -54,6 +59,11 @@ public class SvCheckCmdBuild extends AbstractSamCommandBuilder<AbstractSamRespon
     }
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public SvCheckRespPars createResponseParser(ApduResponse apduResponse) {
     return new SvCheckRespPars(apduResponse, this);

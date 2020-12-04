@@ -24,10 +24,10 @@ public interface StubPoolPlugin extends PoolPlugin {
    * Plug synchronously a new {@link StubReader} in the {@link StubPoolPlugin} associated to
    * groupReference and a stub card. A READER_CONNECTED event will be raised.
    *
-   * @param groupReference : group reference of the new stub reader (mandatory)
-   * @param readerName : name of the new stub reader (mandatory). Each reader should have a unique
+   * @param groupReference group reference of the new stub reader (mandatory)
+   * @param readerName name of the new stub reader (mandatory). Each reader should have a unique
    *     name, no matter to what groupReference they are associated to
-   * @param card : insert a card at creation (can be null)
+   * @param card insert a card at creation (can be null)
    * @return created StubReader
    * @since 1.0
    */

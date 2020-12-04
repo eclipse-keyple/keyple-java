@@ -21,9 +21,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The PO command manager handles the AbstractPoCommandBuilder list updated by the "prepare" methods
- * of PoTransaction. It is used to keep builders between the time the commands are created and the
- * time their responses are parsed.
+ * (package-private)<br>
+ * Handles a list {@link AbstractPoCommandBuilder} updated by the "prepare" methods of
+ * PoTransaction.
+ *
+ * <p>Keeps builders between the time the commands are created and the time their responses are
+ * parsed.
  *
  * <p>A flag (preparedCommandsProcessed) is used to manage the reset of the command list. It allows
  * the builders to be kept until the application creates a new list of commands.

@@ -19,12 +19,12 @@ import org.eclipse.keyple.calypso.KeyReference;
 import org.eclipse.keyple.core.card.selection.CardResource;
 
 /**
- * A class dedicated to managing the security settings involved in managing secure sessions.
+ * Manages the security settings involved in Calypso secure sessions.
  *
- * <p>The object provides default values when instantiated, they can be modified with the putKeyInfo
- * method.
+ * <p>The object provides default values when instantiated, a fluent builder to adjust the settings
+ * to the application needs.
  *
- * <p>The getKeyInfo method returns the specified setting value.
+ * @since 0.9
  */
 public class PoSecuritySettings {
   private final CardResource<CalypsoSam> samResource;
@@ -69,7 +69,11 @@ public class PoSecuritySettings {
     this.svNegativeBalance = builder.svNegativeBalance;
   }
 
-  /** Builder pattern */
+  /**
+   * Builder class for {@link PoSecuritySettings}
+   *
+   * @since 0.9
+   */
   public static final class PoSecuritySettingsBuilder {
     private final CardResource<CalypsoSam> samResource;
     /** List of authorized KVCs */
@@ -96,6 +100,7 @@ public class PoSecuritySettings {
      *
      * @param samResource the SAM resource we'll be working with<br>
      *     Needed in any cases.
+     * @since 0.9
      */
     public PoSecuritySettingsBuilder(CardResource<CalypsoSam> samResource) {
       if (samResource == null) {
@@ -192,6 +197,7 @@ public class PoSecuritySettings {
      *
      * @param authorizedKvcList the list of authorized KVCs
      * @return the builder instance
+     * @since 0.9
      */
     public PoSecuritySettingsBuilder sessionAuthorizedKvcList(List<Byte> authorizedKvcList) {
       this.authorizedKvcList = authorizedKvcList;
@@ -204,6 +210,7 @@ public class PoSecuritySettings {
      * @param kif the KIF of the PIN ciphering key
      * @param kvc the KVC of the PIN ciphering key
      * @return the builder instance
+     * @since 0.9
      */
     public PoSecuritySettingsBuilder pinCipheringKey(byte kif, byte kvc) {
       this.defaultPinCipheringKey = new KeyReference(kif, kvc);
@@ -215,6 +222,7 @@ public class PoSecuritySettings {
      *
      * @param svGetLogReadMode the {@link PoTransaction.SvSettings.LogRead} mode
      * @return the builder instance
+     * @since 0.9
      */
     public PoSecuritySettingsBuilder svGetLogReadMode(
         PoTransaction.SvSettings.LogRead svGetLogReadMode) {
@@ -227,6 +235,7 @@ public class PoSecuritySettings {
      *
      * @param svNegativeBalance the {@link PoTransaction.SvSettings.NegativeBalance} mode
      * @return the builder instance
+     * @since 0.9
      */
     public PoSecuritySettingsBuilder svNegativeBalance(
         PoTransaction.SvSettings.NegativeBalance svNegativeBalance) {
@@ -238,6 +247,7 @@ public class PoSecuritySettings {
      * Build a new {@code PoSecuritySettings}.
      *
      * @return a new instance
+     * @since 0.9
      */
     public PoSecuritySettings build() {
       return new PoSecuritySettings(this);
@@ -322,6 +332,7 @@ public class PoSecuritySettings {
    *
    * @param kvc to be tested
    * @return true if the kvc is authorized
+   * @since 0.9
    */
   boolean isSessionKvcAuthorized(byte kvc) {
     return authorizedKvcList == null || authorizedKvcList.contains(kvc);
@@ -331,6 +342,7 @@ public class PoSecuritySettings {
    * (package-private)<br>
    *
    * @return the default key reference to be used for PIN encryption
+   * @since 0.9
    */
   KeyReference getDefaultPinCipheringKey() {
     return defaultPinCipheringKey;
@@ -340,6 +352,7 @@ public class PoSecuritySettings {
    * (package-private)<br>
    *
    * @return how SV logs are read, indicating whether or not all SV logs are needed
+   * @since 0.9
    */
   PoTransaction.SvSettings.LogRead getSvGetLogReadMode() {
     return svGetLogReadMode;
@@ -349,6 +362,7 @@ public class PoSecuritySettings {
    * (package-private)<br>
    *
    * @return an indication of whether negative balances are allowed or not
+   * @since 0.9
    */
   PoTransaction.SvSettings.NegativeBalance getSvNegativeBalance() {
     return svNegativeBalance;

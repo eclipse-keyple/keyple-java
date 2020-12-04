@@ -18,8 +18,9 @@ import org.eclipse.keyple.calypso.command.po.parser.security.PoGetChallengeRespP
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
- * The Class PoGetChallengeCmdBuild. This class provides the dedicated constructor to build the PO
- * Get Challenge.
+ * Builds the Get Challenge APDU command.
+ *
+ * @since 0.9
  */
 public final class PoGetChallengeCmdBuild extends AbstractPoCommandBuilder<PoGetChallengeRespPars> {
 
@@ -29,6 +30,7 @@ public final class PoGetChallengeCmdBuild extends AbstractPoCommandBuilder<PoGet
    * Instantiates a new PoGetChallengeCmdBuild.
    *
    * @param poClass indicates which CLA byte should be used for the Apdu
+   * @since 0.9
    */
   public PoGetChallengeCmdBuild(PoClass poClass) {
     super(command, null);
@@ -40,16 +42,24 @@ public final class PoGetChallengeCmdBuild extends AbstractPoCommandBuilder<PoGet
     this.request = setApduRequest(poClass.getValue(), command, p1, p2, null, le);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public PoGetChallengeRespPars createResponseParser(ApduResponse apduResponse) {
     return new PoGetChallengeRespPars(apduResponse, this);
   }
 
   /**
-   * This command doesn't modify the contents of the PO and therefore doesn't uses the session
+   * {@inheritDoc}
+   *
+   * <p>This command doesn't modify the contents of the PO and therefore doesn't uses the session
    * buffer.
    *
    * @return false
+   * @since 0.9
    */
   @Override
   public boolean isSessionBufferUsed() {

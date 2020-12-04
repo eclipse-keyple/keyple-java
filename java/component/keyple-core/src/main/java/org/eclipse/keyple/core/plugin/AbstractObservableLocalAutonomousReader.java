@@ -20,7 +20,11 @@ package org.eclipse.keyple.core.plugin;
 public abstract class AbstractObservableLocalAutonomousReader
     extends AbstractObservableLocalReader {
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   protected AbstractObservableLocalAutonomousReader(String pluginName, String readerName) {
     super(pluginName, readerName);
   }

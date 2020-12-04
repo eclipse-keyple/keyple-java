@@ -15,12 +15,16 @@ import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.*;
 import org.eclipse.keyple.calypso.command.po.parser.UpdateRecordRespPars;
 import org.eclipse.keyple.core.card.message.ApduResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * The Class UpdateRecordCmdBuild. This class provides the dedicated constructor to build the Update
- * Record APDU command.
+ * Builds the Update Record APDU command.
+ *
+ * @since 0.9
  */
 public final class UpdateRecordCmdBuild extends AbstractPoCommandBuilder<UpdateRecordRespPars> {
+  private static final Logger logger = LoggerFactory.getLogger(UpdateRecordCmdBuild.class);
 
   /** The command. */
   private static final CalypsoPoCommand command = CalypsoPoCommand.UPDATE_RECORD;
@@ -39,6 +43,7 @@ public final class UpdateRecordCmdBuild extends AbstractPoCommandBuilder<UpdateR
    * @param newRecordData the new record data to write
    * @throws IllegalArgumentException - if record number is &lt; 1
    * @throws IllegalArgumentException - if the request is inconsistent
+   * @since 0.9
    */
   public UpdateRecordCmdBuild(PoClass poClass, byte sfi, int recordNumber, byte[] newRecordData) {
     super(command, null);
@@ -58,33 +63,49 @@ public final class UpdateRecordCmdBuild extends AbstractPoCommandBuilder<UpdateR
     }
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public UpdateRecordRespPars createResponseParser(ApduResponse apduResponse) {
     return new UpdateRecordRespPars(apduResponse, this);
   }
 
   /**
-   * This command can modify the contents of the PO in session and therefore uses the session
-   * buffer.
+   * {@inheritDoc}
+   *
+   * <p>This command modified the contents of the PO and therefore uses the session buffer.
    *
    * @return true
+   * @since 0.9
    */
   @Override
   public boolean isSessionBufferUsed() {
     return true;
   }
 
-  /** @return the SFI of the accessed file */
+  /**
+   * @return the SFI of the accessed file
+   * @since 0.9
+   */
   public int getSfi() {
     return sfi;
   }
 
-  /** @return the number of the accessed record */
+  /**
+   * @return the number of the accessed record
+   * @since 0.9
+   */
   public int getRecordNumber() {
     return recordNumber;
   }
 
-  /** @return the data sent to the PO */
+  /**
+   * @return the data sent to the PO
+   * @since 0.9
+   */
   public byte[] getData() {
     return data;
   }

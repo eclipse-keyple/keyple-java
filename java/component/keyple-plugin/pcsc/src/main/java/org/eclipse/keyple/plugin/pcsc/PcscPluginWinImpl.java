@@ -121,7 +121,11 @@ final class PcscPluginWinImpl extends AbstractPcscPlugin {
     return TerminalFactory.getDefault().terminals();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   AbstractPcscReader createReader(
       String name,

@@ -1,5 +1,5 @@
 /**
- * Contains the SmartcardService and the main interfaces.
+ * Contains the {@link org.eclipse.keyple.core.service.SmartCardService} and the main interfaces.
  *
  * @since 0.9
  */

@@ -17,7 +17,11 @@ import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.parser.security.SamWriteKeyRespPars;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** Builder for the SAM Write Key APDU command. */
+/**
+ * Builds the Write Key APDU command.
+ *
+ * @since 0.9
+ */
 public class SamWriteKeyCmdBuild extends AbstractSamCommandBuilder<SamWriteKeyRespPars> {
   /** The command reference. */
   private static final CalypsoSamCommand command = CalypsoSamCommand.WRITE_KEY;
@@ -29,6 +33,7 @@ public class SamWriteKeyCmdBuild extends AbstractSamCommandBuilder<SamWriteKeyRe
    * @param writingMode the writing mode (P1)
    * @param keyReference the key reference (P2)
    * @param keyData the key data
+   * @since 0.9
    */
   public SamWriteKeyCmdBuild(
       SamRevision revision, byte writingMode, byte keyReference, byte[] keyData) {
@@ -49,6 +54,11 @@ public class SamWriteKeyCmdBuild extends AbstractSamCommandBuilder<SamWriteKeyRe
     request = setApduRequest(cla, command, writingMode, keyReference, keyData, null);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public SamWriteKeyRespPars createResponseParser(ApduResponse apduResponse) {
     return new SamWriteKeyRespPars(apduResponse, this);

@@ -154,7 +154,7 @@ class ObservableReaderStateService {
    * Thread safe method to switch the state of this reader should only be invoked by this reader or
    * its state
    *
-   * @param stateId : next state to onActivate
+   * @param stateId next state to onActivate
    * @since 0.9
    */
   public final synchronized void switchState(AbstractObservableState.MonitoringState stateId) {

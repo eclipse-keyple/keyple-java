@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.calypso.transaction.exception;
 
-/** The exception {@code CalypsoSamRevokedException} indicates that the SAM is revoked. */
+/** Indicates that the SAM is revoked. */
 public class CalypsoSamRevokedException extends CalypsoPoTransactionException {
 
   /** @param message the message to identify the exception context */

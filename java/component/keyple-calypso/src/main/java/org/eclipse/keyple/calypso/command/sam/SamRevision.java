@@ -11,7 +11,11 @@
  ************************************************************************************** */
 package org.eclipse.keyple.calypso.command.sam;
 
-/** This enumeration registers all supported revisions of SAM. */
+/**
+ * This enumeration registers all supported revisions of SAM.
+ *
+ * @since 0.9
+ */
 public enum SamRevision {
 
   /** The revision of C1 and S1E SAM. CLA 0x00 or 0x80 */
@@ -36,20 +40,48 @@ public enum SamRevision {
   private final String applicationTypeMask;
   private final byte classByte;
 
+  /**
+   * Constructor
+   *
+   * @param name The revision name as a String
+   * @param applicationTypeMask The application type mask as a String
+   * @param classByte The class byte as a byte
+   */
   SamRevision(String name, String applicationTypeMask, byte classByte) {
     this.name = name;
     this.applicationTypeMask = applicationTypeMask;
     this.classByte = classByte;
   }
 
+  /**
+   * Gets the revision name
+   *
+   * @return A String
+   * @since 0.9
+   */
   public String getName() {
     return name;
   }
 
+  /**
+   * Get the application type mask.
+   *
+   * <p>This mask can be used as part of a regular expression in order to determine the SAM revision
+   * when applied to the application type byte in the SAM's ATR.
+   *
+   * @return A String
+   * @since 0.9
+   */
   public String getApplicationTypeMask() {
     return applicationTypeMask;
   }
 
+  /**
+   * Gets the class byte.
+   *
+   * @return A byte
+   * @since 0.9
+   */
   public byte getClassByte() {
     return classByte;
   }

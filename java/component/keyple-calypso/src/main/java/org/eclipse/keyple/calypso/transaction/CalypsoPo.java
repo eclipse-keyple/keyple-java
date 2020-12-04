@@ -20,11 +20,11 @@ import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /**
- * The CalypsoPo class gathers all the information about the current PO retrieved from the response
- * to the select application command.
+ * This POJO concentrates all the information we know about the PO being processed: from the
+ * selection stage to the end of the transaction.
  *
- * <p>An instance of CalypsoPo can be obtained by casting the AbstractSmartCard object from the
- * selection process (e.g. (CalypsoPo) matchingSelection.getSmartCard())
+ * <p>An instance of CalypsoPo is obtained by casting the AbstractSmartCard object from the
+ * selection process (e.g. (CalypsoPo)(cardSelectionsResult.getActiveSmartCard()))
  *
  * <p>The various information contained in CalypsoPo is accessible by getters and includes:
  *
@@ -35,7 +35,11 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
  *       ratification management)
  *   <li>The management information of the modification buffer
  *   <li>The invalidation status
+ *   <li>The files, counters, SV data read or modified during the execution of the processes defined
+ *       by {@link PoTransaction}
  * </ul>
+ *
+ * @since 0.9
  */
 public class CalypsoPo extends AbstractSmartCard {
   private final boolean isConfidentialSessionModeSupported;
@@ -93,7 +97,10 @@ public class CalypsoPo extends AbstractSmartCard {
   /**
    * Constructor.
    *
+   * <p>Create the initial content from the data received in response to the card selection.
+   *
    * @param cardSelectionResponse the response to the selection application command
+   * @since 0.9
    */
   CalypsoPo(CardSelectionResponse cardSelectionResponse) {
     super(cardSelectionResponse);
@@ -212,19 +219,24 @@ public class CalypsoPo extends AbstractSmartCard {
   }
 
   /**
-   * The PO revision indicates the generation of the product presented.
+   * Gets the PO revision.
+   *
+   * <p>The PO revision indicates the generation of the product presented.
    *
    * <p>It will also have an impact on the internal construction of some commands to take into
    * account the specificities of the different POs.
    *
    * @return an enum giving the identified PO revision
+   * @since 0.9
    */
   public final PoRevision getRevision() {
     return revision;
   }
 
   /**
-   * The DF name is the name of the application DF as defined in ISO/IEC 7816-4.
+   * Gets the DF name as an array of bytes.
+   *
+   * <p>The DF name is the name of the application DF as defined in ISO/IEC 7816-4.
    *
    * <p>It also corresponds to the complete representation of the target covered by the AID value
    * provided in the selection command.
@@ -233,30 +245,45 @@ public class CalypsoPo extends AbstractSmartCard {
    * minimum).
    *
    * @return a byte array containing the DF Name bytes (5 to 16 bytes)
+   * @since 0.9
    */
   public final byte[] getDfNameBytes() {
     return dfName;
   }
 
-  /** @return the DF name as an HEX string (see getDfNameBytes) */
+  /**
+   * Gets the DF name as an HEX String.
+   *
+   * @return the DF name as an HEX string (see getDfNameBytes)
+   * @since 0.9
+   */
   public final String getDfName() {
     return ByteArrayUtil.toHex(getDfNameBytes());
   }
 
   /**
-   * The serial number to be used as diversifier for key derivation.<br>
+   * Gets the full Calypso serial number including the possible validity date information in the two
+   * MSB.
+   *
+   * <p>The serial number to be used as diversifier for key derivation.<br>
    * This is the complete number returned by the PO in its response to the Select command.
    *
    * @return a byte array containing the Calypso Serial Number (8 bytes)
+   * @since 0.9
    */
   protected final byte[] getCalypsoSerialNumber() {
     return calypsoSerialNumber;
   }
 
   /**
-   * The serial number for the application, is unique ID for the PO.
+   * Gets the Calypso application serial number as an array of bytes.
+   *
+   * <p>The serial number for the application, is unique ID for the PO. <br>
+   * The difference with getCalypsoSerialNumber is that the two possible bytes (MSB) of validity
+   * date are here forced to zero.
    *
    * @return a byte array containing the Application Serial Number (8 bytes)
+   * @since 0.9
    */
   public final byte[] getApplicationSerialNumberBytes() {
     byte[] applicationSerialNumber = calypsoSerialNumber.clone();
@@ -266,15 +293,18 @@ public class CalypsoPo extends AbstractSmartCard {
   }
 
   /**
-   * The serial number for the application, is unique ID for the PO.
+   * Gets the Calypso application serial number as an HEX String.
    *
-   * @return a String representing the Application Serial Number (8 hex bytes)
+   * @return a String representing the Application Serial Number (8 bytes / 16 hex digits)
+   * @since 0.9
    */
   public final String getApplicationSerialNumber() {
     return ByteArrayUtil.toHex(getApplicationSerialNumberBytes());
   }
 
   /**
+   * Gets the Calypso startup information field as an HEX String
+   *
    * @return the startup info field from the FCI as an HEX string
    * @since 0.9
    */
@@ -291,7 +321,9 @@ public class CalypsoPo extends AbstractSmartCard {
   }
 
   /**
-   * The Answer To Reset is sent by the PO is ISO7816-3 mode and in contactless mode for PC/SC
+   * Get the Answer To Reset as an HEX String.
+   *
+   * <p>The Answer To Reset is sent by the PO is ISO7816-3 mode and in contactless mode for PC/SC
    * readers.
    *
    * <p>When the ATR is obtained in contactless mode, it is in fact reconstructed by the reader from
@@ -310,7 +342,9 @@ public class CalypsoPo extends AbstractSmartCard {
   }
 
   /**
-   * @return the maximum length of data that an APDU in this PO can carry
+   * Gets the maximum length of data that an APDU in this PO can carry.
+   *
+   * @return An int
    * @since 0.9
    */
   protected final int getPayloadCapacity() {
@@ -319,12 +353,13 @@ public class CalypsoPo extends AbstractSmartCard {
   }
 
   /**
-   * Specifies whether the change counter allowed in session is established in number of operations
-   * or number of bytes modified.
+   * Tells if the change counter allowed in session is established in number of operations or number
+   * of bytes modified.
    *
    * <p>This varies depending on the revision of the PO.
    *
    * @return true if the counter is number of bytes
+   * @since 0.9
    */
   protected final boolean isModificationsCounterInBytes() {
     return modificationCounterIsInBytes;
@@ -337,6 +372,7 @@ public class CalypsoPo extends AbstractSmartCard {
    * isModificationsCounterInBytes)
    *
    * @return the maximum number of modifications allowed
+   * @since 0.9
    */
   protected final int getModificationsCounter() {
     return modificationsCounterMax;
@@ -346,6 +382,7 @@ public class CalypsoPo extends AbstractSmartCard {
    * The platform identification byte is the reference of the chip
    *
    * @return the platform identification byte
+   * @since 0.9
    */
   public final byte getPlatform() {
     return startupInfo[SI_PLATFORM];
@@ -355,6 +392,7 @@ public class CalypsoPo extends AbstractSmartCard {
    * The Application Type byte determines the Calypso Revision and various options
    *
    * @return the Application Type byte
+   * @since 0.9
    */
   public final byte getApplicationType() {
     return startupInfo[SI_APPLICATION_TYPE];
@@ -366,6 +404,7 @@ public class CalypsoPo extends AbstractSmartCard {
    * <p>This boolean is interpreted from the Application Type byte
    *
    * @return true if the Confidential Session Mode is supported
+   * @since 0.9
    */
   public final boolean isConfidentialSessionModeSupported() {
     return isConfidentialSessionModeSupported;
@@ -377,6 +416,7 @@ public class CalypsoPo extends AbstractSmartCard {
    * <p>This boolean is interpreted from the Application Type byte
    *
    * @return true if the ratification command is required
+   * @since 0.9
    */
   public final boolean isDeselectRatificationSupported() {
     return isDeselectRatificationSupported;
@@ -388,6 +428,7 @@ public class CalypsoPo extends AbstractSmartCard {
    * <p>This boolean is interpreted from the Application Type byte
    *
    * @return true if the PO has the Stored Value feature
+   * @since 0.9
    */
   public final boolean isSvFeatureAvailable() {
     return isSvFeatureAvailable;
@@ -399,6 +440,7 @@ public class CalypsoPo extends AbstractSmartCard {
    * <p>This boolean is interpreted from the Application Type byte
    *
    * @return true if the PO has the PIN feature
+   * @since 0.9
    */
   public final boolean isPinFeatureAvailable() {
     return isPinFeatureAvailable;
@@ -410,6 +452,7 @@ public class CalypsoPo extends AbstractSmartCard {
    * <p>This boolean is interpreted from the Application Type byte
    *
    * @return true if the Public Authentication is supported
+   * @since 0.9
    */
   public final boolean isPublicAuthenticationSupported() {
     return isPublicAuthenticationSupported;
@@ -420,6 +463,7 @@ public class CalypsoPo extends AbstractSmartCard {
    * Calypso DF.
    *
    * @return the Application Subtype byte
+   * @since 0.9
    */
   public final byte getApplicationSubtype() {
     return startupInfo[SI_APPLICATION_SUBTYPE];
@@ -430,6 +474,7 @@ public class CalypsoPo extends AbstractSmartCard {
    * application.
    *
    * @return the Software Issuer byte
+   * @since 0.9
    */
   public final byte getSoftwareIssuer() {
     return startupInfo[SI_SOFTWARE_ISSUER];
@@ -440,6 +485,7 @@ public class CalypsoPo extends AbstractSmartCard {
    * application.
    *
    * @return the Software Version byte
+   * @since 0.9
    */
   public final byte getSoftwareVersion() {
     return startupInfo[SI_SOFTWARE_VERSION];
@@ -450,39 +496,43 @@ public class CalypsoPo extends AbstractSmartCard {
    * application.
    *
    * @return the Software Revision byte
+   * @since 0.9
    */
   public final byte getSoftwareRevision() {
     return startupInfo[SI_SOFTWARE_REVISION];
   }
 
   /**
-   * Depending on the type of PO, the session modification byte indicates the maximum number of
+   * Get the session modification byte from the startup info structure.
+   *
+   * <p>Depending on the type of PO, the session modification byte indicates the maximum number of
    * bytes that can be modified or the number of possible write commands in a session.
    *
    * @return the Session Modifications byte
+   * @since 0.9
    */
   public final byte getSessionModification() {
     return startupInfo[SI_BUFFER_SIZE_INDICATOR];
   }
 
   /**
-   * Indicated whether the PO has been invalidated or not.
+   * Tells if the PO has been invalidated or not.
    *
    * <p>An invalidated PO has 6283 as status word in response to the Select Application command.
    *
    * @return true if the PO has been invalidated.
+   * @since 0.9
    */
   public final boolean isDfInvalidated() {
     return isDfInvalidated;
   }
 
   /**
-   * Indicated whether the last session with this PO has been ratified or not.
-   *
-   * <p>
+   * Tells if the last session with this PO has been ratified or not.
    *
    * @return true if the PO has been ratified.
    * @throws IllegalStateException if these methods is call when no session has been opened
+   * @since 0.9
    */
   public final boolean isDfRatified() {
     if (isDfRatified != null) {
@@ -500,6 +550,7 @@ public class CalypsoPo extends AbstractSmartCard {
    * @param svLastTNum the last SV transaction number
    * @param svLoadLogRecord the SV load log record (may be null if not available)
    * @param svDebitLogRecord the SV debit log record (may be null if not available)
+   * @since 0.9
    */
   final void setSvData(
       int svBalance,
@@ -518,9 +569,9 @@ public class CalypsoPo extends AbstractSmartCard {
   }
 
   /**
-   * Gets the current SV balance
+   * Gets the current SV balance value
    *
-   * @return the current SV balance value
+   * @return An int
    * @throws IllegalStateException if no SV Get command has been executed
    * @since 0.9
    */
@@ -534,7 +585,7 @@ public class CalypsoPo extends AbstractSmartCard {
   /**
    * Gets the last SV transaction number
    *
-   * @return the last SV transaction number value
+   * @return An int
    * @throws IllegalStateException if no SV Get command has been executed
    * @since 0.9
    */
@@ -546,7 +597,7 @@ public class CalypsoPo extends AbstractSmartCard {
   }
 
   /**
-   * Gets the last SV load log record
+   * Gets a reference to the last {@link SvLoadLogRecord}
    *
    * @return a last SV load log record object or null if not available
    * @throws NoSuchElementException if requested log is not found.
@@ -562,7 +613,7 @@ public class CalypsoPo extends AbstractSmartCard {
   }
 
   /**
-   * Gets the last SV debit log record
+   * Gets a reference to the last {@link SvDebitLogRecord}
    *
    * @return a last SV debit log record object or null if not available
    * @throws NoSuchElementException if requested log is not found.
@@ -578,7 +629,7 @@ public class CalypsoPo extends AbstractSmartCard {
   }
 
   /**
-   * Gets all available SV debit log records
+   * Gets list of references to the {@link SvDebitLogRecord} read from the PO.
    *
    * @return a list of SV debit log record objects or null if not available
    * @throws NoSuchElementException if requested log is not found.
@@ -600,7 +651,6 @@ public class CalypsoPo extends AbstractSmartCard {
    * Sets the ratification status
    *
    * @param dfRatified true if the session was ratified
-   * @since 0.9
    */
   final void setDfRatified(boolean dfRatified) {
     isDfRatified = dfRatified;

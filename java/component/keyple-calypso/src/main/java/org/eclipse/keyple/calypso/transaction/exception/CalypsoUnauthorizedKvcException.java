@@ -11,10 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.calypso.transaction.exception;
 
-/**
- * The exception {@code CalypsoUnauthorizedKvcException} indicates that the current PO has an
- * unauthorized KVC.
- */
+/** Indicates that the current PO has an unauthorized KVC. */
 public class CalypsoUnauthorizedKvcException extends CalypsoPoTransactionException {
 
   /** @param message the message to identify the exception context */

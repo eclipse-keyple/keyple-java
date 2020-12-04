@@ -24,6 +24,8 @@ import org.eclipse.keyple.calypso.command.sam.SamRevision;
  * <p>Serial Number (may be a regular expression)
  *
  * <p>Group reference (key group reference)
+ *
+ * @since 0.9
  */
 public class SamIdentifier {
   SamRevision samRevision;
@@ -52,6 +54,7 @@ public class SamIdentifier {
      *
      * @param samRevision the {@link SamRevision} of the targeted SAM
      * @return the builder instance
+     * @since 0.9
      */
     public SamIdentifierBuilder samRevision(SamRevision samRevision) {
       this.samRevision = samRevision;
@@ -63,6 +66,7 @@ public class SamIdentifier {
      *
      * @param serialNumber the serial number of the targeted SAM as regex
      * @return the builder instance
+     * @since 0.9
      */
     public SamIdentifierBuilder serialNumber(String serialNumber) {
       this.serialNumber = serialNumber;
@@ -74,6 +78,7 @@ public class SamIdentifier {
      *
      * @param groupReference the group reference of the targeted SAM as a string
      * @return the builder instance
+     * @since 0.9
      */
     public SamIdentifierBuilder groupReference(String groupReference) {
       this.groupReference = groupReference;
@@ -84,6 +89,7 @@ public class SamIdentifier {
      * Build a new {@code SamIdentifier}.
      *
      * @return a new instance
+     * @since 0.9
      */
     public SamIdentifier build() {
       return new SamIdentifier(this);
@@ -94,22 +100,32 @@ public class SamIdentifier {
    * Gets a new builder.
    *
    * @return a new builder instance
+   * @since 0.9
    */
   public static SamIdentifierBuilder builder() {
     return new SamIdentifierBuilder();
   }
 
-  /** @return the SAM revision */
+  /**
+   * @return the SAM revision
+   * @since 0.9
+   */
   public SamRevision getSamRevision() {
     return samRevision;
   }
 
-  /** @return the SAM serial number */
+  /**
+   * @return the SAM serial number
+   * @since 0.9
+   */
   public String getSerialNumber() {
     return serialNumber;
   }
 
-  /** @return the group reference */
+  /**
+   * @return the group reference
+   * @since 0.9
+   */
   public String getGroupReference() {
     return groupReference;
   }
@@ -130,6 +146,7 @@ public class SamIdentifier {
    *
    * @param samIdentifier the {@link SamIdentifier} object to be compared to the current object
    * @return true if the identifier provided matches the current identifier
+   * @since 0.9
    */
   public boolean matches(SamIdentifier samIdentifier) {
     if (samIdentifier == null) {

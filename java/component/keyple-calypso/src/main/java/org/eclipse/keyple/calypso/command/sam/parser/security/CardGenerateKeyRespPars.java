@@ -21,6 +21,11 @@ import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParamet
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIncorrectInputDataException;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
+/**
+ * Parses the Card Generate Key response.
+ *
+ * @since 0.9
+ */
 public class CardGenerateKeyRespPars extends AbstractSamResponseParser {
 
   private static final Map<Integer, StatusProperties> STATUS_TABLE;
@@ -49,6 +54,11 @@ public class CardGenerateKeyRespPars extends AbstractSamResponseParser {
     STATUS_TABLE = m;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -59,6 +69,7 @@ public class CardGenerateKeyRespPars extends AbstractSamResponseParser {
    *
    * @param response from the SAM
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public CardGenerateKeyRespPars(ApduResponse response, CardGenerateKeyCmdBuild builder) {
     super(response, builder);
@@ -68,6 +79,7 @@ public class CardGenerateKeyRespPars extends AbstractSamResponseParser {
    * Gets the 32 bytes of ciphered data.
    *
    * @return the ciphered data byte array or null if the operation failed
+   * @since 0.9
    */
   public byte[] getCipheredData() {
     return isSuccessful() ? response.getDataOut() : null;

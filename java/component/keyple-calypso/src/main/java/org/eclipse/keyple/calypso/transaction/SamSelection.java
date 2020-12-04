@@ -26,6 +26,8 @@ import org.eclipse.keyple.core.card.selection.AbstractCardSelection;
  * Beyond the creation of a {@link CalypsoSam} object, this class also allows to execute a command
  * to Unlock the SAM if unlockData are present in the {@link SamSelector}.<br>
  * This unlock command is currently the only one allowed during the SAM selection process.
+ *
+ * @since 0.9
  */
 public class SamSelection
     extends AbstractCardSelection<AbstractSamCommandBuilder<? extends AbstractSamResponseParser>> {
@@ -33,6 +35,7 @@ public class SamSelection
    * Create a {@link SamSelection}
    *
    * @param samSelector the SAM selector
+   * @since 0.9
    */
   public SamSelection(SamSelector samSelector) {
     super(samSelector);
@@ -53,6 +56,7 @@ public class SamSelection
    * @return a {@link CalypsoSam}
    * @throws CalypsoDesynchronizedExchangesException if the APDU SAM exchanges are out of sync
    * @throws CalypsoSamCommandException if the SAM has responded with an error status
+   * @since 0.9
    */
   @Override
   protected CalypsoSam parse(CardSelectionResponse cardSelectionResponse) {

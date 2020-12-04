@@ -24,8 +24,10 @@ import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
- * SV Reload (00B8) response parser. See specs: Calypso Stored Value balance (signed binaries'
- * coding based on the two's complement method)
+ * Parses the SV Reload response.
+ *
+ * <p>See specs: Calypso Stored Value balance (signed binaries' coding based on the two's complement
+ * method)
  *
  * <p>balance - 3 bytes signed binary - Integer from -8,388,608 to 8,388,607
  *
@@ -48,6 +50,8 @@ import org.eclipse.keyple.core.card.message.ApduResponse;
  * 8,388,606           %01111111.11111111.11111110
  * 8,388,607           %01111111.11111111.11111111
  * </pre>
+ *
+ * @since 0.9
  */
 public final class SvReloadRespPars extends AbstractPoResponseParser {
 
@@ -87,6 +91,7 @@ public final class SvReloadRespPars extends AbstractPoResponseParser {
    *
    * @param response response to parse
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public SvReloadRespPars(ApduResponse response, SvReloadCmdBuild builder) {
     super(response, builder);
@@ -104,11 +109,17 @@ public final class SvReloadRespPars extends AbstractPoResponseParser {
    * signature is postponed until the end of the session.
    *
    * @return a byte array containing the signature
+   * @since 0.9
    */
   public byte[] getSignatureLo() {
     return getApduResponse().getDataOut();
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
