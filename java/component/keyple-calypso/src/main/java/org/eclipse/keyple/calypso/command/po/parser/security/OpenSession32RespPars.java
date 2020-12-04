@@ -16,6 +16,11 @@ import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.security.OpenSession32CmdBuild;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
+/**
+ * Parses the Open session response from a PO revision 3.2 .
+ *
+ * @since 0.9
+ */
 public final class OpenSession32RespPars extends AbstractOpenSessionRespPars {
 
   /**
@@ -33,6 +38,7 @@ public final class OpenSession32RespPars extends AbstractOpenSessionRespPars {
    *
    * @param apduResponseData the apdu response data
    * @return a SecureSession
+   * @since 0.9
    */
   SecureSession toSecureSession(byte[] apduResponseData) {
     return createSecureSession(apduResponseData);

@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.calypso.transaction.exception;
 
-/** The exception {@code CalypsoPoRevokedException} indicates that the PO is revoked. */
+/** Indicates that the PO is revoked. */
 public class CalypsoPoRevokedException extends CalypsoPoTransactionException {
 
   /** @param message the message to identify the exception context */

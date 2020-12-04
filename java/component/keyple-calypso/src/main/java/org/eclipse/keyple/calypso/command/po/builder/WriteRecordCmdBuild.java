@@ -16,12 +16,12 @@ import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.parser.WriteRecordRespPars;
 import org.eclipse.keyple.core.card.message.ApduResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * The Class WriteRecordCmdBuild. This class provides the dedicated constructor to build the Write
- * Record APDU command.
- */
+/** Builds the Write Record APDU command. */
 public final class WriteRecordCmdBuild extends AbstractPoCommandBuilder<WriteRecordRespPars> {
+  private static final Logger logger = LoggerFactory.getLogger(WriteRecordCmdBuild.class);
 
   /** The command. */
   private static final CalypsoPoCommand command = CalypsoPoCommand.WRITE_RECORD;
@@ -40,6 +40,7 @@ public final class WriteRecordCmdBuild extends AbstractPoCommandBuilder<WriteRec
    * @param newRecordData the new record data to write
    * @throws IllegalArgumentException - if record number is &lt; 1
    * @throws IllegalArgumentException - if the request is inconsistent
+   * @since 0.9
    */
   public WriteRecordCmdBuild(PoClass poClass, byte sfi, int recordNumber, byte[] newRecordData) {
     super(command, null);
@@ -59,33 +60,49 @@ public final class WriteRecordCmdBuild extends AbstractPoCommandBuilder<WriteRec
     }
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public WriteRecordRespPars createResponseParser(ApduResponse apduResponse) {
     return new WriteRecordRespPars(apduResponse, this);
   }
 
   /**
-   * This command can modify the contents of the PO in session and therefore uses the session
-   * buffer.
+   * {@inheritDoc}
+   *
+   * <p>This command modified the contents of the PO and therefore uses the session buffer.
    *
    * @return true
+   * @since 0.9
    */
   @Override
   public boolean isSessionBufferUsed() {
     return true;
   }
 
-  /** @return the SFI of the accessed file */
+  /**
+   * @return the SFI of the accessed file
+   * @since 0.9
+   */
   public int getSfi() {
     return sfi;
   }
 
-  /** @return the number of the accessed record */
+  /**
+   * @return the number of the accessed record
+   * @since 0.9
+   */
   public int getRecordNumber() {
     return recordNumber;
   }
 
-  /** @return the data sent to the PO */
+  /**
+   * @return the data sent to the PO
+   * @since 0.9
+   */
   public byte[] getData() {
     return data;
   }

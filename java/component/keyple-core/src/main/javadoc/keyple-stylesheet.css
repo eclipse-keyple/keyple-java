@@ -34,6 +34,9 @@ pre {
     font-family: monospace;
     font-size:14px;
 }
+li>pre {
+    font-weight: bold;
+}
 h1 {
     font-size:20px;
 }
@@ -67,6 +70,10 @@ dt code {
     font-family: monospace;
     font-size:14px;
     padding-top:4px;
+}
+dd>code:first-of-type {
+    background-color: #F8F8F8;
+    padding: 0 5px;
 }
 table tr td dt code {
     font-family: monospace;
@@ -284,9 +291,8 @@ Page layout container styles
     color:#4E4E4E;
 }
 .contentContainer .description dl dd, .contentContainer .details dl dd, .serializedFormContainer dl dd {
-    margin:5px 0 10px 0px;
+    margin:5px 0 10px 20px;
     font-size:14px;
-    font-family:monospace;
 }
 .serializedFormContainer dl.nameValue dt {
     margin-left:1px;

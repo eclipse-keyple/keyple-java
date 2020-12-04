@@ -14,9 +14,10 @@ package org.eclipse.keyple.calypso.command.po.exception;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 
 /**
- * The exception {@code CalypsoPoTerminatedException} indicates that the number of transactions
- * authorized by the PO has reached its limit.<br>
+ * Indicates that the number of transactions authorized by the PO has reached its limit.<br>
  * This may occur, for example, when requesting an open secure session.
+ *
+ * @since 0.9
  */
 public final class CalypsoPoTerminatedException extends CalypsoPoCommandException {
 
@@ -24,6 +25,7 @@ public final class CalypsoPoTerminatedException extends CalypsoPoCommandExceptio
    * @param message the message to identify the exception context
    * @param command the Calypso PO command
    * @param statusCode the status code
+   * @since 0.9
    */
   public CalypsoPoTerminatedException(
       String message, CalypsoPoCommand command, Integer statusCode) {

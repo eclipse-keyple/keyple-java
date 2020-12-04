@@ -17,7 +17,11 @@ import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.parser.security.SamGetChallengeRespPars;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** Builder for the SAM Get Challenge APDU command. */
+/**
+ * Builds the Get Challenge APDU command.
+ *
+ * @since 0.9
+ */
 public class SamGetChallengeCmdBuild extends AbstractSamCommandBuilder<SamGetChallengeRespPars> {
 
   /** The command reference. */
@@ -29,6 +33,7 @@ public class SamGetChallengeCmdBuild extends AbstractSamCommandBuilder<SamGetCha
    * @param revision of the SAM (SAM)
    * @param expectedResponseLength the expected response length
    * @throws IllegalArgumentException - if the expected response length has wrong value.
+   * @since 0.9
    */
   public SamGetChallengeCmdBuild(SamRevision revision, byte expectedResponseLength) {
     super(command, null);
@@ -46,6 +51,11 @@ public class SamGetChallengeCmdBuild extends AbstractSamCommandBuilder<SamGetCha
     request = setApduRequest(cla, command, p1, p2, null, expectedResponseLength);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public SamGetChallengeRespPars createResponseParser(ApduResponse apduResponse) {
     return new SamGetChallengeRespPars(apduResponse, this);

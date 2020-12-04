@@ -71,12 +71,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Portable Object Secure Session.
+ * This service provides the high-level API to manage transactions with a Calypso PO.
  *
- * <p>A non-encrypted secure session with a Calypso PO requires the management of two {@link
- * ProxyReader} in order to communicate with both a Calypso PO and a SAM
+ * <p>Depending on the type of operations required, the presence of a SAM may be necessary.
  *
- * @author Calypso Networks Association
+ * <p>The {@link CalypsoPo} object provided to the build is kept and updated at each step of using
+ * the service. It is the main container of the data handled during the transaction and acts as a
+ * card image.
+ *
+ * <p>There are two main steps in using the methods of this service:
+ *
+ * <ul>
+ *   <li>A command preparation step during which the application invokes prefixed "prepare" methods
+ *       that will add to an internal list of commands to be executed by the PO. The incoming data
+ *       to the PO are placed in {@link CalypsoPo}.
+ *   <li>A processing step corresponding to the prefixed "process" methods, which will carry out the
+ *       communications with the PO and if necessary the SAM. The outgoing data from the PO are
+ *       placed in {@link CalypsoPo}.
+ * </ul>
+ *
+ * <p>Technical or data errors, security conditions, etc. are reported as exceptions.
+ *
+ * @since 0.9
  */
 public class PoTransaction {
 
@@ -112,15 +128,14 @@ public class PoTransaction {
   private ChannelControl channelControl;
 
   /**
-   * PoTransaction with PO and SAM readers.
+   * Constructor.
    *
-   * <ul>
-   *   <li>Logical channels with PO &amp; SAM could already be established or not.
-   *   <li>A list of SAM parameters is provided as en EnumMap.
-   * </ul>
+   * <p>Secure operations are enabled by the presence of {@link PoSecuritySettings}.
    *
    * @param poResource the PO resource (combination of {@link Reader} and {@link CalypsoPo})
-   * @param poSecuritySettings a list of security settings ({@link PoSecuritySettings}) used in
+   * @param poSecuritySettings a set of security settings ({@link PoSecuritySettings}) including a
+   *     {@link CardResource} based on a {@link CalypsoSam}.
+   * @since 0.9
    */
   public PoTransaction(CardResource<CalypsoPo> poResource, PoSecuritySettings poSecuritySettings) {
 
@@ -132,13 +147,10 @@ public class PoTransaction {
   }
 
   /**
-   * PoTransaction with PO reader and without SAM reader.
-   *
-   * <ul>
-   *   <li>Logical channels with PO could already be established or not.
-   * </ul>
+   * Constructor.
    *
    * @param poResource the PO resource (combination of {@link Reader} and {@link CalypsoPo})
+   * @since 0.9
    */
   public PoTransaction(CardResource<CalypsoPo> poResource) {
     this.poReader = (ProxyReader) poResource.getReader();
@@ -155,36 +167,11 @@ public class PoTransaction {
   }
 
   /**
-   * Open a Secure Session.
-   *
-   * <ul>
-   *   <li>The PO must have been previously selected, so a logical channel with the PO application
-   *       must be already active.
-   *   <li>The PO serial &amp; revision are identified from FCI data.
-   *   <li>A first request is sent to the SAM session reader.
-   *       <ul>
-   *         <li>In case not logical channel is active with the SAM, a channel is open.
-   *         <li>Then a Select Diversifier (with the PO serial) &amp; a Get Challenge are
-   *             automatically operated. The SAM challenge is recovered.
-   *       </ul>
-   *   <li>The PO Open Session command is built according to the PO revision, the SAM challenge, the
-   *       keyIndex, and openingSfiToSelect / openingRecordNumberToRead.
-   *   <li>Next the PO reader is requested:
-   *       <ul>
-   *         <li>for the current selected PO AID, with channelControl set to KEEP_OPEN,
-   *         <li>and some PO Apdu Requests including at least the Open Session command and
-   *             optionally some PO command to operate inside the session.
-   *       </ul>
-   *   <li>The session PO keyset reference is identified from the PO Open Session response, the PO
-   *       challenge is recovered too.
-   *   <li>According to the PO responses of Open Session and the PO commands sent inside the
-   *       session, a "cache" of SAM commands is filled with the corresponding Digest Init &amp;
-   *       Digest Update commands.
-   *   <li>Returns the corresponding PO CardResponse (responses to poCommands).
-   * </ul>
+   * Open a single Secure Session.
    *
    * @param accessLevel access level of the session (personalization, load or debit).
    * @param poCommands the po commands inside session
+   * @throws CalypsoPoTransactionIllegalStateException if no {@link PoSecuritySettings} is available
    * @throws CalypsoPoTransactionException if a functional error occurs (including PO and SAM IO
    *     errors)
    * @throws CalypsoPoCommandException if a response from the PO was unexpected
@@ -566,10 +553,17 @@ public class PoTransaction {
     processAtomicClosing(poCommands, poAnticipatedResponses, ratificationMode, channelControl);
   }
 
+  /**
+   * Contains the Calypso Secure Session set of parameters.
+   *
+   * @since 0.9
+   */
   public static class SessionSetting {
     /**
      * The modification mode indicates whether the secure session can be closed and reopened to
      * manage the limitation of the PO buffer memory.
+     *
+     * @since 0.9
      */
     public enum ModificationMode {
       /**
@@ -585,7 +579,11 @@ public class PoTransaction {
       MULTIPLE
     }
 
-    /** The PO Transaction Access Level: personalization, loading or debiting. */
+    /**
+     * The PO Transaction Access Level: personalization, loading or debiting.
+     *
+     * @since 0.9
+     */
     public enum AccessLevel {
 
       /** Session Access Level used for personalization purposes. */
@@ -615,6 +613,8 @@ public class PoTransaction {
     /**
      * The ratification mode defines the behavior of processClosing regarding the ratification
      * process.
+     *
+     * @since 0.9
      */
     public enum RatificationMode {
       CLOSE_RATIFIED,
@@ -634,15 +634,27 @@ public class PoTransaction {
     SESSION_CLOSED
   }
 
-  /** The {@link PinTransmissionMode} indicates whether the PIN transmission is encrypted or not. */
+  /**
+   * Defines the PIN transmission modes: plain or encrypted.
+   *
+   * @since 0.9
+   */
   public enum PinTransmissionMode {
     PLAIN,
     ENCRYPTED
   }
 
-  /** A set of enumerations used to manage Stored Value transactions */
+  /**
+   * Defines the Stored Value transactions parameters
+   *
+   * @since 0.9
+   */
   public static class SvSettings {
-    /** {@link Operation} specifies the type of operation intended to be carried out */
+    /**
+     * Defines the type of operation to be performed
+     *
+     * @since 0.9
+     */
     public enum Operation {
       /** Increase the balance of the stored value */
       RELOAD,
@@ -651,32 +663,39 @@ public class PoTransaction {
     }
 
     /**
-     * {@link Action} specifies the type of action:
+     * Defines the type of action.
      *
-     * <ul>
-     *   <li>Reload: DO loads a positive amount, UNDO loads a negative amount
-     *   <li>Debit: DO debits a positive amount, UNDO cancels, totally or partially, a previous
-     *       debit.
-     * </ul>
+     * @since 0.9
      */
     public enum Action {
+      /**
+       * In the case of a {@link Operation#RELOAD}, loads a positive amount; in the case of a {@link
+       * Operation#DEBIT}, debits a positive amount
+       */
       DO,
+      /**
+       * In the case of a {@link Operation#RELOAD}, loads a negative amount; in the case of a {@link
+       * Operation#DEBIT}, cancels, totally or partially, a previous debit.
+       */
       UNDO
     }
 
     /**
-     * {@link LogRead} specifies whether only the log related to the current operation {@link} is
-     * requested or whether both logs are requested.
+     * Defines the reading modes of the SV log.
+     *
+     * @since 0.9
      */
     public enum LogRead {
-      /** Request the RELOAD or DEBIT log according to the currently specified operation */
+      /** Request only the RELOAD or DEBIT log according to the currently specified operation */
       SINGLE,
       /** Request both RELOAD and DEBIT logs */
       ALL
     }
 
     /**
-     * {@link NegativeBalance} indicates whether negative balances are allowed when debiting the SV
+     * Defines the acceptance modes for negative balances.
+     *
+     * @since 0.9
      */
     public enum NegativeBalance {
       /**
@@ -771,41 +790,93 @@ public class PoTransaction {
   }
 
   /**
-   * Open a Secure Session.
+   * Opens a Calypso Secure Session and then executes all previously prepared commands.
+   *
+   * <p>It is the starting point of the sequence:
    *
    * <ul>
-   *   <li>The PO must have been previously selected, so a logical channel with the PO application
-   *       must be already active.
-   *   <li>The PO serial &amp; revision are identified from FCI data.
-   *   <li>A first request is sent to the SAM session reader.
-   *       <ul>
-   *         <li>In case not logical channel is active with the SAM, a channel is open.
-   *         <li>Then a Select Diversifier (with the PO serial) &amp; a Get Challenge are
-   *             automatically operated. The SAM challenge is recovered.
-   *       </ul>
-   *   <li>The PO Open Session command is built according to the PO revision, the SAM challenge, the
-   *       keyIndex, and openingSfiToSelect / openingRecordNumberToRead.
-   *   <li>Next the PO reader is requested:
-   *       <ul>
-   *         <li>for the currently selected PO, with channelControl set to KEEP_OPEN,
-   *         <li>and some PO Apdu Requests including at least the Open Session command and all
-   *             prepared PO command to operate inside the session.
-   *       </ul>
-   *   <li>The session PO keyset reference is identified from the PO Open Session response, the PO
-   *       challenge is recovered too.
-   *   <li>According to the PO responses of Open Session and the PO commands sent inside the
-   *       session, a "cache" of SAM commands is filled with the corresponding Digest Init &amp;
-   *       Digest Update commands.
-   *   <li>The result of the commands is placed in CalypsoPo.
-   *   <li>Any call to prepareReleasePoChannel before this command will be ignored but will remain
-   *       active for the next process command.
+   *   <li>{@link #processOpening(SessionSetting.AccessLevel)}
+   *   <li>[{@link #processPoCommands()}]
+   *   <li>[...]
+   *   <li>[{@link #processPoCommands()}]
+   *   <li>{@link #processClosing()}
    * </ul>
    *
-   * @param accessLevel access level of the session (personalization, load or debit).
+   * <p>Each of the steps in this sequence may or may not be preceded by the preparation of one or
+   * more commands and ends with an update of the {@link CalypsoPo} object provided when
+   * PoTransaction was created.
+   *
+   * <p>As a prerequisite for calling this method, since the Calypso Secure Session involves the use
+   * of a SAM, the PoTransaction must have been built in secure mode, i.e. the constructor used must
+   * be the one expecting a reference to a valid {@link PoSecuritySettings} object, otherwise a
+   * {@link CalypsoPoTransactionIllegalStateException} is raised.
+   *
+   * <p>The secure session is opened with the {@link SessionSetting.AccessLevel} passed as an
+   * argument depending on whether it is a personalization, reload or debit transaction profile..
+   *
+   * <p>The possible overflow of the internal session buffer of the PO is managed in two ways
+   * depending on the setting chosen in {@link PoSecuritySettings}.
+   *
+   * <ul>
+   *   <li>If the session was opened with the {@link SessionSetting.ModificationMode#ATOMIC} mode
+   *       and the previously prepared commands will cause the buffer to be exceeded, then an {@link
+   *       CalypsoAtomicTransactionException} is raised and no transmission to the PO is made. <br>
+   *   <li>If the session was opened with the {@link SessionSetting.ModificationMode#MULTIPLE} mode
+   *       and the buffer is to be exceeded then a split into several secure sessions is performed
+   *       automatically. However, regardless of the number of intermediate sessions performed, a
+   *       secure session is opened at the end of the execution of this method.
+   * </ul>
+   *
+   * <p>Be aware that in the "MULTIPLE" case we lose the benefit of the atomicity of the secure
+   * session.
+   *
+   * <p><b>PO and SAM exchanges in detail</b>
+   *
+   * <p>When executing this method, communications with the PO and the SAM are (in that order) :
+   *
+   * <ul>
+   *   <li>Sending the card diversifier (Calypso PO serial number) to the SAM and receiving the
+   *       terminal challenge
+   *   <li>Grouped sending to the PO (in a {@link CardRequest}) of
+   *       <ul>
+   *         <li>the open secure session command including the challenge terminal.
+   *         <li>all previously prepared commands
+   *       </ul>
+   *   <li>Receiving grouped responses and updating {@link CalypsoPo} with the collected data.
+   * </ul>
+   *
+   * For optimization purposes, if the first command prepared is the reading of a single record of a
+   * PO file then this one is replaced by a setting of the session opening command allowing the
+   * retrieval of this data in response to this command.
+   *
+   * <p><b>Other operations carried out</b>
+   *
+   * <ul>
+   *   <li>The card KIF, KVC and card challenge received in response to the open secure session
+   *       command are kept for a later initialization of the session's digest (see {@link
+   *       #processClosing}).
+   *   <li>All data received in response to the open secure session command and the responses to the
+   *       prepared commands are also stored for later calculation of the digest.
+   *   <li>If a list of authorized KVCs has been defined in {@link PoSecuritySettings} and the KVC
+   *       of the card does not belong to this list then a {@link CalypsoUnauthorizedKvcException}
+   *       is thrown.
+   * </ul>
+   *
+   * <p>All unexpected results (communication errors, data or security errors, etc. are notified to
+   * the calling application through dedicated exceptions.
+   *
+   * <p><i>Note: to understand in detail how the secure session works please refer to the PO
+   * specification documents.</i>
+   *
+   * @param accessLevel An {@link SessionSetting.AccessLevel} enum entry.
+   * @throws CalypsoPoTransactionIllegalStateException if no {@link PoSecuritySettings} is available
+   * @throws CalypsoAtomicTransactionException if the PO session buffer were to overflow
+   * @throws CalypsoUnauthorizedKvcException if the card KVC is not authorized
    * @throws CalypsoPoTransactionException if a functional error occurs (including PO and SAM IO
    *     errors)
    * @throws CalypsoPoCommandException if a response from the PO was unexpected
    * @throws CalypsoSamCommandException if a response from the SAM was unexpected
+   * @since 0.9
    */
   public final void processOpening(PoTransaction.SessionSetting.AccessLevel accessLevel) {
     currentAccessLevel = accessLevel;
@@ -857,11 +928,8 @@ public class PoTransaction {
   /**
    * Process all prepared PO commands (outside a Secure Session).
    *
-   * <ul>
-   *   <li>On the PO reader, generates a CardRequest with channelControl set to the provided value
-   *       and ApduRequests containing the PO commands.
-   *   <li>The result of the commands is placed in CalypsoPo.
-   * </ul>
+   * <p>Note: commands prepared prior to the invocation of this method shall not require the use of
+   * a SAM.
    *
    * @param channelControl indicates if the card channel of the PO reader must be closed after the
    *     last command
@@ -886,13 +954,7 @@ public class PoTransaction {
   /**
    * Process all prepared PO commands in a Secure Session.
    *
-   * <ul>
-   *   <li>On the PO reader, generates a CardRequest with channelControl set to KEEP_OPEN, and
-   *       ApduRequests containing the PO commands.
-   *   <li>In case the secure session is active, the "cache" of SAM commands is completed with the
-   *       corresponding Digest Update commands.
-   *   <li>The result of the commands is placed in CalypsoPo.
-   * </ul>
+   * <p>The multiple session mode is handled according to the session settings.
    *
    * @throws CalypsoPoTransactionException if a functional error occurs (including PO and SAM IO
    *     errors)
@@ -952,20 +1014,30 @@ public class PoTransaction {
   }
 
   /**
-   * Process all prepared PO commands outside or in a Secure Session.
+   * Process all previously prepared PO commands outside or inside a Secure Session.
    *
    * <ul>
-   *   <li>In case the secure session is active, the "cache" of SAM commands is completed with the
-   *       corresponding Digest Update commands. Also, the PO channel is kept open.
-   *   <li>Outside of a secure session, the PO channel is closed depending on whether or not
+   *   <li>All APDUs resulting from prepared commands are grouped in a {@link CardRequest} and sent
+   *       to the PO.
+   *   <li>The {@link CalypsoPo} object is updated with the result of the executed commands.
+   *   <li>If a secure session is opened, except in the case where reloading or debit SV operations
+   *       have been prepared, the invocation of this method does not generate communication with
+   *       the SAM. The data necessary for the calculation of the terminal signature are kept to be
+   *       sent to the SAM at the time of the call to {@link #processClosing()}.<br>
+   *       The PO channel is kept open.
+   *   <li>If no secure session is opened, the PO channel is closed depending on whether or not
    *       prepareReleasePoChannel has been called.
-   *   <li>The result of the commands is placed in CalypsoPo.
+   *   <li>The PO session buffer overflows are managed in the same way as in {@link
+   *       #processOpening(SessionSetting.AccessLevel)}. For example, when the {@link
+   *       SessionSetting.ModificationMode#MULTIPLE} mode is chosen, the commands are separated in
+   *       as many sessions as necessary to respect the capacity of the PO buffer.
    * </ul>
    *
    * @throws CalypsoPoTransactionException if a functional error occurs (including PO and SAM IO
    *     errors)
    * @throws CalypsoPoCommandException if a response from the PO was unexpected
    * @throws CalypsoSamCommandException if a response from the SAM was unexpected
+   * @since 0.9
    */
   public final void processPoCommands() {
     if (sessionState == SessionState.SESSION_OPEN) {
@@ -976,24 +1048,58 @@ public class PoTransaction {
   }
 
   /**
-   * Sends the currently prepared commands list (may be empty) and closes the Secure Session.
+   * Terminates the Secure Session sequence started with {@link
+   * #processOpening(SessionSetting.AccessLevel)}.
+   *
+   * <p><b>Nominal case</b>
+   *
+   * <p>The previously prepared commands are integrated into the calculation of the session digest
+   * by the SAM before execution by the PO by anticipating their responses.
+   *
+   * <p>Thus, the session closing command containing the terminal signature is integrated into the
+   * same APDU group sent to the PO via a final {@link CardRequest}.
+   *
+   * <p>Upon reception of the {@link CardRequest} PO, the signature of the PO is verified with the
+   * SAM.
+   *
+   * <p>If the method terminates normally, it means that the secure session closing and all related
+   * security checks have been successful; conversely, if one of these operations fails, an
+   * exception is raised.
+   *
+   * <p><b>Stored Value</b>
+   *
+   * <p>If the SV counter was debited or reloaded during the session, an additional verification
+   * specific to the SV is performed by the SAM.
+   *
+   * <p><b>Ratification</b>
+   *
+   * <p>A ratification command is added after the close secure session command when the
+   * communication is done in a contactless mode.
+   *
+   * <p>The logical channel is closed or left open depending on whether the {@link
+   * #prepareReleasePoChannel()} method has been called before or not.
+   *
+   * <p><b>PO and SAM exchanges in detail</b>
    *
    * <ul>
-   *   <li>The ratification is handled according to the communication mode.
-   *   <li>The logical channel can be left open or closed.
-   *   <li>The result of the commands is placed in CalypsoPo.
+   *   <li>All the data exchanged with the PO so far, to which are added the last prepared orders
+   *       and their anticipated answers, are sent to the SAM for the calculation of the session
+   *       digest. The terminal signature calculation request is also integrated in the same {@link
+   *       CardRequest} SAM.
+   *   <li>All previously prepared commands are sent to the PO along with the session closing
+   *       command and possibly the ratification command within a single {@link CardRequest}.
+   *   <li>The responses received from the PO are integrated into CalypsoPo. <br>
+   *       Note: the reception of the answers of this final {@link CardRequest} PO is tolerant to
+   *       the non-reception of the answer to the ratification order.
+   *   <li>The data received from the PO in response to the logout (PO session signature and
+   *       possibly SV signature) are sent to the SAM for verification.
    * </ul>
-   *
-   * <p>The communication mode is retrieved from CalypsoPO to manage the ratification process. If
-   * the communication mode is CONTACTLESS, a ratification command will be generated and sent to the
-   * PO after the Close Session command; the ratification will not be requested in the Close Session
-   * command. On the contrary, if the communication mode is CONTACTS, no ratification command will
-   * be sent to the PO and ratification will be requested in the Close Session command
    *
    * @throws CalypsoPoTransactionException if a functional error occurs (including PO and SAM IO
    *     errors)
    * @throws CalypsoPoCommandException if a response from the PO was unexpected
    * @throws CalypsoSamCommandException if a response from the SAM was unexpected
+   * @since 0.9
    */
   public final void processClosing() {
     checkSessionIsOpen();
@@ -1075,7 +1181,7 @@ public class PoTransaction {
   }
 
   /**
-   * Abort a Secure Session.
+   * Aborts a Secure Session.
    *
    * <p>Send the appropriate command to the PO
    *
@@ -1084,6 +1190,7 @@ public class PoTransaction {
    * @throws CalypsoPoTransactionException if a functional error occurs (including PO and SAM IO
    *     errors)
    * @throws CalypsoPoCommandException if a response from the PO was unexpected
+   * @since 0.9
    */
   public final void processCancel() {
     // PO ApduRequest List to hold Close Secure Session command
@@ -1113,15 +1220,19 @@ public class PoTransaction {
 
   /**
    * Performs a PIN verification, in order to authenticate the card holder and/or unlock access to
-   * certain PO files.<br>
-   * This command can be performed both in and out of a secure session.<br>
-   * The PIN code can be transmitted in plain text or encrypted according to the parameter set in
-   * PoSecuritySettings (by default the transmission is encrypted).<br>
-   * If the execution is done out of session but an encrypted transmission is requested, then
-   * PoTransaction must be constructed with {@link PoSecuritySettings}<br>
-   * If PoTransaction is constructed without {@link PoSecuritySettings} the transmission in done in
-   * plain.<br>
-   * The PO channel is closed if prepareReleasePoChannel is called before this command.
+   * certain PO files.
+   *
+   * <p>This command can be performed both in and out of a secure session. The PIN code can be
+   * transmitted in plain text or encrypted according to the parameter set in PoSecuritySettings (by
+   * default the transmission is encrypted).
+   *
+   * <p>If the execution is done out of session but an encrypted transmission is requested, then
+   * PoTransaction must be constructed with {@link PoSecuritySettings}
+   *
+   * <p>If PoTransaction is constructed without {@link PoSecuritySettings} the transmission in done
+   * in plain.
+   *
+   * <p>The PO channel is closed if prepareReleasePoChannel is called before this command.
    *
    * @param pin the PIN code value (4-byte long byte array)
    * @throws CalypsoPoTransactionException if a functional error occurs (including PO and SAM IO
@@ -1132,6 +1243,7 @@ public class PoTransaction {
    *     CalypsoPo#getPinAttemptRemaining} methods
    * @throws CalypsoPoTransactionIllegalStateException if the PIN feature is not available for this
    *     PO or if commands have been prepared before calling this process method.
+   * @since 0.9
    */
   public final void processVerifyPin(byte[] pin) {
     Assert.getInstance()
@@ -1176,10 +1288,17 @@ public class PoTransaction {
   }
 
   /**
-   * ProcessVerifyPin variant with the PIN supplied as an ASCII string.<br>
-   * E.g. "1234" will be transmited as { 0x31,032,0x33,0x34 }
+   * Invokes {@link #processVerifyPin(byte[])} with a string converted into an array of bytes as
+   * argument.
+   *
+   * <p>The provided String is converted into an array of bytes and processed with {@link
+   * #processVerifyPin(byte[])}.
+   *
+   * <p>E.g. "1234" will be transmitted as { 0x31,0x32,0x33,0x34 }
    *
    * @param pin an ASCII string (4-character long)
+   * @see #processVerifyPin(byte[])
+   * @since 0.9
    */
   public final void processVerifyPin(String pin) {
     processVerifyPin(pin.getBytes());
@@ -1249,7 +1368,7 @@ public class PoTransaction {
    * @param overflow flag set to true if the command overflowed the buffer
    * @param neededSessionBufferSpace updated with the size of the buffer consumed by the command
    * @return true if the command modifies the content of the PO, false if not
-   * @throws CalypsoPoTransactionIllegalStateException if the command overflows the buffer in ATOMIC
+   * @throws CalypsoAtomicTransactionException if the command overflows the buffer in ATOMIC
    *     modification mode
    */
   private boolean checkModifyingCommand(
@@ -1331,23 +1450,32 @@ public class PoTransaction {
   }
 
   /**
-   * Prepare to close the PO channel.<br>
-   * If this command is called before a "process" command (except for processOpening) then the last
-   * transmission to the PO will be associated with the indication CLOSE_AFTER in order to close the
-   * PO channel.<br>
-   * Important: this command must imperatively be called at the end of any transaction, whether it
-   * ended normally or not.<br>
-   * In case the transaction was interrupted (exception), an additional call to processPoCommands
+   * Requests the closing of the PO channel.
+   *
+   * <p>If this command is called before a "process" command (except for processOpening) then the
+   * last transmission to the PO will be associated with the indication CLOSE_AFTER in order to
+   * close the PO channel.
+   *
+   * <p>Note: this command must imperatively be called at the end of any transaction, whether it
+   * ended normally or not.
+   *
+   * <p>In case the transaction was interrupted (exception), an additional call to processPoCommands
    * must be made to effectively close the channel.
+   *
+   * @since 0.9
    */
   public final void prepareReleasePoChannel() {
     channelControl = ChannelControl.CLOSE_AFTER;
   }
 
   /**
-   * Prepare a select file ApduRequest to be executed following the selection.
+   * Schedules the execution of a <b>Select File</b> command based on the file's LID.
+   *
+   * <p>Once this command is processed, the result is available in {@link CalypsoPo} through the
+   * {@link CalypsoPo#getFileBySfi(byte)} and {@link ElementaryFile#getHeader()} methods.
    *
    * @param lid the LID of the EF to select
+   * @since 0.9
    */
   public final void prepareSelectFile(byte[] lid) {
     // create the builder and add it to the list of commands
@@ -1356,9 +1484,14 @@ public class PoTransaction {
   }
 
   /**
-   * Prepare a select file ApduRequest to be executed following the selection.
+   * Schedules the execution of a <b>Select File</b> command using a navigation control defined by
+   * the ISO standard.
    *
-   * @param control provides the navigation case: FIRST, NEXT or CURRENT
+   * <p>Once this command is processed, the result is available in {@link CalypsoPo} through the
+   * {@link CalypsoPo#getFileBySfi(byte)} and {@link ElementaryFile#getHeader()} methods.
+   *
+   * @param control A {@link SelectFileControl} enum entry
+   * @since 0.9
    */
   public final void prepareSelectFile(SelectFileControl control) {
     // create the builder and add it to the list of commands
@@ -1367,11 +1500,19 @@ public class PoTransaction {
   }
 
   /**
-   * Read a single record from the indicated EF
+   * Schedules the execution of a <b>Read Records</b> command to read a single record from the
+   * indicated EF.
+   *
+   * <p>Once this command is processed, the result is available in {@link CalypsoPo}.
+   *
+   * <p>See the method {@link CalypsoPo#getFileBySfi(byte)}, the objects {@link ElementaryFile},
+   * {@link FileData} and their specialized methods according to the type of expected data: e.g.
+   * {@link FileData#getContent(int)}.
    *
    * @param sfi the SFI of the EF to read
    * @param recordNumber the record number to read
    * @throws IllegalArgumentException if one of the provided argument is out of range
+   * @since 0.9
    */
   public final void prepareReadRecordFile(byte sfi, int recordNumber) {
     // create the builder and add it to the list of commands
@@ -1380,7 +1521,14 @@ public class PoTransaction {
   }
 
   /**
-   * Read one or more records from the indicated EF
+   * Schedules the execution of a <b>Read Records</b> command to read one or more records from the
+   * indicated EF.
+   *
+   * <p>Once this command is processed, the result is available in {@link CalypsoPo}.
+   *
+   * <p>See the method {@link CalypsoPo#getFileBySfi(byte)}, the objects {@link ElementaryFile},
+   * {@link FileData} and their specialized methods according to the type of expected data: e.g.
+   * {@link FileData#getContent()}.
    *
    * @param sfi the SFI of the EF
    * @param firstRecordNumber the record number to read (or first record to read in case of several
@@ -1388,6 +1536,7 @@ public class PoTransaction {
    * @param numberOfRecords the number of records expected
    * @param recordSize the record length
    * @throws IllegalArgumentException if one of the provided argument is out of range
+   * @since 0.9
    */
   public final void prepareReadRecordFile(
       byte sfi, int firstRecordNumber, int numberOfRecords, int recordSize) {
@@ -1445,28 +1594,39 @@ public class PoTransaction {
   }
 
   /**
-   * Read a record of the indicated EF, which should be a count file.
+   * Schedules the execution of a <b>Read Records</b> command to reads a record of the indicated EF,
+   * which should be a counter file.
    *
    * <p>The record will be read up to the counter location indicated in parameter.<br>
    * Thus all previous counters will also be read.
    *
+   * <p>Once this command is processed, the result is available in {@link CalypsoPo}.
+   *
+   * <p>See the method {@link CalypsoPo#getFileBySfi(byte)}, the objects {@link ElementaryFile},
+   * {@link FileData} and their specialized methods according to the type of expected data: e.g.
+   * {@link FileData#getAllCountersValue()} (int)}.
+   *
    * @param sfi the SFI of the EF
    * @param countersNumber the number of the last counter to be read
    * @throws IllegalArgumentException if one of the provided argument is out of range
+   * @since 0.9
    */
   public final void prepareReadCounterFile(byte sfi, int countersNumber) {
     prepareReadRecordFile(sfi, 1, 1, countersNumber * 3);
   }
 
   /**
-   * Builds an AppendRecord command and add it to the list of commands to be sent with the next
-   * process command.
+   * Schedules the execution of a <b>Append Record</b> command to adds the data provided in the
+   * indicated cyclic file.
    *
-   * <p>
+   * <p>A new record is added, the oldest record is deleted.
+   *
+   * <p>Note: {@link CalypsoPo} is filled with the provided input data.
    *
    * @param sfi the sfi to select
    * @param recordData the new record data to write
    * @throws IllegalArgumentException if the command is inconsistent
+   * @since 0.9
    */
   public final void prepareAppendRecord(byte sfi, byte[] recordData) {
     Assert.getInstance() //
@@ -1478,10 +1638,12 @@ public class PoTransaction {
   }
 
   /**
-   * Builds an UpdateRecord command and add it to the list of commands to be sent with the next
-   * process command
+   * Schedules the execution of a <b>Update Record</b> command to overwrites the target file's
+   * record contents with the provided data.
    *
-   * <p>
+   * <p>If the input data is shorter than the record size, only the first bytes will be overwritten.
+   *
+   * <p>Note: {@link CalypsoPo} is filled with the provided input data.
    *
    * @param sfi the sfi to select
    * @param recordNumber the record number to update
@@ -1489,6 +1651,7 @@ public class PoTransaction {
    *     left unchanged.
    * @throws IllegalArgumentException if record number is {@code <} 1
    * @throws IllegalArgumentException if the request is inconsistent
+   * @since 0.9
    */
   public final void prepareUpdateRecord(byte sfi, int recordNumber, byte[] recordData) {
     Assert.getInstance() //
@@ -1502,10 +1665,12 @@ public class PoTransaction {
   }
 
   /**
-   * Builds an WriteRecord command and add it to the list of commands to be sent with the next
-   * process command
+   * Schedules the execution of a <b>Write Record</b> command to updates the target file's record
+   * contents with the result of a binary OR between the existing data and the provided data.
    *
-   * <p>
+   * <p>If the input data is shorter than the record size, only the first bytes will be overwritten.
+   *
+   * <p>Note: {@link CalypsoPo} is filled with the provided input data.
    *
    * @param sfi the sfi to select
    * @param recordNumber the record number to write
@@ -1513,6 +1678,7 @@ public class PoTransaction {
    *     beyond length are left unchanged.
    * @throws IllegalArgumentException if record number is {@code <} 1
    * @throws IllegalArgumentException if the request is inconsistent
+   * @since 0.9
    */
   public final void prepareWriteRecord(byte sfi, int recordNumber, byte[] recordData) {
     Assert.getInstance() //
@@ -1526,10 +1692,9 @@ public class PoTransaction {
   }
 
   /**
-   * Builds a Increase command and add it to the list of commands to be sent with the next process
-   * command
+   * Schedules the execution of a <b>Increase command</b> command to increase the target counter.
    *
-   * <p>
+   * <p>Note: {@link CalypsoPo} is filled with the provided input data.
    *
    * @param counterNumber {@code >=} 01h: Counters file, number of the counter. 00h: Simulated
    *     Counter file.
@@ -1538,6 +1703,7 @@ public class PoTransaction {
    *     [FFFFFFh])
    * @throws IllegalArgumentException if the decrement value is out of range
    * @throws IllegalArgumentException if the command is inconsistent
+   * @since 0.9
    */
   public final void prepareIncreaseCounter(byte sfi, int counterNumber, int incValue) {
     Assert.getInstance() //
@@ -1556,10 +1722,9 @@ public class PoTransaction {
   }
 
   /**
-   * Builds a Decrease command and add it to the list of commands to be sent with the next process
-   * command
+   * Schedules the execution of a <b>Decrease command</b> command to decrease the target counter.
    *
-   * <p>
+   * <p>Note: {@link CalypsoPo} is filled with the provided input data.
    *
    * @param counterNumber {@code >=} 01h: Counters file, number of the counter. 00h: Simulated
    *     Counter file.
@@ -1568,6 +1733,7 @@ public class PoTransaction {
    *     [FFFFFFh])
    * @throws IllegalArgumentException if the decrement value is out of range
    * @throws IllegalArgumentException if the command is inconsistent
+   * @since 0.9
    */
   public final void prepareDecreaseCounter(byte sfi, int counterNumber, int decValue) {
     Assert.getInstance() //
@@ -1586,7 +1752,7 @@ public class PoTransaction {
   }
 
   /**
-   * This method allows the new value of a counter to be set directly.
+   * Schedules the execution of a command to set the value of the target counter.
    *
    * <p>It builds an Increase or Decrease command and add it to the list of commands to be sent with
    * the next <b>process</b> command in order to set the target counter to the specified value.<br>
@@ -1598,12 +1764,11 @@ public class PoTransaction {
    * <ul>
    *   <li>the counter value has been read before,
    *   <li>the type of session (and associated access rights) is consistent with the requested
-   *       operation.
+   *       operation: reload session if the counter is to be incremented, debit if it is to be
+   *       decremented.<br>
+   *       No control is performed on this point by this method; the closing of the session will
+   *       determine the success of the operation..
    * </ul>
-   *
-   * (reload session if the counter is incremented, debit if it is decremented). No control is
-   * performed on this point by this method; it is the closing of the session that will determine
-   * the success of the operation..
    *
    * @param counterNumber {@code >=} 01h: Counters file, number of the counter. 00h: Simulated
    *     Counter file.
@@ -1613,6 +1778,7 @@ public class PoTransaction {
    * @throws IllegalArgumentException if the desired value is out of range or if the command is
    *     inconsistent
    * @throws CalypsoPoTransactionIllegalStateException if the current counter value is unknown.
+   * @since 0.9
    */
   public final void prepareSetCounter(byte sfi, int counterNumber, int newValue) {
     int delta = 0;
@@ -1653,14 +1819,17 @@ public class PoTransaction {
   }
 
   /**
-   * Builds a VerifyPin command without PIN presentation in order to get the attempt counter.<br>
-   * The PIN status will made available in CalypsoPo after the execution of process command.<br>
+   * Schedules the execution of a <b>Verify Pin</b> command without PIN presentation in order to get
+   * the attempt counter.
+   *
+   * <p>The PIN status will made available in CalypsoPo after the execution of process command.<br>
    * Adds it to the list of commands to be sent with the next process command.
    *
    * <p>See {@link CalypsoPo#isPinBlocked} and {@link CalypsoPo#getPinAttemptRemaining} methods.
    *
    * @throws CalypsoPoTransactionIllegalStateException if the PIN feature is not available for this
    *     PO.
+   * @since 0.9
    */
   public final void prepareCheckPinStatus() {
     if (!calypsoPo.isPinFeatureAvailable()) {
@@ -1671,13 +1840,20 @@ public class PoTransaction {
   }
 
   /**
-   * Prepares an SV operation or simply retrieves the current SV status
+   * Schedules the execution of a <b>SV Get</b> command to prepare an SV operation or simply
+   * retrieves the current SV status.
+   *
+   * <p>Once this command is processed, the result is available in {@link CalypsoPo}.
+   *
+   * <p>See the methods {@link CalypsoPo#getSvBalance()}, {@link CalypsoPo#getSvLoadLogRecord()}
+   * ()}, {@link CalypsoPo#getSvDebitLogLastRecord()}, {@link CalypsoPo#getSvDebitLogAllRecords()}.
    *
    * @param svOperation informs about the nature of the intended operation: debit or reload
    * @param svAction the type of action: DO a debit or a positive reload, UNDO an undebit or a
    *     negative reload
    * @throws CalypsoPoTransactionIllegalStateException if the SV feature is not available for this
    *     PO.
+   * @since 0.9
    */
   public final void prepareSvGet(SvSettings.Operation svOperation, SvSettings.Action svAction) {
     if (!calypsoPo.isSvFeatureAvailable()) {
@@ -1703,9 +1879,12 @@ public class PoTransaction {
   }
 
   /**
-   * Prepares an SV reload (increasing the current SV balance)
+   * Schedules the execution of a <b>SV Reload</b> command to increase the current SV balance and
+   * using the provided additional data.
    *
-   * <p>Note: the key used is the reload key
+   * <p>Note #1: a communication with the SAM is done here.
+   *
+   * <p>Note #2: the key used is the reload key.
    *
    * @param amount the value to be reloaded, positive or negative integer in the range
    *     -8388608..8388607
@@ -1714,6 +1893,7 @@ public class PoTransaction {
    * @param free 2-byte free value
    * @throws CalypsoPoTransactionIllegalStateException if the SV feature is not available for this
    *     PO.
+   * @since 0.9
    */
   public final void prepareSvReload(int amount, byte[] date, byte[] time, byte[] free) {
     // create the initial builder with the application data
@@ -1740,14 +1920,19 @@ public class PoTransaction {
   }
 
   /**
-   * Prepares an SV reload (increasing the current SV balance)
+   * Schedules the execution of a <b>SV Reload</b> command to increase the current SV balance.
    *
-   * <p>Note: the key used is the reload key
+   * <p>Note #1: the optional SV additional data are set to zero.
+   *
+   * <p>Note #2: a communication with the SAM is done here.
+   *
+   * <p>Note #3: the key used is the reload key.
    *
    * @param amount the value to be reloaded, positive integer in the range 0..8388607 for a DO
    *     action, in the range 0..8388608 for an UNDO action.
    * @throws CalypsoPoTransactionIllegalStateException if the SV feature is not available for this
    *     PO.
+   * @since 0.9
    */
   public final void prepareSvReload(int amount) {
     final byte[] zero = {0x00, 0x00};
@@ -1755,10 +1940,11 @@ public class PoTransaction {
   }
 
   /**
-   * Prepares an SV debit.
+   * Schedules the execution of a <b>SV Debit</b> command to decrease the current SV balance.
    *
-   * <p>It consists in decreasing the current balance of the SV by a certain amount. <br>
-   * Note: the key used is the debit key
+   * <p>It consists in decreasing the current balance of the SV by a certain amount.
+   *
+   * <p>Note: the key used is the debit key
    *
    * @param amount the amount to be subtracted, positive integer in the range 0..32767
    * @param date 2-byte free value
@@ -1828,16 +2014,23 @@ public class PoTransaction {
   }
 
   /**
-   * Prepares an SV debit or Undebit (partially or totally cancels the last SV debit command).
+   * Schedules the execution of a <b>SV Debit</b> or <b>SV Undebit</b> command to increase the
+   * current SV balance or to partially or totally cancels the last SV debit command and using the
+   * provided additional data.
    *
    * <p>It consists in decreasing the current balance of the SV by a certain amount or canceling a
-   * previous debit. <br>
-   * Note: the key used is the debit key
+   * previous debit according to the type operation chosen in when invoking the previous SV Get
+   * command.
+   *
+   * <p>Note #1: a communication with the SAM is done here.
+   *
+   * <p>Note #2: the key used is the reload key.
    *
    * @param amount the amount to be subtracted or added, positive integer in the range 0..32767 when
    *     subtracted and 0..32768 when added.
    * @param date 2-byte free value
    * @param time 2-byte free value
+   * @since 0.9
    */
   public final void prepareSvDebit(int amount, byte[] date, byte[] time) {
     if (SvSettings.Action.DO.equals(svAction)) {
@@ -1848,17 +2041,28 @@ public class PoTransaction {
   }
 
   /**
-   * Prepares an SV debit or Undebit (partially or totally cancels the last SV debit command).
+   * Schedules the execution of a <b>SV Debit</b> or <b>SV Undebit</b> command to increase the
+   * current SV balance or to partially or totally cancels the last SV debit command.
    *
    * <p>It consists in decreasing the current balance of the SV by a certain amount or canceling a
-   * previous debit. <br>
-   * The information fields such as date and time are set to 0. The extraInfo field propagated in
-   * Logs are automatically generated with the type of transaction and amount. <br>
-   * Operations that would result in a negative balance are forbidden (SV Exception raised). <br>
-   * Note: the key used is the debit key
+   * previous debit.
+   *
+   * <p>Note #1: the optional SV additional data are set to zero.
+   *
+   * <p>Note #2: a communication with the SAM is done here.
+   *
+   * <p>Note #3: the key used is the reload key.The information fields such as date and time are set
+   * to 0. The extraInfo field propagated in Logs are automatically generated with the type of
+   * transaction and amount.
+   *
+   * <p>Note #4: operations that would result in a negative balance are forbidden (SV Exception
+   * raised).
+   *
+   * <p>Note #5: the key used is the debit key
    *
    * @param amount the amount to be subtracted or added, positive integer in the range 0..32767 when
    *     subtracted and 0..32768 when added.
+   * @since 0.9
    */
   public final void prepareSvDebit(int amount) {
     final byte[] zero = {0x00, 0x00};
@@ -1866,14 +2070,26 @@ public class PoTransaction {
   }
 
   /**
-   * Prepare the reading of all SV log records
+   * Schedules the execution of <b>Read Records</b> commands to read all SV logs.
    *
-   * <p>The SV transaction logs are contained in two files with fixed identifiers.<br>
-   * The file whose SFI is 0x14 contains 1 record containing the unique reload log.<br>
-   * The file whose SFI is 0x15 contains 3 records containing the last three debit logs.<br>
-   * At the end of this reading operation, the data will be accessible in CalypsoPo in raw format
+   * <p>The SV transaction logs are contained in two files with fixed identifiers:
+   *
+   * <ul>
+   *   <li>The file whose SFI is 0x14 contains 1 record containing the unique reload log.
+   *   <li>The file whose SFI is 0x15 contains 3 records containing the last three debit logs.
+   * </ul>
+   *
+   * <p>At the end of this reading operation, the data will be accessible in CalypsoPo in raw format
    * via the standard commands for accessing read files or in the form of dedicated objects (see
    * {@link CalypsoPo#getSvLoadLogRecord()} and {@link CalypsoPo#getSvDebitLogAllRecords()})
+   *
+   * <p>Once this command is processed, the result is available in {@link CalypsoPo}.
+   *
+   * <p>See the methods {@link CalypsoPo#getSvBalance()}, {@link CalypsoPo#getSvLoadLogRecord()}
+   * ()}, {@link CalypsoPo#getSvDebitLogLastRecord()}, {@link CalypsoPo#getSvDebitLogAllRecords()}.
+   * *
+   *
+   * @since 0.9
    */
   public final void prepareSvReadAllLogs() {
     if (calypsoPo.getApplicationSubtype() != CalypsoPoUtils.STORED_VALUE_FILE_STRUCTURE_ID) {
@@ -1892,11 +2108,13 @@ public class PoTransaction {
   }
 
   /**
-   * Prepare the invalidation of the PO<br>
-   * This command is usually executed within a secure session with the SESSION_LVL_DEBIT key
+   * Schedules the execution of a <b>Invalidate</b> command.
+   *
+   * <p>This command is usually executed within a secure session with the SESSION_LVL_DEBIT key
    * (depends on the access rights given to this command in the file structure of the PO).
    *
    * @throws CalypsoPoTransactionIllegalStateException if the PO is already invalidated
+   * @since 0.9
    */
   public final void prepareInvalidate() {
     if (calypsoPo.isDfInvalidated()) {
@@ -1906,11 +2124,13 @@ public class PoTransaction {
   }
 
   /**
-   * Prepare the rehabilitation of the PO<br>
-   * This command is usually executed within a secure session with the SESSION_LVL_PERSO key
+   * Schedules the execution of a <b>Rehabilitate</b> command.
+   *
+   * <p>This command is usually executed within a secure session with the SESSION_LVL_PERSO key
    * (depends on the access rights given to this command in the file structure of the PO).
    *
    * @throws CalypsoPoTransactionIllegalStateException if the PO is not invalidated
+   * @since 0.9
    */
   public final void prepareRehabilitate() {
     if (!calypsoPo.isDfInvalidated()) {

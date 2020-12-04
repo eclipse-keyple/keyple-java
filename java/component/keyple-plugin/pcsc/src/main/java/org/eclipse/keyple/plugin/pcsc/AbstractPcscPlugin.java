@@ -259,7 +259,11 @@ abstract class AbstractPcscPlugin extends AbstractThreadedObservablePlugin imple
     this.readerObservationExceptionHandler = readerObservationExceptionHandler;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected PluginObservationExceptionHandler getObservationExceptionHandler() {
     return pluginObservationExceptionHandler;

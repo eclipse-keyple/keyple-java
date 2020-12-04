@@ -153,7 +153,11 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
     return stubPlugin.getReaders();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public Reader getReader(String name) {
     return stubPlugin.getReader(name);

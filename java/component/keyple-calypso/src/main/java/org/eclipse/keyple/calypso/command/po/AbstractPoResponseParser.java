@@ -17,6 +17,11 @@ import org.eclipse.keyple.core.card.command.CardCommand;
 import org.eclipse.keyple.core.card.command.exception.KeypleCardCommandException;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
+/**
+ * Superclass for all PO command parsers.
+ *
+ * @since 0.9
+ */
 public abstract class AbstractPoResponseParser extends AbstractApduResponseParser {
 
   /**
@@ -24,19 +29,28 @@ public abstract class AbstractPoResponseParser extends AbstractApduResponseParse
    *
    * @param response response to parse
    * @param builder the reference of the builder that created the parser
+   * @since 0.9
    */
-  public AbstractPoResponseParser(
+  protected AbstractPoResponseParser(
       ApduResponse response, AbstractPoCommandBuilder<? extends AbstractPoResponseParser> builder) {
     super(response, builder);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public final AbstractPoCommandBuilder<AbstractPoResponseParser> getBuilder() {
     return (AbstractPoCommandBuilder<AbstractPoResponseParser>) super.getBuilder();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected final KeypleCardCommandException buildCommandException(
       Class<? extends KeypleCardCommandException> exceptionClass,
@@ -72,7 +86,11 @@ public abstract class AbstractPoResponseParser extends AbstractApduResponseParse
     return e;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public void checkStatus() {
     try {

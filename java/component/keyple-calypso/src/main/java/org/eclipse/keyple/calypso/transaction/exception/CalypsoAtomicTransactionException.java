@@ -12,8 +12,8 @@
 package org.eclipse.keyple.calypso.transaction.exception;
 
 /**
- * The exception {@code CalypsoAtomicTransactionException} indicates that the transaction cannot be
- * done in an atomic way because the capacity of the session buffer is not sufficient.
+ * Indicates that the transaction cannot be done in an atomic way because the capacity of the
+ * session buffer is not sufficient.
  */
 public class CalypsoAtomicTransactionException extends CalypsoPoTransactionException {
 

@@ -94,13 +94,21 @@ class StubReaderImpl extends AbstractObservableLocalReader
     return card.getATR();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected boolean isPhysicalChannelOpen() {
     return card != null && card.isPhysicalChannelOpen();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected void openPhysicalChannel() {
     if (card != null) {
@@ -108,7 +116,11 @@ class StubReaderImpl extends AbstractObservableLocalReader
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public void closePhysicalChannel() {
     if (card != null) {
@@ -116,7 +128,11 @@ class StubReaderImpl extends AbstractObservableLocalReader
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public byte[] transmitApdu(byte[] apduIn) {
     if (card == null) {

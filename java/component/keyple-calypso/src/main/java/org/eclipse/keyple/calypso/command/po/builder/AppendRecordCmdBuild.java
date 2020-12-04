@@ -15,12 +15,17 @@ import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.*;
 import org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars;
 import org.eclipse.keyple.core.card.message.ApduResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * The Class AppendRecordCmdBuild. This class provides the dedicated constructor to build the Update
- * Record APDU command.
+ * Builds the Append Record APDU command.
+ *
+ * @since 0.9
  */
 public final class AppendRecordCmdBuild extends AbstractPoCommandBuilder<AppendRecordRespPars> {
+
+  private static final Logger logger = LoggerFactory.getLogger(AppendRecordCmdBuild.class);
 
   /** The command. */
   private static final CalypsoPoCommand command = CalypsoPoCommand.APPEND_RECORD;
@@ -36,6 +41,7 @@ public final class AppendRecordCmdBuild extends AbstractPoCommandBuilder<AppendR
    * @param sfi the sfi to select
    * @param newRecordData the new record data to write
    * @throws IllegalArgumentException - if the command is inconsistent
+   * @since 0.9
    */
   public AppendRecordCmdBuild(PoClass poClass, byte sfi, byte[] newRecordData) {
     super(command, null);
@@ -55,28 +61,41 @@ public final class AppendRecordCmdBuild extends AbstractPoCommandBuilder<AppendR
     }
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public AppendRecordRespPars createResponseParser(ApduResponse apduResponse) {
     return new AppendRecordRespPars(apduResponse, this);
   }
 
   /**
-   * This command can modify the contents of the PO in session and therefore uses the session
-   * buffer.
+   * {@inheritDoc}
+   *
+   * <p>This command modified the contents of the PO and therefore uses the session buffer.
    *
    * @return true
+   * @since 0.9
    */
   @Override
   public boolean isSessionBufferUsed() {
     return true;
   }
 
-  /** @return the SFI of the accessed file */
+  /**
+   * @return the SFI of the accessed file
+   * @since 0.9
+   */
   public int getSfi() {
     return sfi;
   }
 
-  /** @return the data sent to the PO */
+  /**
+   * @return the data sent to the PO
+   * @since 0.9
+   */
   public byte[] getData() {
     return data;
   }

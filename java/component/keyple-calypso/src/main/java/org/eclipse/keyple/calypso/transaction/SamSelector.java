@@ -128,19 +128,31 @@ public class SamSelector extends CardSelector {
       return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 0.9
+     */
     @Override
     public SamSelectorBuilder cardProtocol(String cardProtocol) {
       return (SamSelectorBuilder) super.cardProtocol(cardProtocol);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 0.9
+     */
     @Override
     public SamSelectorBuilder atrFilter(AtrFilter atrFilter) {
       return (SamSelectorBuilder) super.atrFilter(atrFilter);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 0.9
+     */
     @Override
     public SamSelectorBuilder aidSelector(AidSelector aidSelector) {
       return (SamSelectorBuilder) super.aidSelector(aidSelector);

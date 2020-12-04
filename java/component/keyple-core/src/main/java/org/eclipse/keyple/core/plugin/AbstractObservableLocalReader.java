@@ -544,7 +544,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
    * (package-private)<br>
    * Changes the state of the state machine
    *
-   * @param stateId : new stateId
+   * @param stateId new stateId
    */
   void switchState(AbstractObservableState.MonitoringState stateId) {
     this.stateService.switchState(stateId);
@@ -570,7 +570,11 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
     this.stateService.onEvent(event);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public final void finalizeCardProcessing() {
     if (logger.isTraceEnabled()) {

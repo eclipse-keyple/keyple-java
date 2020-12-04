@@ -43,13 +43,21 @@ public class StubPluginFactory implements PluginFactory {
     this.readerObservationExceptionHandler = readerObservationExceptionHandler;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public String getPluginName() {
     return pluginName;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public Plugin getPlugin() {
     try {

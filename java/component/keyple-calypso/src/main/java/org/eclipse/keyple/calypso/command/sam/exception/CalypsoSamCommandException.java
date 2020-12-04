@@ -15,8 +15,9 @@ import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.core.card.command.exception.KeypleCardCommandException;
 
 /**
- * The exception {@code CalypsoSamCommandException} is the parent abstract class of all Keyple SAM
- * APDU commands exceptions.
+ * Parent abstract class of all Keyple SAM APDU commands exceptions.
+ *
+ * @since 0.9
  */
 public abstract class CalypsoSamCommandException extends KeypleCardCommandException {
 
@@ -24,6 +25,7 @@ public abstract class CalypsoSamCommandException extends KeypleCardCommandExcept
    * @param message the message to identify the exception context
    * @param command the Calypso SAM command
    * @param statusCode the status code (optional)
+   * @since 0.9
    */
   protected CalypsoSamCommandException(
       String message, CalypsoSamCommand command, Integer statusCode) {

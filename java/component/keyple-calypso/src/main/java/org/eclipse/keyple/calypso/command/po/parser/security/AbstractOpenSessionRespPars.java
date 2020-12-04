@@ -21,7 +21,11 @@ import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
-/** Open session response parser. See specs: Calypso / page 100 / 9.5.1 - Open secure session */
+/**
+ * Parses the Open session response.
+ *
+ * @since 0.9
+ */
 public abstract class AbstractOpenSessionRespPars extends AbstractPoResponseParser {
 
   private static final Map<Integer, StatusProperties> STATUS_TABLE;
@@ -73,6 +77,11 @@ public abstract class AbstractOpenSessionRespPars extends AbstractPoResponsePars
     STATUS_TABLE = m;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -87,6 +96,7 @@ public abstract class AbstractOpenSessionRespPars extends AbstractPoResponsePars
    * @param response the response from Open secure session APDU command
    * @param builder the reference to the builder that created this parser
    * @param revision the revision of the PO
+   * @since 0.9
    */
   AbstractOpenSessionRespPars(
       ApduResponse response,
@@ -185,6 +195,7 @@ public abstract class AbstractOpenSessionRespPars extends AbstractPoResponsePars
      *     command
      * @param secureSessionData the secure session data from the response of open secure session
      *     APDU command
+     * @since 0.9
      */
     public SecureSession(
         byte[] challengeTransactionCounter,
@@ -217,6 +228,7 @@ public abstract class AbstractOpenSessionRespPars extends AbstractPoResponsePars
      *     command
      * @param secureSessionData the secure session data from the response of open secure session
      *     APDU command
+     * @since 0.9
      */
     public SecureSession(
         byte[] challengeTransactionCounter,
@@ -248,6 +260,7 @@ public abstract class AbstractOpenSessionRespPars extends AbstractPoResponsePars
      * Checks if is previous session ratified.
      *
      * @return the boolean
+     * @since 0.9
      */
     public boolean isPreviousSessionRatified() {
       return previousSessionRatified;
@@ -256,7 +269,8 @@ public abstract class AbstractOpenSessionRespPars extends AbstractPoResponsePars
     /**
      * Checks if is manage secure session authorized.
      *
-     * @return the boolean
+     * @return True if the secure session is authorized
+     * @since 0.9
      */
     public boolean isManageSecureSessionAuthorized() {
       return manageSecureSessionAuthorized;
@@ -265,7 +279,8 @@ public abstract class AbstractOpenSessionRespPars extends AbstractPoResponsePars
     /**
      * Gets the kif.
      *
-     * @return the kif
+     * @return A byte
+     * @since 0.9
      */
     public byte getKIF() {
       return kif;
@@ -274,7 +289,8 @@ public abstract class AbstractOpenSessionRespPars extends AbstractPoResponsePars
     /**
      * Gets the kvc.
      *
-     * @return the kvc
+     * @return A byte
+     * @since 0.9
      */
     public byte getKVC() {
       return kvc;
@@ -283,7 +299,8 @@ public abstract class AbstractOpenSessionRespPars extends AbstractPoResponsePars
     /**
      * Gets the original data.
      *
-     * @return the original data
+     * @return An array of bytes
+     * @since 0.9
      */
     public byte[] getOriginalData() {
       return originalData;
@@ -292,7 +309,8 @@ public abstract class AbstractOpenSessionRespPars extends AbstractPoResponsePars
     /**
      * Gets the secure session data.
      *
-     * @return the secure session data
+     * @return An array of bytes
+     * @since 0.9
      */
     public byte[] getSecureSessionData() {
       return secureSessionData;

@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This POJO hold the information and methods needed to select a particular card.
+ * This POJO holds the information needed to select a particular card.
  *
  * <p>In addition to the card protocol provides two optional structure {@link AidSelector} and
  * {@link AtrFilter} to specify the expected card profile.

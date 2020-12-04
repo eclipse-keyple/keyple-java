@@ -14,7 +14,7 @@ package org.eclipse.keyple.calypso.transaction.exception;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
 
 /**
- * The exception {@code CalypsoPoAnomalyException} indicates an anomaly in the PO.<br>
+ * Indicates an anomaly in the PO.<br>
  * This can occur if the PO is not Calypso compliant.
  */
 public class CalypsoPoAnomalyException extends CalypsoPoTransactionException {

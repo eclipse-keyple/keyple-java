@@ -52,7 +52,11 @@ public class SamResourceManagerPool extends SamResourceManager {
     // HSM reader plugin type
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public CardResource<CalypsoSam> allocateSamResource(
       AllocationMode allocationMode, SamIdentifier samIdentifier) {

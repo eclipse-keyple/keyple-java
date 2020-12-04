@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.calypso.transaction.exception;
 
-/** The exception {@code CalypsoPoIOException} indicates a communication error with the PO. */
+/** Indicates a communication error with the PO. */
 public class CalypsoPoIOException extends CalypsoPoTransactionException {
 
   /** @param message the message to identify the exception context */

@@ -14,6 +14,8 @@ package org.eclipse.keyple.calypso;
 /**
  * Definitions governing the expected behavior of the selection command (see the specifics of this
  * command in the ISO7816-4 standard and the Calypso specification)
+ *
+ * @since 0.9
  */
 public enum SelectFileControl {
   /** The first EF of the current Calypso DF */

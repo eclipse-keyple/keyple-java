@@ -17,7 +17,11 @@ import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.parser.security.GiveRandomRespPars;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** Builder for the SAM Give Random APDU command. */
+/**
+ * Builds the Give Random APDU command.
+ *
+ * @since 0.9
+ */
 public class GiveRandomCmdBuild extends AbstractSamCommandBuilder<GiveRandomRespPars> {
 
   /** The command reference. */
@@ -30,6 +34,7 @@ public class GiveRandomCmdBuild extends AbstractSamCommandBuilder<GiveRandomResp
    * @param random the random data
    * @throws IllegalArgumentException - if the random data is null or has a length not equal to 8
    *     TODO implement specific settings for rev less than 3
+   * @since 0.9
    */
   public GiveRandomCmdBuild(SamRevision revision, byte[] random) {
     super(command, null);
@@ -47,6 +52,11 @@ public class GiveRandomCmdBuild extends AbstractSamCommandBuilder<GiveRandomResp
     request = setApduRequest(cla, command, p1, p2, random, null);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public GiveRandomRespPars createResponseParser(ApduResponse apduResponse) {
     return new GiveRandomRespPars(apduResponse, this);

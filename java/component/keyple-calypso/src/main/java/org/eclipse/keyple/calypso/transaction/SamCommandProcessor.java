@@ -52,6 +52,8 @@ import org.slf4j.LoggerFactory;
  *
  * <p>It also will integrate the SAM commands used for Stored Value and PIN/key management. In
  * session, these commands need to be carefully synchronized with the digest calculation.
+ *
+ * @since 0.9
  */
 class SamCommandProcessor {
   private static final Logger logger = LoggerFactory.getLogger(SamCommandProcessor.class);
@@ -91,6 +93,7 @@ class SamCommandProcessor {
    *
    * @param poResource the PO resource containing the PO reader and the Calypso PO information
    * @param poSecuritySettings the security settings from the application layer
+   * @since 0.9
    */
   SamCommandProcessor(CardResource<CalypsoPo> poResource, PoSecuritySettings poSecuritySettings) {
     this.poResource = poResource;
@@ -115,6 +118,7 @@ class SamCommandProcessor {
    * @throws CalypsoSamIOException if the communication with the SAM has failed.
    * @throws CalypsoDesynchronizedExchangesException if the APDU SAM exchanges are out of sync
    * @throws CalypsoSamCommandException if the SAM has responded with an error status
+   * @since 0.9
    */
   byte[] getSessionTerminalChallenge() {
     List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
@@ -191,6 +195,7 @@ class SamCommandProcessor {
    * @param poKif the KIF value from the PO
    * @param accessLevel the session access level
    * @return the work KIF value byte
+   * @since 0.9
    */
   private byte determineWorkKif(byte poKif, PoTransaction.SessionSetting.AccessLevel accessLevel) {
     byte kif;
@@ -217,6 +222,7 @@ class SamCommandProcessor {
    * @param poKif the PO KIF
    * @param poKVC the PO KVC
    * @param digestData a first packet of data to digest.
+   * @since 0.9
    */
   void initializeDigester(
       PoTransaction.SessionSetting.AccessLevel accessLevel,
@@ -269,6 +275,7 @@ class SamCommandProcessor {
    *
    * @param request PO request
    * @param response PO response
+   * @since 0.9
    */
   private void pushPoExchangeData(ApduRequest request, ApduResponse response) {
 
@@ -298,6 +305,7 @@ class SamCommandProcessor {
    * @param requests PO request list
    * @param responses PO response list
    * @param startIndex starting point in the list
+   * @since 0.9
    */
   void pushPoExchangeDataList(
       List<ApduRequest> requests, List<ApduResponse> responses, int startIndex) {
@@ -321,6 +329,7 @@ class SamCommandProcessor {
    *
    * @param addDigestClose indicates whether to add the Digest Close command
    * @return a list of commands to send to the SAM
+   * @since 0.9
    */
   private List<AbstractSamCommandBuilder<? extends AbstractSamResponseParser>>
       getPendingSamCommands(boolean addDigestClose) {
@@ -396,6 +405,7 @@ class SamCommandProcessor {
    * @throws CalypsoSamIOException if the communication with the SAM has failed.
    * @throws CalypsoDesynchronizedExchangesException if the APDU SAM exchanges are out of sync
    * @throws CalypsoSamCommandException if the SAM has responded with an error status
+   * @since 0.9
    */
   byte[] getTerminalSignature() {
 
@@ -455,6 +465,7 @@ class SamCommandProcessor {
    * @throws CalypsoSamIOException if the communication with the SAM has failed.
    * @throws CalypsoDesynchronizedExchangesException if the APDU SAM exchanges are out of sync
    * @throws CalypsoSamCommandException if the SAM has responded with an error status
+   * @since 0.9
    */
   void authenticatePoSignature(byte[] poSignatureLo) {
     // Check the PO signature part with the SAM
@@ -494,6 +505,7 @@ class SamCommandProcessor {
    *
    * @param samCommands a list of SAM commands
    * @return the ApduRequest list
+   * @since 0.9
    */
   private List<ApduRequest> getApduRequests(
       List<AbstractSamCommandBuilder<? extends AbstractSamResponseParser>> samCommands) {
@@ -517,6 +529,7 @@ class SamCommandProcessor {
    * @throws CalypsoSamIOException if the communication with the SAM has failed.
    * @throws CalypsoDesynchronizedExchangesException if the APDU SAM exchanges are out of sync
    * @throws CalypsoSamCommandException if the SAM has responded with an error status
+   * @since 0.9
    */
   byte[] getCipheredPinData(byte[] poChallenge, byte[] currentPin, byte[] newPin) {
     List<AbstractSamCommandBuilder<? extends AbstractSamResponseParser>> samCommands =
@@ -593,6 +606,7 @@ class SamCommandProcessor {
    * @param svPrepareCmdBuild the prepare command builder (can be prepareSvReload/Debit/Undebit)
    * @return a byte array containing the complementary data
    * @throws CalypsoSamIOException if the communication with the SAM has failed.
+   * @since 0.9
    */
   private byte[] getSvComplementaryData(
       AbstractSamCommandBuilder<? extends AbstractSamResponseParser> svPrepareCmdBuild) {
@@ -663,6 +677,7 @@ class SamCommandProcessor {
    * @return the complementary security data to finalize the SvReload PO command (sam ID + SV
    *     prepare load output)
    * @throws CalypsoSamIOException if the communication with the SAM has failed.
+   * @since 0.9
    */
   byte[] getSvReloadComplementaryData(
       SvReloadCmdBuild svReloadCmdBuild, byte[] svGetHeader, byte[] svGetData) {
@@ -690,6 +705,7 @@ class SamCommandProcessor {
    * @return the complementary security data to finalize the SvDebit PO command (sam ID + SV prepare
    *     load output)
    * @throws CalypsoSamIOException if the communication with the SAM has failed.
+   * @since 0.9
    */
   byte[] getSvDebitComplementaryData(
       SvDebitCmdBuild svDebitCmdBuild, byte[] svGetHeader, byte[] svGetData) {
@@ -717,6 +733,7 @@ class SamCommandProcessor {
    * @return the complementary security data to finalize the SvUndebit PO command (sam ID + SV
    *     prepare load output)
    * @throws CalypsoSamIOException if the communication with the SAM has failed.
+   * @since 0.9
    */
   public byte[] getSvUndebitComplementaryData(
       SvUndebitCmdBuild svUndebitCmdBuild, byte[] svGetHeader, byte[] svGetData) {
@@ -739,6 +756,7 @@ class SamCommandProcessor {
    * @param svOperationResponseData the data of the SV operation performed
    * @throws CalypsoSamIOException if the communication with the SAM has failed.
    * @throws CalypsoSamCommandException if the SAM has responded with an error status
+   * @since 0.9
    */
   void checkSvStatus(byte[] svOperationResponseData) {
     List<AbstractSamCommandBuilder<? extends AbstractSamResponseParser>> samCommands =

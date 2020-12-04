@@ -440,7 +440,11 @@ abstract class AbstractPcscReader extends AbstractObservableLocalReader
     return isContactless;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected ReaderObservationExceptionHandler getObservationExceptionHandler() {
     return readerObservationExceptionHandler;

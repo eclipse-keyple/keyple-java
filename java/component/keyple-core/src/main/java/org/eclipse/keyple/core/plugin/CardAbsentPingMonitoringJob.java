@@ -44,7 +44,7 @@ class CardAbsentPingMonitoringJob extends AbstractMonitoringJob {
   /**
    * Create a job monitor job that ping the card with the method isCardPresentPing()
    *
-   * @param reader : reference to the reader
+   * @param reader reference to the reader
    */
   public CardAbsentPingMonitoringJob(AbstractObservableLocalReader reader) {
     this.reader = reader;
@@ -53,8 +53,8 @@ class CardAbsentPingMonitoringJob extends AbstractMonitoringJob {
   /**
    * Create a job monitor job that ping the card with the method isCardPresentPing()
    *
-   * @param reader : reference to the reader
-   * @param removalWait : delay between between each APDU sending
+   * @param reader reference to the reader
+   * @param removalWait delay between between each APDU sending
    */
   public CardAbsentPingMonitoringJob(AbstractObservableLocalReader reader, long removalWait) {
     this.reader = reader;

@@ -20,7 +20,11 @@ import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParamet
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamSecurityDataException;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** Unlock response parser. */
+/**
+ * Parses the Unlock response.
+ *
+ * @since 0.9
+ */
 public class UnlockRespPars extends AbstractSamResponseParser {
 
   private static final Map<Integer, StatusProperties> STATUS_TABLE;
@@ -40,6 +44,11 @@ public class UnlockRespPars extends AbstractSamResponseParser {
     STATUS_TABLE = m;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -50,6 +59,7 @@ public class UnlockRespPars extends AbstractSamResponseParser {
    *
    * @param response the response
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public UnlockRespPars(ApduResponse response, UnlockCmdBuild builder) {
     super(response, builder);

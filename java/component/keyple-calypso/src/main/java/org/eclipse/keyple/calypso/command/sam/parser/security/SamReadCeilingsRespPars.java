@@ -19,7 +19,11 @@ import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCounterOverflo
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** SAM read ceilings. */
+/**
+ * Parses the Read ceilings response.
+ *
+ * @since 0.9
+ */
 public class SamReadCeilingsRespPars extends AbstractSamResponseParser {
 
   private static final Map<Integer, StatusProperties> STATUS_TABLE;
@@ -38,6 +42,11 @@ public class SamReadCeilingsRespPars extends AbstractSamResponseParser {
     STATUS_TABLE = m;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -48,6 +57,7 @@ public class SamReadCeilingsRespPars extends AbstractSamResponseParser {
    *
    * @param response of the SamReadEventCounterRespPars
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public SamReadCeilingsRespPars(ApduResponse response, SamReadCeilingsCmdBuild builder) {
     super(response, builder);
@@ -57,6 +67,7 @@ public class SamReadCeilingsRespPars extends AbstractSamResponseParser {
    * Gets the key parameters.
    *
    * @return the ceilings data (Value or Record)
+   * @since 0.9
    */
   public byte[] getCeilingsData() {
     return isSuccessful() ? response.getDataOut() : null;

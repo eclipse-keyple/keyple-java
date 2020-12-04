@@ -18,7 +18,7 @@ import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /**
- * The class {@code DirectoryHeader} contains all metadata of a Calypso DF.
+ * This POJO contains all metadata of a Calypso DF.
  *
  * @since 0.9
  */
@@ -45,6 +45,8 @@ public class DirectoryHeader implements Serializable {
   /**
    * (package-private)<br>
    * Builder pattern
+   *
+   * @since 0.9
    */
   static final class DirectoryHeaderBuilder {
 
@@ -68,6 +70,7 @@ public class DirectoryHeader implements Serializable {
      *
      * @param lid the LID
      * @return the builder instance
+     * @since 0.9
      */
     DirectoryHeaderBuilder lid(short lid) {
       this.lid = lid;
@@ -80,6 +83,7 @@ public class DirectoryHeader implements Serializable {
      *
      * @param accessConditions the access conditions (should be not null and 4 bytes length)
      * @return the builder instance
+     * @since 0.9
      */
     DirectoryHeaderBuilder accessConditions(byte[] accessConditions) {
       this.accessConditions = accessConditions;
@@ -92,6 +96,7 @@ public class DirectoryHeader implements Serializable {
      *
      * @param keyIndexes the key indexes (should be not null and 4 bytes length)
      * @return the builder instance
+     * @since 0.9
      */
     DirectoryHeaderBuilder keyIndexes(byte[] keyIndexes) {
       this.keyIndexes = keyIndexes;
@@ -104,6 +109,7 @@ public class DirectoryHeader implements Serializable {
      *
      * @param dfStatus the DF status (byte)
      * @return the builder instance
+     * @since 0.9
      */
     DirectoryHeaderBuilder dfStatus(byte dfStatus) {
       this.dfStatus = dfStatus;
@@ -117,6 +123,7 @@ public class DirectoryHeader implements Serializable {
      * @param level the KIF session access level (should be not null)
      * @param kif the KIF value
      * @return the builder instance
+     * @since 0.9
      */
     DirectoryHeaderBuilder kif(PoTransaction.SessionSetting.AccessLevel level, byte kif) {
       this.kif.put(level, kif);
@@ -130,6 +137,7 @@ public class DirectoryHeader implements Serializable {
      * @param level the KVC session access level (should be not null)
      * @param kvc the KVC value
      * @return the builder instance
+     * @since 0.9
      */
     DirectoryHeaderBuilder kvc(PoTransaction.SessionSetting.AccessLevel level, byte kvc) {
       this.kvc.put(level, kvc);
@@ -141,6 +149,7 @@ public class DirectoryHeader implements Serializable {
      * Build a new {@code DirectoryHeader}.
      *
      * @return a new instance
+     * @since 0.9
      */
     DirectoryHeader build() {
       return new DirectoryHeader(this);
@@ -256,6 +265,7 @@ public class DirectoryHeader implements Serializable {
    * Gets a new builder.
    *
    * @return a new builder instance
+   * @since 0.9
    */
   static DirectoryHeaderBuilder builder() {
     return new DirectoryHeaderBuilder();

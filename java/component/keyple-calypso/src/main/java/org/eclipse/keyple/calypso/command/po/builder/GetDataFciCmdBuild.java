@@ -18,10 +18,12 @@ import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
- * This class provides the dedicated constructor to build the Get data APDU commands.
+ * Builds the Get data APDU commands.
  *
  * <p>This command can not be sent in session because it would generate a 6Cxx status in contact
  * mode and thus make calculation of the digest impossible.
+ *
+ * @since 0.9
  */
 public final class GetDataFciCmdBuild extends AbstractPoCommandBuilder<GetDataFciRespPars> {
 
@@ -31,6 +33,7 @@ public final class GetDataFciCmdBuild extends AbstractPoCommandBuilder<GetDataFc
    * Instantiates a new GetDataFciCmdBuild.
    *
    * @param poClass indicates which CLA byte should be used for the Apdu
+   * @since 0.9
    */
   public GetDataFciCmdBuild(PoClass poClass) {
     super(command, null);
@@ -39,16 +42,24 @@ public final class GetDataFciCmdBuild extends AbstractPoCommandBuilder<GetDataFc
         setApduRequest(poClass.getValue(), command, (byte) 0x00, (byte) 0x6F, null, (byte) 0x00);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public GetDataFciRespPars createResponseParser(ApduResponse apduResponse) {
     return new GetDataFciRespPars(apduResponse, this);
   }
 
   /**
-   * This command doesn't modify the contents of the PO and therefore doesn't uses the session
+   * {@inheritDoc}
+   *
+   * <p>This command doesn't modify the contents of the PO and therefore doesn't uses the session
    * buffer.
    *
    * @return false
+   * @since 0.9
    */
   @Override
   public boolean isSessionBufferUsed() {

@@ -13,10 +13,7 @@ package org.eclipse.keyple.calypso.transaction.exception;
 
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 
-/**
- * The exception {@code CalypsoPoTransactionIllegalStateException} indicates an improper use of the
- * {@link PoTransaction} API.
- */
+/** Indicates an improper use of the {@link PoTransaction} API. */
 public class CalypsoPoTransactionIllegalStateException extends CalypsoPoTransactionException {
 
   /** @param message the message to identify the exception context */

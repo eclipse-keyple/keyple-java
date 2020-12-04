@@ -16,6 +16,11 @@ import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.security.OpenSession24CmdBuild;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 
+/**
+ * Parses the Open session response from a PO revision 2.4 .
+ *
+ * @since 0.9
+ */
 public final class OpenSession24RespPars extends AbstractOpenSessionRespPars {
 
   /**
@@ -23,6 +28,7 @@ public final class OpenSession24RespPars extends AbstractOpenSessionRespPars {
    *
    * @param response from OpenSession24RespPars
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public OpenSession24RespPars(ApduResponse response, OpenSession24CmdBuild builder) {
     super(response, builder, PoRevision.REV2_4);
