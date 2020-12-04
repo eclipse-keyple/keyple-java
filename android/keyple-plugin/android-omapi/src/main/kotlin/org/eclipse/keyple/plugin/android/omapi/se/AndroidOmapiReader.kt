@@ -26,6 +26,8 @@ import timber.log.Timber
 /**
  * Implementation of the {@link AndroidOmapiReader} based on the {@link AbstractLocalReader}
  * with android.se.omapi
+ *
+ * @since 0.9
  */
 @RequiresApi(android.os.Build.VERSION_CODES.P)
 internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: String, readerName: String) :
@@ -37,6 +39,8 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
     /**
      * Check if a card is present in this reader. see {@link Reader#isSecureElementPresent()}
      * @return True if the card is present, false otherwise
+     *
+     * @since 0.9
      */
     override fun checkCardPresence(): Boolean {
         return nativeReader.isSecureElementPresent
@@ -45,6 +49,8 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
     /**
      * Get the card Answer To Reset
      * @return a byte array containing the ATR or null if no session was available
+     *
+     * @since 0.9
      */
     override fun getATR(): ByteArray? {
         return session?.let {
@@ -55,11 +61,14 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
 
     /**
      * Open a logical channel by selecting the application
+     *
      * @param dfName A byte array containing the DF name or null if a basic opening is wanted.
      * @param isoControlMask The selection bits defined by the ISO selection command and expected by the OMAPI as P2 parameter.
      * @return A byte array containing the response to the OMAPI openLogicalChannel process or null if the Secure Element is unable to
      *         provide a new logical channel
      * @throws KeypleReaderIOException if the communication with the reader or the card has failed
+     *
+     * @since 0.9
      */
     @Throws(KeypleReaderIOException::class)
     override fun openChannelForAid(dfName: ByteArray?, isoControlMask: Byte): ByteArray? {
@@ -102,10 +111,20 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
         return openChannel!!.selectResponse
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @since 0.9
+     */
     override fun isPhysicalChannelOpen(): Boolean {
         return session?.isClosed == false
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @since 0.9
+     */
     @Throws(KeypleReaderIOException::class)
     override fun openPhysicalChannel() {
         try {
@@ -116,6 +135,11 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
         }
     }
 
+    /**
+     * Close session see android.se.omapi.Session#close()
+     *
+     * @since 0.9
+     */
     override fun closePhysicalChannel() {
         openChannel?.let {
             it.session.close()

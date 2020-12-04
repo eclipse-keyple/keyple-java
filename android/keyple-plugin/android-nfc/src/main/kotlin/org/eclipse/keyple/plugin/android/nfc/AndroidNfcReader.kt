@@ -22,7 +22,7 @@ import org.eclipse.keyple.core.service.event.ObservableReader
  *
  * Configure NFCAdapter Protocols with [AbstractAndroidNfcReader.setParameter]
  *
- * Optimized for android 4.4 (API 19) to  6.0 (API 23)
+ * @since 0.9
  */
 interface AndroidNfcReader : ObservableReader {
     /**
@@ -30,30 +30,40 @@ interface AndroidNfcReader : ObservableReader {
      *
      * Used for logging purpose
      * @return string
+     *
+     * @since 0.9
      */
     fun printTagId(): String
 
     /**
-     * Process data from NFC Intent. Can be use to handle NFC Tag received when app is
-     * triggered by nfc detection
+     * Process data from NFC Intent. Can be use to handle NFC Tag received when app is started
+     * by nfc detection
      *
      * @param intent : Intent received and filterByProtocol by xml tech_list
+     *
+     * @since 0.9
      */
     fun processIntent(intent: Intent)
 
     /**
      * Allows the calling application to specify the delay that the platform will use for performing presence checks on any discovered tag.
      * see @NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY
+     *
+     * @since 0.9
      */
     var presenceCheckDelay: Int?
 
     /**
-     * Allows the caller to prevent the platform from playing sounds when it discovers a tag.
+     * Allows the invoker to prevent the platform from playing sounds when it discovers a tag.
+     *
+     * @since 0.9
      */
     var noPlateformSound: Boolean?
 
     /**
      * Prevent the platform from performing any NDEF checks in reader mode.
+     *
+     * @since 0.9
      */
     var skipNdefCheck: Boolean?
 

@@ -15,18 +15,25 @@ import org.eclipse.keyple.core.plugin.AbstractLocalReader
 import org.eclipse.keyple.core.plugin.SmartSelectionReader
 
 /**
- * Communicates with Android readers throught the Open Mobile API see org.simalliance.openmobileapi.Reader
+ * Internal abstract class extending {@link AbstractLocalReader} and implementing isContactless()
  *
- * Instances of this class represent card readers supported by this device. These readers can be physical devices
- * or virtual devices. They can be removable or not. They can contain one card that can or cannot be
- * removed.
+ * An Android OMAPI reader does not observe smart card insersion or removal
+ *
+ * There is 2 implementations of AndroidOmapiReader one using org.simalliance.openmobileapi.Reader, the other
+ * using android.se.omapi.
+ *
+ * The plugin pickup the best reader by itself.
+ *
+ * @since 0.9
  */
 internal abstract class AbstractAndroidOmapiReader(pluginName: String, readerName: String) : AbstractLocalReader(pluginName, readerName), SmartSelectionReader {
 
     /**
      * The transmission mode is always CONTACTS in an OMAPI reader
      *
-     * @return the current transmission mode
+     * @return Always False for an OMAPI reader
+     *
+     * @since 0.9
      */
     override fun isContactless(): Boolean {
         return false

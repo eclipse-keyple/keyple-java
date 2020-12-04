@@ -19,8 +19,9 @@ import org.simalliance.openmobileapi.SEService
 import timber.log.Timber
 
 /**
- * Allow to provide an implementation of AbstractAndroidOmapiPlugin using the Simalliance
- * OMAPI implementation of Reader and SeService objects.
+ * Implementation of AbstractAndroidOmapiPlugin using the Simalliance OMAPI implementation of Reader and SeService objects.
+ *
+ * @since 0.9
  */
 internal object AndroidOmapiPlugin : AbstractAndroidOmapiPlugin<org.simalliance.openmobileapi.Reader, SEService>() {
 

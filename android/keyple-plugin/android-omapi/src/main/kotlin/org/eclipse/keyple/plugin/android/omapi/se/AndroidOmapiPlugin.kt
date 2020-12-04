@@ -20,8 +20,9 @@ import org.eclipse.keyple.plugin.android.omapi.PLUGIN_NAME
 import timber.log.Timber
 
 /**
- * Allow to provide an implementation of AbstractAndroidOmapiPlugin using the Android 9+
- * OMAPI implementation of Reader and SeService objects.
+ * Implementation of AbstractAndroidOmapiPlugin using the Android 9+ OMAPI implementation of Reader and SeService objects.
+ *
+ * @since 0.9
  */
 @RequiresApi(android.os.Build.VERSION_CODES.P) // OS version providing android.se.omapi package
 internal object AndroidOmapiPlugin : AbstractAndroidOmapiPlugin<android.se.omapi.Reader, SEService>() {

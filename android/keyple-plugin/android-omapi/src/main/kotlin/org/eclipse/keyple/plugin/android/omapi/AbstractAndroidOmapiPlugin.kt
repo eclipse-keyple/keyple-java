@@ -18,11 +18,13 @@ import org.eclipse.keyple.core.service.Plugin
 import org.eclipse.keyple.core.service.Reader
 import timber.log.Timber
 
-/**
- * The AndroidOmapiPlugin interface provides the public elements used to manage the Android OMAPI plugin.
- */
 const val PLUGIN_NAME = "AndroidOmapiPlugin"
 
+/**
+ * The AndroidOmapiPlugin interface provides the public elements used to manage the Android OMAPI plugin.
+ *
+ * @since 0.9
+ */
 internal abstract class AbstractAndroidOmapiPlugin<T, V> : AbstractPlugin(PLUGIN_NAME), Plugin {
 
     abstract fun connectToSe(context: Context, callback: () -> Unit)
@@ -34,6 +36,8 @@ internal abstract class AbstractAndroidOmapiPlugin<T, V> : AbstractPlugin(PLUGIN
 
     /**
      * Initialize plugin by connecting to {@link SEService}
+     *
+     * @since 0.9
      */
     fun init(context: Context, callback: () -> Unit) {
         return if (seService != null) {
@@ -44,6 +48,11 @@ internal abstract class AbstractAndroidOmapiPlugin<T, V> : AbstractPlugin(PLUGIN
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @since 0.9
+     */
     override fun initNativeReaders(): ConcurrentSkipListMap<String, Reader> {
 
         Timber.d("initNativeReaders")

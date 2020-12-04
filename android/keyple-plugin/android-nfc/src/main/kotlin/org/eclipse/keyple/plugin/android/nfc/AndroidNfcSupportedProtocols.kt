@@ -13,6 +13,8 @@ package org.eclipse.keyple.plugin.android.nfc
 
 /**
  * List of protocols supported by this plugin
+ *
+ *  @since 0.9
  */
 enum class AndroidNfcSupportedProtocols {
     ISO_14443_4,

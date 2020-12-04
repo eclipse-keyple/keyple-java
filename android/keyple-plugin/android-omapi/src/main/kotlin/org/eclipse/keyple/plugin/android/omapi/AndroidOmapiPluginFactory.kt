@@ -20,8 +20,12 @@ import org.eclipse.keyple.core.service.PluginFactory
 import org.eclipse.keyple.core.service.exception.KeyplePluginInstantiationException
 
 /**
- * Build asynchronously the Android OMAPI plugin.
- * Platform incompabilities are not managed
+ * Provides a factory to get the {@link AndroidOmapiPlugin}.
+ *
+ * @property context Android Context, cannot be null
+ * @property callback Will be invoked when initiation will be done
+ *
+ * @since 0.9
  */
 class AndroidOmapiPluginFactory(private val context: Context, callback: (AndroidOmapiPluginFactory) -> Unit) : PluginFactory {
 
@@ -45,10 +49,22 @@ class AndroidOmapiPluginFactory(private val context: Context, callback: (Android
         this.sdkVersion = sdkVersion
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @since 0.9
+     */
     override fun getPluginName(): String {
         return PLUGIN_NAME
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws KeyplePluginInstantiationException if no OMAPI package is available on the device
+     *
+     * @since 0.9
+     */
     @Throws(KeyplePluginInstantiationException::class)
     override fun getPlugin(): Plugin {
         return getPluginRegardingOsVersion()
