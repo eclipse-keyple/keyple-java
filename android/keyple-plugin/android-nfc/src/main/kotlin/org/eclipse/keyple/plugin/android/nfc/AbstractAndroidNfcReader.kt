@@ -143,7 +143,7 @@ internal abstract class AbstractAndroidNfcReader(activity: Activity, readerObser
     /**
      * The transmission mode is always CONTACTLESS in a NFC reader
      *
-     * @return Boolean
+     * @return Always True for a NFC reader
      * @since 0.9
      */
     override fun isContactless(): Boolean {

@@ -31,7 +31,7 @@ internal abstract class AbstractAndroidOmapiReader(pluginName: String, readerNam
     /**
      * The transmission mode is always CONTACTS in an OMAPI reader
      *
-     * @return a boolean
+     * @return Always False for an OMAPI reader
      *
      * @since 0.9
      */
