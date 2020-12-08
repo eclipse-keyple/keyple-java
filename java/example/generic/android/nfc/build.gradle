@@ -21,8 +21,18 @@ buildscript {
     }
 }
 
+String findDependencyVersion(File file) {
+    if (file == null) {
+        return '+'
+    }
+    if (new File(file, "VERSION").isFile()) {
+        return new File(file, "VERSION").getText('UTF-8').trim()
+    }
+    return findDependencyVersion(file.getParentFile())
+}
+
 ext {
-    keyple_v = project.hasProperty("keyple_version") ? keyple_version : '+'
+    keyple_v = project.hasProperty("keyple_version") ? keyple_version : findDependencyVersion(new File("$projectDir"))
 }
 
 android {
@@ -95,6 +105,7 @@ dependencies {
     /*
     Keyple dependencies
      */
+    project.logger.lifecycle('Using dependency version: ' + keyple_v)
     //import the last version of keyple-java-core
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: keyple_v
 
