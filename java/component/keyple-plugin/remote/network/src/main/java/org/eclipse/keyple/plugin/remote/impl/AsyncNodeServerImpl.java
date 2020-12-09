@@ -18,8 +18,6 @@ import org.eclipse.keyple.plugin.remote.AsyncNodeServer;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.NodeCommunicationException;
 import org.eclipse.keyple.plugin.remote.spi.AsyncEndpointServer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * (package-private)<br>
@@ -29,7 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 final class AsyncNodeServerImpl extends AbstractNode implements AsyncNodeServer {
 
-  private static final Logger logger = LoggerFactory.getLogger(AsyncNodeServerImpl.class);
+  private static final String SESSION_ID = "sessionId";
 
   private final AsyncEndpointServer endpoint;
   private final Map<String, SessionManager> sessionManagers;
@@ -119,7 +117,7 @@ final class AsyncNodeServerImpl extends AbstractNode implements AsyncNodeServer 
 
     Assert.getInstance() //
         .notNull(msg, "msg") //
-        .notEmpty(msg.getSessionId(), "sessionId") //
+        .notEmpty(msg.getSessionId(), SESSION_ID) //
         .notEmpty(msg.getAction(), "action") //
         .notEmpty(msg.getClientNodeId(), "clientNodeId");
 
@@ -139,9 +137,9 @@ final class AsyncNodeServerImpl extends AbstractNode implements AsyncNodeServer 
    */
   @Override
   public void onError(String sessionId, Throwable error) {
-    Assert.getInstance().notEmpty(sessionId, "sessionId").notNull(error, "error");
+    Assert.getInstance().notEmpty(sessionId, SESSION_ID).notNull(error, "error");
     SessionManager manager = sessionManagers.get(sessionId);
-    Assert.getInstance().notNull(manager, "sessionId");
+    Assert.getInstance().notNull(manager, SESSION_ID);
     manager.onError(error);
   }
 
@@ -152,9 +150,9 @@ final class AsyncNodeServerImpl extends AbstractNode implements AsyncNodeServer 
    */
   @Override
   public void onClose(String sessionId) {
-    Assert.getInstance().notEmpty(sessionId, "sessionId");
+    Assert.getInstance().notEmpty(sessionId, SESSION_ID);
     SessionManager manager = sessionManagers.remove(sessionId);
-    Assert.getInstance().notNull(manager, "sessionId");
+    Assert.getInstance().notNull(manager, SESSION_ID);
   }
 
   /**
@@ -204,7 +202,7 @@ final class AsyncNodeServerImpl extends AbstractNode implements AsyncNodeServer 
       if (state == SessionManagerState.SEND_REQUEST_BEGIN) {
         response = msg;
         state = SessionManagerState.SEND_REQUEST_END;
-        notify();
+        notifyAll();
       } else {
         state = SessionManagerState.ON_MESSAGE;
         handler.onMessage(msg);
@@ -250,7 +248,7 @@ final class AsyncNodeServerImpl extends AbstractNode implements AsyncNodeServer 
       checkState(SessionManagerState.SEND_REQUEST_BEGIN, SessionManagerState.SEND_MESSAGE);
       error = e;
       state = SessionManagerState.EXTERNAL_ERROR_OCCURRED;
-      notify();
+      notifyAll();
     }
   }
 }

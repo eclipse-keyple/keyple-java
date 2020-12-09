@@ -101,5 +101,5 @@ abstract class AbstractRemotePlugin extends AbstractMessageHandler implements Pl
    * @throws KeypleReaderIOException if the communication with the reader or the Card has failed.
    * @since 1.0
    */
-  abstract Map<String, Reader> initNativeReaders() throws KeypleReaderIOException;
+  abstract Map<String, Reader> initNativeReaders();
 }

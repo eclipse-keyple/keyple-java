@@ -19,6 +19,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import org.awaitility.Durations;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.NodeCommunicationException;
 import org.eclipse.keyple.plugin.remote.spi.SyncEndpointClient;
@@ -51,7 +52,7 @@ public class SyncNodeClientTest extends AbstractSyncNodeTest {
         new ServerPushEventStrategy(ServerPushEventStrategy.Type.LONG_POLLING).setDuration(1);
   }
 
-  class KeypleMessageHandlerErrorMock extends AbstractMessageHandler {
+  static class KeypleMessageHandlerErrorMock extends AbstractMessageHandler {
 
     boolean isError = false;
 
@@ -80,11 +81,16 @@ public class SyncNodeClientTest extends AbstractSyncNodeTest {
     @Override
     public List<MessageDto> sendRequest(MessageDto msg) {
       messages.add(msg);
-      try {
-        Thread.sleep(1000);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+      // Equivalent to Thread.sleep(1000) but Sonar compliant.
+      await()
+          .pollDelay(Durations.ONE_SECOND)
+          .until(
+              new Callable<Boolean>() {
+                @Override
+                public Boolean call() {
+                  return true;
+                }
+              });
       return responses;
     }
   }
@@ -163,8 +169,7 @@ public class SyncNodeClientTest extends AbstractSyncNodeTest {
     await().atMost(5, TimeUnit.SECONDS).until(endpointMessagesHasMinSize(2));
     MessageDto msg1 = endpoint.messages.get(0);
     MessageDto msg2 = endpoint.messages.get(1);
-    assertThat(msg1).isSameAs(msg2);
-    assertThat(msg1).isEqualToComparingFieldByField(msg2);
+    assertThat(msg1).isSameAs(msg2).isEqualToComparingFieldByField(msg2);
   }
 
   @Test
@@ -173,8 +178,7 @@ public class SyncNodeClientTest extends AbstractSyncNodeTest {
     await().atMost(5, TimeUnit.SECONDS).until(endpointMessagesHasMinSize(2));
     MessageDto msg1 = endpoint.messages.get(0);
     MessageDto msg2 = endpoint.messages.get(1);
-    assertThat(msg1).isSameAs(msg2);
-    assertThat(msg1).isEqualToComparingFieldByField(msg2);
+    assertThat(msg1).isSameAs(msg2).isEqualToComparingFieldByField(msg2);
   }
 
   @Test
@@ -234,7 +238,7 @@ public class SyncNodeClientTest extends AbstractSyncNodeTest {
     SyncNodeClientImpl node = new SyncNodeClientImpl(handler, endpoint, null, null);
     node.openSession(sessionId);
     verifyZeroInteractions(handler);
-    assertThat(endpoint.messages).hasSize(0);
+    assertThat(endpoint.messages).isEmpty();
   }
 
   @Test
@@ -244,8 +248,7 @@ public class SyncNodeClientTest extends AbstractSyncNodeTest {
     assertThat(endpoint.messages).hasSize(1);
     assertThat(endpoint.messages.get(0)).isSameAs(msg);
     assertThat(endpoint.messages.get(0)).isEqualToComparingFieldByField(msg);
-    assertThat(result).isSameAs(response);
-    assertThat(result).isEqualToComparingFieldByField(response);
+    assertThat(result).isSameAs(response).isEqualToComparingFieldByField(response);
     verifyZeroInteractions(handler);
   }
 
@@ -264,6 +267,6 @@ public class SyncNodeClientTest extends AbstractSyncNodeTest {
     SyncNodeClientImpl node = new SyncNodeClientImpl(handler, endpoint, null, null);
     node.closeSession(sessionId);
     verifyZeroInteractions(handler);
-    assertThat(endpoint.messages).hasSize(0);
+    assertThat(endpoint.messages).isEmpty();
   }
 }

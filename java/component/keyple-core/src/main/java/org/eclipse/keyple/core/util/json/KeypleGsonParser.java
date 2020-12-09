@@ -24,7 +24,7 @@ import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
  */
 public final class KeypleGsonParser {
 
-  private static volatile Gson parser;
+  private static Gson parser;
   private static final GsonBuilder gsonBuilder = initGsonBuilder();
 
   /**

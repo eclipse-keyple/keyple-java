@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.SortedSet;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
-import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.json.KeypleGsonParser;
@@ -187,7 +186,7 @@ final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
    * @since 1.0
    */
   @Override
-  Map<String, Reader> initNativeReaders() throws KeypleReaderIOException {
+  Map<String, Reader> initNativeReaders() {
     return new HashMap<String, Reader>();
   }
 }

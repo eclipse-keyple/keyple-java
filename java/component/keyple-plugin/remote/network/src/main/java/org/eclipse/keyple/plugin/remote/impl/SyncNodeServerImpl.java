@@ -299,10 +299,11 @@ final class SyncNodeServerImpl extends AbstractNode implements SyncNodeServer {
      * @param msg The message to post.
      * @param targetState The new state to set before to notify the waiting task.
      */
-    private void postMessageAndNotify(MessageDto msg, SessionManagerState targetState) {
+    private synchronized void postMessageAndNotify(
+        MessageDto msg, SessionManagerState targetState) {
       response = msg;
       state = targetState;
-      notify();
+      notifyAll();
     }
   }
 
@@ -314,7 +315,7 @@ final class SyncNodeServerImpl extends AbstractNode implements SyncNodeServer {
 
     private final String clientNodeId;
 
-    private volatile List<MessageDto> events;
+    private List<MessageDto> events;
     private ServerPushEventStrategy strategy;
 
     /**
@@ -347,7 +348,7 @@ final class SyncNodeServerImpl extends AbstractNode implements SyncNodeServer {
       // Gets the client's strategy
       // If strategy is long polling, then try to wake up the associated awaiting task.
       if (strategy != null && strategy.getType() == ServerPushEventStrategy.Type.LONG_POLLING) {
-        notify();
+        notifyAll();
       }
     }
 
@@ -366,7 +367,7 @@ final class SyncNodeServerImpl extends AbstractNode implements SyncNodeServer {
         }
 
         // If none, then gets the client's strategy
-        ServerPushEventStrategy strategy = getStrategy(msg);
+        registerClientStrategy(msg);
 
         // If is a long polling strategy, then await for an event notification.
         if (strategy.getType() == ServerPushEventStrategy.Type.LONG_POLLING) {
@@ -380,13 +381,12 @@ final class SyncNodeServerImpl extends AbstractNode implements SyncNodeServer {
 
     /**
      * (private)<br>
-     * Gets the client registered strategy or register it in case of first client invocation.
+     * Registers the client strategy in case of first client invocation.
      *
      * @param msg The client message containing all client info (node id, strategy, ...)
-     * @return a not null {@link ServerPushEventStrategy}
      * @throws IllegalArgumentException in case of first client invocation with bad arguments.
      */
-    private ServerPushEventStrategy getStrategy(MessageDto msg) {
+    private void registerClientStrategy(MessageDto msg) {
 
       // Gets the client registered strategy if exists.
       if (strategy == null) {
@@ -412,7 +412,6 @@ final class SyncNodeServerImpl extends AbstractNode implements SyncNodeServer {
           }
         }
       }
-      return strategy;
     }
 
     /**
@@ -421,9 +420,12 @@ final class SyncNodeServerImpl extends AbstractNode implements SyncNodeServer {
      *
      * @param maxAwaitingTime The max awaiting time.
      */
-    private void waitAtMost(int maxAwaitingTime) {
+    private synchronized void waitAtMost(int maxAwaitingTime) {
       try {
-        wait(maxAwaitingTime);
+        long deadline = new Date().getTime() + maxAwaitingTime;
+        while (events == null && new Date().getTime() < deadline) {
+          wait(maxAwaitingTime);
+        }
       } catch (InterruptedException e) {
         logger.error(
             "Unexpected interruption of the task associated with the node's id {}",

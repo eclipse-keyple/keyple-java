@@ -24,6 +24,8 @@ import org.eclipse.keyple.plugin.remote.PoolRemotePluginClient;
  */
 public final class PoolRemotePluginClientUtils {
 
+  private PoolRemotePluginClientUtils() {}
+
   /**
    * Gets the remote plugin having the default name.
    *

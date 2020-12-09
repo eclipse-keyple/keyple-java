@@ -23,6 +23,8 @@ import org.eclipse.keyple.plugin.remote.SyncNodeServer;
  */
 public final class PoolLocalServiceServerUtils {
 
+  private PoolLocalServiceServerUtils() {}
+
   /**
    * Gets the {@link AsyncNodeServer} node associated to the local service having the default name.
    *
@@ -96,7 +98,6 @@ public final class PoolLocalServiceServerUtils {
    * @throws IllegalStateException If there's no service having the provided name.
    */
   private static PoolLocalServiceServerImpl getServiceImpl(String serviceName) {
-    PoolLocalServiceServerImpl service = PoolLocalServiceServerImpl.getInstance(serviceName);
-    return service;
+    return PoolLocalServiceServerImpl.getInstance(serviceName);
   }
 }

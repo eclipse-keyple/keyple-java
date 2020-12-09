@@ -12,6 +12,7 @@
 package org.eclipse.keyple.plugin.remote.impl;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.UUID;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.NodeCommunicationException;
@@ -168,14 +169,14 @@ abstract class AbstractNode {
      *
      * @since 1.0
      */
-    volatile MessageDto response;
+    MessageDto response;
 
     /**
      * (package-private)<br>
      *
      * @since 1.0
      */
-    volatile Throwable error;
+    Throwable error;
 
     /**
      * (package-private)<br>
@@ -199,7 +200,7 @@ abstract class AbstractNode {
      * @param targetStates The target states.
      * @since 1.0
      */
-    void waitForState(SessionManagerState... targetStates) {
+    synchronized void waitForState(SessionManagerState... targetStates) {
       for (SessionManagerState targetState : targetStates) {
         if (state == targetState) {
           return;
@@ -207,13 +208,16 @@ abstract class AbstractNode {
       }
       checkIfExternalErrorOccurred();
       try {
-        wait(timeout);
-        for (SessionManagerState targetState : targetStates) {
-          if (state == targetState) {
-            return;
+        long deadline = new Date().getTime() + timeout;
+        while (new Date().getTime() < deadline) {
+          wait(timeout);
+          for (SessionManagerState targetState : targetStates) {
+            if (state == targetState) {
+              return;
+            }
           }
+          checkIfExternalErrorOccurred();
         }
-        checkIfExternalErrorOccurred();
         timeoutOccurred();
       } catch (InterruptedException e) {
         logger.error(
@@ -267,7 +271,7 @@ abstract class AbstractNode {
     void timeoutOccurred() {
       state = SessionManagerState.ABORTED_SESSION;
       logger.error(
-          "Timeout occurs for the task associated with the node's session [" + sessionId + "]");
+          "Timeout occurs for the task associated with the node's session [{}]", sessionId);
       throw new NodeCommunicationException(
           "Timeout occurs for the task associated with the node's session [" + sessionId + "]");
     }

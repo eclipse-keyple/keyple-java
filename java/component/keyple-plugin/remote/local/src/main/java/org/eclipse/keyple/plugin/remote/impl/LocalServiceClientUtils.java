@@ -24,6 +24,8 @@ import org.eclipse.keyple.plugin.remote.LocalServiceClient;
  */
 public final class LocalServiceClientUtils {
 
+  private LocalServiceClientUtils() {}
+
   /**
    * Gets the local service having the default name.
    *
@@ -90,7 +92,6 @@ public final class LocalServiceClientUtils {
    * @throws IllegalStateException If there's no service having the provided name.
    */
   private static LocalServiceClientImpl getServiceImpl(String serviceName) {
-    LocalServiceClientImpl service = LocalServiceClientImpl.getInstance(serviceName);
-    return service;
+    return LocalServiceClientImpl.getInstance(serviceName);
   }
 }

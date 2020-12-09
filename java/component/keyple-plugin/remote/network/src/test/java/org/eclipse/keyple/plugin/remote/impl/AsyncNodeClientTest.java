@@ -238,6 +238,8 @@ public class AsyncNodeClientTest extends AbstractAsyncNodeTest {
   @Test
   public void onOpen_whenSessionIdIsUnknown_shouldDoNothing() {
     node.onOpen(sessionIdUnknown);
+    verifyZeroInteractions(endpoint);
+    verifyZeroInteractions(handler);
   }
 
   @Test(expected = IllegalStateException.class)
@@ -274,8 +276,7 @@ public class AsyncNodeClientTest extends AbstractAsyncNodeTest {
     verify(endpoint).sendMessage(msg);
     verifyNoMoreInteractions(endpoint);
     verifyZeroInteractions(handler);
-    assertThat(result).isSameAs(response);
-    assertThat(result).isEqualToComparingFieldByField(response);
+    assertThat(result).isSameAs(response).isEqualToComparingFieldByField(response);
   }
 
   @Test(expected = NodeCommunicationException.class)
@@ -369,6 +370,8 @@ public class AsyncNodeClientTest extends AbstractAsyncNodeTest {
   public void onMessage_whenSessionIdIsUnknown_shouldDoNothing() {
     MessageDto message = new MessageDto(response).setSessionId(sessionIdUnknown);
     node.onMessage(message);
+    verifyZeroInteractions(endpoint);
+    verifyZeroInteractions(handler);
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -429,8 +432,7 @@ public class AsyncNodeClientTest extends AbstractAsyncNodeTest {
     verify(endpoint).sendMessage(msg);
     verifyNoMoreInteractions(endpoint);
     verifyZeroInteractions(handler);
-    assertThat(result).isSameAs(response);
-    assertThat(result).isEqualToComparingFieldByField(response);
+    assertThat(result).isSameAs(response).isEqualToComparingFieldByField(response);
   }
 
   @Test
@@ -443,8 +445,7 @@ public class AsyncNodeClientTest extends AbstractAsyncNodeTest {
     verify(endpoint).sendMessage(msg);
     verifyNoMoreInteractions(endpoint);
     verifyZeroInteractions(handler);
-    assertThat(result).isSameAs(response);
-    assertThat(result).isEqualToComparingFieldByField(response);
+    assertThat(result).isSameAs(response).isEqualToComparingFieldByField(response);
   }
 
   @Test
@@ -486,6 +487,8 @@ public class AsyncNodeClientTest extends AbstractAsyncNodeTest {
   @Test
   public void onClose_whenSessionIdIsUnknown_shouldDoNothing() {
     node.onClose(sessionIdUnknown);
+    verifyZeroInteractions(endpoint);
+    verifyZeroInteractions(handler);
   }
 
   @Test(expected = IllegalStateException.class)
@@ -536,6 +539,8 @@ public class AsyncNodeClientTest extends AbstractAsyncNodeTest {
   @Test
   public void onError_whenSessionIdIsUnknown_shouldDoNothing() {
     node.onError(sessionIdUnknown, error);
+    verifyZeroInteractions(endpoint);
+    verifyZeroInteractions(handler);
   }
 
   @Test

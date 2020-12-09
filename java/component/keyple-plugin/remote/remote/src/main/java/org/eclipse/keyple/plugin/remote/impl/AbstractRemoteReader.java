@@ -20,8 +20,6 @@ import org.eclipse.keyple.core.plugin.AbstractReader;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleGsonParser;
 import org.eclipse.keyple.plugin.remote.MessageDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * (package-private)<br>
@@ -33,13 +31,10 @@ import org.slf4j.LoggerFactory;
  */
 abstract class AbstractRemoteReader extends AbstractReader {
 
-  private static final Logger logger = LoggerFactory.getLogger(AbstractRemoteReader.class);
-
   private final AbstractNode node;
   private final String clientNodeId;
   private final String localReaderName;
-
-  private String sessionId;
+  private final String sessionId;
 
   /**
    * (package-private)<br>

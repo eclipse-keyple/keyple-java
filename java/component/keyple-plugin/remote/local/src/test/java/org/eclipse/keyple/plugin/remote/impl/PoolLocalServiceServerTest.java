@@ -88,8 +88,9 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
                 .withPoolPlugins(poolPluginMock.getName())
                 .getService();
 
-    assertThat(service).isNotNull();
-    assertThat(service).isEqualTo(PoolLocalServiceServerImpl.getInstance("aService_withAsyncNode"));
+    assertThat(service)
+        .isNotNull()
+        .isEqualTo(PoolLocalServiceServerImpl.getInstance("aService_withAsyncNode"));
   }
 
   @Test
@@ -103,8 +104,9 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
                 .withPoolPlugins(poolPluginMock.getName())
                 .getService();
 
-    assertThat(service).isNotNull();
-    assertThat(service).isEqualTo(PoolLocalServiceServerImpl.getInstance("aService_withSyncNode"));
+    assertThat(service)
+        .isNotNull()
+        .isEqualTo(PoolLocalServiceServerImpl.getInstance("aService_withSyncNode"));
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -144,8 +146,7 @@ public class PoolLocalServiceServerTest extends BaseLocalTest {
 
               @Override
               public Plugin getPlugin() {
-                Plugin plugin = Mockito.mock(Plugin.class);
-                return plugin;
+                return Mockito.mock(Plugin.class);
               }
             });
 

@@ -33,7 +33,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-public class RemoteServerBaseTest {
+public class RemoteServerBase {
 
   static String clientId = "client1";
   static String localReaderName = "localReaderName1";
@@ -63,7 +63,7 @@ public class RemoteServerBaseTest {
       if (remoteReaderNames.add(event.getReaderName())) {
         this.event = event;
       }
-      ; // verify that each event targets a new remote reader
+      // verify that each event targets a new remote reader
     }
 
     public void terminateService(Object userOutputData) {
@@ -112,7 +112,7 @@ public class RemoteServerBaseTest {
   Callable<Boolean> validReaderConnectEvent() {
     return new Callable<Boolean>() {
       @Override
-      public Boolean call() throws Exception {
+      public Boolean call() {
 
         return PluginEvent.EventType.READER_CONNECTED.compareTo(pluginObserver.event.getEventType())
                 == 0
@@ -147,7 +147,7 @@ public class RemoteServerBaseTest {
   Callable<Boolean> validSeInsertedEvent(final String remoteReaderName, final int messageNumber) {
     return new Callable<Boolean>() {
       @Override
-      public Boolean call() throws Exception {
+      public Boolean call() {
         return ReaderEvent.EventType.CARD_INSERTED.compareTo(readerObserver.event.getEventType())
                 == 0
             && remotePluginName.equals(pluginObserver.event.getPluginName())
@@ -165,7 +165,7 @@ public class RemoteServerBaseTest {
   Answer aVoid() {
     return new Answer() {
       @Override
-      public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+      public Object answer(InvocationOnMock invocationOnMock) {
         return null;
       }
     };

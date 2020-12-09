@@ -260,12 +260,12 @@ final class SyncNodeClientImpl extends AbstractNode implements SyncNodeClient {
         try {
           timer = timer1 + timer2;
           Thread.sleep(timer);
-          try {
-            logger.info("Retry to send request after {} seconds...", timer / 1000);
-            responses = endpoint.sendRequest(msg);
+          logger.info("Retry to send request after {} seconds...", timer / 1000);
+          responses = sendRequestSilently();
+          if (responses != null) {
             logger.info("Server connection retrieved");
             return responses;
-          } catch (Exception e) {
+          } else {
             timer1 = timer2;
             timer2 = timer;
           }
@@ -275,6 +275,20 @@ final class SyncNodeClientImpl extends AbstractNode implements SyncNodeClient {
         }
       }
       return new ArrayList<MessageDto>();
+    }
+
+    /**
+     * (private)<br>
+     * Try to sends a request silently without throwing an exception.
+     *
+     * @return null if the sending has failed.
+     */
+    private List<MessageDto> sendRequestSilently() {
+      try {
+        return endpoint.sendRequest(msg);
+      } catch (Exception e) {
+        return null;
+      }
     }
 
     /**

@@ -14,7 +14,9 @@ package org.eclipse.keyple.core.util.json;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.core.card.command.AbstractIso7816CommandBuilderTest;
 import org.eclipse.keyple.core.card.command.exception.KeypleCardCommandException;
@@ -32,21 +34,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RunWith(MockitoJUnitRunner.class)
-public class JsonParserTest {
+public class KeypleGsonParserTest {
 
-  private static final Logger logger = LoggerFactory.getLogger(JsonParserTest.class);
+  private static final Logger logger = LoggerFactory.getLogger(KeypleGsonParserTest.class);
 
   /** Test Serialization of Keyple Se Proxy Objects */
   @Test
   public void serialize_HoplinkCardRequestList() {
     List<CardSelectionRequest> selectionRequests = SampleFactory.getCardSelectionRequests();
-    assertSerialization_forList(selectionRequests, List.class);
+    assertSerialization_forList(
+        selectionRequests, new TypeToken<ArrayList<CardSelectionRequest>>() {}.getType());
   }
 
   @Test
   public void serialize_cardSelectionResponses() {
     List<CardSelectionResponse> cardSelectionResponses = SampleFactory.getCompleteResponseSet();
-    assertSerialization_forList(cardSelectionResponses, List.class);
+    assertSerialization_forList(
+        cardSelectionResponses, new TypeToken<ArrayList<CardSelectionResponse>>() {}.getType());
   }
 
   @Test
@@ -95,8 +99,7 @@ public class JsonParserTest {
 
   @Test
   public void serialize_readerException() {
-    KeypleReaderException source =
-        (KeypleReaderException) SampleFactory.getAReaderKeypleException();
+    KeypleReaderException source = SampleFactory.getAReaderKeypleException();
     assertSerialization_forException(new BodyError(source), BodyError.class);
   }
 
@@ -135,15 +138,16 @@ public class JsonParserTest {
     String json = gson.toJson(source);
     logger.debug("json : {}", json);
     Object target = gson.fromJson(json, objectClass);
-    assertThat(source).isEqualToComparingFieldByFieldRecursively(target);
+    assertThat(target).isEqualToComparingFieldByFieldRecursively(source);
   }
 
-  public static void assertSerialization_forList(Object source, Class<? extends List> objectClass) {
+  public static void assertSerialization_forList(List<?> source, Type objectType) {
     Gson gson = KeypleGsonParser.getParser();
     String json = gson.toJson(source);
     logger.debug("json : {}", json);
-    List target = gson.fromJson(json, objectClass);
-    assertThat(target).hasSameElementsAs(target);
+    List<?> target = gson.fromJson(json, objectType);
+    assertThat(target).hasSameSizeAs(source);
+    assertThat(target.get(0)).isEqualToComparingFieldByFieldRecursively(source.get(0));
   }
 
   public static void assertSerialization_forException(
@@ -156,10 +160,10 @@ public class JsonParserTest {
     BodyError target = gson.fromJson(json, objectClass);
     logger.debug(
         "deserialize exception className : {}", target.getException().getClass().getName());
-    assertThat(target).isEqualToComparingFieldByFieldRecursively(target);
+    assertThat(target).isEqualToComparingFieldByFieldRecursively(source);
   }
 
-  public class MyKeypleUserDataMockAdapter
+  public static class MyKeypleUserDataMockAdapter
       implements JsonDeserializer<SampleFactory.MyKeypleUserData>,
           JsonSerializer<SampleFactory.MyKeypleUserData> {
 
