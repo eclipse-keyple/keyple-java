@@ -25,6 +25,10 @@ import org.eclipse.keyple.plugin.remote.SyncNodeServer;
  */
 public final class RemotePluginServerUtils {
 
+  private static final String PLUGIN_NAME = "pluginName";
+
+  private RemotePluginServerUtils() {}
+
   /**
    * Gets the remote plugin having the default name.
    *
@@ -46,7 +50,7 @@ public final class RemotePluginServerUtils {
    * @since 1.0
    */
   public static RemotePluginServer getRemotePlugin(String pluginName) {
-    Assert.getInstance().notNull(pluginName, "pluginName");
+    Assert.getInstance().notNull(pluginName, PLUGIN_NAME);
     return (RemotePluginServer) SmartCardService.getInstance().getPlugin(pluginName);
   }
 
@@ -75,7 +79,7 @@ public final class RemotePluginServerUtils {
    * @since 1.0
    */
   public static AsyncNodeServer getAsyncNode(String pluginName) {
-    Assert.getInstance().notNull(pluginName, "pluginName");
+    Assert.getInstance().notNull(pluginName, PLUGIN_NAME);
     RemotePluginServerImpl plugin = (RemotePluginServerImpl) getRemotePlugin(pluginName);
     if (plugin.node instanceof AsyncNodeServer) {
       return (AsyncNodeServer) plugin.node;
@@ -109,7 +113,7 @@ public final class RemotePluginServerUtils {
    * @since 1.0
    */
   public static SyncNodeServer getSyncNode(String pluginName) {
-    Assert.getInstance().notNull(pluginName, "pluginName");
+    Assert.getInstance().notNull(pluginName, PLUGIN_NAME);
     RemotePluginServerImpl plugin = (RemotePluginServerImpl) getRemotePlugin(pluginName);
     if (plugin.node instanceof SyncNodeServer) {
       return (SyncNodeServer) plugin.node;

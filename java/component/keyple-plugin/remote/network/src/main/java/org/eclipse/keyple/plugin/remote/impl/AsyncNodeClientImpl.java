@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 final class AsyncNodeClientImpl extends AbstractNode implements AsyncNodeClient {
 
   private static final Logger logger = LoggerFactory.getLogger(AsyncNodeClientImpl.class);
+  private static final String SESSION_ID = "sessionId";
 
   private final AsyncEndpointClient endpoint;
   private final Map<String, SessionManager> sessionManagers;
@@ -67,7 +68,7 @@ final class AsyncNodeClientImpl extends AbstractNode implements AsyncNodeClient 
    */
   @Override
   public void onOpen(String sessionId) {
-    Assert.getInstance().notEmpty(sessionId, "sessionId");
+    Assert.getInstance().notEmpty(sessionId, SESSION_ID);
     SessionManager manager = getManagerForEndpoint(sessionId);
     if (manager != null) {
       manager.onOpen();
@@ -108,7 +109,7 @@ final class AsyncNodeClientImpl extends AbstractNode implements AsyncNodeClient 
 
     Assert.getInstance() //
         .notNull(msg, "msg") //
-        .notEmpty(msg.getSessionId(), "sessionId") //
+        .notEmpty(msg.getSessionId(), SESSION_ID) //
         .notEmpty(msg.getAction(), "action") //
         .notEmpty(msg.getClientNodeId(), "clientNodeId") //
         .notEmpty(msg.getServerNodeId(), "serverNodeId");
@@ -149,7 +150,7 @@ final class AsyncNodeClientImpl extends AbstractNode implements AsyncNodeClient 
    */
   @Override
   public void onClose(String sessionId) {
-    Assert.getInstance().notEmpty(sessionId, "sessionId");
+    Assert.getInstance().notEmpty(sessionId, SESSION_ID);
     SessionManager manager = getManagerForEndpoint(sessionId);
     if (manager != null) {
       manager.onClose();
@@ -163,7 +164,7 @@ final class AsyncNodeClientImpl extends AbstractNode implements AsyncNodeClient 
    */
   @Override
   public void onError(String sessionId, Throwable error) {
-    Assert.getInstance().notEmpty(sessionId, "sessionId").notNull(error, "error");
+    Assert.getInstance().notEmpty(sessionId, SESSION_ID).notNull(error, "error");
     SessionManager manager = getManagerForEndpoint(sessionId);
     if (manager != null) {
       manager.onError(error);
@@ -236,7 +237,7 @@ final class AsyncNodeClientImpl extends AbstractNode implements AsyncNodeClient 
     private synchronized void onOpen() {
       checkState(SessionManagerState.OPEN_SESSION_BEGIN);
       state = SessionManagerState.OPEN_SESSION_END;
-      notify();
+      notifyAll();
     }
 
     /**
@@ -266,7 +267,7 @@ final class AsyncNodeClientImpl extends AbstractNode implements AsyncNodeClient 
       checkState(SessionManagerState.SEND_REQUEST_BEGIN);
       response = msg;
       state = SessionManagerState.SEND_REQUEST_END;
-      notify();
+      notifyAll();
     }
 
     /**
@@ -314,7 +315,7 @@ final class AsyncNodeClientImpl extends AbstractNode implements AsyncNodeClient 
     private synchronized void onClose() {
       checkState(SessionManagerState.CLOSE_SESSION_BEGIN);
       state = SessionManagerState.CLOSE_SESSION_END;
-      notify();
+      notifyAll();
     }
 
     /**
@@ -331,7 +332,7 @@ final class AsyncNodeClientImpl extends AbstractNode implements AsyncNodeClient 
           SessionManagerState.CLOSE_SESSION_BEGIN);
       error = e;
       state = SessionManagerState.EXTERNAL_ERROR_OCCURRED;
-      notify();
+      notifyAll();
     }
   }
 }

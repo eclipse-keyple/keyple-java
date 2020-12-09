@@ -30,7 +30,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ObservableRemoteReaderServerImplTest extends RemoteServerBaseTest {
+public class ObservableRemoteReaderServerImplTest extends RemoteServerBase {
 
   static final String serviceId = "serviceId";
   static final String userInputDataJson = "userInputDataJson";
@@ -179,7 +179,6 @@ public class ObservableRemoteReaderServerImplTest extends RemoteServerBaseTest {
     reader.isCardPresent();
   }
 
-  @SuppressWarnings("ResultOfMethodCallIgnored")
   @Test
   public void getName_shouldDelegateMethodToRemoteReader() {
 

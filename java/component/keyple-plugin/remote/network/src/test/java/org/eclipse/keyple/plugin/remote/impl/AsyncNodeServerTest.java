@@ -128,8 +128,7 @@ public class AsyncNodeServerTest extends AbstractAsyncNodeTest {
     MessageDto result = node.sendRequest(msg);
     verify(endpoint).sendMessage(msg);
     verifyNoMoreInteractions(endpoint);
-    assertThat(result).isSameAs(response);
-    assertThat(result).isEqualToComparingFieldByField(response);
+    assertThat(result).isSameAs(response).isEqualToComparingFieldByField(response);
   }
 
   @Test(expected = NodeCommunicationException.class)
@@ -240,8 +239,7 @@ public class AsyncNodeServerTest extends AbstractAsyncNodeTest {
     MessageDto result = node.sendRequest(msg);
     verify(endpoint).sendMessage(msg);
     verifyNoMoreInteractions(endpoint);
-    assertThat(result).isSameAs(response);
-    assertThat(result).isEqualToComparingFieldByField(response);
+    assertThat(result).isSameAs(response).isEqualToComparingFieldByField(response);
   }
 
   @Test
@@ -251,8 +249,7 @@ public class AsyncNodeServerTest extends AbstractAsyncNodeTest {
     MessageDto result = node.sendRequest(msg);
     verify(endpoint).sendMessage(msg);
     verifyNoMoreInteractions(endpoint);
-    assertThat(result).isSameAs(response);
-    assertThat(result).isEqualToComparingFieldByField(response);
+    assertThat(result).isSameAs(response).isEqualToComparingFieldByField(response);
   }
 
   @Test(expected = IllegalArgumentException.class)

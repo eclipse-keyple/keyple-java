@@ -45,16 +45,16 @@ public class ObservableRemoteReaderImplTest {
   ObservableReader.ReaderObserver observer;
 
   static final DefaultSelectionsRequest abstractDefaultSelectionsRequest =
-      SampleFactory.getSelectionRequest();;
+      SampleFactory.getSelectionRequest();
   static final ObservableReader.NotificationMode notificationMode =
-      SampleFactory.getNotificationMode();;
-  static final ObservableReader.PollingMode pollingMode = ObservableReader.PollingMode.REPEATING;;
+      SampleFactory.getNotificationMode();
+  static final ObservableReader.PollingMode pollingMode = ObservableReader.PollingMode.REPEATING;
   static final ReaderEvent event =
-      new ReaderEvent(pluginName, localReaderName, ReaderEvent.EventType.CARD_INSERTED, null);;
+      new ReaderEvent(pluginName, localReaderName, ReaderEvent.EventType.CARD_INSERTED, null);
   static final MessageDto response =
-      new MessageDto().setAction(MessageDto.Action.SET_DEFAULT_SELECTION.name());;
+      new MessageDto().setAction(MessageDto.Action.SET_DEFAULT_SELECTION.name());
 
-  static final ExecutorService notificationPool = Executors.newCachedThreadPool();;
+  static final ExecutorService notificationPool = Executors.newCachedThreadPool();
 
   final ArgumentCaptor<MessageDto> messageArgumentCaptor =
       ArgumentCaptor.forClass(MessageDto.class);
@@ -71,15 +71,15 @@ public class ObservableRemoteReaderImplTest {
 
   @Test
   public void addObserver_count_removeObserver() {
-    assertThat(reader.countObservers()).isEqualTo(0);
+    assertThat(reader.countObservers()).isZero();
     reader.addObserver(observer);
     assertThat(reader.countObservers()).isEqualTo(1);
     reader.removeObserver(observer);
-    assertThat(reader.countObservers()).isEqualTo(0);
+    assertThat(reader.countObservers()).isZero();
     reader.addObserver(observer);
     assertThat(reader.countObservers()).isEqualTo(1);
     reader.clearObservers();
-    assertThat(reader.countObservers()).isEqualTo(0);
+    assertThat(reader.countObservers()).isZero();
   }
 
   @Test
@@ -91,7 +91,7 @@ public class ObservableRemoteReaderImplTest {
         .until(
             new Callable<Boolean>() {
               @Override
-              public Boolean call() throws Exception {
+              public Boolean call() {
                 return ((MockObserver) observer).getEvent().equals(event);
               }
             });
@@ -100,6 +100,7 @@ public class ObservableRemoteReaderImplTest {
   @Test
   public void notifyEvent_to_ZeroObserver_doNothing() {
     reader.notifyObservers(event);
+    assertThat(reader.countObservers()).isZero();
   }
 
   @Test

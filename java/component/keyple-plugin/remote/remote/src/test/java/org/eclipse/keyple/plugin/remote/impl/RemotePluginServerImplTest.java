@@ -27,7 +27,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
-public class RemotePluginServerImplTest extends RemoteServerBaseTest {
+public class RemotePluginServerImplTest extends RemoteServerBase {
 
   String pluginName = "pluginName";
 
@@ -84,11 +84,11 @@ public class RemotePluginServerImplTest extends RemoteServerBaseTest {
   public void addObserver_removeObserver() {
     assertThat(remotePlugin.countObservers()).isEqualTo(1);
     remotePlugin.removeObserver(pluginObserver);
-    assertThat(remotePlugin.countObservers()).isEqualTo(0);
+    assertThat(remotePlugin.countObservers()).isZero();
     remotePlugin.addObserver(pluginObserver);
     assertThat(remotePlugin.countObservers()).isEqualTo(1);
     remotePlugin.clearObservers();
-    assertThat(remotePlugin.countObservers()).isEqualTo(0);
+    assertThat(remotePlugin.countObservers()).isZero();
   }
 
   @Test
@@ -98,8 +98,9 @@ public class RemotePluginServerImplTest extends RemoteServerBaseTest {
     remotePlugin.onMessage(message);
     AbstractRemoteReaderServer remoteReader =
         (AbstractRemoteReaderServer) remotePlugin.getReaders().values().iterator().next();
-    assertThat(remoteReader).isOfAnyClassIn(RemoteReaderServerImpl.class);
-    assertThat(remoteReader).isNotExactlyInstanceOf(ObservableReader.class);
+    assertThat(remoteReader)
+        .isOfAnyClassIn(RemoteReaderServerImpl.class)
+        .isNotExactlyInstanceOf(ObservableReader.class);
     assertThat(remoteReader.getServiceId()).isEqualTo(serviceId);
     assertThat(remoteReader.getName()).isNotEmpty();
     await().atMost(1, TimeUnit.SECONDS).until(validReaderConnectEvent());
@@ -119,7 +120,7 @@ public class RemotePluginServerImplTest extends RemoteServerBaseTest {
   }
 
   @Test
-  public void terminateService_onRemoteReader_withObserver_doNotdeleteRemoteReader() {
+  public void terminateService_onRemoteReader_withObserver_doNotDeleteRemoteReader() {
 
     // executing remote service creates a remote reader
     String sessionId0 = UUID.randomUUID().toString();
@@ -151,7 +152,7 @@ public class RemotePluginServerImplTest extends RemoteServerBaseTest {
     MessageDto terminateServiceMsg = messageArgumentCaptor.getValue();
     assertThat(terminateServiceMsg.getSessionId()).isEqualTo(sessionId0);
     validateTerminateServiceResponse(terminateServiceMsg, true);
-    assertThat(remotePlugin.getReaders()).hasSize(0);
+    assertThat(remotePlugin.getReaders()).isEmpty();
   }
 
   @Test
@@ -252,6 +253,6 @@ public class RemotePluginServerImplTest extends RemoteServerBaseTest {
     assertThat(terminateServiceMsg.getSessionId()).isEqualTo(sessionId1);
     validateTerminateServiceResponse(terminateServiceMsg, true);
 
-    assertThat(remotePlugin.getReaders()).hasSize(0); // every reader is removed
+    assertThat(remotePlugin.getReaders()).isEmpty(); // every reader is removed
   }
 }

@@ -117,8 +117,9 @@ public class LocalServiceClientTest extends BaseLocalTest {
             .withoutReaderObservation()
             .getService();
 
-    assertThat(service).isNotNull();
-    assertThat(service).isEqualTo(LocalServiceClientUtils.getLocalService(localServiceName));
+    assertThat(service)
+        .isNotNull()
+        .isEqualTo(LocalServiceClientUtils.getLocalService(localServiceName));
   }
 
   @Test
@@ -133,8 +134,9 @@ public class LocalServiceClientTest extends BaseLocalTest {
             .getService();
 
     // assert
-    assertThat(service).isNotNull();
-    assertThat(service).isEqualTo(LocalServiceClientUtils.getLocalService(localServiceName));
+    assertThat(service)
+        .isNotNull()
+        .isEqualTo(LocalServiceClientUtils.getLocalService(localServiceName));
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -255,8 +257,7 @@ public class LocalServiceClientTest extends BaseLocalTest {
         .isEqualToComparingFieldByFieldRecursively(matchingCard);
 
     // verify output
-    assertThat(output).isNotNull();
-    assertThat(output).isEqualToComparingFieldByField(outputData);
+    assertThat(output).isNotNull().isEqualToComparingFieldByField(outputData);
   }
 
   @Test
@@ -274,12 +275,11 @@ public class LocalServiceClientTest extends BaseLocalTest {
     // test
     localClientService.update(readerEvent);
 
-    assertThat(((SyncEndpointClientMock) syncClientEndpoint).getRequests().size()).isEqualTo(0);
+    assertThat(((SyncEndpointClientMock) syncClientEndpoint).getRequests().size()).isZero();
   }
 
   @Test
-  public void onUpdate_withSyncNode_unregisterReader()
-      throws NoSuchFieldException, IllegalAccessException {
+  public void onUpdate_withSyncNode_unregisterReader() {
     // init
     syncClientEndpoint = new SyncEndpointClientMock(2);
     LocalServiceClientImpl localClientService =
@@ -310,7 +310,7 @@ public class LocalServiceClientTest extends BaseLocalTest {
     // output is verified in eventFilter
 
     // assert that remote reader is unregister as required by the terminate service
-    assertThat(getMapOfRemoteReaderByLocalName(localClientService)).hasSize(0);
+    assertThat(getMapOfRemoteReaderByLocalName(localClientService)).isEmpty();
   }
 
   /*

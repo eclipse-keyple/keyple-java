@@ -411,8 +411,7 @@ public class SyncNodeServerTest extends AbstractSyncNodeTest {
     List<MessageDto> responses = node.onRequest(msg3);
     verify(handler).onMessage(msg);
     verifyNoMoreInteractions(handler);
-    assertThat(serverTask1.response).isSameAs(msg3);
-    assertThat(serverTask1.response).isEqualToComparingFieldByField(msg3);
+    assertThat(serverTask1.response).isSameAs(msg3).isEqualToComparingFieldByField(msg3);
     assertThat(responses).containsExactly(msg4);
   }
 

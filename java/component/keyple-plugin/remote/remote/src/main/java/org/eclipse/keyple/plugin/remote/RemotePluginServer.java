@@ -17,7 +17,6 @@ import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservablePlugin;
 import org.eclipse.keyple.core.service.event.PluginEvent;
-import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.plugin.remote.impl.RemotePluginServerFactory;
 import org.eclipse.keyple.plugin.remote.impl.RemotePluginServerUtils;
 
@@ -91,7 +90,7 @@ public interface RemotePluginServer extends ObservablePlugin {
    * @since 1.0
    */
   @Override
-  RemoteReaderServer getReader(String name) throws KeypleReaderNotFoundException;
+  RemoteReaderServer getReader(String name);
 
   /**
    * Must be invoked to terminates the remote ticketing service associated to the provided remote

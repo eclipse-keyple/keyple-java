@@ -219,9 +219,8 @@ final class LocalServiceClientImpl extends AbstractLocalService
     } catch (DoNotPropagateEventException e) {
       // do not throw event
       logger.info(
-          "The propagation of the reader event ["
-              + event.getEventType().name()
-              + "] is cancelled by the user's event filter");
+          "The propagation of the reader event [{}] is cancelled by the user's event filter",
+          event.getEventType().name());
       return;
     }
 

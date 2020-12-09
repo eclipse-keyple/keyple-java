@@ -89,6 +89,8 @@ abstract class AbstractLocalService extends AbstractMessageHandler {
    */
   private static final class LocalReaderExecutor {
 
+    private static final String POLLING_MODE = "pollingMode";
+
     private final ProxyReader reader;
     private final MessageDto msg;
     private final MessageDto.Action action;
@@ -240,7 +242,7 @@ abstract class AbstractLocalService extends AbstractMessageHandler {
      */
     private MessageDto setDefaultSelection() {
 
-      ObservableReader reader = (ObservableReader) this.reader;
+      ObservableReader observableReader = (ObservableReader) this.reader;
 
       // Extract info from the message
       JsonObject body = KeypleGsonParser.getParser().fromJson(msg.getBody(), JsonObject.class);
@@ -256,8 +258,7 @@ abstract class AbstractLocalService extends AbstractMessageHandler {
       boolean hasPollingMode = false;
       ObservableReader.PollingMode pollingMode = null;
 
-      String pollingModeJson =
-          body.has("pollingMode") ? body.get("pollingMode").getAsString() : null;
+      String pollingModeJson = body.has(POLLING_MODE) ? body.get(POLLING_MODE).getAsString() : null;
       if (pollingModeJson != null) {
         hasPollingMode = true;
         pollingMode = ObservableReader.PollingMode.valueOf(pollingModeJson);
@@ -266,7 +267,7 @@ abstract class AbstractLocalService extends AbstractMessageHandler {
       if (logger.isTraceEnabled()) {
         logger.trace(
             "Execute locally set DefaultSelectionExecutor on reader : {} with params {} {} {}",
-            reader.getName(),
+            observableReader.getName(),
             defaultSelectionsRequest,
             notificationMode != null ? notificationMode : "no-notificationMode",
             hasPollingMode ? pollingMode : "no-pollingMode");
@@ -274,9 +275,10 @@ abstract class AbstractLocalService extends AbstractMessageHandler {
 
       // Execute the action on the reader
       if (hasPollingMode) {
-        reader.setDefaultSelectionRequest(defaultSelectionsRequest, notificationMode, pollingMode);
+        observableReader.setDefaultSelectionRequest(
+            defaultSelectionsRequest, notificationMode, pollingMode);
       } else {
-        reader.setDefaultSelectionRequest(defaultSelectionsRequest, notificationMode);
+        observableReader.setDefaultSelectionRequest(defaultSelectionsRequest, notificationMode);
       }
 
       // Build response
@@ -330,7 +332,7 @@ abstract class AbstractLocalService extends AbstractMessageHandler {
       JsonObject body = KeypleGsonParser.getParser().fromJson(msg.getBody(), JsonObject.class);
 
       ObservableReader.PollingMode pollingMode =
-          ObservableReader.PollingMode.valueOf(body.get("pollingMode").getAsString());
+          ObservableReader.PollingMode.valueOf(body.get(POLLING_MODE).getAsString());
 
       // Execute the action on the reader
       ((ObservableReader) reader).startCardDetection(pollingMode);

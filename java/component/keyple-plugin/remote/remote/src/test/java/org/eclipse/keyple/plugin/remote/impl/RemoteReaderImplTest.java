@@ -242,7 +242,7 @@ public class RemoteReaderImplTest {
   }
 
   @Test
-  public void releaseChannel_whenOk_shouldCallTheHandlerAndReturnResponses() {
+  public void releaseChannel_whenOk_shouldCallTheNodeAndReturnNoResponses() {
 
     // init response
     MessageDto responseDto =
@@ -255,6 +255,8 @@ public class RemoteReaderImplTest {
 
     // execute
     reader.releaseChannel();
+    verify(node).sendRequest(any(MessageDto.class));
+    verifyNoMoreInteractions(node);
   }
 
   @Test(expected = NodeCommunicationException.class)

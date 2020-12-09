@@ -20,7 +20,6 @@ import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.event.PluginEvent;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
-import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.json.KeypleGsonParser;
@@ -40,6 +39,7 @@ import org.slf4j.LoggerFactory;
 final class RemotePluginServerImpl extends AbstractRemotePlugin implements RemotePluginServer {
 
   private static final Logger logger = LoggerFactory.getLogger(RemotePluginServerImpl.class);
+  private static final String USER_INPUT_DATA = "userInputData";
 
   private final ExecutorService eventNotificationPool;
 
@@ -72,7 +72,7 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
    * @since 1.0
    */
   @Override
-  ConcurrentMap<String, Reader> initNativeReaders() throws KeypleReaderIOException {
+  ConcurrentMap<String, Reader> initNativeReaders() {
     return new ConcurrentHashMap<String, Reader>();
   }
 
@@ -133,7 +133,7 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
         (AbstractRemoteReaderServer) getReader(remoteReaderName);
 
     // keep remote reader if observable and has observers
-    Boolean unregisterRemoteReader = false;
+    boolean unregisterRemoteReader = false;
 
     if (!(remoteReader instanceof ObservableRemoteReaderServer)) {
       // not a observable, remove it and unregister
@@ -183,7 +183,7 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
    * @since 1.0
    */
   @Override
-  public RemoteReaderServer getReader(String name) throws KeypleReaderNotFoundException {
+  public RemoteReaderServer getReader(String name) {
     Assert.getInstance().notNull(name, "reader name");
     RemoteReaderServer seReader = (RemoteReaderServer) readers.get(name);
     if (seReader == null) {
@@ -200,7 +200,8 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
   @Override
   public void addObserver(PluginObserver observer) {
     Assert.getInstance().notNull(observer, "Plugin Observer");
-    if (observers.add(observer) && logger.isTraceEnabled()) {
+    observers.add(observer);
+    if (logger.isTraceEnabled()) {
       logger.trace(
           "[{}] Added plugin observer '{}'", getName(), observer.getClass().getSimpleName());
     }
@@ -274,7 +275,7 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
         KeypleGsonParser.getParser().fromJson(message.getBody(), JsonObject.class);
     final String serviceId = body.get("serviceId").getAsString();
     final String userInputData =
-        body.has("userInputData") ? body.get("userInputData").toString() : null;
+        body.has(USER_INPUT_DATA) ? body.get(USER_INPUT_DATA).toString() : null;
     final String initialCardContent =
         body.has("initialCardContent") ? body.get("initialCardContent").toString() : null;
     boolean isObservable = body.has("isObservable") && body.get("isObservable").getAsBoolean();
@@ -320,7 +321,7 @@ final class RemotePluginServerImpl extends AbstractRemotePlugin implements Remot
     final JsonObject body =
         KeypleGsonParser.getParser().fromJson(message.getBody(), JsonObject.class);
 
-    String userInputData = body.has("userInputData") ? body.get("userInputData").toString() : null;
+    String userInputData = body.has(USER_INPUT_DATA) ? body.get(USER_INPUT_DATA).toString() : null;
 
     ObservableRemoteReaderImpl observableRemoteReader =
         new ObservableRemoteReaderImpl(
