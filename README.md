@@ -11,9 +11,9 @@ This is the repository for the Java implementation of the 'Eclipse Keyple' API. 
    - [Keyple Calypso - features / packages and corresponding usages](#keyple-calypso---features--packages-and-corresponding-usages)
  - [Getting started](#getting-started)
    - [Cloning this project](#cloning-this-project)
-   - [Import keyple components with Gradle](#import-keyple-components-with-gradle)
+   - [Import keyple components with Gradle](#import-keyple-components-in-your-project)
  - [Artifacts](#artifacts)
- - [Building the Keyple components](#)
+ - [Building the Keyple components](#building-the-keyple-components)
    - [Java components](#java-components)
    - [Android components](#android-components)
  - [CI and Docker](#ci-and-docker)
@@ -24,14 +24,14 @@ This is the repository for the Java implementation of the 'Eclipse Keyple' API. 
 ![global architecture](docs/img/Keyple-components.svg "keyple SDK global architecture")
 
 The API is currently divided in two major layers:
-- The ‘Keyple Core' : a Secure Element Proxy API which allows managing SE readers in a generic way, whaterver the reader driver or environment, and for standalone or distributed solution.
+- The ‘Keyple Core' : a Smart Card Proxy API which allows managing SE readers in a generic way, whaterver the reader driver or environment, and for standalone or distributed solution.
 - A ‘Calypso Keyple extension' : a high level Calypso Processing API allowing to operate commands with a Calypso Portable Object, and to manage a secure Calypso transaction.
 
-Dedicated reader’s plugins have to be implemented in order to interface the SE Proxy API with the specific reader’s drivers.
+Dedicated reader’s plugins have to be implemented in order to interface the Plugin API with the specific reader’s drivers.
 
-API guides for the Keyple Core and Keyple Calypso are available on [keyple.org](https://keyple.org/).
+API guides for the Keyple Core and Keyple Calypso are available on the [official documentation page](https://keyple.org/docs).
 
-For a distributed architecture, the Remote SE Plugin should be used ([Keyple Remote SE User Guide](./docs/KeypleRemoteSe_UserGuide.md)). In version 0.9 the SE Plugin is still proposed as a draft, a simpler API will be provided in the version 1.0 alpha 1 in October 2020.
+For a distributed architecture, the Remote Plugin should be used : [Keyple Remote Plugin](/java/component/keyple-plugin/remote).
 
 ### Supported platforms
 - Java SE 1.6 compact2
@@ -40,7 +40,7 @@ For a distributed architecture, the Remote SE Plugin should be used ([Keyple Rem
 ### keyple-java repositories structure
 
 - Modules that are provided as artifacts
-  - keyple-core: source and unit tests for the SE Proxy module (artifact : keyple-java-core)
+  - keyple-core: source and unit tests for the Smart Card Proxy module (artifact : keyple-java-core)
   - keyple-calypso: source and unit tests for the Calypso library (artifact : keyple-java-calypso)
   - keyple-plugin: source and unit tests for the different plugins: smartcard.io PC/SC, Stub, Android NFC, Android OMAPI, etc.
 - developer support, testing
@@ -51,11 +51,9 @@ For a distributed architecture, the Remote SE Plugin should be used ([Keyple Rem
 The Keyple Core is the basic component of Keyple to handle secure element reader and to operate generic processing with Secure Elements. On Keyple, secure element readers are interfaced through specific reader plugins.
 
 The Core is divided in 3 sub-modules:
-- Reader: includes the API to access and manage a SE reader.
+- Reader: includes the API to access and manage a reader.
 - Plugin: provides factorized processing for the implementation of reader plugin.
-- SE: the generic operation for Secure Element.
-
-(Starting from the version 1.0 of Keyple Core, the sub-modules will be provided in different artifacts with their own versioning).
+- Card: the generic operation for smart cards.
 
 According to the developer’s objective different API must be imported:
 - for the implementation of a secure element terminal application, only the high-level API of the ‘reader’ and ‘SE’ modules.
@@ -184,18 +182,12 @@ The only exception is the implementation a Calypso PO/SAM test tool, the setting
 Releases and snapshots are available from Maven central repositories.
 
 ### Cloning this project
-Examples provided in this project relies on symbolic links to handle their common dependencies. (Please refer to this [file](/java/example/README.md) for more information).
+This repository includes Java, Android examples of Eclipse Keyple use cases : [Keyple Examples](/java/example)
 
-Although symlink support should be provided out of the box for Unix users, **Windows users** should be aware that the git option `core.symlinks` needs to be enabled before [cloning](https://help.github.com/en/articles/cloning-a-repository) this repo. Several solutions can be considered:
-- When installing git for Windows, an option `Enable symbolic links` can be choosen. If it has not been enabled and you want to set it via the installer, a reinstallation is needed
-- If you do not want to reinstall git, this option can be enabled afterward via the command line `git config core.symlinks true`
-- Also, the option can be enabled once only for this specific cloning operation with `git clone -c core.symlinks=true REPO_URL`
 
-It is important to note that for this option to be actually working, the Windows user needs to have the **_SeCreateSymbolicLink_ permission**: a user with admin rights is typically granted with this permission.
+### Import keyple components in your project
 
-### Import keyple components with Gradle
-
-When using gradle, it is fairly simple to import Keyple components into your project. Just add the following statements to your build.gradle file :
+With Gradle, add the following statements to your build.gradle file :
 
 ```
 repositories {
@@ -207,30 +199,63 @@ repositories {
 }
 
 dependencies {
-     //Keyple core is a mandatory library for using Keyple, in this case import the last version of keyple-java-core
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: '0.8.1'
-
-    //Import Calypso library to support Calypso Portable Object, in this case import the last version of keyple-java-calypso
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: '0.8.1'
-   
-    //Import PCSC library to use a Pcsc reader, in this case import the last version of keyple-java-plugin-pcsc
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-pcsc', version: '0.8.1'
-    ...
+    // Keyple Core is a mandatory library for using Keyple, in this case import the last version of keyple-java-core
+    // https://mvnrepository.com/artifact/org.eclipse.keyple/keyple-java-core
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: '1.0.0'
+    
+    // Import Calypso library to support Calypso Portable Object, in this case import the last version of keyple-java-calypso
+    // https://mvnrepository.com/artifact/org.eclipse.keyple/keyple-java-calypso
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: '1.0.0'
+    
+    // Import PCSC library to use a Pcsc reader, in this case import the last version of keyple-java-plugin-pcsc
+    // https://mvnrepository.com/artifact/org.eclipse.keyple/keyple-java-plugin-pcsc    
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-pcsc', version: '1.0.0'
 }
 ```
+
+With Maven, add the following statements to your pom.xml file :
+
+````maven
+<dependencies>
+    <!-- Keyple Core is a mandatory library for using Keyple, in this case import the last version of keyple-java-plugin-pcsc -->
+    <!-- https://mvnrepository.com/artifact/org.eclipse.keyple/keyple-java-core -->
+    <dependency>
+        <groupId>org.eclipse.keyple</groupId>
+        <artifactId>keyple-java-core</artifactId>
+        <version>1.0.0</version>
+    </dependency>
+    
+    <!-- Import Calypso library to support Calypso Portable Object, in this case import the last version of keyple-java-plugin-pcsc -->
+    <!-- https://mvnrepository.com/artifact/org.eclipse.keyple/keyple-java-calypso -->
+    <dependency>
+        <groupId>org.eclipse.keyple</groupId>
+        <artifactId>keyple-java-calypso</artifactId>
+        <version>1.0.0</version>
+    </dependency>
+    
+    <!-- Import PCSC library to use a Pcsc reader, in this case import the last version of keyple-java-plugin-pcsc -->
+    <!-- https://mvnrepository.com/artifact/org.eclipse.keyple/keyple-java-plugin-pcsc -->
+    <dependency>
+        <groupId>org.eclipse.keyple</groupId>
+        <artifactId>keyple-java-plugin-pcsc</artifactId>
+        <version>1.0.0</version>
+    </dependency>
+    ...
+</dependencies>
+````
 
 ## Artifacts
 The Eclipse Keyple Java artifacts are published on the Eclipse Keyple Project page [https://projects.eclipse.org/projects/iot.keyple/downloads] (available also on Maven).
 
 - Keyple modules:
-  - **'Keyple Core module' JAR**:  the generic API to manage Secure Element Readers and to select SE application.
+  - **'Keyple Core module' JAR**:  the generic API to manage Readers and to select Smart card application.
   - **'Keyple Calypso Library JAR'**: the Calypso API to operate a transaction with a Calypso Portable Object.
 - Keyple plugins:
   - **'Keyple PC/SC plugin JAR'**: to manage PC/SC readers on a PC environment supporting the # javax.smartcardio API
   - **'Keyple NFC Android plugin AAR'**: to operate the contactless reader of an Android Environment supporting the android.nfc API 
   - **'Keyple OMAPI Android plugin AAR'**: to operate the internal contacts readers of an Android Environment supporting the OMAPI 
   - **'Keyple "stub" plugin JAR'**: plugin to simulate the presence of fake readers with or without fake cards
-  - **'Keyple "Remote SE" plugin JARs'**: plugin & service to manage a SE remotely in a transparent way.
+  - **'Keyple "Remote" plugin JARs'**: plugin & service to manage a smart card remotely in a transparent way.
 
 ## Building the Keyple components
 
