@@ -24,7 +24,7 @@ This is the repository for the Java implementation of the 'Eclipse Keyple' API. 
 ![global architecture](docs/img/Keyple-components.svg "keyple SDK global architecture")
 
 The API is currently divided in two major layers:
-- The ‘Keyple Core' : a Smart Card Proxy API which allows managing SE readers in a generic way, whaterver the reader driver or environment, and for standalone or distributed solution.
+- The ‘Keyple Core' : a smart card API which allows managing smart card readers in a generic way, whaterver the reader driver or environment, and for standalone or distributed solution.
 - A ‘Calypso Keyple extension' : a high level Calypso Processing API allowing to operate commands with a Calypso Portable Object, and to manage a secure Calypso transaction.
 
 Dedicated reader’s plugins have to be implemented in order to interface the Plugin API with the specific reader’s drivers.
@@ -40,25 +40,26 @@ For a distributed architecture, the Remote Plugin should be used : [Keyple Remot
 ### keyple-java repositories structure
 
 - Modules that are provided as artifacts
-  - keyple-core: source and unit tests for the Smart Card Proxy module (artifact : keyple-java-core)
+  - keyple-core: source and unit tests for the smart card module (artifact : keyple-java-core)
   - keyple-calypso: source and unit tests for the Calypso library (artifact : keyple-java-calypso)
   - keyple-plugin: source and unit tests for the different plugins: smartcard.io PC/SC, Stub, Android NFC, Android OMAPI, etc.
 - developer support, testing
-  - example: source for Keyple implementation examples, generic or Calypso specific.
+  - [example](/java/example): source for Keyple implementation examples, generic or Calypso specific.
 
 ### Keyple Core - features / packages and corresponding usages
 
-The Keyple Core is the basic component of Keyple to handle secure element reader and to operate generic processing with Secure Elements. On Keyple, secure element readers are interfaced through specific reader plugins.
+The Keyple Core is the basic component of Keyple to handle smart card reader and to operate generic processing with Secure Elements. On Keyple, secure element readers are interfaced through specific reader plugins.
 
 The Core is divided in 3 sub-modules:
 - Reader: includes the API to access and manage a reader.
-- Plugin: provides factorized processing for the implementation of reader plugin.
+- Plugin: provides factorized processing for the implementation of plugin.
 - Card: the generic operation for smart cards.
+- Service: the main service of Keyple : SmartCardService
 
 According to the developer’s objective different API must be imported:
-- for the implementation of a secure element terminal application, only the high-level API of the ‘reader’ and ‘SE’ modules.
+- for the implementation of a smart card terminal application, only the high-level API of the ‘reader’ and ‘card’ modules.
 - to implement a plugin, all the ‘reader’ API and the low-level ‘plugin’ API.
-- to develop a dedicated library supporting the command sets and transaction features of a specific secure element solution, the low-level ‘reader’ and ‘SE’ API.
+- to develop a dedicated library supporting the command sets and transaction features of a specific smart card solution, the low-level ‘reader’ and ‘card’ API.
 
 <table>
 <thead>
@@ -71,62 +72,61 @@ According to the developer’s objective different API must be imported:
 </thead>
 <tbody>
   <tr>
-    <td rowspan="4">reader</td>
-    <td>org.eclipse.keyple.core.<b>seproxy</b></td>
+    <td rowspan="4">Reader</td>
+    <td>org.eclipse.keyple.core.<b>service</b></td>
     <td>high</td>
     <td>Management of the smart card readers<br/>
-      <ul><li>Registration of plugins to the SE Proxy Service<br/></li>
+      <ul><li>Registration of plugins to the smart card Service<br/></li>
         <li>Access to the readers through plugins</li></ul></td>
   </tr>
   <tr>
-    <td>org.eclipse.keyple.core.seproxy.<b>event</b></td>
+    <td>org.eclipse.keyple.core.service.<b>event</b></td>
     <td>high</td>
-    <td>Notifications of reader plug/unplug, of SE insertion/removed<br/>
+    <td>Notifications of reader plug/unplug, of smart card insertion/removed<br/>
       <ul><li>Define observers of plugins or readers<br/></li>
         <li>Interface to be implemented by observers to be notified on plugin event or reader event<br/></li>
-        <li>For observable reader, setting of default selections, to automatically operate in case of SE insertion</li></ul></td>
+        <li>For observable reader, setting of default selections, to automatically operate in case of smart card insertion</li></ul></td>
   </tr>
   <tr>
-    <td>org.eclipse.keyple.core.seproxy.<b>protocol</b></td>
+    <td>org.eclipse.keyple.core.service.util</td>
     <td>high</td>
-    <td>Communication protocols setting for contactless/contacts SE Reader</td>
+    <td>Communication protocols setting for contactless/contacts Reader</td>
   </tr>
   <tr>
-    <td>org.eclipse.keyple.core.seproxy.<b>message</b></td>
+    <td>org.eclipse.keyple.card.<b>message</b></td>
     <td>low</td>
-    <td>Transmission of grouped APDU commands to a SE Reader</td>
+    <td>Transmission of grouped APDU commands to a Reader</td>
   </tr>
   <tr>
-    <td>plugin</td>
-    <td>org.eclipse.keyple.core.seproxy.<b>plugin</b><br/>
-      org.eclipse.keyple.core.seproxy.<b>plugin</b>.reader</td>
+    <td>Plugin</td>
+    <td>org.eclipse.keyple.core.<b>plugin</b><br/>
     <td>low</td>
     <td>Reader plugins implementation<br/>
-      <ul><li>Utility classes providing generic processing for SE Reader Plugins</li></ul></td>
+      <ul><li>Utility classes providing generic processing for Readers </li></ul></td>
   </tr>
   <tr>
-    <td rowspan="2">SE</td>
-    <td>org.eclipse.keyple.core.<b>selection</b></td>
+    <td rowspan="2">Smart card</td>
+    <td>org.eclipse.keyple.card.<b>selection</b></td>
     <td>high</td>
-    <td>Generic selection of a Secure Element<br/>
-      <ul><li>preparation of SE selection requests<br></li>
-        <li>matching selection results as SE images</li></ul></td>
+    <td>Generic selection of a smart card<br/>
+      <ul><li>preparation of smart card selection requests<br></li>
+        <li>matching selection results as smart card images</li></ul></td>
   </tr>
   <tr>
-    <td>org.eclipse.keyple.core.<b>command</b></td>
+    <td>org.eclipse.keyple.core.card.<b>command</b></td>
     <td>low</td>
-    <td>Generic API to develop a SE specific library</td>
+    <td>Generic API to develop a smart card specific library</td>
   </tr>
 </tbody>
 </table>
 
-A terminal application operating secure element must only import the Keyple Core packages: ‘seproxy’, ‘event’, ‘protocol’ and ‘selection’.
+A terminal application operating smart card must only import the Keyple Core packages: ‘service’ and ‘card’.
 
-![generic packages](docs/img/KeyplePackages_Core.svg "Keyple generic packages")
+![generic packages](docs/img/KeyplePackages_Core.svg "Keyple generic packages") //TODO regenerate diagrams
 
-A reader plugin could be implemented by importing the ‘plugin’, ‘message’ and ‘seproxy’ packages.
+A reader plugin could be implemented by importing the ‘plugin’, ‘card’ and ‘service’ packages.
 
-A secure element specific library could be implemented on top of the ‘message’ and ‘command’ packages.
+A smart card specific library could be implemented on top of the ‘card’ package.
 
 ### Keyple Calypso - features / packages and corresponding usages
 
@@ -172,7 +172,7 @@ The transaction API is defined on a low-level Calypso commands API which contain
 
 Ticketing terminal applications must import only the high-level Calypso transaction package.
 
-![Calypso packages](docs/img/KeyplePackages_Calypso.svg "Calypso packages")
+![Calypso packages](docs/img/KeyplePackages_Calypso.svg "Calypso packages") 
 
 The only exception is the implementation a Calypso PO/SAM test tool, the setting of low-level APDU commands with wrong settings could require the usage of the Calypso command packages.
 
@@ -183,7 +183,6 @@ Releases and snapshots are available from Maven central repositories.
 
 ### Cloning this project
 This repository includes Java, Android examples of Eclipse Keyple use cases : [Keyple Examples](/java/example)
-
 
 ### Import keyple components in your project
 
@@ -269,7 +268,6 @@ Here are the prerequisites to build the keyple components (jars)
 - Maven (any version) [available here](https://maven.apache.org/install.html)
 - Gradle (any version as we use the gradle wrapper) [available here](https://gradle.org/install/)
 
-
 #### Windows, Linux or Macos
 Following commands will build all the artifacts at once and install them into the local maven repository.  
 ```
@@ -279,7 +277,7 @@ Following commands will build all the artifacts at once and install them into th
 ### Android components
 If you want to build the keyple android components (aar plugins), you need : 
 - Java JDK 1.6, 1.7 or 1.8 (Java 11 is not supported yet)
-- Intellij 2018 community version or Android Studio 3.0
+- Intellij 2018+ community version or Android Studio 3.0
 - Android sdk 26 should be installed on your machine [follow those instructions](http://www.androiddocs.com/sdk/installing/index.html)
 - Gradle (any version as we use the gradle wrapper) [available here](https://gradle.org/install/)
 
