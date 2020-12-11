@@ -13,8 +13,8 @@ package org.eclipse.keyple.example.generic.remote.server.websocket.client;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.websocket.*;
 import org.eclipse.keyple.core.util.json.KeypleGsonParser;
 import org.eclipse.keyple.example.generic.remote.server.websocket.server.EndpointServer;
@@ -44,7 +44,7 @@ public class EndpointClient implements AsyncEndpointClient {
 
   /** Constructor */
   public EndpointClient() {
-    openedSessions = new HashMap<>();
+    openedSessions = new ConcurrentHashMap<>();
   }
 
   /** {@inheritDoc} */

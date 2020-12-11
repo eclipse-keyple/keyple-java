@@ -11,8 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.integration.common.endpoint.service;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.eclipse.keyple.plugin.remote.MessageDto;
@@ -39,8 +39,8 @@ public class StubAsyncEndpointServer implements AsyncEndpointServer {
   private boolean simulateConnectionError;
 
   public StubAsyncEndpointServer() {
-    clients = new HashMap<String, StubAsyncEndpointClient>();
-    messageCounts = new HashMap<String, Integer>();
+    clients = new ConcurrentHashMap<String, StubAsyncEndpointClient>();
+    messageCounts = new ConcurrentHashMap<String, Integer>();
     taskPool = Executors.newCachedThreadPool(new NamedThreadFactory("server-async-pool"));
     simulateConnectionError = false;
   }
