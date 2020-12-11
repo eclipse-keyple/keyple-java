@@ -134,7 +134,9 @@ pipeline {
                 catchError(buildResult: 'SUCCESS', message: 'Unable to log code quality to Sonar.', stageResult: 'FAILURE') {
                     container('java-builder') {
                         withCredentials([string(credentialsId: 'sonarcloud-token', variable: 'SONAR_LOGIN')]) {
+                            sh './gradlew --stop'
                             sh './gradlew codeQuality --info'
+                            sh './gradlew --stop'
                         }
                     }
                 }
@@ -149,7 +151,9 @@ pipeline {
                     container('java-builder') {
                         dir('android') {
                             withCredentials([string(credentialsId: 'sonarcloud-token', variable: 'SONAR_LOGIN')]) {
-                                sh './gradlew codeQuality'
+                                sh './gradlew --stop'
+                                sh './gradlew codeQuality --info'
+                                sh './gradlew --stop'
                             }
                         }
                     }
