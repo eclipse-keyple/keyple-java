@@ -12,9 +12,9 @@
 package org.eclipse.keyple.plugin.remote.impl;
 
 import com.google.gson.JsonObject;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
+import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
@@ -187,6 +187,6 @@ final class PoolRemotePluginClientImpl extends AbstractRemotePlugin
    */
   @Override
   Map<String, Reader> initNativeReaders() {
-    return new HashMap<String, Reader>();
+    return new ConcurrentHashMap<String, Reader>();
   }
 }

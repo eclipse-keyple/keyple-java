@@ -11,8 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.stub;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -47,7 +47,7 @@ public abstract class StubSmartCard {
    */
   public abstract String getCardProtocol();
 
-  Map<String, String> hexCommands = new HashMap<String, String>();
+  Map<String, String> hexCommands = new ConcurrentHashMap<String, String>();
 
   /**
    * Add more simulated commands to the card Stub

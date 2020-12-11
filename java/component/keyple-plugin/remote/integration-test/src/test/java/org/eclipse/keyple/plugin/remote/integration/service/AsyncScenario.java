@@ -130,7 +130,6 @@ public class AsyncScenario extends BaseScenario {
    *
    * @since 1.0
    */
-  // TODO flaky
   @Test
   @Override
   public void execute_multiclient_remoteselection_remoteTransaction_successful() {

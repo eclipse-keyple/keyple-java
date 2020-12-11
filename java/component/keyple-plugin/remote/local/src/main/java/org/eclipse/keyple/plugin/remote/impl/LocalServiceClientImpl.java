@@ -13,8 +13,8 @@ package org.eclipse.keyple.plugin.remote.impl;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.keyple.core.card.message.ProxyReader;
 import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.service.event.ObservableReader;
@@ -58,7 +58,7 @@ final class LocalServiceClientImpl extends AbstractLocalService
     super();
     this.withReaderObservation = withReaderObservation;
     this.eventFilter = eventFilter;
-    this.remoteReaderByLocalName = new HashMap<String, String>();
+    this.remoteReaderByLocalName = new ConcurrentHashMap<String, String>();
   }
 
   /**
@@ -75,7 +75,7 @@ final class LocalServiceClientImpl extends AbstractLocalService
       String serviceName, boolean withReaderObservation, ObservableReaderEventFilter eventFilter) {
 
     if (serviceByName == null) {
-      serviceByName = new HashMap<String, LocalServiceClientImpl>();
+      serviceByName = new ConcurrentHashMap<String, LocalServiceClientImpl>();
     }
     if (serviceByName.containsKey(serviceName)) {
       throw new IllegalArgumentException(

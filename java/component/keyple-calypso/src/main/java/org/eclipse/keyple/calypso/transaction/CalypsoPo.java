@@ -12,6 +12,7 @@
 package org.eclipse.keyple.calypso.transaction;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
@@ -83,10 +84,11 @@ public class CalypsoPo extends AbstractSmartCard {
   private final int modificationsCounterMax;
   private boolean modificationCounterIsInBytes = true;
   private DirectoryHeader directoryHeader;
-  private final Map<Byte, ElementaryFile> efBySfi = new HashMap<Byte, ElementaryFile>();
-  private final Map<Byte, ElementaryFile> efBySfiBackup = new HashMap<Byte, ElementaryFile>();
-  private final Map<Short, Byte> sfiByLid = new HashMap<Short, Byte>();
-  private final Map<Short, Byte> sfiByLidBackup = new HashMap<Short, Byte>();
+  private final Map<Byte, ElementaryFile> efBySfi = new ConcurrentHashMap<Byte, ElementaryFile>();
+  private final Map<Byte, ElementaryFile> efBySfiBackup =
+      new ConcurrentHashMap<Byte, ElementaryFile>();
+  private final Map<Short, Byte> sfiByLid = new ConcurrentHashMap<Short, Byte>();
+  private final Map<Short, Byte> sfiByLidBackup = new ConcurrentHashMap<Short, Byte>();
   private Boolean isDfRatified = null;
   private Integer pinAttemptCounter;
   private Integer svBalance;

@@ -13,6 +13,7 @@ package org.eclipse.keyple.plugin.remote.impl;
 
 import com.google.gson.JsonObject;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.keyple.core.card.message.ProxyReader;
 import org.eclipse.keyple.core.service.PoolPlugin;
 import org.eclipse.keyple.core.service.SmartCardService;
@@ -52,7 +53,7 @@ final class PoolLocalServiceServerImpl extends AbstractLocalService
    */
   static PoolLocalServiceServerImpl createInstance(String serviceName, String[] poolPluginNames) {
     if (serviceByName == null) {
-      serviceByName = new HashMap<String, PoolLocalServiceServerImpl>();
+      serviceByName = new ConcurrentHashMap<String, PoolLocalServiceServerImpl>();
     }
     if (serviceByName.containsKey(serviceName)) {
       throw new IllegalArgumentException(

@@ -14,6 +14,7 @@ package org.eclipse.keyple.plugin.remote.impl;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remote.MessageDto;
 import org.eclipse.keyple.plugin.remote.SyncNodeServer;
@@ -45,9 +46,9 @@ final class SyncNodeServerImpl extends AbstractNode implements SyncNodeServer {
   SyncNodeServerImpl(AbstractMessageHandler handler, int timeoutInSecond) {
     super(handler, timeoutInSecond);
     jsonParser = new JsonParser();
-    this.sessionManagers = new HashMap<String, SessionManager>();
-    this.pluginManagers = new HashMap<String, ServerPushEventManager>();
-    this.readerManagers = new HashMap<String, ServerPushEventManager>();
+    this.sessionManagers = new ConcurrentHashMap<String, SessionManager>();
+    this.pluginManagers = new ConcurrentHashMap<String, ServerPushEventManager>();
+    this.readerManagers = new ConcurrentHashMap<String, ServerPushEventManager>();
   }
 
   /**

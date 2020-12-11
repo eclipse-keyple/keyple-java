@@ -25,7 +25,6 @@ import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.PluginFactory;
 import org.eclipse.keyple.core.service.SmartCardService;
-import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.eclipse.keyple.core.util.json.KeypleGsonParser;
 import org.eclipse.keyple.plugin.remote.LocalServiceClient;
@@ -372,8 +371,6 @@ public class LocalServiceClientTest extends BaseLocalTest {
       this.field = field;
     }
   }
-
-  public interface ObservableProxyReader extends ProxyReader, ObservableReader {}
 
   public static class MatchingSeImpl extends AbstractSmartCard {
 
