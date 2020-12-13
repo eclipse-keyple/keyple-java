@@ -1,25 +1,66 @@
 # Keyple - Release Notes
 
-Releases:
- - Alpha [Keyple Java 20/next](#keyple-java-20next)
+## Releases:
+ - [Master - Keyple Java 20/12](#keyple-java-java-2012)
+ - [Master - Keyple Java 20/09](#keyple-java-java-2009)
  - [Patch - Keyple Java 20/05](#patch---keyple-java-2005)
  - [Master - Keyple Java 20/01](#master---keyple-java-2001)
  - [Master - Keyple Java 19/07](#master---keyple-java-1907)
 
+## Keyple Java 20/12
+Release train components:
+ - [keyple-java-core 1.0](#keyple-java-core-10)
+ - [keyple-java-calypso 1.0](#keyple-java-calypso-10)
+ - [keyple-java-plugin-pcsc 1.0](#keyple-java-plugin-pcsc-10)
+ - [keyple-java-plugin-stub 1.0](#keyple-java-plugin-stub-10)
+ - [keyple-java-plugin-remotese 1.0](#keyple-java-plugin-remotese-10)
+ - [keyple-android-plugin-android-nfc 1.0](#keyple-android-plugin-android-nfc-10)
+ - [keyple-android-plugin-android-omapi 1.0](#keyple-android-plugin-android-omapi-10)
 
-## Keyple Java 20/next
- - [keyple-java-core 0.9a](#keyple-java-core-09a)
- - [keyple-java-calypso 0.9a](#keyple-java-calypso-09a)
- - [keyple-java-plugin-pcsc 0.9a](#keyple-java-plugin-pcsc-09a)
- - [keyple-java-plugin-stub 0.9a](#keyple-java-plugin-stub-09a)
- - [keyple-java-plugin-remotese 0.9a](#keyple-java-plugin-remotese-09a)
- - [keyple-android-plugin-android-nfc 0.9a](#keyple-android-plugin-android-nfc-09a)
- - [keyple-android-plugin-android-omapi 0.9a](#keyple-android-plugin-android-omapi-09a)
+### keyple-java-core 1.0
+* KEYP-346,370 : reorganization and renaming of many packages and classes, all "SE" have been changed to "Card". 
+* KEYP-305 : improved plugin/reader API with register/unregister mechanisms, simplified settings
+* KEYP-324 : revised observation management in the Reader API
+* KEYP-332 : removed unused TIMEOUT events entries
+* KEYP-337 : added exception handlers management for observable plugins and readers
+* KEYP-360 : improved accessibility logic in the reader API
+* various other refactorings and improvements
+* fixed issues raised by Sonarqube
+* improved Javadoc
 
-### keyple-java-core 1.0a
-* KEYP-346 : reorganization and renaming of many packages and classes 
+### keyple-java-calypso 1.0
+* KEYP-346,370 : reorganization and renaming of many packages and classes, all "SE" have been changed to "Card", removed ProxyElement internal interface. 
+* KEYP-123 : added new method prepareSetCounter in PoTransaction
+* various other refactorings and improvements
+* fixed issues raised by Sonarqube
+* improved Javadoc
 
-### keyple-java-core 0.9a
+### keyple-java-plugin-pcsc 1.0
+* KEYP-305 : update observation mechanisms, added specific settings
+* KEYP-336 : revised protocol identification management 
+* KEYP-361 : improved OS specific constraints (MacOS, Windows, Linux)
+* various other refactorings and improvements
+
+### keyple-java-plugin-stub 1.0
+* KEYP-305 : update observation mechanisms 
+* various other refactorings and improvements
+
+
+### keyple-java-plugin-remote 1.0
+### keyple-android-plugin-android-nfc 1.0
+### keyple-android-plugin-android-omapi 1.0
+
+## Keyple Java 20/09
+Release train components:
+ - [keyple-java-core 0.9](#keyple-java-core-09)
+ - [keyple-java-calypso 0.9](#keyple-java-calypso-09)
+ - [keyple-java-plugin-pcsc 0.9](#keyple-java-plugin-pcsc-09)
+ - [keyple-java-plugin-stub 0.9](#keyple-java-plugin-stub-09)
+ - [keyple-java-plugin-remotese 0.9](#keyple-java-plugin-remotese-09)
+ - [keyple-android-plugin-android-nfc 0.9](#keyple-android-plugin-android-nfc-09)
+ - [keyple-android-plugin-android-omapi 0.9](#keyple-android-plugin-android-omapi-09)
+
+### keyple-java-core 0.9
 * KEYP-320 : ReaderPlugin and SeReader no longer implement the Comparable interface
 * KEYP-319 : added a method finalizeSeProcessing to ObservableReader to handle abnormal transaction terminations
 * KEYP-318 : added a direct access to the plugin and reader that generated a ReaderEvent
@@ -38,7 +79,7 @@ Releases:
 * various other refactorings and improvements
 * fixed many issues raised by Sonarqube
  
-### keyple-java-calypso 0.9a
+### keyple-java-calypso 0.9
 * KEYP-314 : simplified the channel control management: a new prepareReleasePoChannel command is added to PoTransaction 
 * KEYP-306 : added a default value to SeProtocol in PoSelector and SamSelector (specifying it is now optional)
 * KEYP-311 : added the possibility to unlock the SAM when it is selected
@@ -59,17 +100,17 @@ Releases:
 * various other refactorings and improvements
 * fixed many issues raised by Sonarqube
 
-### keyple-java-plugin-pcsc 0.9a
-### keyple-java-plugin-stub 0.9a
+### keyple-java-plugin-pcsc 0.9
+### keyple-java-plugin-stub 0.9
 * any parameters can be set in the stub reader
-### keyple-java-plugin-remotese 0.9a
-### keyple-android-plugin-android-nfc 0.9a
+### keyple-java-plugin-remotese 0.9
+### keyple-android-plugin-android-nfc 0.9
 * Conversion of the Java code to Kotlin
 * Removal of Supports Library usage
 * AndroidNFC plugin now support Android 9.0+ remove SE detection
 * Updated versions of Android sdk support and dependencies
 * Various improvements of Android NFC example application
-### keyple-android-plugin-android-omapi 0.9a
+### keyple-android-plugin-android-omapi 0.9
 * Conversion of the Java code to Kotlin
 * Removal of Supports Library usage
 * OMAPI compliance improvement to the SIM Alliance 
