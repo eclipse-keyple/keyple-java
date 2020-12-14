@@ -105,7 +105,7 @@ According to the developer’s objective different API must be imported:
       <ul><li>Utility classes providing generic processing for Readers </li></ul></td>
   </tr>
   <tr>
-    <td rowspan="2">Smart card</td>
+    <td rowspan="2">smart card</td>
     <td>org.eclipse.keyple.card.<b>selection</b></td>
     <td>high</td>
     <td>Generic selection of a smart card<br/>
@@ -247,7 +247,7 @@ With Maven, add the following statements to your pom.xml file :
 The Eclipse Keyple Java artifacts are published on the Eclipse Keyple Project page [https://projects.eclipse.org/projects/iot.keyple/downloads] (available also on Maven).
 
 - Keyple modules:
-  - **'Keyple Core module' JAR**:  the generic API to manage Readers and to select Smart card application.
+  - **'Keyple Core module' JAR**:  the generic API to manage Readers and to select smart card application.
   - **'Keyple Calypso Library JAR'**: the Calypso API to operate a transaction with a Calypso Portable Object.
 - Keyple plugins:
   - **'Keyple PC/SC plugin JAR'**: to manage PC/SC readers on a PC environment supporting the # javax.smartcardio API

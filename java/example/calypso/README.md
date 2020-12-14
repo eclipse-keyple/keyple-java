@@ -1,7 +1,7 @@
 Getting Started - Calypso Local Example 
 ---
 
-Those examples make use of the Keyple Calypso library. They demonstrate how to select a Calypso application and execute Calypso secure Transaction. We use a PCSC plugin for real smartcard a Stub Plugin to simulates Calypso Smart Card. 
+Those examples make use of the Keyple Calypso library. They demonstrate how to select a Calypso application and execute Calypso secure Transaction. We use a PCSC plugin for real smartcard a Stub Plugin to simulates Calypso smart card. 
 
    **The purpose of these packages is to demonstrate the use of the Calypso library:**
 
