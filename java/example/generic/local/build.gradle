@@ -7,9 +7,18 @@ group 'org.eclipse.keyple'
 
 sourceCompatibility = 1.6
 
+String findDependencyVersion(File file) {
+    if (file == null) {
+        return '+'
+    }
+    if (new File(file, "VERSION").isFile()) {
+        return new File(file, "VERSION").getText('UTF-8').trim()
+    }
+    return findDependencyVersion(file.getParentFile())
+}
+
 ext {
-    //if a property keyple_version is specified, this version will be taken, else the '+' latest version will be taken
-    keyple_v = project.hasProperty("keyple_version") ? keyple_version : '+'
+    keyple_v = project.hasProperty("keyple_version") ? keyple_version : findDependencyVersion(new File("$projectDir"))
 }
 
 mainClassName = 'org.eclipse.keyple.example.generic.local.Demo_CardProtocolDetection.Main_CardProtocolDetection_Pcsc'
@@ -70,6 +79,8 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 
+    /* Keyple dependencies */
+    project.logger.lifecycle('Using dependency version: ' + keyple_v)
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: keyple_v
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: keyple_v
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-pcsc', version: keyple_v

@@ -11,8 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.generic.remote.server.websocket.server;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.enterprise.context.ApplicationScoped;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
@@ -42,7 +42,7 @@ public class EndpointServer implements AsyncEndpointServer {
 
   /** constructor */
   public EndpointServer() {
-    openedSessions = new HashMap<>();
+    openedSessions = new ConcurrentHashMap<>();
   }
 
   /**

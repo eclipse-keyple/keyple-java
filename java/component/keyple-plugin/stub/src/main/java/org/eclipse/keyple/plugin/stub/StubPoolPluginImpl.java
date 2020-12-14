@@ -12,6 +12,7 @@
 package org.eclipse.keyple.plugin.stub;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.event.PluginObservationExceptionHandler;
 import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
@@ -41,7 +42,7 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
                     pluginObservationExceptionHandler,
                     readerObservationExceptionHandler)
                 .getPlugin();
-    this.poolReaders = new HashMap<String, String>();
+    this.poolReaders = new ConcurrentHashMap<String, String>();
     this.allocatedReaders = new ArrayList<String>();
   }
 

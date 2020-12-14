@@ -1,7 +1,7 @@
 Getting Started - Generic Local Example
 ---
 
-Those examples make use of the Keyple Core library. They demonstrate how to observe insertion/removal of Smart Card or Readers.
+Those examples make use of the Keyple Core library. They demonstrate how to observe insertion/removal of smart card or Readers.
 
 **These examples involve several packages**
 

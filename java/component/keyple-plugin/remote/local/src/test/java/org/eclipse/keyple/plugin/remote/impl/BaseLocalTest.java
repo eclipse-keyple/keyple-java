@@ -13,6 +13,7 @@ package org.eclipse.keyple.plugin.remote.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 
 import com.google.gson.JsonObject;
 import java.util.*;
@@ -33,12 +34,15 @@ public abstract class BaseLocalTest {
   final String observableReaderName = "observableReaderName";
 
   ProxyReader readerMocked;
-  LocalServiceClientTest.ObservableProxyReader observableReaderMocked;
+  ObservableProxyReader observableReaderMocked;
+
+  public interface ObservableProxyReader extends ProxyReader, ObservableReader {}
 
   public void init() {
     readerMocked = Mockito.mock(ProxyReader.class);
-    observableReaderMocked = Mockito.mock(LocalServiceClientTest.ObservableProxyReader.class);
+    observableReaderMocked = Mockito.mock(ObservableProxyReader.class);
     doReturn(readerName).when(readerMocked).getName();
+    lenient().doReturn(observableReaderName).when(observableReaderMocked).getName();
   }
 
   public static MessageDto getTransmitDto(String sessionId) {

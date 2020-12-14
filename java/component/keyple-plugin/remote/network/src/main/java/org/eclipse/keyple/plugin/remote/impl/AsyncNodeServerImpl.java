@@ -11,8 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.impl;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remote.AsyncNodeServer;
 import org.eclipse.keyple.plugin.remote.MessageDto;
@@ -44,7 +44,7 @@ final class AsyncNodeServerImpl extends AbstractNode implements AsyncNodeServer 
       AbstractMessageHandler handler, AsyncEndpointServer endpoint, int timeoutInSecond) {
     super(handler, timeoutInSecond);
     this.endpoint = endpoint;
-    this.sessionManagers = new HashMap<String, SessionManager>();
+    this.sessionManagers = new ConcurrentHashMap<String, SessionManager>();
   }
 
   /**

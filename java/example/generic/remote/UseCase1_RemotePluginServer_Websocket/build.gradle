@@ -12,16 +12,31 @@ task('runExample',  group:'keyple'){
     dependsOn 'quarkusDev'
 }
 
+String findDependencyVersion(File file) {
+    if (file == null) {
+        return '+'
+    }
+    if (new File(file, "VERSION").isFile()) {
+        return new File(file, "VERSION").getText('UTF-8').trim()
+    }
+    return findDependencyVersion(file.getParentFile())
+}
+
+ext {
+    keyple_v = project.hasProperty("keyple_version") ? keyple_version : findDependencyVersion(new File("$projectDir"))
+}
+
 dependencies {
     
     /* Keyple dependencies */
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: keyple_version
-    implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-remote-local', version: keyple_version
-    implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-remote-remote', version: keyple_version
+    project.logger.lifecycle('Using dependency version: ' + keyple_v)
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: keyple_v
+    implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-remote-local', version: keyple_v
+    implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-remote-remote', version: keyple_v
 
     /* Keyple plugin dependencies */
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-stub', version: keyple_version
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-pcsc', version: keyple_version
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-stub', version: keyple_v
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-pcsc', version: keyple_v
 
     /* Quarkus */
     implementation 'io.quarkus:quarkus-undertow-websockets'
