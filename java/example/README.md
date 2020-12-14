@@ -1,15 +1,15 @@
 Getting started - Example
 --
-Here are several ready-to-execute examples to demonstrate Keyple capabilities with different types of Keyple plugins and Secure Elements.
+Here are several ready-to-execute examples to demonstrate Keyple capabilities with different types of Keyple plugins and smart cards.
 
 Keyple is compatible with any card reader as long as a Keyple plugin is provided. In theses examples, we use:
-- PCSC readers, usually USB readers, they can be with-contact or contactless. More info on the [PCSC plugin](/java/component/keyple-plugin/pcsc) 
-- Stub readers : allow to emulate programmatically a smart card of any kind. More info on the More info on the [Stub plugin](/java/component/keyple-plugin/stub)
-- Remote readers : they allow to communicate with a smart card inserted on a remote reader hosted on another device. More info on the [Remote plugin](/java/component/keyple-plugin/stub)
+- PCSC reader, usually USB readers, they can be with-contact or contact less. More info on the [PCSC plugin](/java/component/keyple-plugin/pcsc) 
+- Stub reader : allow to emulate programmatically a smart card of any kind. More info on the More info on the [Stub plugin](/java/component/keyple-plugin/stub)
+- Remote reader : they allow to communicate with a smart card inserted on a remote reader hosted on another device. More info on the [Remote plugin](/java/component/keyple-plugin/stub)
 
 As Keyple is not tight to Calypso protocol, both generic and Calypso examples are provided.
-- Calypso examples are available in this subproject : [Calypso examples](/java/example/calypso/)
-- Generic examples are available in this subproject : [Generic examples](/java/example/generic/)
+- Calypso examples are available in this sub project : [Calypso examples](/java/example/calypso/)
+- Generic examples are available in this sub project : [Generic examples](/java/example/generic/)
 
 Also, some Android examples are provided: [Android examples](/java/example/generic/android).
 

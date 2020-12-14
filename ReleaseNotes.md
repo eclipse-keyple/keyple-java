@@ -205,7 +205,7 @@ Release train components:
 * Added PcscPluginFactory to register plugin to SeProxy
 * Added PcscPlugin interface, make PcscPluginImpl package protected
 * Added PcscReader interface, make PcscReaderImpl package protected
-* Added a work around the stop of the Smart Card service under Windows has been made specific to this platform by detecting the OS
+* Added a work around the stop of the smart card service under Windows has been made specific to this platform by detecting the OS
 * Added a specific behaviour for card detection on MacOs
 
 ### keyple-java-plugin-stub 0.8
