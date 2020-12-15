@@ -50,11 +50,11 @@ For a distributed architecture, the Remote Plugin should be used : [Keyple Remot
 
 The Keyple Core is the basic component of Keyple to handle smart card reader and to operate generic processing with Secure Elements. On Keyple, secure element readers are interfaced through specific reader plugins.
 
-The Core is divided in 3 sub-modules:
-- Reader: includes the API to access and manage a reader.
-- Plugin: provides factorized processing for the implementation of plugin.
-- Card: the generic operation for smart cards.
-- Service: the main service of Keyple : SmartCardService
+The Core is divided in 4 sub-modules:
+- reader : includes the API to access and manage a reader.
+- plugin : provides factorized processing for the implementation of plugin.
+- card : the generic operation for smart cards.
+- service : the common interfaces and the main service of Keyple.
 
 According to the developer’s objective different API must be imported:
 - for the implementation of a smart card terminal application, only the high-level API of the ‘reader’ and ‘card’ modules.
@@ -270,8 +270,14 @@ Here are the prerequisites to build the keyple components (jars)
 
 #### Windows, Linux or Macos
 Following commands will build all the artifacts at once and install them into the local maven repository.  
+
+On Windows : 
 ```
 ./gradlew :installAll --info
+```
+On Linux, macOS : 
+```
+.\gradlew.bat :installAll --info
 ```
 
 ### Android components
@@ -281,41 +287,40 @@ If you want to build the keyple android components (aar plugins), you need :
 - Android sdk 26 should be installed on your machine [follow those instructions](http://www.androiddocs.com/sdk/installing/index.html)
 - Gradle (any version as we use the gradle wrapper) [available here](https://gradle.org/install/)
 
-To acknowledge where is installed you Android SDK, you need to create a file `local.properties` in the ```/android```, ``/android/example/calypso/nfc``, ```/android/example/calypso/omapi``` folders with the following content 
+To setup where is installed you Android SDK, you need to create a file `local.properties` in the ```/android```, ``/android/example/calypso/nfc``, ```/android/example/calypso/omapi``` folders with the following content 
 `sdk.dir=absolut/path/to/where/your/android/sdk/is`
 
 For instance ``sdk.dir=/Users/user/Library/Android/sdk``
 
-#### Linux or Macos
+#### Windows, Linux or macOS
 
 First, you need to build and install locally the java component keyple-core (see above)
-To build the plugins, execute the following commands in the **/android folder**, the first command is required to be executed at least once to build the gradle wrapper.  
+To build the plugins, execute the following commands :  
+
+On Windows : 
 ```
+cd android
+.\gradlew.bat installPlugin
+```
+On Linux, macOS : 
+```
+cd android
 ./gradlew installPlugin
 ```
 
 To build the example app NFC and OMAPI, first, you need to build and install locally the java component keyple-core, keyple-calypso and keyple-android-plugin (see above)
 
+On Windows : 
 ```
-./gradlew -b ./example/calypso/android/nfc/build.gradle assembleDebug 
-./gradlew -b ./example/calypso/android/omapi/build.gradle assembleDebug
+.\gradlew.bat -b ./example/generic/android/nfc/build.gradle assembleDebug 
+.\gradlew.bat -b ./example/generic/android/omapi/build.gradle assembleDebug
 ```
-
-#### Windows
-First, you need to build and install locally the java component keyple-core (see above)
-To build the plugins, execute the following commands in the **/android folder**, the first command is required to be executed at least once to build the gradle wrapper.  
-
+On Linux, macOS : 
 ```
-.\gradlew.bat installPlugin
+./gradlew -b ./example/generic/android/nfc/build.gradle assembleDebug 
+./gradlew -b ./example/generic/android/omapi/build.gradle assembleDebug
 ```
 
-To build the example app NFC and OMAPI, first, you need to build and install locally the java component keyple-core, keyple-calypso and keyple-android-plugin (see above)
-
-
-```
-.\gradlew.bat -b ./example/calypso/nfc/build.gradle assembleDebug 
-.\gradlew.bat -b ./example/calypso/omapi/build.gradle assembleDebug
-```
 
 ### CI and Docker 
 Eclipse CI tools to build and test the components are Open Source too. They can be found in this repository : [Eclipse Keyple Ops](https://www.github.com/eclipse/keyple-ops)
