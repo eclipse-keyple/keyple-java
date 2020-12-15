@@ -50,11 +50,11 @@ For a distributed architecture, the Remote Plugin should be used : [Keyple Remot
 
 The Keyple Core is the basic component of Keyple to handle smart card reader and to operate generic processing with Secure Elements. On Keyple, secure element readers are interfaced through specific reader plugins.
 
-The Core is divided in 3 sub-modules:
-- Reader: includes the API to access and manage a reader.
-- Plugin: provides factorized processing for the implementation of plugin.
-- Card: the generic operation for smart cards.
-- Service: the main service of Keyple : SmartCardService
+The Core is divided in 4 sub-modules:
+- reader : includes the API to access and manage a reader.
+- plugin : provides factorized processing for the implementation of plugin.
+- card : the generic operation for smart cards.
+- service : the common interfaces and the main service of Keyple.
 
 According to the developer’s objective different API must be imported:
 - for the implementation of a smart card terminal application, only the high-level API of the ‘reader’ and ‘card’ modules.
