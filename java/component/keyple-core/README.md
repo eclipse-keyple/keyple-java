@@ -4,7 +4,7 @@
 
 The Keyple **Core** library contains the core components for the Eclipse Keyple. 
 
-This library **should be import explicitly** in the project configuration.
+This library **should be import explicitly** from [maven](https://mvnrepository.com/artifact/org.eclipse.keyple/keyple-java-core).
 
 ## User Guide & Download Information
 

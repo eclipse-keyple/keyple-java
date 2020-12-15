@@ -4,7 +4,7 @@
 
 The Keyple **Calypso** library is an extension for Eclipse Keyple to manage Calypso Portable Object securely using Calypso SAM.
 
-This library **should be import explicitly** in the project configuration.
+This library **should be import explicitly** from [maven](https://mvnrepository.com/artifact/org.eclipse.keyple/keyple-java-calypso).
 
 ## User Guide & Download Information
 

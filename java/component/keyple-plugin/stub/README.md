@@ -4,7 +4,7 @@
 
 The **Stub** plugin makes it easy to test your Keyple app. By simulating APDU exchanges to a Stub smart card you can simulate a variety of scenario and troobleshoot field-driven problems.  
 
-This library **should be import explicitly** in the project configuration.
+This library **should be import explicitly** from [maven](https://mvnrepository.com/artifact/org.eclipse.keyple/keyple-java-plugin-stub).
 
 ## User Guide & Download Information
 

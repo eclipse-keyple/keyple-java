@@ -4,7 +4,7 @@
 
 The **PCSC** plugin enables the use for PCSC smart card readers into Eclipse Keyple. It uses internally the [javax.smartcardio](https://docs.oracle.com/javase/7/docs/jre/api/security/smartcardio/spec/javax/smartcardio/package-summary.html) library and works on Windows, Linux and Mac OS. 
 
-This library **should be import explicitly** in the project configuration.
+This library **should be import explicitly** from [maven](https://mvnrepository.com/artifact/org.eclipse.keyple/keyple-java-plugin-pcsc).
 
 ## User Guide & Download Information
 
