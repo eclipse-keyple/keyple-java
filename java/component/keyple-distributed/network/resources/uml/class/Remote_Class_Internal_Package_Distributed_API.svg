@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="2552.5px" preserveAspectRatio="none" style="width:3482px;height:2552px;" version="1.1" viewBox="0 0 3482 2552" width="3482.5px" zoomAndPan="magnify"><defs><filter height="1" id="bm7zg2m6ik3nm0" width="1" x="0" y="0"><feFlood flood-color="#FFA500" result="flood"/><feComposite in="SourceGraphic" in2="flood" operator="over"/></filter></defs><g><text fill="#000000" font-family="sans-serif" font-size="45" lengthAdjust="spacingAndGlyphs" textLength="1610" x="920" y="46.7139">Keyple Distributed - Package "org.eclipse.keyple.distributed" - 1.0.0 (06/11/2020)</text><!--MD5=[91b6dd3df80ea74b046042e8d0e3d9eb]
+cluster packRemote--><polygon fill="#F8F9F9" points="40,71.6016,580,71.6016,597.5,130.625,3440,130.625,3440,2536.6016,40,2536.6016,40,71.6016" style="stroke: #000000; stroke-width: 3.75;"/><line style="stroke: #000000; stroke-width: 3.75;" x1="40" x2="597.5" y1="130.625" y2="130.625"/><text fill="#000000" font-family="sans-serif" font-size="35" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="525" x="50" y="112.9346">org.eclipse.keyple.distributed</text><!--MD5=[f5644b98fc2cac15db0816ab2936d10f]
+class AsyncNodeClient--><rect codeLine="52" fill="#FEFECE" height="258.3594" id="AsyncNodeClient" style="stroke: #D4AC0D; stroke-width: 3.75;" width="645" x="2687.5" y="1881.6016"/><ellipse cx="2866.875" cy="1921.6016" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M2869.375,1914.1016 L2869.375,1929.1016 L2874.375,1929.1016 L2875.5859,1929.1016 L2876.875,1930.6641 L2876.875,1931.6016 L2876.875,1932.5391 L2875.5859,1934.1016 L2874.375,1934.1016 L2859.375,1934.1016 L2858.1641,1934.1016 L2856.875,1932.5391 L2856.875,1931.6016 L2856.875,1930.6641 L2858.1641,1929.1016 L2859.375,1929.1016 L2864.375,1929.1016 L2864.375,1914.1016 L2859.375,1914.1016 L2858.1641,1914.1016 L2856.875,1912.5391 L2856.875,1911.6016 L2856.875,1910.6641 L2858.1641,1909.1016 L2859.375,1909.1016 L2874.375,1909.1016 L2875.5859,1909.1016 L2876.875,1910.6641 L2876.875,1911.6016 L2876.875,1912.5391 L2875.5859,1914.1016 L2874.375,1914.1016 L2869.375,1914.1016 Z " fill="#000000"/><ellipse cx="2930.625" cy="1920.3516" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="237.5" x="2945.625" y="1933.877">AsyncNodeClient</text><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="2690" x2="3330" y1="1961.6016" y2="1961.6016"/><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="2690" x2="3330" y1="1981.6016" y2="1981.6016"/><ellipse cx="2715" cy="2009.1016" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="372.5" x="2737.5" y="2020.1489">void onOpen (String sessionId)</text><ellipse cx="2715" cy="2043.6914" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="432.5" x="2737.5" y="2054.7388">void onMessage (MessageDto msg)</text><ellipse cx="2715" cy="2078.2813" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="375" x="2737.5" y="2089.3286">void onClose (String sessionId)</text><ellipse cx="2715" cy="2112.8711" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="580" x="2737.5" y="2123.9185">void onError (String sessionId, Throwable error)</text><!--MD5=[0a2f2fb2edeec6d0e98aba29aa655f31]
+class AsyncNodeServer--><rect codeLine="58" fill="#FEFECE" height="189.1797" id="AsyncNodeServer" style="stroke: #D4AC0D; stroke-width: 3.75;" width="645" x="2687.5" y="1539.1016"/><ellipse cx="2861.875" cy="1579.1016" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M2864.375,1571.6016 L2864.375,1586.6016 L2869.375,1586.6016 L2870.5859,1586.6016 L2871.875,1588.1641 L2871.875,1589.1016 L2871.875,1590.0391 L2870.5859,1591.6016 L2869.375,1591.6016 L2854.375,1591.6016 L2853.1641,1591.6016 L2851.875,1590.0391 L2851.875,1589.1016 L2851.875,1588.1641 L2853.1641,1586.6016 L2854.375,1586.6016 L2859.375,1586.6016 L2859.375,1571.6016 L2854.375,1571.6016 L2853.1641,1571.6016 L2851.875,1570.0391 L2851.875,1569.1016 L2851.875,1568.1641 L2853.1641,1566.6016 L2854.375,1566.6016 L2869.375,1566.6016 L2870.5859,1566.6016 L2871.875,1568.1641 L2871.875,1569.1016 L2871.875,1570.0391 L2870.5859,1571.6016 L2869.375,1571.6016 L2864.375,1571.6016 Z " fill="#000000"/><ellipse cx="2925.625" cy="1577.8516" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="247.5" x="2940.625" y="1591.377">AsyncNodeServer</text><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="2690" x2="3330" y1="1619.1016" y2="1619.1016"/><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="2690" x2="3330" y1="1639.1016" y2="1639.1016"/><ellipse cx="2715" cy="1666.6016" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="432.5" x="2737.5" y="1677.6489">void onMessage (MessageDto msg)</text><ellipse cx="2715" cy="1701.1914" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="580" x="2737.5" y="1712.2388">void onError (String sessionId, Throwable error)</text><!--MD5=[93e80188d33ab05d87f81cd0d94a3bc4]
+class SyncNodeClient--><rect codeLine="62" fill="#FEFECE" height="120" id="SyncNodeClient" style="stroke: #D4AC0D; stroke-width: 3.75;" width="330" x="2845" y="689.1016"/><ellipse cx="2882.5" cy="729.1016" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M2885,721.6016 L2885,736.6016 L2890,736.6016 L2891.2109,736.6016 L2892.5,738.1641 L2892.5,739.1016 L2892.5,740.0391 L2891.2109,741.6016 L2890,741.6016 L2875,741.6016 L2873.7891,741.6016 L2872.5,740.0391 L2872.5,739.1016 L2872.5,738.1641 L2873.7891,736.6016 L2875,736.6016 L2880,736.6016 L2880,721.6016 L2875,721.6016 L2873.7891,721.6016 L2872.5,720.0391 L2872.5,719.1016 L2872.5,718.1641 L2873.7891,716.6016 L2875,716.6016 L2890,716.6016 L2891.2109,716.6016 L2892.5,718.1641 L2892.5,719.1016 L2892.5,720.0391 L2891.2109,721.6016 L2890,721.6016 L2885,721.6016 Z " fill="#000000"/><ellipse cx="2930" cy="727.8516" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="222.5" x="2945" y="741.377">SyncNodeClient</text><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="2847.5" x2="3172.5" y1="769.1016" y2="769.1016"/><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="2847.5" x2="3172.5" y1="789.1016" y2="789.1016"/><!--MD5=[6c35b9bf176c1aee30f526a9a385796d]
+class SyncNodeServer--><rect codeLine="64" fill="#FEFECE" height="154.5898" id="SyncNodeServer" style="stroke: #D4AC0D; stroke-width: 3.75;" width="660" x="2680" y="249.1016"/><ellipse cx="2869.375" cy="289.1016" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M2871.875,281.6016 L2871.875,296.6016 L2876.875,296.6016 L2878.0859,296.6016 L2879.375,298.1641 L2879.375,299.1016 L2879.375,300.0391 L2878.0859,301.6016 L2876.875,301.6016 L2861.875,301.6016 L2860.6641,301.6016 L2859.375,300.0391 L2859.375,299.1016 L2859.375,298.1641 L2860.6641,296.6016 L2861.875,296.6016 L2866.875,296.6016 L2866.875,281.6016 L2861.875,281.6016 L2860.6641,281.6016 L2859.375,280.0391 L2859.375,279.1016 L2859.375,278.1641 L2860.6641,276.6016 L2861.875,276.6016 L2876.875,276.6016 L2878.0859,276.6016 L2879.375,278.1641 L2879.375,279.1016 L2879.375,280.0391 L2878.0859,281.6016 L2876.875,281.6016 L2871.875,281.6016 Z " fill="#000000"/><ellipse cx="2933.125" cy="287.8516" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="232.5" x="2948.125" y="301.377">SyncNodeServer</text><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="2682.5" x2="3337.5" y1="329.1016" y2="329.1016"/><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="2682.5" x2="3337.5" y1="349.1016" y2="349.1016"/><ellipse cx="2707.5" cy="376.6016" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="595" x="2730" y="387.6489">List&lt;MessageDto&gt; onRequest (MessageDto msg)</text><!--MD5=[f1362ea87dac9fe50fe8caadfc737c53]
+class MessageDto--><rect codeLine="69" fill="#FEFECE" height="362.1289" id="MessageDto" style="stroke: #D4AC0D; stroke-width: 3.75;" width="432.5" x="2793.75" y="1024.1016"/><ellipse cx="2901" cy="1064.1016" fill="#ADD1B2" rx="27.5" ry="27.5" style="stroke: #ADD1B2; stroke-width: 2.5;"/><path d="M2906,1055.3516 Q2906.5078,1054.1016 2907.0938,1053.4766 Q2907.6797,1052.8516 2908.3438,1052.8516 Q2909.5156,1052.8516 2910.2578,1053.5547 Q2911,1054.2578 2911,1055.8984 L2911,1059.8047 Q2911,1061.4453 2910.2969,1062.1484 Q2909.5938,1062.8516 2908.5,1062.8516 Q2907.5234,1062.8516 2906.8984,1062.4219 Q2906.2734,1061.9922 2906,1060.8594 Q2905.8828,1060.0781 2905.4531,1059.6484 Q2904.6719,1058.8281 2903.2656,1058.3594 Q2901.8594,1057.8516 2900.4531,1057.8516 Q2898.6953,1057.8516 2897.2109,1058.5547 Q2895.7656,1059.2578 2894.6328,1060.8203 Q2893.5,1062.3828 2893.5,1064.5313 L2893.5,1066.8359 Q2893.5,1069.4141 2895.6094,1071.1328 Q2897.7188,1072.8516 2901.4688,1072.8516 Q2903.6953,1072.8516 2905.2578,1072.3438 Q2906.1563,1072.0703 2907.1719,1071.1719 Q2907.8359,1070.6641 2908.1875,1070.5078 Q2908.5391,1070.3516 2908.9688,1070.3516 Q2909.7891,1070.3516 2910.375,1071.0156 Q2911,1071.6406 2911,1072.5391 Q2911,1073.3984 2910.1406,1074.4141 Q2908.8906,1075.8984 2906.8984,1076.7188 Q2904.2813,1077.8516 2901.0781,1077.8516 Q2897.3281,1077.8516 2894.3203,1076.3672 Q2891.8984,1075.1953 2890.1797,1072.6563 Q2888.5,1070.1172 2888.5,1067.1094 L2888.5,1064.375 Q2888.5,1061.25 2889.9844,1058.5156 Q2891.5078,1055.7813 2894.125,1054.3359 Q2896.7813,1052.8516 2899.75,1052.8516 Q2901.5469,1052.8516 2903.1094,1053.4766 Q2904.6719,1054.1016 2906,1055.3516 Z " fill="#000000"/><ellipse cx="2964" cy="1062.8516" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="170" x="2979" y="1076.377">MessageDto</text><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="2796.25" x2="3223.75" y1="1104.1016" y2="1104.1016"/><ellipse cx="2821.25" cy="1131.6016" fill="none" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="192.5" x="2843.75" y="1142.6489">String sessionId</text><ellipse cx="2821.25" cy="1166.1914" fill="none" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="150" x="2843.75" y="1177.2388">String action</text><ellipse cx="2821.25" cy="1200.7813" fill="none" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="222.5" x="2843.75" y="1211.8286">String clientNodeId</text><ellipse cx="2821.25" cy="1235.3711" fill="none" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="240" x="2843.75" y="1246.4185">String serverNodeId</text><ellipse cx="2821.25" cy="1269.9609" fill="none" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="287.5" x="2843.75" y="1281.0083">String localReaderName</text><ellipse cx="2821.25" cy="1304.5508" fill="none" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="367.5" x="2843.75" y="1315.5981">String RemoteReaderImplName</text><ellipse cx="2821.25" cy="1339.1406" fill="none" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="137.5" x="2843.75" y="1350.188">String body</text><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="2796.25" x2="3223.75" y1="1366.2305" y2="1366.2305"/><!--MD5=[4d142d173e80d1ead80837db61750bd6]
+class LocalServiceServer--><rect codeLine="82" fill="#FEFECE" height="120" id="LocalServiceServer" style="stroke: #D4AC0D; stroke-width: 3.75;" width="375" x="1772.5" y="1574.1016"/><ellipse cx="1810" cy="1614.1016" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M1812.5,1606.6016 L1812.5,1621.6016 L1817.5,1621.6016 L1818.7109,1621.6016 L1820,1623.1641 L1820,1624.1016 L1820,1625.0391 L1818.7109,1626.6016 L1817.5,1626.6016 L1802.5,1626.6016 L1801.2891,1626.6016 L1800,1625.0391 L1800,1624.1016 L1800,1623.1641 L1801.2891,1621.6016 L1802.5,1621.6016 L1807.5,1621.6016 L1807.5,1606.6016 L1802.5,1606.6016 L1801.2891,1606.6016 L1800,1605.0391 L1800,1604.1016 L1800,1603.1641 L1801.2891,1601.6016 L1802.5,1601.6016 L1817.5,1601.6016 L1818.7109,1601.6016 L1820,1603.1641 L1820,1604.1016 L1820,1605.0391 L1818.7109,1606.6016 L1817.5,1606.6016 L1812.5,1606.6016 Z " fill="#000000"/><ellipse cx="1857.5" cy="1612.8516" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="267.5" x="1872.5" y="1626.377">LocalServiceServer</text><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="1775" x2="2145" y1="1654.1016" y2="1654.1016"/><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="1775" x2="2145" y1="1674.1016" y2="1674.1016"/><!--MD5=[900bc9a326d1e4c0e6bf43bbad480964]
+class PoolLocalServiceServer--><rect codeLine="84" fill="#FEFECE" height="120" id="PoolLocalServiceServer" style="stroke: #D4AC0D; stroke-width: 3.75;" width="437.5" x="1741.25" y="1950.3516"/><ellipse cx="1778.75" cy="1990.3516" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M1781.25,1982.8516 L1781.25,1997.8516 L1786.25,1997.8516 L1787.4609,1997.8516 L1788.75,1999.4141 L1788.75,2000.3516 L1788.75,2001.2891 L1787.4609,2002.8516 L1786.25,2002.8516 L1771.25,2002.8516 L1770.0391,2002.8516 L1768.75,2001.2891 L1768.75,2000.3516 L1768.75,1999.4141 L1770.0391,1997.8516 L1771.25,1997.8516 L1776.25,1997.8516 L1776.25,1982.8516 L1771.25,1982.8516 L1770.0391,1982.8516 L1768.75,1981.2891 L1768.75,1980.3516 L1768.75,1979.4141 L1770.0391,1977.8516 L1771.25,1977.8516 L1786.25,1977.8516 L1787.4609,1977.8516 L1788.75,1979.4141 L1788.75,1980.3516 L1788.75,1981.2891 L1787.4609,1982.8516 L1786.25,1982.8516 L1781.25,1982.8516 Z " fill="#000000"/><ellipse cx="1826.25" cy="1989.1016" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="330" x="1841.25" y="2002.627">PoolLocalServiceServer</text><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="1743.75" x2="2176.25" y1="2030.3516" y2="2030.3516"/><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="1743.75" x2="2176.25" y1="2050.3516" y2="2050.3516"/><!--MD5=[657218de26726cf2cc3eddb35d9875a6]
+class LocalServiceClient--><rect codeLine="86" fill="#FEFECE" height="154.5898" id="LocalServiceClient" style="stroke: #D4AC0D; stroke-width: 3.75;" width="1157.5" x="1381.25" y="249.1016"/><ellipse cx="1806.875" cy="289.1016" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M1809.375,281.6016 L1809.375,296.6016 L1814.375,296.6016 L1815.5859,296.6016 L1816.875,298.1641 L1816.875,299.1016 L1816.875,300.0391 L1815.5859,301.6016 L1814.375,301.6016 L1799.375,301.6016 L1798.1641,301.6016 L1796.875,300.0391 L1796.875,299.1016 L1796.875,298.1641 L1798.1641,296.6016 L1799.375,296.6016 L1804.375,296.6016 L1804.375,281.6016 L1799.375,281.6016 L1798.1641,281.6016 L1796.875,280.0391 L1796.875,279.1016 L1796.875,278.1641 L1798.1641,276.6016 L1799.375,276.6016 L1814.375,276.6016 L1815.5859,276.6016 L1816.875,278.1641 L1816.875,279.1016 L1816.875,280.0391 L1815.5859,281.6016 L1814.375,281.6016 L1809.375,281.6016 Z " fill="#000000"/><ellipse cx="1870.625" cy="287.8516" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="257.5" x="1885.625" y="301.377">LocalServiceClient</text><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="1383.75" x2="2536.25" y1="329.1016" y2="329.1016"/><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="1383.75" x2="2536.25" y1="349.1016" y2="349.1016"/><ellipse cx="1408.75" cy="376.6016" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="1092.5" x="1431.25" y="387.6489">&lt;T&gt; T executeRemoteService (RemoteServiceParameters parameters, Class&lt;T&gt; classOfT)</text><!--MD5=[d20a95b78d716283a1df9eca070f5ba1]
+class RemoteServiceParameters--><rect codeLine="89" fill="#FEFECE" height="154.5898" id="RemoteServiceParameters" style="stroke: #D4AC0D; stroke-width: 3.75;" width="702.5" x="1608.75" y="671.6016"/><ellipse cx="1749.375" cy="711.6016" fill="#ADD1B2" rx="27.5" ry="27.5" style="stroke: #ADD1B2; stroke-width: 2.5;"/><path d="M1754.375,702.8516 Q1754.8828,701.6016 1755.4688,700.9766 Q1756.0547,700.3516 1756.7188,700.3516 Q1757.8906,700.3516 1758.6328,701.0547 Q1759.375,701.7578 1759.375,703.3984 L1759.375,707.3047 Q1759.375,708.9453 1758.6719,709.6484 Q1757.9688,710.3516 1756.875,710.3516 Q1755.8984,710.3516 1755.2734,709.9219 Q1754.6484,709.4922 1754.375,708.3594 Q1754.2578,707.5781 1753.8281,707.1484 Q1753.0469,706.3281 1751.6406,705.8594 Q1750.2344,705.3516 1748.8281,705.3516 Q1747.0703,705.3516 1745.5859,706.0547 Q1744.1406,706.7578 1743.0078,708.3203 Q1741.875,709.8828 1741.875,712.0313 L1741.875,714.3359 Q1741.875,716.9141 1743.9844,718.6328 Q1746.0938,720.3516 1749.8438,720.3516 Q1752.0703,720.3516 1753.6328,719.8438 Q1754.5313,719.5703 1755.5469,718.6719 Q1756.2109,718.1641 1756.5625,718.0078 Q1756.9141,717.8516 1757.3438,717.8516 Q1758.1641,717.8516 1758.75,718.5156 Q1759.375,719.1406 1759.375,720.0391 Q1759.375,720.8984 1758.5156,721.9141 Q1757.2656,723.3984 1755.2734,724.2188 Q1752.6563,725.3516 1749.4531,725.3516 Q1745.7031,725.3516 1742.6953,723.8672 Q1740.2734,722.6953 1738.5547,720.1563 Q1736.875,717.6172 1736.875,714.6094 L1736.875,711.875 Q1736.875,708.75 1738.3594,706.0156 Q1739.8828,703.2813 1742.5,701.8359 Q1745.1563,700.3516 1748.125,700.3516 Q1749.9219,700.3516 1751.4844,700.9766 Q1753.0469,701.6016 1754.375,702.8516 Z " fill="#000000"/><ellipse cx="1813.125" cy="710.3516" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="372.5" x="1828.125" y="723.877">RemoteServiceParameters</text><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="1611.25" x2="2308.75" y1="751.6016" y2="751.6016"/><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="1611.25" x2="2308.75" y1="771.6016" y2="771.6016"/><ellipse cx="1636.25" cy="799.1016" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" text-decoration="underline" textLength="637.5" x="1658.75" y="810.1489">Builder builder (String serviceId, Reader localReader)</text><!--MD5=[d456467577ef109bf5015118e808ea7b]
+class RemoteServiceParametersBuilder--><rect codeLine="92" fill="#FEFECE" height="223.7695" id="RemoteServiceParametersBuilder" style="stroke: #D4AC0D; stroke-width: 3.75;" width="807.5" x="1556.25" y="1092.8516"/><ellipse cx="1886.875" cy="1132.8516" fill="#ADD1B2" rx="27.5" ry="27.5" style="stroke: #ADD1B2; stroke-width: 2.5;"/><path d="M1891.875,1124.1016 Q1892.3828,1122.8516 1892.9688,1122.2266 Q1893.5547,1121.6016 1894.2188,1121.6016 Q1895.3906,1121.6016 1896.1328,1122.3047 Q1896.875,1123.0078 1896.875,1124.6484 L1896.875,1128.5547 Q1896.875,1130.1953 1896.1719,1130.8984 Q1895.4688,1131.6016 1894.375,1131.6016 Q1893.3984,1131.6016 1892.7734,1131.1719 Q1892.1484,1130.7422 1891.875,1129.6094 Q1891.7578,1128.8281 1891.3281,1128.3984 Q1890.5469,1127.5781 1889.1406,1127.1094 Q1887.7344,1126.6016 1886.3281,1126.6016 Q1884.5703,1126.6016 1883.0859,1127.3047 Q1881.6406,1128.0078 1880.5078,1129.5703 Q1879.375,1131.1328 1879.375,1133.2813 L1879.375,1135.5859 Q1879.375,1138.1641 1881.4844,1139.8828 Q1883.5938,1141.6016 1887.3438,1141.6016 Q1889.5703,1141.6016 1891.1328,1141.0938 Q1892.0313,1140.8203 1893.0469,1139.9219 Q1893.7109,1139.4141 1894.0625,1139.2578 Q1894.4141,1139.1016 1894.8438,1139.1016 Q1895.6641,1139.1016 1896.25,1139.7656 Q1896.875,1140.3906 1896.875,1141.2891 Q1896.875,1142.1484 1896.0156,1143.1641 Q1894.7656,1144.6484 1892.7734,1145.4688 Q1890.1563,1146.6016 1886.9531,1146.6016 Q1883.2031,1146.6016 1880.1953,1145.1172 Q1877.7734,1143.9453 1876.0547,1141.4063 Q1874.375,1138.8672 1874.375,1135.8594 L1874.375,1133.125 Q1874.375,1130 1875.8594,1127.2656 Q1877.3828,1124.5313 1880,1123.0859 Q1882.6563,1121.6016 1885.625,1121.6016 Q1887.4219,1121.6016 1888.9844,1122.2266 Q1890.5469,1122.8516 1891.875,1124.1016 Z " fill="#000000"/><ellipse cx="1950.625" cy="1131.6016" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="97.5" x="1965.625" y="1145.127">Builder</text><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="1558.75" x2="2361.25" y1="1172.8516" y2="1172.8516"/><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="1558.75" x2="2361.25" y1="1192.8516" y2="1192.8516"/><ellipse cx="1583.75" cy="1220.3516" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="592.5" x="1606.25" y="1231.3989">Builder withUserInputData (Object userInputData)</text><ellipse cx="1583.75" cy="1254.9414" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="742.5" x="1606.25" y="1265.9888">Builder withInitialCardContent (AbstractSmartCard smartCard)</text><ellipse cx="1583.75" cy="1289.5313" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="410" x="1606.25" y="1300.5786">RemoteServiceParameters build ()</text><!--MD5=[57381a601ab499b50c18ece76cf4c4fc]
+class RemotePluginClient--><rect codeLine="102" fill="#FEFECE" height="140.4688" id="RemotePluginClient" style="stroke: #D4AC0D; stroke-width: 3.75;" width="385" x="497.5" y="1564.1016"/><ellipse cx="535" cy="1614.3359" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M537.5,1606.8359 L537.5,1621.8359 L542.5,1621.8359 L543.7109,1621.8359 L545,1623.3984 L545,1624.3359 L545,1625.2734 L543.7109,1626.8359 L542.5,1626.8359 L527.5,1626.8359 L526.2891,1626.8359 L525,1625.2734 L525,1624.3359 L525,1623.3984 L526.2891,1621.8359 L527.5,1621.8359 L532.5,1621.8359 L532.5,1606.8359 L527.5,1606.8359 L526.2891,1606.8359 L525,1605.2734 L525,1604.3359 L525,1603.3984 L526.2891,1601.8359 L527.5,1601.8359 L542.5,1601.8359 L543.7109,1601.8359 L545,1603.3984 L545,1604.3359 L545,1605.2734 L543.7109,1606.8359 L542.5,1606.8359 L537.5,1606.8359 Z " fill="#000000"/><ellipse cx="582.5" cy="1613.0859" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="35" x="657.5" y="1607.7441">&lt;&lt;</text><text fill="#000000" filter="url(#bm7zg2m6ik3nm0)" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="87.5" x="692.5" y="1607.7441">Plugin</text><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="35" x="780" y="1607.7441">&gt;&gt;</text><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="277.5" x="597.5" y="1645.4785">RemotePluginClient</text><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="500" x2="880" y1="1664.5703" y2="1664.5703"/><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="500" x2="880" y1="1684.5703" y2="1684.5703"/><!--MD5=[4a761a2b58d1d2bf860b3161f61990d3]
+class ObservableRemotePluginClient--><rect codeLine="104" fill="#FEFECE" height="140.4688" id="ObservableRemotePluginClient" style="stroke: #D4AC0D; stroke-width: 3.75;" width="547.5" x="416.25" y="1940.3516"/><ellipse cx="453.75" cy="1990.5859" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M456.25,1983.0859 L456.25,1998.0859 L461.25,1998.0859 L462.4609,1998.0859 L463.75,1999.6484 L463.75,2000.5859 L463.75,2001.5234 L462.4609,2003.0859 L461.25,2003.0859 L446.25,2003.0859 L445.0391,2003.0859 L443.75,2001.5234 L443.75,2000.5859 L443.75,1999.6484 L445.0391,1998.0859 L446.25,1998.0859 L451.25,1998.0859 L451.25,1983.0859 L446.25,1983.0859 L445.0391,1983.0859 L443.75,1981.5234 L443.75,1980.5859 L443.75,1979.6484 L445.0391,1978.0859 L446.25,1978.0859 L461.25,1978.0859 L462.4609,1978.0859 L463.75,1979.6484 L463.75,1980.5859 L463.75,1981.5234 L462.4609,1983.0859 L461.25,1983.0859 L456.25,1983.0859 Z " fill="#000000"/><ellipse cx="501.25" cy="1989.3359" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="35" x="576.25" y="1983.9941">&lt;&lt;</text><text fill="#000000" filter="url(#bm7zg2m6ik3nm0)" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="250" x="611.25" y="1983.9941">ObservablePlugin</text><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="35" x="861.25" y="1983.9941">&gt;&gt;</text><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="440" x="516.25" y="2021.7285">ObservableRemotePluginClient</text><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="418.75" x2="961.25" y1="2040.8203" y2="2040.8203"/><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="418.75" x2="961.25" y1="2060.8203" y2="2060.8203"/><!--MD5=[c56ca6b77aa06b3d2950573fd1b91a32]
+class PoolRemotePluginClient--><rect codeLine="106" fill="#FEFECE" height="140.4688" id="PoolRemotePluginClient" style="stroke: #D4AC0D; stroke-width: 3.75;" width="447.5" x="466.25" y="2296.6016"/><ellipse cx="503.75" cy="2346.8359" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M506.25,2339.3359 L506.25,2354.3359 L511.25,2354.3359 L512.4609,2354.3359 L513.75,2355.8984 L513.75,2356.8359 L513.75,2357.7734 L512.4609,2359.3359 L511.25,2359.3359 L496.25,2359.3359 L495.0391,2359.3359 L493.75,2357.7734 L493.75,2356.8359 L493.75,2355.8984 L495.0391,2354.3359 L496.25,2354.3359 L501.25,2354.3359 L501.25,2339.3359 L496.25,2339.3359 L495.0391,2339.3359 L493.75,2337.7734 L493.75,2336.8359 L493.75,2335.8984 L495.0391,2334.3359 L496.25,2334.3359 L511.25,2334.3359 L512.4609,2334.3359 L513.75,2335.8984 L513.75,2336.8359 L513.75,2337.7734 L512.4609,2339.3359 L511.25,2339.3359 L506.25,2339.3359 Z " fill="#000000"/><ellipse cx="551.25" cy="2345.5859" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="35" x="626.25" y="2340.2441">&lt;&lt;</text><text fill="#000000" filter="url(#bm7zg2m6ik3nm0)" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="150" x="661.25" y="2340.2441">PoolPlugin</text><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="35" x="811.25" y="2340.2441">&gt;&gt;</text><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="340" x="566.25" y="2377.9785">PoolRemotePluginClient</text><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="468.75" x2="911.25" y1="2397.0703" y2="2397.0703"/><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="468.75" x2="911.25" y1="2417.0703" y2="2417.0703"/><!--MD5=[b116b5b4a8d6db79f3f06e94b5597360]
+class RemotePluginServer--><rect codeLine="108" fill="#FEFECE" height="209.6484" id="RemotePluginServer" style="stroke: #D4AC0D; stroke-width: 3.75;" width="1010" x="185" y="221.6016"/><ellipse cx="505.625" cy="271.8359" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M508.125,264.3359 L508.125,279.3359 L513.125,279.3359 L514.3359,279.3359 L515.625,280.8984 L515.625,281.8359 L515.625,282.7734 L514.3359,284.3359 L513.125,284.3359 L498.125,284.3359 L496.9141,284.3359 L495.625,282.7734 L495.625,281.8359 L495.625,280.8984 L496.9141,279.3359 L498.125,279.3359 L503.125,279.3359 L503.125,264.3359 L498.125,264.3359 L496.9141,264.3359 L495.625,262.7734 L495.625,261.8359 L495.625,260.8984 L496.9141,259.3359 L498.125,259.3359 L513.125,259.3359 L514.3359,259.3359 L515.625,260.8984 L515.625,261.8359 L515.625,262.7734 L514.3359,264.3359 L513.125,264.3359 L508.125,264.3359 Z " fill="#000000"/><ellipse cx="569.375" cy="270.5859" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="35" x="584.375" y="265.2441">&lt;&lt;</text><text fill="#000000" filter="url(#bm7zg2m6ik3nm0)" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="250" x="619.375" y="265.2441">ObservablePlugin</text><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="35" x="869.375" y="265.2441">&gt;&gt;</text><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="287.5" x="600.625" y="302.9785">RemotePluginServer</text><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="187.5" x2="1192.5" y1="322.0703" y2="322.0703"/><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="187.5" x2="1192.5" y1="342.0703" y2="342.0703"/><ellipse cx="212.5" cy="369.5703" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="562.5" x="235" y="380.6177">RemoteReaderServer getReader (String name)</text><ellipse cx="212.5" cy="404.1602" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="945" x="235" y="415.2075">void terminateService (String RemoteReaderImplName, Object userOutputData)</text><!--MD5=[1fea4ca2f0966e5f6f3a3a4a4c98475d]
+class RemoteReaderServer--><rect codeLine="114" fill="#FEFECE" height="244.2383" id="RemoteReaderServer" style="stroke: #D4AC0D; stroke-width: 3.75;" width="1100" x="140" y="626.6016"/><ellipse cx="514.375" cy="676.8359" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M516.875,669.3359 L516.875,684.3359 L521.875,684.3359 L523.0859,684.3359 L524.375,685.8984 L524.375,686.8359 L524.375,687.7734 L523.0859,689.3359 L521.875,689.3359 L506.875,689.3359 L505.6641,689.3359 L504.375,687.7734 L504.375,686.8359 L504.375,685.8984 L505.6641,684.3359 L506.875,684.3359 L511.875,684.3359 L511.875,669.3359 L506.875,669.3359 L505.6641,669.3359 L504.375,667.7734 L504.375,666.8359 L504.375,665.8984 L505.6641,664.3359 L506.875,664.3359 L521.875,664.3359 L523.0859,664.3359 L524.375,665.8984 L524.375,666.8359 L524.375,667.7734 L523.0859,669.3359 L521.875,669.3359 L516.875,669.3359 Z " fill="#000000"/><ellipse cx="578.125" cy="675.5859" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="35" x="658.125" y="670.2441">&lt;&lt;</text><text fill="#000000" filter="url(#bm7zg2m6ik3nm0)" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="102.5" x="693.125" y="670.2441">Reader</text><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="35" x="795.625" y="670.2441">&gt;&gt;</text><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="302.5" x="593.125" y="707.9785">RemoteReaderServer</text><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="142.5" x2="1237.5" y1="727.0703" y2="727.0703"/><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="142.5" x2="1237.5" y1="747.0703" y2="747.0703"/><ellipse cx="167.5" cy="774.5703" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="255" x="190" y="785.6177">String getServiceId ()</text><ellipse cx="167.5" cy="809.1602" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="540" x="190" y="820.2075">&lt;T&gt; T getUserInputData (Class&lt;T&gt; classOfT)</text><ellipse cx="167.5" cy="843.75" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="1035" x="190" y="854.7974">&lt;T extends AbstractSmartCard&gt; T getInitialCardContent (Class&lt;T&gt; classOfSmartCard)</text><!--MD5=[02fd76e72f2368374dd9ab96c82a9c0c]
+class ObservableRemoteReaderServer--><rect codeLine="119" fill="#FEFECE" height="140.4688" id="ObservableRemoteReaderServer" style="stroke: #D4AC0D; stroke-width: 3.75;" width="572.5" x="403.75" y="1135.3516"/><ellipse cx="441.25" cy="1185.5859" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M443.75,1178.0859 L443.75,1193.0859 L448.75,1193.0859 L449.9609,1193.0859 L451.25,1194.6484 L451.25,1195.5859 L451.25,1196.5234 L449.9609,1198.0859 L448.75,1198.0859 L433.75,1198.0859 L432.5391,1198.0859 L431.25,1196.5234 L431.25,1195.5859 L431.25,1194.6484 L432.5391,1193.0859 L433.75,1193.0859 L438.75,1193.0859 L438.75,1178.0859 L433.75,1178.0859 L432.5391,1178.0859 L431.25,1176.5234 L431.25,1175.5859 L431.25,1174.6484 L432.5391,1173.0859 L433.75,1173.0859 L448.75,1173.0859 L449.9609,1173.0859 L451.25,1174.6484 L451.25,1175.5859 L451.25,1176.5234 L449.9609,1178.0859 L448.75,1178.0859 L443.75,1178.0859 Z " fill="#000000"/><ellipse cx="488.75" cy="1184.3359" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="35" x="568.75" y="1178.9941">&lt;&lt;</text><text fill="#000000" filter="url(#bm7zg2m6ik3nm0)" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="265" x="603.75" y="1178.9941">ObservableReader</text><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="35" x="868.75" y="1178.9941">&gt;&gt;</text><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="465" x="503.75" y="1216.7285">ObservableRemoteReaderServer</text><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="406.25" x2="973.75" y1="1235.8203" y2="1235.8203"/><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="406.25" x2="973.75" y1="1255.8203" y2="1255.8203"/><!--MD5=[80f261a1d0808d01d90b6011e5f61fa3]
+reverse link RemotePluginClient to ObservableRemotePluginClient--><path d="M690,1754.7566 C690,1815.9641 690,1888.4966 690,1940.1891 " fill="none" id="RemotePluginClient-backto-ObservableRemotePluginClient" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="none" points="672.5,1754.6941,690,1704.6941,707.5,1754.6941,672.5,1754.6941" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[e086aeea72bf317a18055594ecdae63e]
+reverse link RemoteReaderServer to ObservableRemoteReaderServer--><path d="M690,923.0841 C690,996.8566 690,1078.8341 690,1134.8741 " fill="none" id="RemoteReaderServer-backto-ObservableRemoteReaderServer" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="none" points="672.5,922.5291,690,872.5291,707.5,922.5291,672.5,922.5291" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[a90d75fa912a29c73465d3d42e1a8937]
+link RemotePluginServer to RemoteReaderServer--><path codeLine="127" d="M690,462.3041 C690,462.3041 690,551.3241 690,593.2741 " fill="none" id="RemotePluginServer-RemoteReaderServer" style="stroke: #3498DB; stroke-width: 2.5;"/><polygon fill="#3498DB" points="690,626.0841,700,603.5841,690,613.5841,680,603.5841,690,626.0841" style="stroke: #3498DB; stroke-width: 2.5;"/><line style="stroke: #3498DB; stroke-width: 2.5;" x1="690" x2="690" y1="613.5841" y2="593.5841"/><polygon fill="#3498DB" points="690,432.3041,680,447.3041,690,462.3041,700,447.3041,690,432.3041" style="stroke: #3498DB; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="32.5" lengthAdjust="spacingAndGlyphs" textLength="107.5" x="692.5" y="542.8394">readers</text><text fill="#000000" font-family="sans-serif" font-size="32.5" lengthAdjust="spacingAndGlyphs" textLength="60" x="625.7813" y="599.8254">1..N</text><!--MD5=[cd153c0242e2864675b9dc50f471e3a6]
+link LocalServiceClient to RemoteServiceParameters--><path codeLine="128" d="M1960,404.7066 C1960,476.2341 1960,583.5541 1960,658.8291 " fill="none" id="LocalServiceClient-to-RemoteServiceParameters" style="stroke: #3498DB; stroke-width: 2.5;"/><polygon fill="#3498DB" points="1960,671.5591,1970,649.0591,1960,659.0591,1950,649.0591,1960,671.5591" style="stroke: #3498DB; stroke-width: 2.5;"/><polygon fill="#000000" points="1972.5,542.041,1979.8473,519.4283,1965.1527,519.4283,1972.5,542.041" style="stroke: #000000; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="32.5" lengthAdjust="spacingAndGlyphs" textLength="52.5" x="1995" y="542.8394">use</text><!--MD5=[67388e983a21b7fb718f5f064a2e9e7f]
+reverse link RemoteServiceParameters to RemoteServiceParametersBuilder--><path codeLine="129" d="M1960,865.5841 C1960,935.0991 1960,1023.5166 1960,1092.3791 " fill="none" id="RemoteServiceParameters-backto-RemoteServiceParametersBuilder" style="stroke: #3498DB; stroke-width: 2.5;"/><ellipse cx="1960" cy="847.1316" fill="#FFFFFF" rx="20" ry="20" style="stroke: #3498DB; stroke-width: 2.5;"/><line style="stroke: #3498DB; stroke-width: 2.5;" x1="1960" x2="1960" y1="867.1316" y2="827.1316"/><line style="stroke: #3498DB; stroke-width: 2.5;" x1="1940" x2="1980" y1="847.1316" y2="847.1316"/><!--MD5=[de3ba00feccc4f0d04c391f4a96b3418]
+link ObservableRemoteReaderServer to RemotePluginClient--><!--MD5=[33ded1a61abf684390fb28fb1b0491fd]
+link ObservableRemotePluginClient to PoolRemotePluginClient--><!--MD5=[717d6ad38431c6d04c042d21c8e08802]
+link RemoteServiceParametersBuilder to LocalServiceServer--><!--MD5=[eab34a0f1aa9c60f24c80bd61549f640]
+link LocalServiceServer to PoolLocalServiceServer--><!--MD5=[89a3c4f33a1aed7d74bb15f92ee0d0ba]
+link SyncNodeServer to SyncNodeClient--><!--MD5=[d625fa653a5ba7aa3464f616e4b6508f]
+link SyncNodeClient to MessageDto--><!--MD5=[175f5a65a7eb64e903eab6f8038f041a]
+link MessageDto to AsyncNodeServer--><!--MD5=[d3a6ffdcf0f5451aa402cd387050b4e4]
+link AsyncNodeServer to AsyncNodeClient--><!--MD5=[f93d1eaed51c8dad6c37adda70c02136]
+@startuml
+title
+    Keyple Distributed - Package "org.eclipse.keyple.distributed" - 1.0.0 (06/11/2020)
+end title
+
+' == THEME ==
+
+'Couleurs issues de : https://htmlcolorcodes.com/fr/tableau-de-couleur/tableau-de-couleur-design-plat/
+!define C_GREY1 F8F9F9
+!define C_GREY2 F2F3F4
+!define C_GREY3 E5E7E9
+!define C_GREY4 D7DBDD
+!define C_GREY5 CACFD2
+!define C_GREY6 BDC3C7
+!define C_LINK 3498DB
+!define C_USE 27AE60
+
+skinparam Shadowing false
+skinparam ClassFontStyle italic
+skinparam ClassBorderColor #D4AC0D
+skinparam stereotypeABorderColor #A9DCDF
+skinparam stereotypeIBorderColor #B4A7E5
+skinparam stereotypeCBorderColor #ADD1B2
+skinparam stereotypeEBorderColor #EB93DF
+' Red
+skinparam ClassBackgroundColor<<red>> #FDEDEC
+skinparam ClassBorderColor<<red>> #E74C3C
+hide <<red>> stereotype
+' Purple
+skinparam ClassBackgroundColor<<purple>> #F4ECF7
+skinparam ClassBorderColor<<purple>> #8E44AD
+hide <<purple>> stereotype
+' blue
+skinparam ClassBackgroundColor<<blue>> #EBF5FB
+skinparam ClassBorderColor<<blue>> #3498DB
+hide <<blue>> stereotype
+' Green
+skinparam ClassBackgroundColor<<green>> #E9F7EF
+skinparam ClassBorderColor<<green>> #27AE60
+hide <<green>> stereotype
+' Grey
+skinparam ClassBackgroundColor<<grey>> #EAECEE
+skinparam ClassBorderColor<<grey>> #2C3E50
+hide <<grey>> stereotype
+
+' == CONTENT ==
+
+package "org.eclipse.keyple.distributed" as packRemote {
+
+    together {
+
+        ' Nodes
+        +interface AsyncNodeClient {
+            +void onOpen (String sessionId)
+            +void onMessage (MessageDto msg)
+            +void onClose (String sessionId)
+            +void onError (String sessionId, Throwable error)
+        }
+        +interface AsyncNodeServer {
+            +void onMessage (MessageDto msg)
+            +void onError (String sessionId, Throwable error)
+        }
+        +interface SyncNodeClient {
+        }
+        +interface SyncNodeServer {
+            +List<MessageDto> onRequest (MessageDto msg)
+        }
+
+        ' DTO
+        +class MessageDto {
+            + String sessionId
+            + String action
+            + String clientNodeId
+            + String serverNodeId
+            + String localReaderName
+            + String RemoteReaderImplName
+            + String body
+        }
+
+    }
+    together {
+
+        +interface LocalServiceServer {
+        }
+        +interface PoolLocalServiceServer {
+        }
+        +interface LocalServiceClient {
+            +<T> T executeRemoteService (RemoteServiceParameters parameters, Class<T> classOfT)
+        }
+        +class RemoteServiceParameters {
+            +{static} Builder builder (String serviceId, Reader localReader)
+        }
+        +class "Builder" as RemoteServiceParametersBuilder {
+            +Builder withUserInputData (Object userInputData)
+            +Builder withInitialCardContent (AbstractSmartCard smartCard)
+            +RemoteServiceParameters build ()
+        }
+
+    }
+    together {
+
+        ' Remote Handlers
+        +interface "<<<back:orange>Plugin</back>>>\nRemotePluginClient" as RemotePluginClient {
+        }
+        +interface "<<<back:orange>ObservablePlugin</back>>>\nObservableRemotePluginClient" as ObservableRemotePluginClient extends RemotePluginClient {
+        }
+        +interface "<<<back:orange>PoolPlugin</back>>>\nPoolRemotePluginClient" as PoolRemotePluginClient {
+        }
+        +interface "<<<back:orange>ObservablePlugin</back>>>\nRemotePluginServer" as RemotePluginServer {
+            +RemoteReaderServer getReader (String name)
+            +void terminateService (String RemoteReaderImplName, Object userOutputData)
+        }
+
+        ' Remote Readers
+        +interface "<<<back:orange>Reader</back>>>\nRemoteReaderServer" as RemoteReaderServer {
+            +String getServiceId ()
+            +<T> T getUserInputData (Class<T> classOfT)
+            +<T extends AbstractSmartCard> T getInitialCardContent (Class<T> classOfSmartCard)
+        }
+        +interface "<<<back:orange>ObservableReader</back>>>\nObservableRemoteReaderServer" as ObservableRemoteReaderServer extends RemoteReaderServer {
+        }
+
+    }
+
+}
+
+' Associations
+RemotePluginServer *- -> "1..N" RemoteReaderServer #C_LINK : readers
+LocalServiceClient - -> RemoteServiceParameters #C_LINK : use >
+RemoteServiceParameters +- - RemoteServiceParametersBuilder #C_LINK
+
+' == LAYOUT ==
+
+ObservableRemoteReaderServer -[hidden]- RemotePluginClient
+ObservableRemotePluginClient -[hidden]- PoolRemotePluginClient
+RemoteServiceParametersBuilder -[hidden]- LocalServiceServer
+LocalServiceServer -[hidden]- PoolLocalServiceServer
+SyncNodeServer -[hidden]- SyncNodeClient
+SyncNodeClient -[hidden]- MessageDto
+MessageDto -[hidden]- AsyncNodeServer
+AsyncNodeServer -[hidden]- AsyncNodeClient
+
+' == STYLE ==
+
+package packRemote #C_GREY1 {}
+
+@enduml
+
+@startuml
+title
+    Keyple Distributed - Package "org.eclipse.keyple.distributed" - 1.0.0 (06/11/2020)
+end title
+
+
+
+skinparam Shadowing false
+skinparam ClassFontStyle italic
+skinparam ClassBorderColor #D4AC0D
+skinparam stereotypeABorderColor #A9DCDF
+skinparam stereotypeIBorderColor #B4A7E5
+skinparam stereotypeCBorderColor #ADD1B2
+skinparam stereotypeEBorderColor #EB93DF
+skinparam ClassBackgroundColor<<red>> #FDEDEC
+skinparam ClassBorderColor<<red>> #E74C3C
+hide <<red>> stereotype
+skinparam ClassBackgroundColor<<purple>> #F4ECF7
+skinparam ClassBorderColor<<purple>> #8E44AD
+hide <<purple>> stereotype
+skinparam ClassBackgroundColor<<blue>> #EBF5FB
+skinparam ClassBorderColor<<blue>> #3498DB
+hide <<blue>> stereotype
+skinparam ClassBackgroundColor<<green>> #E9F7EF
+skinparam ClassBorderColor<<green>> #27AE60
+hide <<green>> stereotype
+skinparam ClassBackgroundColor<<grey>> #EAECEE
+skinparam ClassBorderColor<<grey>> #2C3E50
+hide <<grey>> stereotype
+
+
+package "org.eclipse.keyple.distributed" as packRemote {
+
+    together {
+
+        +interface AsyncNodeClient {
+            +void onOpen (String sessionId)
+            +void onMessage (MessageDto msg)
+            +void onClose (String sessionId)
+            +void onError (String sessionId, Throwable error)
+        }
+        +interface AsyncNodeServer {
+            +void onMessage (MessageDto msg)
+            +void onError (String sessionId, Throwable error)
+        }
+        +interface SyncNodeClient {
+        }
+        +interface SyncNodeServer {
+            +List<MessageDto> onRequest (MessageDto msg)
+        }
+
+        +class MessageDto {
+            + String sessionId
+            + String action
+            + String clientNodeId
+            + String serverNodeId
+            + String localReaderName
+            + String RemoteReaderImplName
+            + String body
+        }
+
+    }
+    together {
+
+        +interface LocalServiceServer {
+        }
+        +interface PoolLocalServiceServer {
+        }
+        +interface LocalServiceClient {
+            +<T> T executeRemoteService (RemoteServiceParameters parameters, Class<T> classOfT)
+        }
+        +class RemoteServiceParameters {
+            +{static} Builder builder (String serviceId, Reader localReader)
+        }
+        +class "Builder" as RemoteServiceParametersBuilder {
+            +Builder withUserInputData (Object userInputData)
+            +Builder withInitialCardContent (AbstractSmartCard smartCard)
+            +RemoteServiceParameters build ()
+        }
+
+    }
+    together {
+
+        +interface "<<<back:orange>Plugin</back>>>\nRemotePluginClient" as RemotePluginClient {
+        }
+        +interface "<<<back:orange>ObservablePlugin</back>>>\nObservableRemotePluginClient" as ObservableRemotePluginClient extends RemotePluginClient {
+        }
+        +interface "<<<back:orange>PoolPlugin</back>>>\nPoolRemotePluginClient" as PoolRemotePluginClient {
+        }
+        +interface "<<<back:orange>ObservablePlugin</back>>>\nRemotePluginServer" as RemotePluginServer {
+            +RemoteReaderServer getReader (String name)
+            +void terminateService (String RemoteReaderImplName, Object userOutputData)
+        }
+
+        +interface "<<<back:orange>Reader</back>>>\nRemoteReaderServer" as RemoteReaderServer {
+            +String getServiceId ()
+            +<T> T getUserInputData (Class<T> classOfT)
+            +<T extends AbstractSmartCard> T getInitialCardContent (Class<T> classOfSmartCard)
+        }
+        +interface "<<<back:orange>ObservableReader</back>>>\nObservableRemoteReaderServer" as ObservableRemoteReaderServer extends RemoteReaderServer {
+        }
+
+    }
+
+}
+
+RemotePluginServer *- -> "1..N" RemoteReaderServer #3498DB : readers
+LocalServiceClient - -> RemoteServiceParameters #3498DB : use >
+RemoteServiceParameters +- - RemoteServiceParametersBuilder #3498DB
+
+
+ObservableRemoteReaderServer -[hidden]- RemotePluginClient
+ObservableRemotePluginClient -[hidden]- PoolRemotePluginClient
+RemoteServiceParametersBuilder -[hidden]- LocalServiceServer
+LocalServiceServer -[hidden]- PoolLocalServiceServer
+SyncNodeServer -[hidden]- SyncNodeClient
+SyncNodeClient -[hidden]- MessageDto
+MessageDto -[hidden]- AsyncNodeServer
+AsyncNodeServer -[hidden]- AsyncNodeClient
+
+
+package packRemote #F8F9F9 {}
+
+@enduml
+
+PlantUML version 1.2020.20(Sat Nov 21 11:02:45 CET 2020)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: Cp1252
+Language: fr
+Country: FR
+--></g></svg>
