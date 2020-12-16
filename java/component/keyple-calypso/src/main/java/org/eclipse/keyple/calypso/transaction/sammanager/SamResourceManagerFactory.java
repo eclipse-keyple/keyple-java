@@ -9,13 +9,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.calypso.transaction;
+package org.eclipse.keyple.calypso.transaction.sammanager;
 
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.PoolPlugin;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 
-/** Factory that builds a SamResourceManager depending on the plugin used */
+/**
+ * Factory that builds a SamResourceManager depending on the plugin used
+ *
+ * @deprecated
+ */
 public abstract class SamResourceManagerFactory {
 
   static final int MAX_BLOCKING_TIME = 1000; // 1 sec

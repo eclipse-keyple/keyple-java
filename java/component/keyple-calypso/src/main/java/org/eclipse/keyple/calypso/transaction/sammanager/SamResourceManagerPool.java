@@ -9,9 +9,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.calypso.transaction;
+package org.eclipse.keyple.calypso.transaction.sammanager;
 
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
+import org.eclipse.keyple.calypso.transaction.CalypsoSam;
 import org.eclipse.keyple.core.card.selection.CardResource;
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.PoolPlugin;
@@ -21,7 +22,11 @@ import org.eclipse.keyple.core.service.exception.KeypleAllocationReaderException
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Implementation of Sam Resource Manager working a {@link PoolPlugin} */
+/**
+ * Implementation of Sam Resource Manager working a {@link PoolPlugin}
+ *
+ * @deprecated
+ */
 public class SamResourceManagerPool extends SamResourceManager {
   private static final Logger logger = LoggerFactory.getLogger(SamResourceManagerPool.class);
 
