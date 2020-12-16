@@ -95,9 +95,9 @@ task setVersion {
     dependsOn ':java:component:keyple-core:setVersion'
     dependsOn ':java:component:keyple-calypso:setVersion'
     dependsOn ':java:component:keyple-plugin:keyple-plugin-pcsc:setVersion'
-    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-network:setVersion'
-    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-local:setVersion'
-    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-remote:setVersion'
+    dependsOn ':java:component:keyple-distributed:keyple-distributed-network:setVersion'
+    dependsOn ':java:component:keyple-distributed:keyple-distributed-local:setVersion'
+    dependsOn ':java:component:keyple-distributed:keyple-distributed-remote:setVersion'
     dependsOn ':java:component:keyple-plugin:keyple-plugin-stub:setVersion'
     doLast {
         new File("$projectDir", "VERSION").text = version
@@ -125,25 +125,25 @@ task installPcscPlugin{
 
 }
 
-task installRemotePluginNetwork{
+task installDistributedNetwork{
     group 'keyple'
-    description 'Builds and installs the Keyple Remote Plugins (Network Lib) into maven local repository'
+    description 'Builds and installs the Keyple Distributed Network into maven local repository'
     dependsOn installCore
-    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-network:installPlugin'
+    dependsOn ':java:component:keyple-distributed:keyple-distributed-network:installModule'
 }
 
-task installRemotePluginLocal{
+task installDistributedLocal{
     group 'keyple'
-    description 'Builds and installs the Keyple Remote Plugins (Local Lib) into maven local repository'
-    dependsOn installRemotePluginNetwork
-    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-local:installPlugin'
+    description 'Builds and installs the Keyple Distributed Local into maven local repository'
+    dependsOn installDistributedNetwork
+    dependsOn ':java:component:keyple-distributed:keyple-distributed-local:installModule'
 }
 
-task installRemotePluginRemote{
+task installDistributedRemote{
     group 'keyple'
-    description 'Builds and installs the Keyple Remote Plugins (Remote Lib) into maven local repository'
-    dependsOn installRemotePluginNetwork
-    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-remote:installPlugin'
+    description 'Builds and installs the Keyple Distributed Remote into maven local repository'
+    dependsOn installDistributedNetwork
+    dependsOn ':java:component:keyple-distributed:keyple-distributed-remote:installModule'
 }
 
 task installStubPlugin{
@@ -158,9 +158,9 @@ task installAll {
     description 'Builds and installs all java Keyple library into maven local repository'
     dependsOn installCore
     dependsOn installCalypsoExtension
-    dependsOn installRemotePluginNetwork
-    dependsOn installRemotePluginLocal
-    dependsOn installRemotePluginRemote
+    dependsOn installDistributedNetwork
+    dependsOn installDistributedLocal
+    dependsOn installDistributedRemote
     dependsOn installStubPlugin
     dependsOn installPcscPlugin
 
@@ -186,14 +186,12 @@ task codeQuality {
     dependsOn ':java:component:keyple-core:sonarqube'
     dependsOn installCalypsoExtension
     dependsOn ':java:component:keyple-calypso:sonarqube'
-    //dependsOn installRemotePlugin
-    //dependsOn ':java:component:keyple-plugin:keyple-plugin-remote:sonarqube'
-    dependsOn installRemotePluginNetwork
-    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-network:sonarqube'
-    dependsOn installRemotePluginLocal
-    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-local:sonarqube'
-    dependsOn installRemotePluginRemote
-    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-remote:sonarqube'
+    dependsOn installDistributedNetwork
+    dependsOn ':java:component:keyple-distributed:keyple-distributed-network:sonarqube'
+    dependsOn installDistributedLocal
+    dependsOn ':java:component:keyple-distributed:keyple-distributed-local:sonarqube'
+    dependsOn installDistributedRemote
+    dependsOn ':java:component:keyple-distributed:keyple-distributed-remote:sonarqube'
     dependsOn installStubPlugin
     dependsOn ':java:component:keyple-plugin:keyple-plugin-stub:sonarqube'
     dependsOn installPcscPlugin

@@ -91,19 +91,19 @@ pipeline {
                     dir('java/example/generic/android/omapi') {
                         sh "./gradlew assembleDebug -P keyple_version=${keypleVersion}"
                     }
-                    dir('java/example/generic/remote/UseCase7_PoolRemotePluginClient_Webservice') {
+                    dir('java/example/generic/distributed/UseCase7_PoolRemotePluginClient_Webservice') {
                         sh "./gradlew assemble -P keyple_version=${keypleVersion}"
                     }
-                    dir('java/example/generic/remote/UseCase1_RemotePluginServer_Webservice') {
+                    dir('java/example/generic/distributed/UseCase1_RemotePluginServer_Webservice') {
                         sh "./gradlew assemble -P keyple_version=${keypleVersion}"
                     }
-                    dir('java/example/generic/remote/UseCase1_RemotePluginServer_Websocket') {
+                    dir('java/example/generic/distributed/UseCase1_RemotePluginServer_Websocket') {
                         sh "./gradlew assemble -P keyple_version=${keypleVersion}"
                     }
                     dir('java/example/calypso') {
                         sh "./gradlew assemble -P keyple_version=${keypleVersion}"
                     }
-                    dir('java/example/generic/local') {
+                    dir('java/example/generic/centralized') {
                         sh "./gradlew assemble -P keyple_version=${keypleVersion}"
                     }
                 }
@@ -172,9 +172,9 @@ pipeline {
                         sh './gradlew :java:component:keyple-core:uploadArchives ${uploadParams}'
                         sh './gradlew :java:component:keyple-calypso:uploadArchives ${uploadParams}'
                         sh './gradlew :java:component:keyple-plugin:keyple-plugin-pcsc:uploadArchives ${uploadParams}'
-                        sh './gradlew :java:component:keyple-plugin:remote:keyple-plugin-remote-network:uploadArchives ${uploadParams}'
-                        sh './gradlew :java:component:keyple-plugin:remote:keyple-plugin-remote-local:uploadArchives ${uploadParams}'
-                        sh './gradlew :java:component:keyple-plugin:remote:keyple-plugin-remote-remote:uploadArchives ${uploadParams}'
+                        sh './gradlew :java:component:keyple-distributed:keyple-distributed-network:uploadArchives ${uploadParams}'
+                        sh './gradlew :java:component:keyple-distributed:keyple-distributed-local:uploadArchives ${uploadParams}'
+                        sh './gradlew :java:component:keyple-distributed:keyple-distributed-remote:uploadArchives ${uploadParams}'
                         sh './gradlew :java:component:keyple-plugin:keyple-plugin-stub:uploadArchives ${uploadParams}'
                         sh './gradlew --stop'
                     }
@@ -211,9 +211,9 @@ pipeline {
                     sh 'cp ./java/component/keyple-calypso/build/libs/keyple-java-calypso*.jar ./repository/java'
                     sh 'cp ./java/component/keyple-core/build/libs/keyple-java-core*.jar ./repository/java'
                     sh 'cp ./java/component/keyple-plugin/pcsc/build/libs/keyple-java-plugin*.jar ./repository/java'
-                    sh 'cp ./java/component/keyple-plugin/remote/network/build/libs/keyple-plugin*.jar ./repository/java'
-                    sh 'cp ./java/component/keyple-plugin/remote/local/build/libs/keyple-plugin*.jar ./repository/java'
-                    sh 'cp ./java/component/keyple-plugin/remote/remote/build/libs/keyple-plugin*.jar ./repository/java'
+                    sh 'cp ./java/component/keyple-distributed/network/build/libs/keyple-distributed*.jar ./repository/java'
+                    sh 'cp ./java/component/keyple-distributed/local/build/libs/keyple-distributed*.jar ./repository/java'
+                    sh 'cp ./java/component/keyple-distributed/remote/build/libs/keyple-distributed*.jar ./repository/java'
                     sh 'cp ./java/component/keyple-plugin/stub/build/libs/keyple-java-plugin*.jar ./repository/java'
                     sh 'cp ./java/example/generic/android/nfc/build/outputs/apk/debug/*.apk ./repository/android'
                     sh 'cp ./java/example/generic/android/omapi/build/outputs/apk/debug/*.apk ./repository/android'

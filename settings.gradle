@@ -24,17 +24,20 @@ project(':java:component:keyple-plugin:pcsc').name = "keyple-plugin-pcsc"
 include ':java:component:keyple-plugin:stub'
 project(':java:component:keyple-plugin:stub').name = "keyple-plugin-stub"
 
-include ':java:component:keyple-plugin:remote:network'
-project(':java:component:keyple-plugin:remote:network').name = "keyple-plugin-remote-network"
+include ':java:component:keyple-distributed:network'
+project(':java:component:keyple-distributed:network').name = "keyple-distributed-network"
 
-include ':java:component:keyple-plugin:remote:local'
-project(':java:component:keyple-plugin:remote:local').name = "keyple-plugin-remote-local"
+include ':java:component:keyple-distributed:local'
+project(':java:component:keyple-distributed:local').name = "keyple-distributed-local"
 
-include ':java:component:keyple-plugin:remote:remote'
-project(':java:component:keyple-plugin:remote:remote').name = "keyple-plugin-remote-remote"
+include ':java:component:keyple-distributed:remote'
+project(':java:component:keyple-distributed:remote').name = "keyple-distributed-remote"
 
-include ':java:component:keyple-plugin:remote:integration-test'
-project(':java:component:keyple-plugin:remote:integration-test').name = "keyple-plugin-remote-integration-test"
+include ':java:component:keyple-distributed:integration-test'
+project(':java:component:keyple-distributed:integration-test').name = "keyple-distributed-integration-test"
 
 include ':java:example:calypso'
-include ':java:example:generic:local'
+include ':java:example:generic:centralized'
+//include ':java:example:generic:distributed:UseCase1_RemotePluginServer_Webservice'
+//include ':java:example:generic:distributed:UseCase1_RemotePluginServer_Websocket'
+//include ':java:example:generic:distributed:UseCase7_PoolRemotePluginClient_Webservice'
