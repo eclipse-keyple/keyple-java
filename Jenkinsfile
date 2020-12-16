@@ -103,7 +103,7 @@ pipeline {
                     dir('java/example/calypso') {
                         sh "./gradlew assemble -P keyple_version=${keypleVersion}"
                     }
-                    dir('java/example/generic/centralized') {
+                    dir('java/example/generic/standalone') {
                         sh "./gradlew assemble -P keyple_version=${keypleVersion}"
                     }
                 }
