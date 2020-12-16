@@ -1,6 +1,6 @@
 # 'Eclipse Keyple' Java implementation
 
-This is the repository for the Java implementation of the 'Eclipse Keyple' API. Information & guides are available on [keyple.org](https://keyple.org/).
+This is the repository for the Java implementation of the '[Eclipse Keyple' API. Information & guides are available on [keyple.org](https://keyple.org/).
 
 (The C++ implementation is hosted on https://github.com/eclipse/keyple-cpp.)
 
@@ -324,3 +324,15 @@ On Linux, macOS :
 
 ### CI and Docker 
 Eclipse CI tools to build and test the components are Open Source too. They can be found in this repository : [Eclipse Keyple Ops](https://www.github.com/eclipse/keyple-ops)
+
+## Trademarks
+
+* Eclipse Keyple and the Eclipse Keyple project are Trademarks of the Eclipse Foundation, Inc.
+* Eclipse® is a Trademark of the Eclipse Foundation, Inc.
+* Eclipse Foundation is a Trademark of the Eclipse Foundation, Inc.
+
+## Copyright and license
+
+Copyright 2020 the [Eclipse Foundation, Inc.](https://www.eclipse.org) and 
+the [Keyple Java authors](https://github.com/eclipse/keyple/graphs/contributors). 
+Code released under the [Eclipse Public License Version 2.0 (EPL-2.0)](https://github.com/eclipse/keyple-website/blob/src/LICENSE).
