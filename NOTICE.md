@@ -1,10 +1,9 @@
-# Notices for Keyple Java, Tools for Committers
+# Notices for 'Eclipse Keyple' Java implementation
 
-This content is produced and maintained by the Eclipse keyple, Tools for
-Committers project.
+This content is produced and maintained by the Eclipse Keyple project.
 
  * Project home: https://projects.eclipse.org/projects/iot.keyple
-
+ 
 ## Supported platforms
 - Java SE 1.6 compact2
 - Android 4.4 KitKat API level 19
@@ -17,6 +16,12 @@ Committers project.
 - example: source for the generic and Calypso implementation examples.
 - keyple-integration: source for the integration code (SDK).
 
+## Trademarks
+ 
+ * Eclipse Keyple and the Eclipse Keyple project are Trademarks of the Eclipse Foundation, Inc.
+ * Eclipse® is a Trademark of the Eclipse Foundation, Inc.
+ * Eclipse Foundation is a Trademark of the Eclipse Foundation, Inc.
+ 
 ## Copyright
 
 All content is the property of the respective authors or their employers.
@@ -35,18 +40,23 @@ SPDX-License-Identifier: EPL-2.0
 
 The project maintains the following source code repositories:
 
- * https://github.com/eclipse/keyple.git
- 
+* https://github.com/eclipse/keyple
+* https://github.com/eclipse/keyple-website
+* https://github.com/eclipse/keyple-java
+* https://github.com/eclipse/keyple-cpp
+* https://github.com/eclipse/keyple-ops
  
 ## Contributors
    *   Pierre Terrée - API specification
-   *   Jean-Pierre Fortune - plugin PCSC, keyple Core and Keyple Calypso
-   *   Olivier Delcroix - plugins Android, plugin Remote SE
+   *   Jean-Pierre Fortune - Keyple Core, Keyple Calypso, PCSC plugin and Stub plugin
+   *   Olivier Delcroix - Keyple Distributed and Android plugins
    *   Florent Clairambault - Keyple Core
-   *   Paulo Barreto - integration and demo
-   *   Meddy Menzikoff - Android plugins and Examples 
+   *   Paulo Barreto - Integration and Demo apps
+   *   Meddy Menzikoff - Android plugins and Examples
+   *   Andrei Cristea - Keyple Core, Keyple Distributed and Keyple Calypso
+   *   Youssef Amrani - Android plugins and demo apps
+   *   Brice Ruppen - DevOps
    
-
 ## Third-party Content
 
 Google Gson (2.2.4)
