@@ -8,7 +8,7 @@ This library **should be import explicitly** from [maven](https://mvnrepository.
 
 ## User Guide & Download Information
 
-This plugin is used in a variety of [examples](/java/example/generic/local/) and also in the [quick start](https://keyple.org/docs/build-your-first-app/java-app/) section of the official Keyple website [keyple.org](http://keyple.org). You can find all the information you need in the Eclipse Keyple [documentation](http://keyple.org/docs) and in the [API reference](https://keyple.org/docs/api-reference/).
+This plugin is used in a variety of [examples](/java/example/generic/local/) and also in the [quick start](https://keyple.org/docs/build-your-first-app/java-app/) section of the official Keyple website [keyple.org](https://keyple.org). You can find all the information you need in the Eclipse Keyple [documentation](http://keyple.org/docs) and in the [API reference](https://keyple.org/docs/api-reference/).
 
 ## Build the Code
 

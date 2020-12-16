@@ -8,7 +8,7 @@ This library **should be import explicitly** from [maven](https://mvnrepository.
 
 ## User Guide & Download Information
 
-This extension is used in a variety of [examples](/java/example/calypso/local/) around the Calypso protocol. You can find all the information you need in the Eclipse Keyple [documentation](http://keyple.org/docs) and in the [API reference](https://keyple.org/docs/api-reference/).
+This extension is used in a variety of [examples](/java/example/calypso/local/) around the Calypso protocol. You can find all the information you need in the Eclipse Keyple [documentation](https://keyple.org/docs) and in the [API reference](https://keyple.org/docs/api-reference/).
 
 ## Build the Code
 
