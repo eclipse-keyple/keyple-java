@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.calypso.transaction;
+package org.eclipse.keyple.calypso.transaction.sammanager;
 
 import java.util.Map;
 import java.util.Set;
@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
+import org.eclipse.keyple.calypso.transaction.CalypsoSam;
 import org.eclipse.keyple.core.card.selection.CardResource;
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
@@ -37,6 +38,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Implementation of Sam Resource Manager working a {@link Plugin} (either Stub or Pcsc) It is meant
  * to work with a Keyple Pcsc Plugin or a Keyple Stub Plugin.
+ *
+ * @deprecated
  */
 public class SamResourceManagerDefault extends SamResourceManager {
   private static final Logger logger = LoggerFactory.getLogger(SamResourceManagerDefault.class);

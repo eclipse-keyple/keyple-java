@@ -102,18 +102,6 @@ public class SamSelector extends CardSelector {
     }
 
     /**
-     * Sets the SAM identifier
-     *
-     * @param samIdentifier the {@link SamIdentifier} of the targeted SAM
-     * @return the builder instance
-     */
-    public SamSelectorBuilder samIdentifier(SamIdentifier samIdentifier) {
-      samRevision = samIdentifier.getSamRevision();
-      serialNumber = samIdentifier.getSerialNumber();
-      return this;
-    }
-
-    /**
      * Sets the unlock data
      *
      * @param unlockData a byte array containing the unlock data (8 or 16 bytes)

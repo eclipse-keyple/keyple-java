@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.calypso.transaction;
+package org.eclipse.keyple.calypso.transaction.sammanager;
 
 import static org.eclipse.keyple.calypso.command.sam.SamRevision.AUTO;
 
@@ -26,6 +26,7 @@ import org.eclipse.keyple.calypso.command.sam.SamRevision;
  * <p>Group reference (key group reference)
  *
  * @since 0.9
+ * @deprecated
  */
 public class SamIdentifier {
   SamRevision samRevision;
