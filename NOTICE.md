@@ -48,13 +48,15 @@ The project maintains the following source code repositories:
  
 ## Contributors
    *   Pierre Terrée - API specification
-   *   Jean-Pierre Fortune - plugin PCSC, keyple Core and Keyple Calypso
-   *   Olivier Delcroix - plugins Android, plugin Remote SE
+   *   Jean-Pierre Fortune - Keyple Core, Keyple Calypso, PCSC plugin and Stub plugin
+   *   Olivier Delcroix - Keyple Remote and Android plugins
    *   Florent Clairambault - Keyple Core
-   *   Paulo Barreto - integration and demo
-   *   Meddy Menzikoff - Android plugins and Examples 
+   *   Paulo Barreto - Integration and Demo apps
+   *   Meddy Menzikoff - Android plugins and Examples
+   *   Andrei Cristea - Keyple Remote
+   *   Youssef Amrani - Android plugins and demo apps
+   *   Brice Ruppen - DevOps
    
-
 ## Third-party Content
 
 Google Gson (2.2.4)
