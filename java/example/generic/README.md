@@ -2,7 +2,7 @@ Getting Started - Generic Example
 ---
 Those projects showcase the use of keyple among multiple type of readers within a standalone or distributed architecture.  
 
-## Stanalone examples
+## Standalone examples
 The [standalone examples](/java/example/generic/standalone) make use of the Keyple Core library.
 They demonstrate how to observe insertion/removal of smart card or Readers.
 They show case the [PCSC plugin](/java/component/keyple-plugin/pcsc) and the [Stub plugin](/java/component/keyple-plugin/stub). 
