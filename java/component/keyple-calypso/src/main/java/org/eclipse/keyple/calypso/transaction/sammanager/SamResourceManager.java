@@ -9,11 +9,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.calypso.transaction;
+package org.eclipse.keyple.calypso.transaction.sammanager;
 
 import static org.eclipse.keyple.calypso.command.sam.SamRevision.AUTO;
 
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
+import org.eclipse.keyple.calypso.transaction.CalypsoSam;
+import org.eclipse.keyple.calypso.transaction.SamSelection;
+import org.eclipse.keyple.calypso.transaction.SamSelector;
 import org.eclipse.keyple.core.card.selection.CardResource;
 import org.eclipse.keyple.core.card.selection.CardSelectionsResult;
 import org.eclipse.keyple.core.card.selection.CardSelectionsService;
@@ -73,6 +76,7 @@ public abstract class SamResourceManager {
    * @param samReader the SAM reader with which the APDU exchanges will be done.
    * @return a {@link CardResource}
    * @throws CalypsoNoSamResourceAvailableException if an error occurs while doing the selection
+   * @deprecated
    */
   protected SamResourceManagerDefault.ManagedSamResource createSamResource(Reader samReader) {
 
@@ -80,10 +84,7 @@ public abstract class SamResourceManager {
 
     /* Prepare selector */
     samSelection.prepareSelection(
-        new SamSelection(
-            SamSelector.builder()
-                .samIdentifier(SamIdentifier.builder().samRevision(AUTO).build())
-                .build()));
+        new SamSelection(SamSelector.builder().samRevision(AUTO).build()));
 
     CardSelectionsResult cardSelectionsResult = null;
 
