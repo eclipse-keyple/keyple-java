@@ -38,6 +38,6 @@ project(':java:component:keyple-distributed:integration-test').name = "keyple-di
 
 include ':java:example:calypso'
 include ':java:example:generic:standalone'
-//include ':java:example:generic:distributed:UseCase1_RemotePluginServer_Webservice'
-//include ':java:example:generic:distributed:UseCase1_RemotePluginServer_Websocket'
-//include ':java:example:generic:distributed:UseCase7_PoolRemotePluginClient_Webservice'
+//include ':java:example:generic:distributed:UseCase1_ReaderClientSide_Webservice'
+//include ':java:example:generic:distributed:UseCase1_ReaderClientSide_Websocket'
+//include ':java:example:generic:distributed:UseCase7_PoolReaderServerSide_Webservice'
