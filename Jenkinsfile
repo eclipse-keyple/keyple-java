@@ -91,13 +91,13 @@ pipeline {
                     dir('java/example/generic/android/omapi') {
                         sh "./gradlew assembleDebug -P keyple_version=${keypleVersion}"
                     }
-                    dir('java/example/generic/distributed/UseCase7_PoolRemotePluginClient_Webservice') {
+                    dir('java/example/generic/distributed/UseCase7_PoolReaderServerSide_Webservice') {
                         sh "./gradlew assemble -P keyple_version=${keypleVersion}"
                     }
-                    dir('java/example/generic/distributed/UseCase1_RemotePluginServer_Webservice') {
+                    dir('java/example/generic/distributed/UseCase1_ReaderClientSide_Webservice') {
                         sh "./gradlew assemble -P keyple_version=${keypleVersion}"
                     }
-                    dir('java/example/generic/distributed/UseCase1_RemotePluginServer_Websocket') {
+                    dir('java/example/generic/distributed/UseCase1_ReaderClientSide_Websocket') {
                         sh "./gradlew assemble -P keyple_version=${keypleVersion}"
                     }
                     dir('java/example/calypso') {

@@ -10,7 +10,7 @@ It is important to note that it uses and exposes the APIs exposed by the library
 
 ## User Guide & Download Information
 
-The full documentation, including download information is available in the [Developer Guides / Develop a Remote Ticketing Application](https://keyple.org/docs/developer-guide/distributed-application/) section of the official Keyple website [keyple.org](https://keyple.org)
+The full documentation, including download information is available in the [Developer Guides / Distributed Application](https://keyple.org/docs/developer-guide/distributed-application/) section of the official Keyple website [keyple.org](https://keyple.org)
 
 ## Build the Code
 
