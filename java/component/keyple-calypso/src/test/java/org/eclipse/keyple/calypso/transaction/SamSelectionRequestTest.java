@@ -17,10 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException;
-import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
+import org.eclipse.keyple.core.card.message.AnswerToReset;
+import org.eclipse.keyple.core.card.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
+import org.eclipse.keyple.core.card.message.SelectionStatus;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
 
@@ -45,10 +46,9 @@ public class SamSelectionRequestTest {
         SamSelector.builder() //
             .samRevision(SamRevision.AUTO) //
             .build();
-    SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
+    SamSelection samSelection = new SamSelection(samSelector);
     SelectionStatus selectionStatus = new SelectionStatus(new AnswerToReset(ATR), null, true);
-    CalypsoSam calypsoSam =
-        samSelectionRequest.parse(new SeResponse(true, true, selectionStatus, null));
+    CalypsoSam calypsoSam = samSelection.parse(new CardSelectionResponse(selectionStatus, null));
     // minimal checks on the CalypsoSam result
     assertThat(calypsoSam.getSamRevision()).isEqualTo(SamRevision.C1);
     assertThat(calypsoSam.getSerialNumber()).isEqualTo(SN);
@@ -61,12 +61,13 @@ public class SamSelectionRequestTest {
             .samRevision(SamRevision.AUTO) //
             .unlockData(UNLOCK_DATA)
             .build();
-    SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
+    SamSelection samSelection = new SamSelection(samSelector);
     SelectionStatus selectionStatus = new SelectionStatus(new AnswerToReset(ATR), null, true);
     List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
     apduResponses.add(UNLOCK_APDU_RESPONSE_OK);
     CalypsoSam calypsoSam =
-        samSelectionRequest.parse(new SeResponse(true, true, selectionStatus, apduResponses));
+        samSelection.parse(
+            new CardSelectionResponse(selectionStatus, new CardResponse(true, apduResponses)));
     // minimal checks on the CalypsoSam result
     assertThat(calypsoSam.getSamRevision()).isEqualTo(SamRevision.C1);
     assertThat(calypsoSam.getSerialNumber()).isEqualTo(SN);
@@ -79,11 +80,12 @@ public class SamSelectionRequestTest {
             .samRevision(SamRevision.AUTO) //
             .unlockData(UNLOCK_DATA)
             .build();
-    SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
+    SamSelection samSelection = new SamSelection(samSelector);
     SelectionStatus selectionStatus = new SelectionStatus(new AnswerToReset(ATR), null, true);
     List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
     apduResponses.add(UNLOCK_APDU_RESPONSE_KO);
     CalypsoSam calypsoSam =
-        samSelectionRequest.parse(new SeResponse(true, true, selectionStatus, apduResponses));
+        samSelection.parse(
+            new CardSelectionResponse(selectionStatus, new CardResponse(true, apduResponses)));
   }
 }

@@ -14,10 +14,11 @@ package org.eclipse.keyple.calypso.command.sam.exception;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 
 /**
- * The exception {@code CalypsoSamSecurityDataException} indicates that the security input data
- * provided is not valid.<br>
+ * Indicates that the security input data provided is not valid.<br>
  * This can occur, for example, during the digest authenticate operation when the PO's signature is
  * incorrect.
+ *
+ * @since 0.9
  */
 public final class CalypsoSamSecurityDataException extends CalypsoSamCommandException {
 
@@ -25,6 +26,7 @@ public final class CalypsoSamSecurityDataException extends CalypsoSamCommandExce
    * @param message the message to identify the exception context
    * @param command the Calypso SAM command
    * @param statusCode the status code
+   * @since 0.9
    */
   public CalypsoSamSecurityDataException(
       String message, CalypsoSamCommand command, Integer statusCode) {

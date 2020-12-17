@@ -14,13 +14,14 @@ package org.eclipse.keyple.calypso.command.po.builder;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.*;
 import org.eclipse.keyple.calypso.command.po.parser.IncreaseRespPars;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * The Class IncreaseCmdBuild. This class provides the dedicated constructor to build the Increase
- * APDU command.
- */
+/** Builds the Increase APDU command. */
 public final class IncreaseCmdBuild extends AbstractPoCommandBuilder<IncreaseRespPars> {
+
+  private static final Logger logger = LoggerFactory.getLogger(IncreaseCmdBuild.class);
 
   /** The command. */
   private static final CalypsoPoCommand command = CalypsoPoCommand.INCREASE;
@@ -69,16 +70,23 @@ public final class IncreaseCmdBuild extends AbstractPoCommandBuilder<IncreaseRes
     }
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public IncreaseRespPars createResponseParser(ApduResponse apduResponse) {
     return new IncreaseRespPars(apduResponse, this);
   }
 
   /**
-   * This command can modify the contents of the PO in session and therefore uses the session
-   * buffer.
+   * {@inheritDoc}
+   *
+   * <p>This command modified the contents of the PO and therefore uses the session buffer.
    *
    * @return true
+   * @since 0.9
    */
   @Override
   public boolean isSessionBufferUsed() {

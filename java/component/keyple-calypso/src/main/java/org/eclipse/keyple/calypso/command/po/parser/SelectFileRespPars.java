@@ -19,18 +19,18 @@ import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.builder.SelectFileCmdBuild;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoDataAccessException;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalParameterException;
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.bertlv.TLV;
 import org.eclipse.keyple.core.util.bertlv.Tag;
 
 /**
- * This class provides status code properties and the getters to access to the structured fields of
- * data from response to a Select File command (available from the parent class).
+ * Parses the response to a Select File command.
  *
- * <p>The value of the Proprietary Information tag is extracted from the Select File response and
- * made available using the corresponding getter.
+ * @since 0.9
+ *     <p>The value of the Proprietary Information tag is extracted from the Select File response
+ *     and made available using the corresponding getter.
  */
 public final class SelectFileRespPars extends AbstractPoResponseParser {
   private static final Map<Integer, StatusProperties> STATUS_TABLE;
@@ -48,6 +48,11 @@ public final class SelectFileRespPars extends AbstractPoResponseParser {
 
   private byte[] proprietaryInformation;
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -61,6 +66,7 @@ public final class SelectFileRespPars extends AbstractPoResponseParser {
    *
    * @param response the response from the PO
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public SelectFileRespPars(ApduResponse response, SelectFileCmdBuild builder) {
     super(response, builder);
@@ -70,6 +76,7 @@ public final class SelectFileRespPars extends AbstractPoResponseParser {
   /**
    * @return the content of the proprietary information tag present in the response to the Select
    *     File command
+   * @since 0.9
    */
   public byte[] getProprietaryInformation() {
     if (proprietaryInformation == null) {

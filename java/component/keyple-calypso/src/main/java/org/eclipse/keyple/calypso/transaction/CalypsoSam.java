@@ -16,13 +16,23 @@ import static org.eclipse.keyple.calypso.command.sam.SamRevision.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
-import org.eclipse.keyple.core.selection.AbstractMatchingSe;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
+import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CalypsoSam extends AbstractMatchingSe {
+/**
+ * This POJO concentrates all the information we know about the SAM currently selected.
+ *
+ * <p>An instance of CalypsoSam is obtained by casting the AbstractSmartCard object from the
+ * selection process (e.g. (CalypsoSam)(cardSelectionsResult.getActiveSmartCard()))
+ *
+ * <p>The information on the SAM is extracted from an analysis of the ATR.
+ *
+ * @since 0.9
+ */
+public class CalypsoSam extends AbstractSmartCard {
   private static final Logger logger = LoggerFactory.getLogger(CalypsoSam.class);
 
   private final SamRevision samRevision;
@@ -37,13 +47,14 @@ public class CalypsoSam extends AbstractMatchingSe {
   /**
    * Constructor.
    *
-   * @param selectionResponse the selection response from the SAM
+   * @param cardSelectionResponse the selection response from the SAM
+   * @since 0.9
    */
-  CalypsoSam(SeResponse selectionResponse) {
-    super(selectionResponse);
+  CalypsoSam(CardSelectionResponse cardSelectionResponse) {
+    super(cardSelectionResponse);
 
     String atrString =
-        ByteArrayUtil.toHex(selectionResponse.getSelectionStatus().getAtr().getBytes());
+        ByteArrayUtil.toHex(cardSelectionResponse.getSelectionStatus().getAtr().getBytes());
     if (atrString.isEmpty()) {
       throw new IllegalStateException("ATR should not be empty.");
     }
@@ -101,34 +112,82 @@ public class CalypsoSam extends AbstractMatchingSe {
     }
   }
 
+  /**
+   * Gets the SAM revision as an enum constant
+   *
+   * @return An enum entry of {@link SamRevision}
+   * @since 0.9
+   */
   public final SamRevision getSamRevision() {
     return samRevision;
   }
 
+  /**
+   * Gets the SAM serial number as an array of bytes
+   *
+   * @return A not null array of bytes
+   * @since 0.9
+   */
   public final byte[] getSerialNumber() {
     return serialNumber;
   }
 
+  /**
+   * Gets the platform identifier
+   *
+   * @return A byte
+   * @since 0.9
+   */
   public final byte getPlatform() {
     return platform;
   }
 
+  /**
+   * Gets the application type
+   *
+   * @return A byte
+   * @since 0.9
+   */
   public final byte getApplicationType() {
     return applicationType;
   }
 
+  /**
+   * Gets the application subtype
+   *
+   * @return A byte
+   * @since 0.9
+   */
   public final byte getApplicationSubType() {
     return applicationSubType;
   }
 
+  /**
+   * Gets the software issuer identifier
+   *
+   * @return A byte
+   * @since 0.9
+   */
   public final byte getSoftwareIssuer() {
     return softwareIssuer;
   }
 
+  /**
+   * Gets the software version number
+   *
+   * @return A byte
+   * @since 0.9
+   */
   public final byte getSoftwareVersion() {
     return softwareVersion;
   }
 
+  /**
+   * Gets the software revision number
+   *
+   * @return A byte
+   * @since 0.9
+   */
   public final byte getSoftwareRevision() {
     return softwareRevision;
   }

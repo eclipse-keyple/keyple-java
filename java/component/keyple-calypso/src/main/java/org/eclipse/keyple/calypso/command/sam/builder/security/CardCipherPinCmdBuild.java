@@ -16,9 +16,13 @@ import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.parser.security.CardCipherPinRespPars;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** Builder for the SAM Card Cipher PIN APDU command. */
+/**
+ * Builds the Card Cipher PIN APDU command.
+ *
+ * @since 0.9
+ */
 public class CardCipherPinCmdBuild extends AbstractSamCommandBuilder<CardCipherPinRespPars> {
   /** The command reference. */
   private static final CalypsoSamCommand command = CalypsoSamCommand.CARD_CIPHER_PIN;
@@ -37,6 +41,7 @@ public class CardCipherPinCmdBuild extends AbstractSamCommandBuilder<CardCipherP
    * @param currentPin the current PIN (a 4-byte byte array)
    * @param newPin the new PIN (a 4-byte byte array if the operation in progress is a PIN update,
    *     null if the operation in progress is a PIN verification)
+   * @since 0.9
    */
   public CardCipherPinCmdBuild(
       SamRevision revision, KeyReference cipheringKey, byte[] currentPin, byte[] newPin) {
@@ -79,6 +84,11 @@ public class CardCipherPinCmdBuild extends AbstractSamCommandBuilder<CardCipherP
     request = setApduRequest(cla, command, p1, p2, data, null);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public CardCipherPinRespPars createResponseParser(ApduResponse apduResponse) {
     return new CardCipherPinRespPars(apduResponse, this);

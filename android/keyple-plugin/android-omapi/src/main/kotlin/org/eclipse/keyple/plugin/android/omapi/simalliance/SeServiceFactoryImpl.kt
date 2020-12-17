@@ -15,6 +15,11 @@ import android.content.Context
 import org.eclipse.keyple.plugin.android.omapi.SeServiceFactory
 import org.simalliance.openmobileapi.SEService
 
+/**
+ * Implementation of {@link SeServiceFactory} using org.simalliance.openmobileapi
+ *
+ * @since 0.9
+ */
 internal class SeServiceFactoryImpl(private val applicationContext: Context) : SeServiceFactory<SEService, SEService.CallBack> {
 
     override fun connectToSe(callBack: SEService.CallBack): SEService {

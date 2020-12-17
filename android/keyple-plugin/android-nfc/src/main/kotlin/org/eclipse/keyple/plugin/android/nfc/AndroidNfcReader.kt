@@ -11,59 +11,64 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
-import android.app.Activity
 import android.content.Intent
 import android.nfc.NfcAdapter
-import org.eclipse.keyple.core.seproxy.SeReader
-import org.eclipse.keyple.core.seproxy.plugin.reader.SmartRemovalReader
+import org.eclipse.keyple.core.service.Reader
+import org.eclipse.keyple.core.service.event.ObservableReader
 
 /**
- * [SeReader] to communicate with NFC Tag though
+ * [Reader] to communicate with NFC Tag though
  * Android [NfcAdapter]
  *
- * Configure NFCAdapter Protocols with [AndroidNfcReaderImpl.setParameter]
+ * Configure NFCAdapter Protocols with [AbstractAndroidNfcReader.setParameter]
  *
- * Optimized for android 4.4 (API 19) to  6.0 (API 23)
+ * @since 0.9
  */
-interface AndroidNfcReader : SmartRemovalReader {
+interface AndroidNfcReader : ObservableReader {
     /**
      * Gets a string describing the low level description of the current tag.
      *
      * Used for logging purpose
      * @return string
+     *
+     * @since 0.9
      */
     fun printTagId(): String
 
     /**
-     * Process data from NFC Intent. Can be use to handle NFC Tag received when app is
-     * triggered by nfc detection
+     * Process data from NFC Intent. Can be use to handle NFC Tag received when app is started
+     * by nfc detection
      *
      * @param intent : Intent received and filterByProtocol by xml tech_list
+     *
+     * @since 0.9
      */
     fun processIntent(intent: Intent)
 
     /**
-     * Declare app to handle NFC Tags while in the foreground
+     * Allows the calling application to specify the delay that the platform will use for performing presence checks on any discovered tag.
+     * see @NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY
+     *
+     * @since 0.9
      */
-    fun enableNFCReaderMode(activity: Activity)
+    var presenceCheckDelay: Int?
 
     /**
-     * Stop app handling NFC Tags while in the foreground
+     * Allows the invoker to prevent the platform from playing sounds when it discovers a tag.
+     *
+     * @since 0.9
      */
-    fun disableNFCReaderMode(activity: Activity)
+    var noPlateformSound: Boolean?
+
+    /**
+     * Prevent the platform from performing any NDEF checks in reader mode.
+     *
+     * @since 0.9
+     */
+    var skipNdefCheck: Boolean?
 
     companion object {
-
-        val READER_NAME = "AndroidNfcReaderImpl"
+        val READER_NAME = "AndroidNfcReader"
         val PLUGIN_NAME = AndroidNfcPlugin.PLUGIN_NAME
-
-        // FLAG_READER_SKIP_NDEF_CHECK Prevent the platform from performing any NDEF checks in reader mode. Must be 0 or 1.
-        val FLAG_READER_SKIP_NDEF_CHECK = "FLAG_READER_SKIP_NDEF_CHECK"
-
-        // Allows the caller to prevent the platform from playing sounds when it discovers a tag. Must be 0 or 1.
-        val FLAG_READER_NO_PLATFORM_SOUNDS = "FLAG_READER_NO_PLATFORM_SOUNDS"
-
-        // Allows the calling application to specify the delay that the platform will use for performing presence checks on any discovered tag.
-        val FLAG_READER_PRESENCE_CHECK_DELAY = "FLAG_READER_PRESENCE_CHECK_DELAY"
     }
 }

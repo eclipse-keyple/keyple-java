@@ -13,9 +13,13 @@ package org.eclipse.keyple.calypso.command.po.parser.security;
 
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.builder.security.PoGetChallengeCmdBuild;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** PO Get challenge response parser. See specs: Calypso / page 108 / 9.54 - Get challenge */
+/**
+ * Parses the PO Get challenge response.
+ *
+ * @since 0.9
+ */
 public final class PoGetChallengeRespPars extends AbstractPoResponseParser {
 
   /**
@@ -23,11 +27,18 @@ public final class PoGetChallengeRespPars extends AbstractPoResponseParser {
    *
    * @param response the response from PO Get Challenge APDU Command
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public PoGetChallengeRespPars(ApduResponse response, PoGetChallengeCmdBuild builder) {
     super(response, builder);
   }
 
+  /**
+   * Gets the PO challenge
+   *
+   * @return An array of bytes
+   * @since 0.9
+   */
   public byte[] getPoChallenge() {
     return getApduResponse().getDataOut();
   }

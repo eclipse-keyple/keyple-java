@@ -16,9 +16,13 @@ import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.parser.security.CardGenerateKeyRespPars;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** Builder for the SAM Give Random APDU command. */
+/**
+ * Builds the Give Random APDU command.
+ *
+ * @since 0.9
+ */
 public class CardGenerateKeyCmdBuild extends AbstractSamCommandBuilder<CardGenerateKeyRespPars> {
   /** The command reference. */
   private static final CalypsoSamCommand command = CalypsoSamCommand.CARD_GENERATE_KEY;
@@ -34,6 +38,7 @@ public class CardGenerateKeyCmdBuild extends AbstractSamCommandBuilder<CardGener
    * @param cipheringKey the key used to ciphering the source key (the null key is used if this
    *     reference is null)
    * @param sourceKey the reference of the key to be loaded
+   * @since 0.9
    */
   public CardGenerateKeyCmdBuild(
       SamRevision revision, KeyReference cipheringKey, KeyReference sourceKey) {
@@ -75,6 +80,11 @@ public class CardGenerateKeyCmdBuild extends AbstractSamCommandBuilder<CardGener
     request = setApduRequest(cla, command, p1, p2, data, null);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public CardGenerateKeyRespPars createResponseParser(ApduResponse apduResponse) {
     return new CardGenerateKeyRespPars(apduResponse, this);

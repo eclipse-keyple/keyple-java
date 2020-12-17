@@ -14,7 +14,7 @@ package org.eclipse.keyple.calypso.transaction;
 import java.io.Serializable;
 
 /**
- * The class {@code ElementaryFile} contains the description of a Calypso EF.
+ * This POJO contains the description of a Calypso EF.
  *
  * @since 0.9
  */
@@ -41,6 +41,7 @@ public class ElementaryFile implements Serializable {
    * Constructor used to create a clone of the provided EF.
    *
    * @param source the EF to be cloned
+   * @since 0.9
    */
   ElementaryFile(ElementaryFile source) {
     this.sfi = source.getSfi();
@@ -76,6 +77,7 @@ public class ElementaryFile implements Serializable {
    *
    * @param header the file header (should be not null)
    * @return the current instance.
+   * @since 0.9
    */
   ElementaryFile setHeader(FileHeader header) {
     this.header = header;

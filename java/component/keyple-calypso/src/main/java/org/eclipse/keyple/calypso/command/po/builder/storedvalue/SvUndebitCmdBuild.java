@@ -15,12 +15,15 @@ import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.*;
 import org.eclipse.keyple.calypso.command.po.parser.storedvalue.SvDebitRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.storedvalue.SvUndebitRespPars;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
- * The Class SvUndebitCmdBuild. This class provides the dedicated constructor to build the SV
- * Undebit command. Note: {@link SvUndebitCmdBuild} and {@link SvDebitCmdBuild} shares the same
- * parser {@link SvDebitRespPars}
+ * Builds the SV Undebit command.
+ *
+ * <p>Note: {@link SvUndebitCmdBuild} and {@link SvDebitCmdBuild} shares the same parser {@link
+ * SvDebitRespPars}
+ *
+ * @since 0.9
  */
 public final class SvUndebitCmdBuild extends AbstractPoCommandBuilder<SvUndebitRespPars> {
 
@@ -42,12 +45,13 @@ public final class SvUndebitCmdBuild extends AbstractPoCommandBuilder<SvUndebitR
    * @param date debit date (not checked by the PO)
    * @param time debit time (not checked by the PO)
    * @throws IllegalArgumentException - if the command is inconsistent
+   * @since 0.9
    */
   public SvUndebitCmdBuild(
       PoClass poClass, PoRevision poRevision, int amount, byte kvc, byte[] date, byte[] time) {
     super(command, null);
 
-    /**
+    /*
      * @see Calypso Layer ID 8.02 (200108)
      * @see Ticketing Layer Recommendations 170 (200108)
      */
@@ -95,6 +99,7 @@ public final class SvUndebitCmdBuild extends AbstractPoCommandBuilder<SvUndebitR
    * <p>5 or 10 byte signature (hi part)
    *
    * @param undebitComplementaryData the data out from the SvPrepareDebit SAM command
+   * @since 0.9
    */
   public void finalizeBuilder(byte[] undebitComplementaryData) {
     if ((poRevision == PoRevision.REV3_2 && undebitComplementaryData.length != 20)
@@ -118,6 +123,7 @@ public final class SvUndebitCmdBuild extends AbstractPoCommandBuilder<SvUndebitR
    * Gets the SV Debit part of the data to include in the SAM SV Prepare Debit command
    *
    * @return a byte array containing the SV undebit data
+   * @since 0.9
    */
   public byte[] getSvUndebitData() {
     byte[] svUndebitData = new byte[12];
@@ -130,13 +136,22 @@ public final class SvUndebitCmdBuild extends AbstractPoCommandBuilder<SvUndebitR
     return svUndebitData;
   }
 
+  /** {@inheritDoc} 9çào */
   @Override
   public SvUndebitRespPars createResponseParser(ApduResponse apduResponse) {
     return new SvUndebitRespPars(apduResponse, this);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>This command modified the contents of the PO and therefore uses the session buffer.
+   *
+   * @return true
+   * @since 0.9
+   */
   @Override
   public boolean isSessionBufferUsed() {
-    return false;
+    return true;
   }
 }

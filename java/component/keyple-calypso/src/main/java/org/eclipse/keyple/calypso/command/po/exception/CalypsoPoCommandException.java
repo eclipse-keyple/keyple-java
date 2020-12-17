@@ -12,18 +12,20 @@
 package org.eclipse.keyple.calypso.command.po.exception;
 
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
-import org.eclipse.keyple.core.command.exception.KeypleSeCommandException;
+import org.eclipse.keyple.core.card.command.exception.KeypleCardCommandException;
 
 /**
- * The exception {@code CalypsoPoCommandException} is the parent abstract class of all Keyple PO
- * APDU commands exceptions.
+ * Parent abstract class of all Keyple PO APDU commands exceptions.
+ *
+ * @since 0.9
  */
-public abstract class CalypsoPoCommandException extends KeypleSeCommandException {
+public abstract class CalypsoPoCommandException extends KeypleCardCommandException {
 
   /**
    * @param message the message to identify the exception context
    * @param command the Calypso PO command
    * @param statusCode the status code (optional)
+   * @since 0.9
    */
   protected CalypsoPoCommandException(
       String message, CalypsoPoCommand command, Integer statusCode) {

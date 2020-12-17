@@ -18,9 +18,13 @@ import org.eclipse.keyple.calypso.command.sam.builder.security.SamReadKeyParamet
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCounterOverflowException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamDataAccessException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** SAM read key parameters. */
+/**
+ * Parses the read key parameters response.
+ *
+ * @since 0.9
+ */
 public class SamReadKeyParametersRespPars extends AbstractSamResponseParser {
 
   private static final Map<Integer, StatusProperties> STATUS_TABLE;
@@ -42,6 +46,11 @@ public class SamReadKeyParametersRespPars extends AbstractSamResponseParser {
     STATUS_TABLE = m;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -52,6 +61,7 @@ public class SamReadKeyParametersRespPars extends AbstractSamResponseParser {
    *
    * @param response of the SamReadKeyParametersRespPars
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public SamReadKeyParametersRespPars(ApduResponse response, SamReadKeyParametersCmdBuild builder) {
     super(response, builder);
@@ -61,6 +71,7 @@ public class SamReadKeyParametersRespPars extends AbstractSamResponseParser {
    * Gets the key parameters.
    *
    * @return the key parameters
+   * @since 0.9
    */
   public byte[] getKeyParameters() {
     return isSuccessful() ? response.getDataOut() : null;

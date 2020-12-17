@@ -19,10 +19,14 @@ import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoAccessForbiddenE
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoDataAccessException;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoSecurityContextException;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoSessionBufferOverflowException;
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** Rehabilitate response parser. */
+/**
+ * Parses the Rehabilitate response.
+ *
+ * @since 0.9
+ */
 public final class RehabilitateRespPars extends AbstractPoResponseParser {
 
   private static final Map<Integer, StatusProperties> STATUS_TABLE;
@@ -54,11 +58,17 @@ public final class RehabilitateRespPars extends AbstractPoResponseParser {
    *
    * @param response the response from Rehabilitate APDU Command
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public RehabilitateRespPars(ApduResponse response, RehabilitateCmdBuild builder) {
     super(response, builder);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;

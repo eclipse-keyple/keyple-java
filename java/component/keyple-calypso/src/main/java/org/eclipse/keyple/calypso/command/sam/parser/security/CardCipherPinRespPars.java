@@ -19,8 +19,13 @@ import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamAccessForbidde
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCounterOverflowException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamDataAccessException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
+/**
+ * Parses the Card Cipher Pin response.
+ *
+ * @since 0.9
+ */
 public class CardCipherPinRespPars extends AbstractSamResponseParser {
   private static final Map<Integer, StatusProperties> STATUS_TABLE;
 
@@ -46,6 +51,11 @@ public class CardCipherPinRespPars extends AbstractSamResponseParser {
     STATUS_TABLE = m;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -56,6 +66,7 @@ public class CardCipherPinRespPars extends AbstractSamResponseParser {
    *
    * @param response from the SAM
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public CardCipherPinRespPars(ApduResponse response, CardCipherPinCmdBuild builder) {
     super(response, builder);
@@ -65,6 +76,7 @@ public class CardCipherPinRespPars extends AbstractSamResponseParser {
    * Gets the 8 bytes of ciphered data.
    *
    * @return the ciphered data byte array
+   * @since 0.9
    */
   public byte[] getCipheredData() {
     return response.getDataOut();

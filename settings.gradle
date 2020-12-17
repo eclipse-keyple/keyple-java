@@ -24,6 +24,20 @@ project(':java:component:keyple-plugin:pcsc').name = "keyple-plugin-pcsc"
 include ':java:component:keyple-plugin:stub'
 project(':java:component:keyple-plugin:stub').name = "keyple-plugin-stub"
 
-include ':java:component:keyple-plugin:remotese'
-project(':java:component:keyple-plugin:remotese').name = "keyple-plugin-remotese"
+include ':java:component:keyple-distributed:network'
+project(':java:component:keyple-distributed:network').name = "keyple-distributed-network"
 
+include ':java:component:keyple-distributed:local'
+project(':java:component:keyple-distributed:local').name = "keyple-distributed-local"
+
+include ':java:component:keyple-distributed:remote'
+project(':java:component:keyple-distributed:remote').name = "keyple-distributed-remote"
+
+include ':java:component:keyple-distributed:integration-test'
+project(':java:component:keyple-distributed:integration-test').name = "keyple-distributed-integration-test"
+
+include ':java:example:calypso'
+include ':java:example:generic:standalone'
+//include ':java:example:generic:distributed:UseCase1_ReaderClientSide_Webservice'
+//include ':java:example:generic:distributed:UseCase1_ReaderClientSide_Websocket'
+//include ':java:example:generic:distributed:UseCase7_PoolReaderServerSide_Webservice'

@@ -16,9 +16,18 @@ import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.parser.security.VerifyPinRespPars;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * Builds the Verify PIN command.
+ *
+ * @since 0.9
+ */
 public class VerifyPinCmdBuild extends AbstractPoCommandBuilder<VerifyPinRespPars> {
+  private static final Logger logger = LoggerFactory.getLogger(VerifyPinCmdBuild.class);
+
   private static final CalypsoPoCommand command = CalypsoPoCommand.VERIFY_PIN;
 
   private final byte cla;
@@ -32,6 +41,7 @@ public class VerifyPinCmdBuild extends AbstractPoCommandBuilder<VerifyPinRespPar
    *     form.
    * @param pin the PIN data. The PIN is always 4-byte long here, even in the case of a encrypted
    *     transmission (@see setCipheredPinData).
+   * @since 0.9
    */
   public VerifyPinCmdBuild(
       PoClass poClass, PoTransaction.PinTransmissionMode pinTransmissionMode, byte[] pin) {
@@ -76,12 +86,25 @@ public class VerifyPinCmdBuild extends AbstractPoCommandBuilder<VerifyPinRespPar
 
     readCounterOnly = true;
   }
-
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public VerifyPinRespPars createResponseParser(ApduResponse apduResponse) {
     return new VerifyPinRespPars(apduResponse, this);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>This command doesn't modify the contents of the PO and therefore doesn't uses the session
+   * buffer.
+   *
+   * @return false
+   * @since 0.9
+   */
   @Override
   public boolean isSessionBufferUsed() {
     return false;

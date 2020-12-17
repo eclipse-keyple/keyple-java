@@ -11,10 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.calypso.transaction.exception;
 
-/**
- * The exception {@code CalypsoSamIOException} indicates a communication error with the SAM (e.g
- * timeout, network,...).
- */
+/** Indicates a communication error with the SAM (e.g timeout, network,...). */
 public class CalypsoSamIOException extends CalypsoPoTransactionException {
 
   /** @param message the message to identify the exception context */

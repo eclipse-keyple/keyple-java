@@ -19,12 +19,13 @@ import org.eclipse.keyple.calypso.command.po.builder.security.CloseSessionCmdBui
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoAccessForbiddenException;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalParameterException;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoSecurityDataException;
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
- * Close Secure Session (008E) response parser. See specs: Calypso / page 104 / 9.5.2 - Close Secure
- * Session
+ * Parses the Close Secure Session response.
+ *
+ * @since 0.9
  */
 public final class CloseSessionRespPars extends AbstractPoResponseParser {
 
@@ -51,6 +52,11 @@ public final class CloseSessionRespPars extends AbstractPoResponseParser {
     STATUS_TABLE = m;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -67,6 +73,7 @@ public final class CloseSessionRespPars extends AbstractPoResponseParser {
    *
    * @param response from CloseSessionCmdBuild
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public CloseSessionRespPars(ApduResponse response, CloseSessionCmdBuild builder) {
     super(response, builder);

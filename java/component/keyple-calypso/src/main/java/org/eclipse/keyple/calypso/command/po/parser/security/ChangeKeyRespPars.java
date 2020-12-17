@@ -16,9 +16,14 @@ import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.builder.security.ChangeKeyCmdBuild;
 import org.eclipse.keyple.calypso.command.po.exception.*;
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
+/**
+ * Parses the ChangeKey response.
+ *
+ * @since 0.9
+ */
 public class ChangeKeyRespPars extends AbstractPoResponseParser {
   private static final Map<Integer, StatusProperties> STATUS_TABLE;
 
@@ -66,11 +71,17 @@ public class ChangeKeyRespPars extends AbstractPoResponseParser {
    *
    * @param response the response from the PO
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public ChangeKeyRespPars(ApduResponse response, ChangeKeyCmdBuild builder) {
     super(response, builder);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;

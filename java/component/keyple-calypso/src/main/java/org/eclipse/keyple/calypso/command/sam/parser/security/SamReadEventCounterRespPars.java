@@ -17,9 +17,13 @@ import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
 import org.eclipse.keyple.calypso.command.sam.builder.security.SamReadEventCounterCmdBuild;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCounterOverflowException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** SAM read event counter. */
+/**
+ * Parses the Read event counter.
+ *
+ * @since 0.9
+ */
 public class SamReadEventCounterRespPars extends AbstractSamResponseParser {
 
   private static final Map<Integer, StatusProperties> STATUS_TABLE;
@@ -36,6 +40,11 @@ public class SamReadEventCounterRespPars extends AbstractSamResponseParser {
     STATUS_TABLE = m;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -46,6 +55,7 @@ public class SamReadEventCounterRespPars extends AbstractSamResponseParser {
    *
    * @param response of the SamReadEventCounterRespPars
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public SamReadEventCounterRespPars(ApduResponse response, SamReadEventCounterCmdBuild builder) {
     super(response, builder);
@@ -55,6 +65,7 @@ public class SamReadEventCounterRespPars extends AbstractSamResponseParser {
    * Gets the key parameters.
    *
    * @return the counter data (Value or Record)
+   * @since 0.9
    */
   public byte[] getCounterData() {
     return isSuccessful() ? response.getDataOut() : null;

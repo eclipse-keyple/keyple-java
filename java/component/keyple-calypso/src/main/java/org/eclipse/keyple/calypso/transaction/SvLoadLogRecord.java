@@ -14,7 +14,7 @@ package org.eclipse.keyple.calypso.transaction;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /**
- * The class {@code SvLoadLogRecord} contains the data of a Stored Value load log.
+ * This POJO contains the data of a Stored Value load log.
  *
  * @since 0.9
  */
@@ -27,6 +27,7 @@ public class SvLoadLogRecord {
    *
    * @param poResponse the Sv Get or Read Record (SV Debit log file) response data
    * @param offset the load log offset in the response (may change from a PO to another)
+   * @since 0.9
    */
   public SvLoadLogRecord(byte[] poResponse, int offset) {
     this.poResponse = poResponse;
@@ -34,9 +35,9 @@ public class SvLoadLogRecord {
   }
 
   /**
-   * Gets the load amount
+   * Gets the load amount value
    *
-   * @return the amount value
+   * @return An int
    * @since 0.9
    */
   public int getAmount() {
@@ -44,9 +45,9 @@ public class SvLoadLogRecord {
   }
 
   /**
-   * Gets the SV balance
+   * Gets the SV balance value
    *
-   * @return the balance value
+   * @return An int
    * @since 0.9
    */
   public int getBalance() {
@@ -54,9 +55,9 @@ public class SvLoadLogRecord {
   }
 
   /**
-   * Gets the load time
+   * Gets the load time as an int
    *
-   * @return the time value as an int
+   * @return An int
    * @since 0.9
    */
   public int getLoadTime() {
@@ -64,9 +65,9 @@ public class SvLoadLogRecord {
   }
 
   /**
-   * Gets the load time
+   * Gets the load time as an array of bytes
    *
-   * @return the time value as a 2-byte byte array
+   * @return A 2-byte byte array
    * @since 0.9
    */
   public byte[] getLoadTimeBytes() {
@@ -77,9 +78,9 @@ public class SvLoadLogRecord {
   }
 
   /**
-   * Gets the load date
+   * Gets the load date as an int
    *
-   * @return the date value as an int
+   * @return An int
    * @since 0.9
    */
   public int getLoadDate() {
@@ -87,9 +88,9 @@ public class SvLoadLogRecord {
   }
 
   /**
-   * Gets the load date
+   * Gets the load date as an array of bytes
    *
-   * @return the date value as a 2-byte byte array
+   * @return A 2-byte byte array
    * @since 0.9
    */
   public byte[] getLoadDateBytes() {
@@ -102,7 +103,7 @@ public class SvLoadLogRecord {
   /**
    * Gets the free bytes as a String
    *
-   * @return the free value as an Ascii string
+   * @return A 2-character Ascii string
    * @since 0.9
    */
   public String getFreeByte() {
@@ -110,9 +111,9 @@ public class SvLoadLogRecord {
   }
 
   /**
-   * Gets the free bytes
+   * Gets the free bytes as an array of bytes
    *
-   * @return the free value as a 2-byte byte array
+   * @return A 2-byte byte array
    * @since 0.9
    */
   public byte[] getFreeByteBytes() {
@@ -125,7 +126,7 @@ public class SvLoadLogRecord {
   /**
    * Gets the KVC of the load key (as given in the last SV Reload)
    *
-   * @return the KVC value
+   * @return A byte
    * @since 0.9
    */
   public byte getKvc() {
@@ -133,9 +134,9 @@ public class SvLoadLogRecord {
   }
 
   /**
-   * Gets the SAM ID
+   * Gets the SAM ID value as a long
    *
-   * @return the SAM ID value as an int
+   * @return A long
    * @since 0.9
    */
   public long getSamId() {
@@ -143,9 +144,9 @@ public class SvLoadLogRecord {
   }
 
   /**
-   * Gets the SAM ID
+   * Gets the SAM ID as an array of bytes
    *
-   * @return the SAM ID value as a 4-byte byte array
+   * @return A 4-byte byte array
    * @since 0.9
    */
   public byte[] getSamIdBytes() {
@@ -155,9 +156,9 @@ public class SvLoadLogRecord {
   }
 
   /**
-   * Gets the SV transaction number
+   * Gets the SV transaction number value as an int
    *
-   * @return the SV transaction number value as an int
+   * @return An int
    * @since 0.9
    */
   public int getSvTNum() {
@@ -165,9 +166,9 @@ public class SvLoadLogRecord {
   }
 
   /**
-   * Gets the SV transaction number
+   * Gets the SV transaction number as an array of bytes
    *
-   * @return the SV transaction number value as a 2-byte byte array
+   * @return A 2-byte byte array
    * @since 0.9
    */
   public byte[] getSvTNumBytes() {
@@ -178,9 +179,9 @@ public class SvLoadLogRecord {
   }
 
   /**
-   * Gets the SAM transaction number
+   * Gets the SAM transaction number value as an int
    *
-   * @return the SAM transaction number value as an int
+   * @return An int
    * @since 0.9
    */
   public int getSamTNum() {
@@ -188,9 +189,9 @@ public class SvLoadLogRecord {
   }
 
   /**
-   * Gets the SAM transaction number
+   * Gets the SAM transaction number as an array of bytes
    *
-   * @return the SAM transaction number value as a 3-byte byte array
+   * @return A 3-byte byte array
    * @since 0.9
    */
   public byte[] getSamTNumBytes() {
@@ -199,7 +200,12 @@ public class SvLoadLogRecord {
     return samTNum;
   }
 
-  /** @return a JSON formatted string with the debit log content */
+  /**
+   * Gets the SV load log record a JSON formatted string
+   *
+   * @return A not empty String
+   * @since 0.9
+   */
   @Override
   public String toString() {
     return "{\"SvLoadLogRecord\":{"
@@ -209,7 +215,7 @@ public class SvLoadLogRecord {
         + getBalance()
         + ", \"debitDate\":"
         + getLoadDate()
-        + ", \"debitTime\":"
+        + ", \"loadTime\":"
         + getLoadDate()
         + ", \"freeBytes\":"
         + ByteArrayUtil.toHex(getFreeByteBytes())

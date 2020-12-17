@@ -11,8 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.stub;
 
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.rules.TestName;
@@ -27,15 +27,23 @@ public class BaseStubTest {
 
   public static String PLUGIN_NAME = "stub1";
 
+  protected ObservationExceptionHandler observationExceptionHandler =
+      new ObservationExceptionHandler();
+
   @Rule public TestName name = new TestName();
 
-  public void setupStub() throws Exception {
+  public void registerStub() throws Exception {
     logger.info("------------------------------");
     logger.info("Test {}", name.getMethodName());
     logger.info("------------------------------");
 
     logger.info("setupStub, assert stubplugin is empty");
-    stubPlugin = (StubPluginImpl) new StubPluginFactory(PLUGIN_NAME).getPlugin();
+    stubPlugin =
+        (StubPluginImpl)
+            new StubPluginFactory(
+                    PLUGIN_NAME, observationExceptionHandler, observationExceptionHandler)
+                .getPlugin();
+    stubPlugin.register();
 
     logger.info("Stubplugin readers size {}", stubPlugin.getReaders().size());
     Assert.assertEquals(0, stubPlugin.getReaders().size());
@@ -47,14 +55,14 @@ public class BaseStubTest {
     Thread.sleep(100);
   }
 
-  public void clearStub()
+  public void unregisterStub()
       throws InterruptedException, KeypleReaderException, KeyplePluginNotFoundException {
     logger.info("---------");
     logger.info("TearDown ");
     logger.info("---------");
 
-    stubPlugin.unplugStubReaders(stubPlugin.getReaderNames(), true);
-
     stubPlugin.clearObservers();
+    stubPlugin.unplugReaders(stubPlugin.getReaderNames(), true);
+    stubPlugin.unregister();
   }
 }

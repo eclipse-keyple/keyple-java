@@ -12,13 +12,17 @@
 package org.eclipse.keyple.calypso.command.po.builder.security;
 
 import org.eclipse.keyple.calypso.command.PoClass;
-import org.eclipse.keyple.core.seproxy.message.ApduRequest;
+import org.eclipse.keyple.core.card.message.ApduRequest;
 
 /**
- * The RatificationCmdBuild class provides the ApduRequest dedicated to the ratification command,
- * i.e. the command sent after closing the secure session to handle the ratification mechanism. <br>
+ * Provides the ApduRequest dedicated to the ratification command.
+ *
+ * <p>i.e. the command sent after closing the secure session to handle the ratification mechanism.
+ * <br>
  * This particular builder is not associated with any parser since the response to this command is
  * always an error and is never checked.
+ *
+ * @since 0.9
  */
 public final class RatificationCmdBuild {
   private RatificationCmdBuild() {}
@@ -26,6 +30,7 @@ public final class RatificationCmdBuild {
   /**
    * @param poClass the PO class
    * @return the ApduRequest ratification command according to the PO class provided
+   * @since 0.9
    */
   public static ApduRequest getApduRequest(PoClass poClass) {
     byte[] ratificationApdu =

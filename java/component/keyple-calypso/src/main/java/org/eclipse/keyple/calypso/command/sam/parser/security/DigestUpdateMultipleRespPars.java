@@ -18,11 +18,12 @@ import org.eclipse.keyple.calypso.command.sam.builder.security.DigestUpdateMulti
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamAccessForbiddenException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIncorrectInputDataException;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
- * Digest update multiple response parser. See specs: Calypso / page 54 / 7.4.2 - Session MAC
- * computation
+ * Parses the Digest update multiple response.
+ *
+ * @since 0.9
  */
 public class DigestUpdateMultipleRespPars extends AbstractSamResponseParser {
 
@@ -45,6 +46,11 @@ public class DigestUpdateMultipleRespPars extends AbstractSamResponseParser {
     STATUS_TABLE = m;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -55,6 +61,7 @@ public class DigestUpdateMultipleRespPars extends AbstractSamResponseParser {
    *
    * @param response the response
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public DigestUpdateMultipleRespPars(ApduResponse response, DigestUpdateMultipleCmdBuild builder) {
     super(response, builder);

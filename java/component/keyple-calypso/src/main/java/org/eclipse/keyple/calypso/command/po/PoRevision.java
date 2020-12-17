@@ -11,7 +11,11 @@
  ************************************************************************************** */
 package org.eclipse.keyple.calypso.command.po;
 
-/** Calypso revisions */
+/**
+ * Calypso revisions
+ *
+ * @since 0.9
+ */
 public enum PoRevision {
 
   /** Calypso Revision 1 (CLA 0x94) */

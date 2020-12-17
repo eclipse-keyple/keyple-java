@@ -17,6 +17,11 @@ import androidx.annotation.RequiresApi
 import java.util.concurrent.Executors
 import org.eclipse.keyple.plugin.android.omapi.SeServiceFactory
 
+/**
+ * Implementation of {@link SeServiceFactory} using android.se.omapi
+ *
+ * @since 0.9
+ */
 internal class SeServiceFactoryImpl(private val applicationContext: Context) : SeServiceFactory<SEService, SEService.OnConnectedListener> {
 
     @RequiresApi(android.os.Build.VERSION_CODES.P)

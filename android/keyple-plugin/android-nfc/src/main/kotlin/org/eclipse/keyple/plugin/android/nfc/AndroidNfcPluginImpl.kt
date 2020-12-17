@@ -11,43 +11,41 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
-import java.util.HashMap
+import android.app.Activity
+import android.os.Build
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
-import org.eclipse.keyple.core.seproxy.SeReader
-import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin
+import org.eclipse.keyple.core.plugin.AbstractPlugin
+import org.eclipse.keyple.core.service.Reader
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler
 import timber.log.Timber
 
 /**
  * Enables Keyple to communicate with the the Android device by providing access to the
- * implementation of SeReader.
+ * implementation of Reader.
  *
+ * Will provide 2 version of Android NFC reader based on Android OS version.
+ *
+ * @since 0.9
  */
-internal object AndroidNfcPluginImpl : AbstractPlugin(AndroidNfcPlugin.PLUGIN_NAME), AndroidNfcPlugin {
-
-    private val parameters = HashMap<String, String>() // not in use in
-
-    override fun getParameters(): Map<String, String> {
-
-        Timber.w("Android NFC Plugin does not support parameters, see AndroidNfcReaderImpl instead")
-        return parameters
-    }
-
-    override fun setParameter(key: String, value: String) {
-        Timber.w("Android NFC Plugin does not support parameters, see AndroidNfcReaderImpl instead")
-        parameters[key] = value
-    }
+internal class AndroidNfcPluginImpl(private val activity: Activity, private val readerObservationExceptionHandler: ReaderObservationExceptionHandler) :
+    AbstractPlugin(AndroidNfcPlugin.PLUGIN_NAME),
+    AndroidNfcPlugin {
 
     /**
-     * For an Android NFC device, the Android NFC Plugin manages only one @[AndroidNfcReaderImpl].
+     * For an Android NFC device, the Android NFC Plugin manages only one @[AbstractAndroidNfcReader].
      *
      * @return SortedSet<ProxyReader> : contains only one element, the
-     * singleton @[AndroidNfcReaderImpl]
+     * singleton @[AbstractAndroidNfcReader]
     </ProxyReader> */
-    override fun initNativeReaders(): ConcurrentMap<String, SeReader>? {
+    override fun initNativeReaders(): ConcurrentMap<String, Reader>? {
         Timber.d("InitNativeReader() add the unique instance of AndroidNfcReaderImpl")
-        val readers = ConcurrentHashMap<String, SeReader>()
-        readers[AndroidNfcReaderImpl.name] = AndroidNfcReaderImpl
+        val readers = ConcurrentHashMap<String, Reader>()
+        readers[AndroidNfcReader.READER_NAME] = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            AndroidNfcReaderPreNImpl(activity, readerObservationExceptionHandler)
+        } else {
+            AndroidNfcReaderPostNImpl(activity, readerObservationExceptionHandler)
+        }
         // Nfc android adapter availability is checked in AndroidNfcFragment
         return readers
     }

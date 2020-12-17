@@ -12,8 +12,7 @@
 package org.eclipse.keyple.calypso.transaction.exception;
 
 /**
- * The exception {@code CalypsoInconsistencyDataException} indicates an inconsistency in the PO
- * data.<br>
+ * Indicates an inconsistency in the PO data.<br>
  * This can occur, for example, if data read in session is different from data read outside the
  * session.
  */

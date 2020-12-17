@@ -14,7 +14,7 @@ package org.eclipse.keyple.calypso.transaction;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /**
- * The class {@code SvDebitLogRecord} contains the data of a Stored Value debit log.
+ * This POJO contains the data of a Stored Value debit log.
  *
  * @since 0.9
  */
@@ -34,9 +34,9 @@ public class SvDebitLogRecord {
   }
 
   /**
-   * Gets the debit amount
+   * Gets the debit amount value
    *
-   * @return the amount value
+   * @return An int
    * @since 0.9
    */
   public int getAmount() {
@@ -44,9 +44,9 @@ public class SvDebitLogRecord {
   }
 
   /**
-   * Gets the SV balance
+   * Gets the SV balance value
    *
-   * @return the balance value
+   * @return An int
    * @since 0.9
    */
   public int getBalance() {
@@ -54,9 +54,9 @@ public class SvDebitLogRecord {
   }
 
   /**
-   * Gets the debit time
+   * Gets the debit time as an int
    *
-   * @return the time value as an int
+   * @return An int
    * @since 0.9
    */
   public int getDebitTime() {
@@ -64,9 +64,9 @@ public class SvDebitLogRecord {
   }
 
   /**
-   * Gets the debit time
+   * Gets the debit time as an array of bytes
    *
-   * @return the time value as a 2-byte byte array
+   * @return A 2-byte byte array
    * @since 0.9
    */
   public byte[] getDebitTimeBytes() {
@@ -77,9 +77,9 @@ public class SvDebitLogRecord {
   }
 
   /**
-   * Gets the debit date
+   * Gets the debit date as an int
    *
-   * @return the date value as an int
+   * @return An int
    * @since 0.9
    */
   public int getDebitDate() {
@@ -87,9 +87,9 @@ public class SvDebitLogRecord {
   }
 
   /**
-   * Gets the debit date
+   * Gets the debit date as an array of bytes
    *
-   * @return the date value as a 2-byte byte array
+   * @return A 2-byte byte array
    * @since 0.9
    */
   public byte[] getDebitDateBytes() {
@@ -102,7 +102,7 @@ public class SvDebitLogRecord {
   /**
    * Gets the KVC of the load key (as given in the last SV Reload)
    *
-   * @return the KVC value
+   * @return A byte
    * @since 0.9
    */
   public byte getKvc() {
@@ -110,9 +110,9 @@ public class SvDebitLogRecord {
   }
 
   /**
-   * Gets the SAM ID
+   * Gets the SAM ID as a long
    *
-   * @return the SAM ID value as an int
+   * @return A long
    * @since 0.9
    */
   public long getSamId() {
@@ -120,9 +120,9 @@ public class SvDebitLogRecord {
   }
 
   /**
-   * Gets the SAM ID
+   * Gets the SAM ID as an array of bytes
    *
-   * @return the SAM ID value as a 4-byte byte array
+   * @return A 4-byte byte array
    * @since 0.9
    */
   public byte[] getSamIdBytes() {
@@ -132,9 +132,9 @@ public class SvDebitLogRecord {
   }
 
   /**
-   * Gets the SV transaction number
+   * Gets the SV transaction number value as an int
    *
-   * @return the SV transaction number value as an int
+   * @return An int
    * @since 0.9
    */
   public int getSvTNum() {
@@ -142,9 +142,9 @@ public class SvDebitLogRecord {
   }
 
   /**
-   * Gets the SV transaction number
+   * Gets the SV transaction number as an array of bytes
    *
-   * @return the SV transaction number value as a 2-byte byte array
+   * @return A 2-byte byte array
    * @since 0.9
    */
   public byte[] getSvTNumBytes() {
@@ -155,9 +155,9 @@ public class SvDebitLogRecord {
   }
 
   /**
-   * Gets the SAM transaction number
+   * Gets the SAM transaction number value as an int
    *
-   * @return the SAM transaction number value as an int
+   * @return An int
    * @since 0.9
    */
   public int getSamTNum() {
@@ -165,9 +165,9 @@ public class SvDebitLogRecord {
   }
 
   /**
-   * Gets the SAM transaction number
+   * Gets the SAM transaction number as an array of bytes
    *
-   * @return the SAM transaction number value as a 3-byte byte array
+   * @return A 3-byte byte array
    * @since 0.9
    */
   public byte[] getSamTNumBytes() {
@@ -176,7 +176,12 @@ public class SvDebitLogRecord {
     return samTNum;
   }
 
-  /** @return a JSON formatted string with the load log content */
+  /**
+   * Gets the SV debit log record a JSON formatted string
+   *
+   * @return A not empty String
+   * @since 0.9
+   */
   @Override
   public String toString() {
     return "{\"SvDebitLogRecord\":{"

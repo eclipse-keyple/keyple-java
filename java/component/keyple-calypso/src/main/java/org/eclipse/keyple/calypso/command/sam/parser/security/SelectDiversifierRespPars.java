@@ -17,11 +17,12 @@ import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
 import org.eclipse.keyple.calypso.command.sam.builder.security.SelectDiversifierCmdBuild;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamAccessForbiddenException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
- * Select diversifier response parser. See specs: Calypso / page 54 / 7.4.2 - Session MAC
- * computation
+ * Parses the Select diversifier response.
+ *
+ * @since 0.9
  */
 public class SelectDiversifierRespPars extends AbstractSamResponseParser {
 
@@ -39,6 +40,11 @@ public class SelectDiversifierRespPars extends AbstractSamResponseParser {
     STATUS_TABLE = m;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -49,6 +55,7 @@ public class SelectDiversifierRespPars extends AbstractSamResponseParser {
    *
    * @param response the response
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public SelectDiversifierRespPars(ApduResponse response, SelectDiversifierCmdBuild builder) {
     super(response, builder);

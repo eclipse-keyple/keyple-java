@@ -15,9 +15,13 @@ import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.parser.security.SvPrepareOperationRespPars;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** Builder for the SAM SV Undebit APDU command. */
+/**
+ * Builds the SV Undebit APDU command.
+ *
+ * @since 0.9
+ */
 public class SvPrepareUndebitCmdBuild
     extends AbstractSamCommandBuilder<SvPrepareOperationRespPars> {
   /** The command reference. */
@@ -31,6 +35,7 @@ public class SvPrepareUndebitCmdBuild
    * @param svGetHeader the SV Get command header
    * @param svGetData a byte array containing the data from the SV get command and response
    * @param svUndebitCmdBuildDebitCmdBuildData the SV undebit command builder data
+   * @since 0.9
    */
   public SvPrepareUndebitCmdBuild(
       SamRevision samRevision,
@@ -56,6 +61,11 @@ public class SvPrepareUndebitCmdBuild
     request = setApduRequest(cla, command, p1, p2, data, null);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public SvPrepareOperationRespPars createResponseParser(ApduResponse apduResponse) {
     return new SvPrepareOperationRespPars(apduResponse, this);

@@ -12,60 +12,64 @@
 package org.eclipse.keyple.plugin.stub;
 
 import java.util.Set;
-import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.core.service.event.ObservablePlugin;
 
 /**
- * Stubplugin allows to simulate a {@link org.eclipse.keyple.core.seproxy.ReaderPlugin} and a {@link
- * StubSecureElement}
+ * This plugin allows to simulate card communication by creating @{@link StubReaderImpl} and @{@link
+ * StubSmartCard}. Plug a new StubReader with StubPlugin#plugReader and insert an implementation of
+ * your own of {@link StubSmartCard} to start simulation communication.
  */
 public interface StubPlugin extends ObservablePlugin {
 
   /**
-   * Plug a Stub Reader
+   * Plug a new {@link StubReader} available in the plugin
    *
-   * @param name : name of the created reader
-   * @param synchronous : should the stubreader added synchronously (without waiting for the
-   *     observation thread). An READER_CONNECTED event is raised in both cases
+   * @param name name of the created reader
+   * @param synchronous should the stubreader added synchronously (without waiting for the
+   *     observation thread). A READER_CONNECTED event is raised in both cases
+   * @since 1.0
    */
-  void plugStubReader(String name, Boolean synchronous);
+  void plugReader(String name, Boolean synchronous);
 
   /**
-   * Plug a Stub Reader
+   * Plug a new {@link StubReader} available in the plugin
    *
-   * @param name : name of the created reader
-   * @param transmissionMode : transmissionMode of the created reader
-   * @param synchronous : should the stubreader added synchronously (without waiting for the
-   *     observation thread). An READER_CONNECTED event is raised in both cases
+   * @param name name of the created reader
+   * @param isContactless true if the created reader should be contactless, false if not.
+   * @param synchronous should the stubreader added synchronously (without waiting for the
+   *     observation thread). A READER_CONNECTED event is raised in both cases
+   * @since 1.0
    */
-  void plugStubReader(String name, TransmissionMode transmissionMode, Boolean synchronous);
+  void plugReader(String name, boolean isContactless, Boolean synchronous);
 
   /**
-   * Plug a list of stub Reader at once
+   * Plug multiple new {@link StubReader} available in the plugin
    *
-   * @param names : names of readers to be connected
-   * @param synchronous : should the stubreader be added synchronously (without waiting for the
-   *     observation thread). An READER_CONNECTED event is raised in both cases
+   * @param names names of readers to be connected
+   * @param synchronous should the stubreader be added synchronously (without waiting for the
+   *     observation thread). A READER_CONNECTED event is raised in both cases
+   * @since 1.0
    */
-  void plugStubReaders(Set<String> names, Boolean synchronous);
+  void plugReaders(Set<String> names, Boolean synchronous);
 
   /**
-   * Unplug a Stub Reader
+   * Unplug a {@link StubReader}
    *
    * @param name the name of the reader
-   * @throws KeypleReaderException in case of a reader exception
-   * @param synchronous : should the stubreader be removed synchronously (without waiting for the
-   *     observation thread). An READER_DISCONNECTED event is raised in both cases
+   * @throws IllegalStateException in case of a reader exception
+   * @param synchronous should the stubreader be removed synchronously (without waiting for the
+   *     observation thread). A READER_DISCONNECTED event is raised in both cases
+   * @since 1.0
    */
-  void unplugStubReader(String name, Boolean synchronous);
+  void unplugReader(String name, Boolean synchronous);
 
   /**
-   * Unplug a list of readers
+   * Unplug a list of {@link StubReader}
    *
-   * @param names : names of the reader to be unplugged
-   * @param synchronous : should the stubreader removed synchronously (without waiting for the
-   *     observation thread). An READER_DISCONNECTED event is raised in both cases
+   * @param names names of the reader to be unplugged
+   * @param synchronous should the stubreader removed synchronously (without waiting for the
+   *     observation thread). A READER_DISCONNECTED event is raised in both cases
+   * @since 1.0
    */
-  void unplugStubReaders(Set<String> names, Boolean synchronous);
+  void unplugReaders(Set<String> names, Boolean synchronous);
 }

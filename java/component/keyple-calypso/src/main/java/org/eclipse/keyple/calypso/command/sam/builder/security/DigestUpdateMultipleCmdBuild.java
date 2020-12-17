@@ -15,11 +15,12 @@ import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.parser.security.DigestUpdateMultipleRespPars;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
- * This class provides the dedicated constructor to build the SAM Digest Update Multiple APDU
- * command.
+ * Builds the SAM Digest Update Multiple APDU command.
+ *
+ * @since 0.9
  */
 public class DigestUpdateMultipleCmdBuild
     extends AbstractSamCommandBuilder<DigestUpdateMultipleRespPars> {
@@ -33,6 +34,7 @@ public class DigestUpdateMultipleCmdBuild
    * @param revision the revision
    * @param encryptedSession the encrypted session flag, true if encrypted
    * @param digestData the digest data
+   * @since 0.9
    */
   public DigestUpdateMultipleCmdBuild(
       SamRevision revision, boolean encryptedSession, byte[] digestData) {
@@ -51,6 +53,11 @@ public class DigestUpdateMultipleCmdBuild
     request = setApduRequest(cla, command, p1, p2, digestData, null);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public DigestUpdateMultipleRespPars createResponseParser(ApduResponse apduResponse) {
     return new DigestUpdateMultipleRespPars(apduResponse, this);

@@ -15,10 +15,12 @@ import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.parser.security.SelectDiversifierRespPars;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
- * This class provides the dedicated constructor to build the SAM Select Diversifier APDU command.
+ * Builds the SAM Select Diversifier APDU command.
+ *
+ * @since 0.9
  */
 public class SelectDiversifierCmdBuild
     extends AbstractSamCommandBuilder<SelectDiversifierRespPars> {
@@ -32,6 +34,7 @@ public class SelectDiversifierCmdBuild
    * @param revision the SAM revision
    * @param diversifier the application serial number
    * @throws IllegalArgumentException - if the diversifier is null or has a wrong length
+   * @since 0.9
    */
   public SelectDiversifierCmdBuild(SamRevision revision, byte[] diversifier) {
     super(command, null);
@@ -49,6 +52,11 @@ public class SelectDiversifierCmdBuild
     request = setApduRequest(cla, command, p1, p2, diversifier, null);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public SelectDiversifierRespPars createResponseParser(ApduResponse apduResponse) {
     return new SelectDiversifierRespPars(apduResponse, this);

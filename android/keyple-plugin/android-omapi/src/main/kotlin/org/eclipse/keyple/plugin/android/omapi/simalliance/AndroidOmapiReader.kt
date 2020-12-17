@@ -12,13 +12,10 @@
 package org.eclipse.keyple.plugin.android.omapi.simalliance
 
 import java.io.IOException
-import kotlin.experimental.or
-import org.eclipse.keyple.core.seproxy.SeSelector
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
-import org.eclipse.keyple.core.seproxy.message.ApduResponse
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractLocalReader
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiReader
+import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiSupportedProtocols
 import org.simalliance.openmobileapi.Channel
 import org.simalliance.openmobileapi.Reader
 import org.simalliance.openmobileapi.Session
@@ -27,6 +24,8 @@ import timber.log.Timber
 /**
  * Implementation of the [AbstractAndroidOmapiReader] based on the [AbstractLocalReader]
  * with org.simalliance.omapi
+ *
+ * @since 0.9
  */
 internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: String, readerName: String) :
     AbstractAndroidOmapiReader(pluginName, readerName) {
@@ -40,16 +39,20 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
     private val omapiVersion = nativeReader.seService.version.toFloat()
 
     /**
-     * Check if a SE is present in this reader. see [Reader.isSecureElementPresent]
-     * @return True if the SE is present, false otherwise
+     * Check if a card is present in this reader. see [Reader.isSecureElementPresent]
+     * @return True if the card is present, false otherwise
+     *
+     * @since 0.9
      */
-    override fun checkSePresence(): Boolean {
+    override fun checkCardPresence(): Boolean {
         return nativeReader.isSecureElementPresent
     }
 
     /**
-     * Get the SE Answer To Reset
+     * Get the card Answer To Reset
      * @return a byte array containing the ATR or null if no session was available
+     *
+     * @since 0.9
      */
     override fun getATR(): ByteArray? {
         return session?.let {
@@ -60,13 +63,18 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
 
     /**
      * Open a logical channel by selecting the application
-     * @param aidSelector the selection parameters
-     * @return a ApduResponse built from the FCI data resulting from the application selection
-     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+     *
+     * @param dfName A byte array containing the DF name or null if a basic opening is wanted.
+     * @param isoControlMask The selection bits defined by the ISO selection command and expected by the OMAPI as P2 parameter.
+     * @return A byte array containing the response to the OMAPI openLogicalChannel process or null if the Secure Element is unable to
+     *         provide a new logical channel
+     * @throws KeypleReaderIOException if the communication with the reader or the card has failed
+     *
+     * @since 0.9
      */
     @Throws(KeypleReaderIOException::class)
-    override fun openChannelForAid(aidSelector: SeSelector.AidSelector): ApduResponse {
-        if (aidSelector.aidToSelect == null) {
+    override fun openChannelForAid(dfName: ByteArray?, isoControlMask: Byte): ByteArray? {
+        if (dfName == null) {
             try {
                 openChannel = session?.openBasicChannel(null)
             } catch (e: IOException) {
@@ -74,7 +82,7 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
                 throw KeypleReaderIOException("IOException while opening basic channel.")
             } catch (e: SecurityException) {
                 Timber.e(e)
-                throw KeypleReaderIOException("Error while opening basic channel, SE_SELECTOR = $aidSelector", e.cause)
+                throw KeypleReaderIOException("Error while opening basic channel, DFNAME = " + ByteArrayUtil.toHex(dfName), e.cause)
             }
 
             if (openChannel == null) {
@@ -82,18 +90,18 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
             }
         } else {
             Timber.i("[%s] openLogicalChannel => Select Application with AID = %s",
-                    this.name, ByteArrayUtil.toHex(aidSelector.aidToSelect))
+                    this.name, ByteArrayUtil.toHex(dfName))
             try {
                 // openLogicalChannel of SimAlliance OMAPI is only available for version 3.0+ of the library.
                 // By default the library always passes p2=00h
                 // So if a p2 different of 00h is requested, we must check if omapi support it. Otherwise we throw an exception.
-                val p2 = aidSelector.fileOccurrence.isoBitMask or aidSelector.fileControlInformation.isoBitMask
+                val p2 = isoControlMask
                 openChannel =
                         if (0 == p2.toInt()) {
-                            session?.openLogicalChannel(aidSelector.aidToSelect)
+                            session?.openLogicalChannel(dfName)
                         } else {
                             if (omapiVersion >= P2_SUPPORTED_MIN_VERSION) {
-                                session?.openLogicalChannel(aidSelector.aidToSelect, p2)
+                                session?.openLogicalChannel(dfName, p2)
                             } else {
                                 throw KeypleReaderIOException("P2 != 00h while opening logical channel is only supported by OMAPI version >= 3.0. Current is $omapiVersion")
                             }
@@ -104,10 +112,10 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
             } catch (e: NoSuchElementException) {
                 Timber.e(e, "NoSuchElementException")
                 throw java.lang.IllegalArgumentException(
-                        "NoSuchElementException: " + ByteArrayUtil.toHex(aidSelector.aidToSelect), e)
+                        "NoSuchElementException: " + ByteArrayUtil.toHex(dfName), e)
             } catch (e: SecurityException) {
                 Timber.e(e, "SecurityException")
-                throw KeypleReaderIOException("SecurityException while opening logical channel, aid :" + ByteArrayUtil.toHex(aidSelector.aidToSelect), e.cause)
+                throw KeypleReaderIOException("SecurityException while opening logical channel, aid :" + ByteArrayUtil.toHex(dfName), e.cause)
             }
 
             if (openChannel == null) {
@@ -115,13 +123,23 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
             }
         }
         /* get the FCI and build an ApduResponse */
-        return ApduResponse(openChannel?.selectResponse, aidSelector.successfulSelectionStatusCodes)
+        return openChannel!!.selectResponse
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @since 0.9
+     */
     override fun isPhysicalChannelOpen(): Boolean {
         return session?.isClosed == false
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @since 0.9
+     */
     @Throws(KeypleReaderIOException::class)
     public override fun openPhysicalChannel() {
         try {
@@ -134,6 +152,8 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
 
     /**
      * Close session see org.simalliance.openmobileapi.Session#close()
+     *
+     * @since 0.9
      */
     override fun closePhysicalChannel() {
         openChannel?.let {
@@ -143,11 +163,71 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
     }
 
     /**
-     * Transmit an APDU command (as per ISO/IEC 7816) to the SE see org.simalliance.openmobileapi.Channel#transmit(byte[])
+     * Activates the provided card protocol.
+     *
+     *
+     *  * Ask the plugin to take this protocol into account if a card using this protocol is
+     * identified during the selection phase.
+     *  * Activates the detection of SEs using this protocol (if the plugin allows it).
+     *
+     *
+     * @param readerProtocolName The protocol to activate (must be not null).
+     * @throws KeypleReaderProtocolNotSupportedException if the protocol is not supported.
+     *
+     * @since 1.0
+     */
+    override fun activateReaderProtocol(readerProtocolName: String?) {
+        // Do nothing
+    }
+
+    /**
+     * Deactivates the provided card protocol.
+     *
+     *
+     *  * Ask the plugin to ignore this protocol if a card using this protocol is identified during
+     * the selection phase.
+     *  * Inhibits the detection of SEs using this protocol (if the plugin allows it).
+     *
+     *
+     * @param readerProtocolName The protocol to deactivate (must be not null).
+     *
+     * @since 1.0
+     */
+    override fun deactivateReaderProtocol(readerProtocolName: String?) {
+        // Do nothing
+    }
+
+    /**
+     * Tells if the provided protocol matches the current protocol.
+     *
+     * @param readerProtocolName A not empty String.
+     * @return A boolean
+     * @throws KeypleReaderProtocolNotFoundException if it is not possible to determine the protocol.
+     *
+     * @since 1.0
+     */
+    override fun isCurrentProtocol(readerProtocolName: String?): Boolean {
+        return AndroidOmapiSupportedProtocols.ISO_7816_3.name == readerProtocolName
+    }
+
+    /**
+     * Closes the logical channel explicitly.
+     *
+     * @since 0.9
+     *
+     */
+    override fun closeLogicalChannel() {
+        session?.closeChannels()
+    }
+
+    /**
+     * Transmit an APDU command (as per ISO/IEC 7816) to the card see org.simalliance.openmobileapi.Channel#transmit(byte[])
      *
      * @param apduIn byte buffer containing the ingoing data
      * @return apduOut response
-     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+     * @throws KeypleReaderIOException if the communication with the reader or the card has failed
+     *
+     * @since 0.9
      */
     @Throws(KeypleReaderIOException::class)
     override fun transmitApdu(apduIn: ByteArray): ByteArray {

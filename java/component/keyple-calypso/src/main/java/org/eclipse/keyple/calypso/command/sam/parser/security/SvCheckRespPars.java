@@ -18,8 +18,13 @@ import org.eclipse.keyple.calypso.command.sam.builder.security.SvCheckCmdBuild;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamAccessForbiddenException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamSecurityDataException;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
+/**
+ * Parses the SV Check response.
+ *
+ * @since 0.9
+ */
 public class SvCheckRespPars extends AbstractSamResponseParser {
   private static final Map<Integer, StatusProperties> STATUS_TABLE;
 
@@ -37,6 +42,11 @@ public class SvCheckRespPars extends AbstractSamResponseParser {
     STATUS_TABLE = m;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -47,6 +57,7 @@ public class SvCheckRespPars extends AbstractSamResponseParser {
    *
    * @param response from the SAM
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public SvCheckRespPars(ApduResponse response, SvCheckCmdBuild builder) {
     super(response, builder);

@@ -15,10 +15,14 @@ import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.parser.security.CloseSessionRespPars;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
-/** This class provides the dedicated constructor to build the Close Secure Session APDU command. */
+/**
+ * Builds the Close Secure Session APDU command.
+ *
+ * @since 0.9
+ */
 public final class CloseSessionCmdBuild extends AbstractPoCommandBuilder<CloseSessionRespPars> {
 
   /** The command. */
@@ -32,6 +36,7 @@ public final class CloseSessionCmdBuild extends AbstractPoCommandBuilder<CloseSe
    * @param terminalSessionSignature the sam half session signature
    * @throws IllegalArgumentException - if the signature is null or has a wrong length
    * @throws IllegalArgumentException - if the command is inconsistent
+   * @since 0.9
    */
   public CloseSessionCmdBuild(
       PoClass poClass, boolean ratificationAsked, byte[] terminalSessionSignature) {
@@ -61,23 +66,30 @@ public final class CloseSessionCmdBuild extends AbstractPoCommandBuilder<CloseSe
    * session command (Close Secure Session with p1 = p2 = lc = 0).
    *
    * @param poClass indicates which CLA byte should be used for the Apdu
+   * @since 0.9
    */
   public CloseSessionCmdBuild(PoClass poClass) {
     super(command, null);
     request = setApduRequest(poClass.getValue(), command, (byte) 0x00, (byte) 0x00, null, (byte) 0);
-    /* Add "Abort session" to command name for logging purposes */
-    this.addSubName("Abort session");
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public CloseSessionRespPars createResponseParser(ApduResponse apduResponse) {
     return new CloseSessionRespPars(apduResponse, this);
   }
 
   /**
-   * This command can't be executed in session and therefore doesn't uses the session buffer.
+   * {@inheritDoc}
+   *
+   * <p>This command can't be executed in session and therefore doesn't uses the session buffer.
    *
    * @return false
+   * @since 0.9
    */
   @Override
   public boolean isSessionBufferUsed() {

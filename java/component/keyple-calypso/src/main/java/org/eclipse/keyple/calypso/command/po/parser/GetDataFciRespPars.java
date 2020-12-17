@@ -20,8 +20,8 @@ import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.builder.GetDataFciCmdBuild;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoDataAccessException;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalParameterException;
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.core.util.bertlv.TLV;
 import org.eclipse.keyple.core.util.bertlv.Tag;
@@ -29,9 +29,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Extracts information from the FCI data returned is response to the selection application command.
+ * Parses the FCI data returned is response to the selection application command.
  *
  * <p>Provides getter methods for all relevant information.
+ *
+ * @since 0.9
  */
 public final class GetDataFciRespPars extends AbstractPoResponseParser {
   private static final Logger logger = LoggerFactory.getLogger(GetDataFciRespPars.class);
@@ -58,6 +60,11 @@ public final class GetDataFciRespPars extends AbstractPoResponseParser {
     STATUS_TABLE = m;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -118,6 +125,7 @@ public final class GetDataFciRespPars extends AbstractPoResponseParser {
    *
    * @param response the select application response from Get Data APDU command
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public GetDataFciRespPars(ApduResponse response, GetDataFciCmdBuild builder) {
     super(response, builder);
@@ -195,22 +203,52 @@ public final class GetDataFciRespPars extends AbstractPoResponseParser {
     }
   }
 
+  /**
+   * Tells if the FCI is valid
+   *
+   * @return True if the FCI is valid, false if not
+   * @since 0.9
+   */
   public boolean isValidCalypsoFCI() {
     return isValidCalypsoFCI;
   }
 
+  /**
+   * Gets the DF name
+   *
+   * @return An array of bytes
+   * @since 0.9
+   */
   public byte[] getDfName() {
     return dfName;
   }
 
+  /**
+   * Gets the application serial number
+   *
+   * @return An array of bytes
+   * @since 0.9
+   */
   public byte[] getApplicationSerialNumber() {
     return applicationSN;
   }
 
+  /**
+   * Gets the discretionary data
+   *
+   * @return An array of bytes
+   * @since 0.9
+   */
   public byte[] getDiscretionaryData() {
     return discretionaryData;
   }
 
+  /**
+   * Tells if the DF is invalidated
+   *
+   * @return True if the DF is invalidated, false if not
+   * @since 0.9
+   */
   public boolean isDfInvalidated() {
     return isDfInvalidated;
   }

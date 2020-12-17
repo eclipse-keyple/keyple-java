@@ -15,13 +15,17 @@ import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.*;
 import org.eclipse.keyple.calypso.command.po.parser.storedvalue.SvGetRespPars;
 import org.eclipse.keyple.calypso.transaction.PoTransaction.SvSettings;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * The Class SvGetCmdBuild. This class provides the dedicated constructor to build the SV Get
- * command.
+ * Builds the SV Get command.
+ *
+ * @since 0.9
  */
 public final class SvGetCmdBuild extends AbstractPoCommandBuilder<SvGetRespPars> {
+  private static final Logger logger = LoggerFactory.getLogger(SvGetCmdBuild.class);
 
   /** The command. */
   private static final CalypsoPoCommand command = CalypsoPoCommand.SV_GET;
@@ -36,6 +40,7 @@ public final class SvGetCmdBuild extends AbstractPoCommandBuilder<SvGetRespPars>
    * @param poRevision the PO revision
    * @param svOperation the desired SV operation
    * @throws IllegalArgumentException - if the command is inconsistent
+   * @since 0.9
    */
   public SvGetCmdBuild(PoClass poClass, PoRevision poRevision, SvSettings.Operation svOperation) {
     super(command, null);
@@ -60,16 +65,31 @@ public final class SvGetCmdBuild extends AbstractPoCommandBuilder<SvGetRespPars>
    * Gets the request SV operation (used to check the SV command sequence)
    *
    * @return the current SvSettings.Operation enum value
+   * @since 0.9
    */
   public SvSettings.Operation getSvOperation() {
     return svOperation;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public SvGetRespPars createResponseParser(ApduResponse apduResponse) {
     return new SvGetRespPars(header, apduResponse, this);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>This command doesn't modify the contents of the PO and therefore doesn't uses the session
+   * buffer.
+   *
+   * @return false
+   * @since 0.9
+   */
   @Override
   public boolean isSessionBufferUsed() {
     return false;

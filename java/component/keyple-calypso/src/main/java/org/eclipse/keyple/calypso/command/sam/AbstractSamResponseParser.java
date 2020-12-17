@@ -14,11 +14,16 @@ package org.eclipse.keyple.calypso.command.sam;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.sam.exception.*;
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
-import org.eclipse.keyple.core.command.SeCommand;
-import org.eclipse.keyple.core.command.exception.KeypleSeCommandException;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.card.command.CardCommand;
+import org.eclipse.keyple.core.card.command.exception.KeypleCardCommandException;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
+/**
+ * Superclass for all SAM command parsers.
+ *
+ * @since 0.9
+ */
 public abstract class AbstractSamResponseParser extends AbstractApduResponseParser {
 
   protected static final Map<Integer, StatusProperties> STATUS_TABLE;
@@ -35,7 +40,11 @@ public abstract class AbstractSamResponseParser extends AbstractApduResponsePars
     STATUS_TABLE = m;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -47,27 +56,35 @@ public abstract class AbstractSamResponseParser extends AbstractApduResponsePars
    * @param response response to parse
    * @param builder the reference of the builder that created the parser
    */
-  public AbstractSamResponseParser(
+  protected AbstractSamResponseParser(
       ApduResponse response,
       AbstractSamCommandBuilder<? extends AbstractSamResponseParser> builder) {
     super(response, builder);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public final AbstractSamCommandBuilder<AbstractSamResponseParser> getBuilder() {
     return (AbstractSamCommandBuilder<AbstractSamResponseParser>) super.getBuilder();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
-  protected final KeypleSeCommandException buildCommandException(
-      Class<? extends KeypleSeCommandException> exceptionClass,
+  protected final KeypleCardCommandException buildCommandException(
+      Class<? extends KeypleCardCommandException> exceptionClass,
       String message,
-      SeCommand commandRef,
+      CardCommand commandRef,
       Integer statusCode) {
 
-    KeypleSeCommandException e;
+    KeypleCardCommandException e;
     CalypsoSamCommand command = (CalypsoSamCommand) commandRef;
     if (exceptionClass == CalypsoSamAccessForbiddenException.class) {
       e = new CalypsoSamAccessForbiddenException(message, command, statusCode);
@@ -89,12 +106,16 @@ public abstract class AbstractSamResponseParser extends AbstractApduResponsePars
     return e;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public void checkStatus() {
     try {
       super.checkStatus();
-    } catch (KeypleSeCommandException e) {
+    } catch (KeypleCardCommandException e) {
       throw (CalypsoSamCommandException) e;
     }
   }

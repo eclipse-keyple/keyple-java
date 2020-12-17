@@ -14,8 +14,13 @@ package org.eclipse.keyple.calypso.command.po.parser.security;
 import java.util.Arrays;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.security.OpenSession31CmdBuild;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
+/**
+ * Parses the Open session response from a PO revision 3.1.
+ *
+ * @since 0.9
+ */
 public final class OpenSession31RespPars extends AbstractOpenSessionRespPars {
 
   /**
@@ -23,6 +28,7 @@ public final class OpenSession31RespPars extends AbstractOpenSessionRespPars {
    *
    * @param response from OpenSession31RespPars
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public OpenSession31RespPars(ApduResponse response, OpenSession31CmdBuild builder) {
     super(response, builder, PoRevision.REV3_1);

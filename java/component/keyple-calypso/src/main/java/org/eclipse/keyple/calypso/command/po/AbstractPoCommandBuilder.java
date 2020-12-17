@@ -11,39 +11,43 @@
  ************************************************************************************** */
 package org.eclipse.keyple.calypso.command.po;
 
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
-import org.eclipse.keyple.core.command.AbstractIso7816CommandBuilder;
-import org.eclipse.keyple.core.seproxy.message.ApduRequest;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.card.command.AbstractIso7816CommandBuilder;
+import org.eclipse.keyple.core.card.message.ApduRequest;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** Abstract class for all PO command builders. */
+/**
+ * Superclass for all PO command builders
+ *
+ * @since 0.9
+ */
 public abstract class AbstractPoCommandBuilder<T extends AbstractPoResponseParser>
     extends AbstractIso7816CommandBuilder {
-
-  /** common logger for all builders */
-  protected static Logger logger = LoggerFactory.getLogger(AbstractPoCommandBuilder.class);
 
   /**
    * Constructor dedicated for the building of referenced Calypso commands
    *
    * @param commandRef a command reference from the Calypso command table
    * @param request the ApduRequest (the instruction byte will be overwritten)
+   * @since 0.9
    */
-  public AbstractPoCommandBuilder(CalypsoPoCommand commandRef, ApduRequest request) {
+  protected AbstractPoCommandBuilder(CalypsoPoCommand commandRef, ApduRequest request) {
     super(commandRef, request);
   }
 
   /**
    * Create the response parser matching the builder
    *
-   * @param apduResponse the response data from the SE
+   * @param apduResponse the response data from the the card
    * @return an {@link AbstractApduResponseParser}
    */
   public abstract T createResponseParser(ApduResponse apduResponse);
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public CalypsoPoCommand getCommandRef() {
     return (CalypsoPoCommand) commandRef;
@@ -55,6 +59,7 @@ public abstract class AbstractPoCommandBuilder<T extends AbstractPoResponseParse
    * <p>Allows the management of the overflow of this buffer.
    *
    * @return true if this command uses the session buffer
+   * @since 0.9
    */
   public abstract boolean isSessionBufferUsed();
 }

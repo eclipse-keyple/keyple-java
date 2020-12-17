@@ -15,9 +15,13 @@ import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.parser.security.SvPrepareOperationRespPars;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** Builder for the SAM SV Prepare Debit APDU command. */
+/**
+ * Builds the SV Prepare Debit APDU command.
+ *
+ * @since 0.9
+ */
 public class SvPrepareDebitCmdBuild extends AbstractSamCommandBuilder<SvPrepareOperationRespPars> {
   /** The command reference. */
   private static final CalypsoSamCommand command = CalypsoSamCommand.SV_PREPARE_DEBIT;
@@ -29,6 +33,7 @@ public class SvPrepareDebitCmdBuild extends AbstractSamCommandBuilder<SvPrepareO
    * @param svGetHeader the SV Get command header
    * @param svGetData a byte array containing the data from the SV get command and response
    * @param svDebitCmdBuildData the SV debit command builder data
+   * @since 0.9
    */
   public SvPrepareDebitCmdBuild(
       SamRevision samRevision, byte[] svGetHeader, byte[] svGetData, byte[] svDebitCmdBuildData) {
@@ -47,6 +52,11 @@ public class SvPrepareDebitCmdBuild extends AbstractSamCommandBuilder<SvPrepareO
     request = setApduRequest(cla, command, p1, p2, data, null);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public SvPrepareOperationRespPars createResponseParser(ApduResponse apduResponse) {
     return new SvPrepareOperationRespPars(apduResponse, this);

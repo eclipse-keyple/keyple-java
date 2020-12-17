@@ -16,9 +16,13 @@ import java.util.Map;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
 import org.eclipse.keyple.calypso.command.sam.builder.security.DigestCloseCmdBuild;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamAccessForbiddenException;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** Digest close response parser. See specs: Calypso / page 54 / 7.4.2 - Session MAC computation */
+/**
+ * Parses the Digest close response.
+ *
+ * @since 0.9
+ */
 public class DigestCloseRespPars extends AbstractSamResponseParser {
 
   private static final Map<Integer, StatusProperties> STATUS_TABLE;
@@ -33,6 +37,11 @@ public class DigestCloseRespPars extends AbstractSamResponseParser {
     STATUS_TABLE = m;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -43,6 +52,7 @@ public class DigestCloseRespPars extends AbstractSamResponseParser {
    *
    * @param response from the DigestCloseCmdBuild
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public DigestCloseRespPars(ApduResponse response, DigestCloseCmdBuild builder) {
     super(response, builder);
@@ -52,6 +62,7 @@ public class DigestCloseRespPars extends AbstractSamResponseParser {
    * Gets the sam signature.
    *
    * @return the sam half session signature
+   * @since 0.9
    */
   public byte[] getSignature() {
     return isSuccessful() ? response.getDataOut() : null;

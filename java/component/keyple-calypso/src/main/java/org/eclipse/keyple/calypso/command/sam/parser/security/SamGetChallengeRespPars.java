@@ -16,9 +16,13 @@ import java.util.Map;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
 import org.eclipse.keyple.calypso.command.sam.builder.security.SamGetChallengeCmdBuild;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** SAM get challenge. See specs: Calypso / Page 108 / 9.5.4 - Get challenge */
+/**
+ * Parses the get challenge response.
+ *
+ * @since 0.9
+ */
 public class SamGetChallengeRespPars extends AbstractSamResponseParser {
 
   private static final Map<Integer, StatusProperties> STATUS_TABLE;
@@ -30,6 +34,11 @@ public class SamGetChallengeRespPars extends AbstractSamResponseParser {
     STATUS_TABLE = m;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -40,6 +49,7 @@ public class SamGetChallengeRespPars extends AbstractSamResponseParser {
    *
    * @param response of the SamGetChallengeCmdBuild
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public SamGetChallengeRespPars(ApduResponse response, SamGetChallengeCmdBuild builder) {
     super(response, builder);
@@ -49,6 +59,7 @@ public class SamGetChallengeRespPars extends AbstractSamResponseParser {
    * Gets the challenge.
    *
    * @return the challenge
+   * @since 0.9
    */
   public byte[] getChallenge() {
     return isSuccessful() ? response.getDataOut() : null;

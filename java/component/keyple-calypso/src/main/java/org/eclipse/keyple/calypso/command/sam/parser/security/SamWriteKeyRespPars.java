@@ -16,9 +16,13 @@ import java.util.Map;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
 import org.eclipse.keyple.calypso.command.sam.builder.security.SamWriteKeyCmdBuild;
 import org.eclipse.keyple.calypso.command.sam.exception.*;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
-/** SAM Write Key response parser. */
+/**
+ * Parses the Write Key response.
+ *
+ * @since 0.9
+ */
 public class SamWriteKeyRespPars extends AbstractSamResponseParser {
 
   private static final Map<Integer, StatusProperties> STATUS_TABLE;
@@ -56,6 +60,11 @@ public class SamWriteKeyRespPars extends AbstractSamResponseParser {
     STATUS_TABLE = m;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -66,6 +75,7 @@ public class SamWriteKeyRespPars extends AbstractSamResponseParser {
    *
    * @param response the response
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public SamWriteKeyRespPars(ApduResponse response, SamWriteKeyCmdBuild builder) {
     super(response, builder);

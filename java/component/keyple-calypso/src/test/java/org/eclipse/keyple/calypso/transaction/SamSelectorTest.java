@@ -21,49 +21,34 @@ public class SamSelectorTest {
 
   @Test
   public void test_AidSelectorNull() {
-    SamSelector samSelector =
-        SamSelector.builder()
-            .samIdentifier(SamIdentifier.builder().samRevision(SamRevision.S1D).build())
-            .build();
+    SamSelector samSelector = SamSelector.builder().samRevision(SamRevision.S1D).build();
     assertThat(samSelector.getAidSelector()).isNull();
   }
 
   @Test
   public void test_SamRevision_S1D() {
-    SamSelector samSelector =
-        SamSelector.builder()
-            .samIdentifier(SamIdentifier.builder().samRevision(SamRevision.S1D).build())
-            .build();
+    SamSelector samSelector = SamSelector.builder().samRevision(SamRevision.S1D).build();
     assertThat(samSelector.getAtrFilter().getAtrRegex())
         .isEqualTo("3B(.{6}|.{10})805A..80D?20.{4}.{8}829000");
   }
 
   @Test
   public void test_SamRevision_S1E() {
-    SamSelector samSelector =
-        SamSelector.builder()
-            .samIdentifier(SamIdentifier.builder().samRevision(SamRevision.S1E).build())
-            .build();
+    SamSelector samSelector = SamSelector.builder().samRevision(SamRevision.S1E).build();
     assertThat(samSelector.getAtrFilter().getAtrRegex())
         .isEqualTo("3B(.{6}|.{10})805A..80E120.{4}.{8}829000");
   }
 
   @Test
   public void test_SamRevision_C1() {
-    SamSelector samSelector =
-        SamSelector.builder()
-            .samIdentifier(SamIdentifier.builder().samRevision(SamRevision.C1).build())
-            .build();
+    SamSelector samSelector = SamSelector.builder().samRevision(SamRevision.C1).build();
     assertThat(samSelector.getAtrFilter().getAtrRegex())
         .isEqualTo("3B(.{6}|.{10})805A..80C120.{4}.{8}829000");
   }
 
   @Test
   public void test_SamRevision_ANY() {
-    SamSelector samSelector =
-        SamSelector.builder()
-            .samIdentifier(SamIdentifier.builder().samRevision(SamRevision.AUTO).build())
-            .build();
+    SamSelector samSelector = SamSelector.builder().samRevision(SamRevision.AUTO).build();
     assertThat(samSelector.getAtrFilter().getAtrRegex()).isEqualTo(".*");
   }
 
@@ -78,13 +63,7 @@ public class SamSelectorTest {
   @Test
   public void test_SamSerialNumber_SamIdentifier() {
     SamSelector samSelector =
-        SamSelector.builder()
-            .samIdentifier(
-                new SamIdentifier.SamIdentifierBuilder()
-                    .samRevision(SamRevision.C1)
-                    .serialNumber("11223344")
-                    .build())
-            .build();
+        SamSelector.builder().samRevision(SamRevision.C1).serialNumber("11223344").build();
     assertThat(samSelector.getAtrFilter().getAtrRegex())
         .isEqualTo("3B(.{6}|.{10})805A..80C120.{4}11223344829000");
   }
@@ -93,13 +72,7 @@ public class SamSelectorTest {
   public void test_UnlockData_notSet() {
 
     SamSelector samSelector =
-        SamSelector.builder()
-            .samIdentifier(
-                new SamIdentifier.SamIdentifierBuilder()
-                    .samRevision(SamRevision.C1)
-                    .serialNumber("11223344")
-                    .build())
-            .build();
+        SamSelector.builder().samRevision(SamRevision.C1).serialNumber("11223344").build();
     assertThat(samSelector.getUnlockData()).isNull();
   }
 
@@ -109,11 +82,8 @@ public class SamSelectorTest {
 
     SamSelector samSelector =
         SamSelector.builder()
-            .samIdentifier(
-                new SamIdentifier.SamIdentifierBuilder()
-                    .samRevision(SamRevision.C1)
-                    .serialNumber("11223344")
-                    .build())
+            .samRevision(SamRevision.C1)
+            .serialNumber("11223344")
             .unlockData(ByteArrayUtil.fromHex(UNLOCK_DATA))
             .build();
     assertThat(samSelector.getUnlockData()).isEqualTo(ByteArrayUtil.fromHex(UNLOCK_DATA));
@@ -125,11 +95,8 @@ public class SamSelectorTest {
 
     SamSelector samSelector =
         SamSelector.builder()
-            .samIdentifier(
-                new SamIdentifier.SamIdentifierBuilder()
-                    .samRevision(SamRevision.C1)
-                    .serialNumber("11223344")
-                    .build())
+            .samRevision(SamRevision.C1)
+            .serialNumber("11223344")
             .unlockData(ByteArrayUtil.fromHex(UNLOCK_DATA_BAD_LENGTH))
             .build();
   }

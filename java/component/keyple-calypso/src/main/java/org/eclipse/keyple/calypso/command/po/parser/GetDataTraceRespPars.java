@@ -17,13 +17,15 @@ import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.builder.GetDataTraceCmdBuild;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoDataAccessException;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalParameterException;
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
- * Returns the traceability data obtained from the Get Data command response.
+ * Parses the Get Data command response.
  *
  * <p>Provides getter methods for all relevant information.
+ *
+ * @since 0.9
  */
 public final class GetDataTraceRespPars extends AbstractPoResponseParser {
 
@@ -55,11 +57,17 @@ public final class GetDataTraceRespPars extends AbstractPoResponseParser {
    *
    * @param response the Traceability Data response from Get Data APDU command
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public GetDataTraceRespPars(ApduResponse response, GetDataTraceCmdBuild builder) {
     super(response, builder);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;

@@ -11,15 +11,15 @@
  ************************************************************************************** */
 package org.eclipse.keyple.calypso.command.po.builder.storedvalue;
 
-import java.awt.*;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.*;
 import org.eclipse.keyple.calypso.command.po.parser.storedvalue.SvReloadRespPars;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
- * The Class SvReloadCmdBuild. This class provides the dedicated constructor to build the SV Reload
- * command.
+ * Builds the SV Reload command.
+ *
+ * @since 0.9
  */
 public final class SvReloadCmdBuild extends AbstractPoCommandBuilder<SvReloadRespPars> {
 
@@ -45,6 +45,7 @@ public final class SvReloadCmdBuild extends AbstractPoCommandBuilder<SvReloadRes
    * @param time debit time (not checked by the PO)
    * @param free 2 free bytes stored in the log but not processed by the PO
    * @throws IllegalArgumentException - if the command is inconsistent
+   * @since 0.9
    */
   public SvReloadCmdBuild(
       PoClass poClass,
@@ -102,6 +103,7 @@ public final class SvReloadCmdBuild extends AbstractPoCommandBuilder<SvReloadRes
    * <p>5 or 10 byte signature (hi part)
    *
    * @param reloadComplementaryData the sam id and the data out from the SvPrepareReload SAM command
+   * @since 0.9
    */
   public void finalizeBuilder(byte[] reloadComplementaryData) {
     if ((poRevision == PoRevision.REV3_2 && reloadComplementaryData.length != 20)
@@ -124,6 +126,7 @@ public final class SvReloadCmdBuild extends AbstractPoCommandBuilder<SvReloadRes
    * Gets the SV Reload part of the data to include in the SAM SV Prepare Load command
    *
    * @return a byte array containing the SV reload data
+   * @since 0.9
    */
   public byte[] getSvReloadData() {
     byte[] svReloadData = new byte[15];
@@ -142,16 +145,25 @@ public final class SvReloadCmdBuild extends AbstractPoCommandBuilder<SvReloadRes
    * <p>A check is made to see if the object has been finalized. If not, an exception {@link
    * IllegalStateException} is thrown.
    *
-   * @param apduResponse the response data from the SE
+   * @param apduResponse the response data from the the card
    * @return a {@link SvReloadRespPars} object
+   * @since 0.9
    */
   @Override
   public SvReloadRespPars createResponseParser(ApduResponse apduResponse) {
     return new SvReloadRespPars(apduResponse, this);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>This command modified the contents of the PO and therefore uses the session buffer.
+   *
+   * @return true
+   * @since 0.9
+   */
   @Override
   public boolean isSessionBufferUsed() {
-    return false;
+    return true;
   }
 }

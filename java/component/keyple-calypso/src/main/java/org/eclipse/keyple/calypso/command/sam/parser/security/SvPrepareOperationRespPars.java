@@ -19,8 +19,13 @@ import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamAccessForbidde
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamDataAccessException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIncorrectInputDataException;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
+/**
+ * Parses the Sv Prepare response.
+ *
+ * @since 0.9
+ */
 public class SvPrepareOperationRespPars extends AbstractSamResponseParser {
   private static final Map<Integer, StatusProperties> STATUS_TABLE;
 
@@ -46,6 +51,11 @@ public class SvPrepareOperationRespPars extends AbstractSamResponseParser {
     STATUS_TABLE = m;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
@@ -56,6 +66,7 @@ public class SvPrepareOperationRespPars extends AbstractSamResponseParser {
    *
    * @param response from the SAM
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public SvPrepareOperationRespPars(ApduResponse response, AbstractSamCommandBuilder builder) {
     super(response, builder);

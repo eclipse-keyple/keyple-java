@@ -14,8 +14,9 @@ package org.eclipse.keyple.calypso.command.sam.exception;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 
 /**
- * The exception {@code CalypsoSamIncorrectInputDataException} indicates that input data content is
- * incorrect.
+ * Indicates that input data content is incorrect.
+ *
+ * @since 0.9
  */
 public final class CalypsoSamIncorrectInputDataException extends CalypsoSamCommandException {
 
@@ -23,6 +24,7 @@ public final class CalypsoSamIncorrectInputDataException extends CalypsoSamComma
    * @param message the message to identify the exception context
    * @param command the Calypso SAM command
    * @param statusCode the status code
+   * @since 0.9
    */
   public CalypsoSamIncorrectInputDataException(
       String message, CalypsoSamCommand command, Integer statusCode) {

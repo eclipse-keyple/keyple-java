@@ -16,10 +16,19 @@ import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.parser.security.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.security.OpenSession24RespPars;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * Builds the Open Session command for a PO revision 2.4.
+ *
+ * @since 0.9
+ */
 public final class OpenSession24CmdBuild
     extends AbstractOpenSessionCmdBuild<AbstractOpenSessionRespPars> {
+
+  private static final Logger logger = LoggerFactory.getLogger(OpenSession24CmdBuild.class);
 
   // Construction arguments used for parsing
   private final int sfi;
@@ -34,6 +43,7 @@ public final class OpenSession24CmdBuild
    * @param recordNumber the record number to read
    * @throws IllegalArgumentException - if key index is 0 (rev 2.4)
    * @throws IllegalArgumentException - if the request is inconsistent
+   * @since 0.9
    */
   public OpenSession24CmdBuild(byte keyIndex, byte[] samChallenge, int sfi, int recordNumber) {
     super(PoRevision.REV2_4);
@@ -69,28 +79,44 @@ public final class OpenSession24CmdBuild
     }
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public OpenSession24RespPars createResponseParser(ApduResponse apduResponse) {
     return new OpenSession24RespPars(apduResponse, this);
   }
 
   /**
-   * This command can't be executed in session and therefore doesn't uses the session buffer.
+   * {@inheritDoc}
+   *
+   * <p>This command can't be executed in session and therefore doesn't uses the session buffer.
    *
    * @return false
+   * @since 0.9
    */
   @Override
   public boolean isSessionBufferUsed() {
     return false;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public int getSfi() {
     return sfi;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public int getRecordNumber() {
     return recordNumber;

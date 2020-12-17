@@ -12,14 +12,13 @@
 package org.eclipse.keyple.calypso.transaction;
 
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
-import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
+import org.eclipse.keyple.core.card.selection.CardSelector;
 
 /**
- * The {@link SamSelector} class extends {@link SeSelector} to handle specific Calypso SAM needs
+ * The {@link SamSelector} class extends {@link CardSelector} to handle specific Calypso SAM needs
  * such as model identification.
  */
-public class SamSelector extends SeSelector {
+public class SamSelector extends CardSelector {
   private final SamRevision targetSamRevision;
   private final byte[] unlockData;
 
@@ -69,7 +68,7 @@ public class SamSelector extends SeSelector {
    *
    * @since 0.9
    */
-  public static final class SamSelectorBuilder extends SeSelector.SeSelectorBuilder {
+  public static final class SamSelectorBuilder extends CardSelector.CardSelectorBuilder {
     private SamRevision samRevision;
     private String serialNumber;
     private byte[] unlockData;
@@ -103,18 +102,6 @@ public class SamSelector extends SeSelector {
     }
 
     /**
-     * Sets the SAM identifier
-     *
-     * @param samIdentifier the {@link SamIdentifier} of the targeted SAM
-     * @return the builder instance
-     */
-    public SamSelectorBuilder samIdentifier(SamIdentifier samIdentifier) {
-      samRevision = samIdentifier.getSamRevision();
-      serialNumber = samIdentifier.getSerialNumber();
-      return this;
-    }
-
-    /**
      * Sets the unlock data
      *
      * @param unlockData a byte array containing the unlock data (8 or 16 bytes)
@@ -129,19 +116,31 @@ public class SamSelector extends SeSelector {
       return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 0.9
+     */
     @Override
-    public SamSelectorBuilder seProtocol(SeProtocol seProtocol) {
-      return (SamSelectorBuilder) super.seProtocol(seProtocol);
+    public SamSelectorBuilder cardProtocol(String cardProtocol) {
+      return (SamSelectorBuilder) super.cardProtocol(cardProtocol);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 0.9
+     */
     @Override
     public SamSelectorBuilder atrFilter(AtrFilter atrFilter) {
       return (SamSelectorBuilder) super.atrFilter(atrFilter);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @since 0.9
+     */
     @Override
     public SamSelectorBuilder aidSelector(AidSelector aidSelector) {
       return (SamSelectorBuilder) super.aidSelector(aidSelector);

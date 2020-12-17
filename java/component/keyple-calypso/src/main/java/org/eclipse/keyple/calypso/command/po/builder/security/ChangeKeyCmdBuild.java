@@ -15,8 +15,13 @@ import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.parser.security.ChangeKeyRespPars;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
+/**
+ * Builds the Change key APDU command.
+ *
+ * @since 0.9
+ */
 public class ChangeKeyCmdBuild extends AbstractPoCommandBuilder<ChangeKeyRespPars> {
   private static final CalypsoPoCommand command = CalypsoPoCommand.CHANGE_KEY;
 
@@ -26,6 +31,7 @@ public class ChangeKeyCmdBuild extends AbstractPoCommandBuilder<ChangeKeyRespPar
    * @param poClass indicates which CLA byte should be used for the Apdu
    * @param keyIndex index of the key of the current DF to change
    * @param cryptogram key encrypted with Issuer key (key #1)
+   * @since 0.9
    */
   public ChangeKeyCmdBuild(PoClass poClass, byte keyIndex, byte[] cryptogram) {
     super(command, null);
@@ -39,18 +45,25 @@ public class ChangeKeyCmdBuild extends AbstractPoCommandBuilder<ChangeKeyRespPar
     byte p2 = keyIndex;
 
     this.request = setApduRequest(cla, command, p1, p2, cryptogram, null);
-    this.addSubName("Change Key");
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public ChangeKeyRespPars createResponseParser(ApduResponse apduResponse) {
     return new ChangeKeyRespPars(apduResponse, this);
   }
 
   /**
-   * This command can't be executed in session and therefore doesn't uses the session buffer.
+   * {@inheritDoc}
+   *
+   * <p>This command can't be executed in session and therefore doesn't uses the session buffer.
    *
    * @return false
+   * @since 0.9
    */
   @Override
   public boolean isSessionBufferUsed() {

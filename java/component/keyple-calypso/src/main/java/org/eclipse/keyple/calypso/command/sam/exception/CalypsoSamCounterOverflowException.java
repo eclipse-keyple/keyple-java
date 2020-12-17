@@ -14,9 +14,10 @@ package org.eclipse.keyple.calypso.command.sam.exception;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 
 /**
- * The exception {@code CalypsoSamCounterOverflowException} indicates that an event counter number
- * authorized by the SAM has reached its limit.<br>
+ * Indicates that an event counter number authorized by the SAM has reached its limit.<br>
  * This may occur, for example, during the digest init operation.
+ *
+ * @since 0.9
  */
 public final class CalypsoSamCounterOverflowException extends CalypsoSamCommandException {
 
@@ -24,6 +25,7 @@ public final class CalypsoSamCounterOverflowException extends CalypsoSamCommandE
    * @param message the message to identify the exception context
    * @param command the Calypso SAM command
    * @param statusCode the status code
+   * @since 0.9
    */
   public CalypsoSamCounterOverflowException(
       String message, CalypsoSamCommand command, Integer statusCode) {

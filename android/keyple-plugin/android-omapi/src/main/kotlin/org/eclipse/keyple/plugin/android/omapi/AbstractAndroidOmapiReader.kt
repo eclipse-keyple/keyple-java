@@ -11,50 +11,31 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.omapi
 
-import java.util.HashMap
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractLocalReader
-import org.eclipse.keyple.core.seproxy.plugin.reader.SmartSelectionReader
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode
-import timber.log.Timber
+import org.eclipse.keyple.core.plugin.AbstractLocalReader
+import org.eclipse.keyple.core.plugin.SmartSelectionReader
 
 /**
- * Communicates with Android readers throught the Open Mobile API see org.simalliance.openmobileapi.Reader
+ * Internal abstract class extending {@link AbstractLocalReader} and implementing isContactless()
  *
- * Instances of this class represent SE readers supported by this device. These readers can be physical devices
- * or virtual devices. They can be removable or not. They can contain one SE that can or cannot be
- * removed.
+ * An Android OMAPI reader does not observe smart card insersion or removal
+ *
+ * There is 2 implementations of AndroidOmapiReader one using org.simalliance.openmobileapi.Reader, the other
+ * using android.se.omapi.
+ *
+ * The plugin pickup the best reader by itself.
+ *
+ * @since 0.9
  */
 internal abstract class AbstractAndroidOmapiReader(pluginName: String, readerName: String) : AbstractLocalReader(pluginName, readerName), SmartSelectionReader {
-
-    private val parameters: MutableMap<String, String> = HashMap()
-
-    override fun getParameters(): Map<String, String> {
-        Timber.w("No parameters are supported by AndroidOmapiReader")
-        return parameters
-    }
-
-    override fun setParameter(key: String, value: String) {
-        Timber.w("No parameters are supported by AndroidOmapiReader")
-        parameters[key] = value
-    }
 
     /**
      * The transmission mode is always CONTACTS in an OMAPI reader
      *
-     * @return the current transmission mode
+     * @return Always False for an OMAPI reader
+     *
+     * @since 0.9
      */
-    override fun getTransmissionMode(): TransmissionMode {
-        return TransmissionMode.CONTACTS
-    }
-
-    /**
-     * Check that protocolFlag is PROTOCOL_ISO7816_3
-     * @param protocolFlag
-     * @return true if match PROTOCOL_ISO7816_3
-     */
-    override fun protocolFlagMatches(protocolFlag: SeProtocol?): Boolean {
-        return protocolFlag == SeCommonProtocols.PROTOCOL_ISO7816_3
+    override fun isContactless(): Boolean {
+        return false
     }
 }

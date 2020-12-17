@@ -14,13 +14,18 @@ package org.eclipse.keyple.calypso.command.po.builder;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.*;
 import org.eclipse.keyple.calypso.command.po.parser.DecreaseRespPars;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * The Class DecreaseCmdBuild. This class provides the dedicated constructor to build the Decrease
- * APDU command.
+ * Builds the Decrease APDU command.
+ *
+ * @since 0.9
  */
 public final class DecreaseCmdBuild extends AbstractPoCommandBuilder<DecreaseRespPars> {
+
+  private static final Logger logger = LoggerFactory.getLogger(DecreaseCmdBuild.class);
 
   /** The command. */
   private static final CalypsoPoCommand command = CalypsoPoCommand.DECREASE;
@@ -41,6 +46,7 @@ public final class DecreaseCmdBuild extends AbstractPoCommandBuilder<DecreaseRes
    *     [FFFFFFh])
    * @throws IllegalArgumentException - if the decrement value is out of range
    * @throws IllegalArgumentException - if the command is inconsistent
+   * @since 0.9
    */
   public DecreaseCmdBuild(PoClass poClass, byte sfi, int counterNumber, int decValue) {
     super(command, null);
@@ -68,33 +74,49 @@ public final class DecreaseCmdBuild extends AbstractPoCommandBuilder<DecreaseRes
     }
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public DecreaseRespPars createResponseParser(ApduResponse apduResponse) {
     return new DecreaseRespPars(apduResponse, this);
   }
 
   /**
-   * This command can modify the contents of the PO in session and therefore uses the session
-   * buffer.
+   * {@inheritDoc}
+   *
+   * <p>This command modified the contents of the PO and therefore uses the session buffer.
    *
    * @return true
+   * @since 0.9
    */
   @Override
   public boolean isSessionBufferUsed() {
     return true;
   }
 
-  /** @return the SFI of the accessed file */
+  /**
+   * @return the SFI of the accessed file
+   * @since 0.9
+   */
   public int getSfi() {
     return sfi;
   }
 
-  /** @return the counter number */
+  /**
+   * @return the counter number
+   * @since 0.9
+   */
   public int getCounterNumber() {
     return counterNumber;
   }
 
-  /** @return the decrement value */
+  /**
+   * @return the decrement value
+   * @since 0.9
+   */
   public int getDecValue() {
     return decValue;
   }

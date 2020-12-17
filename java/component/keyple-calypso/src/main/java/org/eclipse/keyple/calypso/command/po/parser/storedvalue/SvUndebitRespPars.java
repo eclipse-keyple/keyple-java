@@ -20,16 +20,17 @@ import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoSecurityDataExce
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoSessionBufferOverflowException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamAccessForbiddenException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCounterOverflowException;
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
- * SV Undebit (00BA) response parser. See specs: Calypso Stored Value balance (signed binaries'
- * coding based on the two's complement method)
+ * Parses the SV Undebit response.
  *
- * <p>balance - 3 bytes signed binary - Integer from -8,388,608 to 8,388,607
- *
- * <pre>
+ * @since 0.9
+ *     <p>See specs: Calypso Stored Value balance (signed binaries' coding based on the two's
+ *     complement method)
+ *     <p>balance - 3 bytes signed binary - Integer from -8,388,608 to 8,388,607
+ *     <pre>
  * -8,388,608           %10000000.00000000.00000000
  * -8,388,607           %10000000.00000000.00000001
  * -8,388,606           %10000000.00000000.00000010
@@ -46,12 +47,9 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
  * 8,388,606           %01111111.11111111.11111110
  * 8,388,607           %01111111.11111111.11111111
  * </pre>
- *
- * amount - 2 bytes signed binary
- *
- * <p>amount for debit - Integer 0..32767 =&gt; for negative value
- *
- * <pre>
+ *     amount - 2 bytes signed binary
+ *     <p>amount for debit - Integer 0..32767 =&gt; for negative value
+ *     <pre>
  * -32767           %10000000.00000001
  * -32766           %10000000.00000010
  * -3           %11111111.11111101
@@ -61,6 +59,8 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
  *
  * Notice: -32768 (%10000000.00000000) is not allowed.
  * </pre>
+ *
+ * @since 0.9
  */
 public class SvUndebitRespPars extends AbstractPoResponseParser {
 
@@ -100,6 +100,7 @@ public class SvUndebitRespPars extends AbstractPoResponseParser {
    *
    * @param response response to parse
    * @param builder the reference to the builder that created this parser
+   * @since 0.9
    */
   public SvUndebitRespPars(ApduResponse response, SvUndebitCmdBuild builder) {
     super(response, builder);
@@ -117,11 +118,17 @@ public class SvUndebitRespPars extends AbstractPoResponseParser {
    * signature is postponed until the end of the session.
    *
    * @return a byte array containing the signature
+   * @since 0.9
    */
   public byte[] getSignatureLo() {
     return getApduResponse().getDataOut();
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;

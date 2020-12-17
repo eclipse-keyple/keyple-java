@@ -15,11 +15,12 @@ import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.parser.security.RehabilitateRespPars;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
- * The Class {@link RehabilitateCmdBuild}. This class provides the dedicated constructor to build
- * the PO Rehabilitate command.
+ * Builds the Rehabilitate command.
+ *
+ * @since 0.9
  */
 public final class RehabilitateCmdBuild extends AbstractPoCommandBuilder<RehabilitateRespPars> {
 
@@ -29,6 +30,7 @@ public final class RehabilitateCmdBuild extends AbstractPoCommandBuilder<Rehabil
    * Instantiates a new RehabilitateCmdBuild.
    *
    * @param poClass indicates which CLA byte should be used for the Apdu
+   * @since 0.9
    */
   public RehabilitateCmdBuild(PoClass poClass) {
     super(command, null);
@@ -39,15 +41,23 @@ public final class RehabilitateCmdBuild extends AbstractPoCommandBuilder<Rehabil
     this.request = setApduRequest(poClass.getValue(), command, p1, p2, null, null);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public RehabilitateRespPars createResponseParser(ApduResponse apduResponse) {
     return new RehabilitateRespPars(apduResponse, this);
   }
 
   /**
-   * This command modified the contents of the PO and therefore uses the session buffer.
+   * {@inheritDoc}
+   *
+   * <p>This command modified the contents of the PO and therefore uses the session buffer.
    *
    * @return true
+   * @since 0.9
    */
   @Override
   public boolean isSessionBufferUsed() {

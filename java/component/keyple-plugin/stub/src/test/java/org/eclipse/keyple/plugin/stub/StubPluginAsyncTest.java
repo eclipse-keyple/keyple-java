@@ -16,11 +16,10 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
-import org.eclipse.keyple.core.seproxy.event.PluginEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.core.service.event.ObservablePlugin;
+import org.eclipse.keyple.core.service.event.PluginEvent;
+import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -35,19 +34,20 @@ public class StubPluginAsyncTest extends BaseStubTest {
   Logger logger = LoggerFactory.getLogger(StubPluginAsyncTest.class);
 
   @Before
-  public void setupStub() throws Exception {
-    super.setupStub();
+  public void registerStub() throws Exception {
+    super.registerStub();
   }
 
   @After
-  public void clearStub()
+  public void unregisterStub()
       throws InterruptedException, KeypleReaderException, KeyplePluginNotFoundException {
-    super.clearStub();
+    super.unregisterStub();
   }
 
   /** Plug one reader asynchronously Check: Event thrown */
   @Test
-  public void plugOneReaderAsync_success() throws InterruptedException, KeypleReaderException {
+  public void plug_oneReader_asynchronously_withObserver_success()
+      throws InterruptedException, KeypleReaderException {
     final CountDownLatch lock = new CountDownLatch(1);
     final String READER_NAME = "plugOneReaderAsync_sucess";
 
@@ -63,14 +63,15 @@ public class StubPluginAsyncTest extends BaseStubTest {
           }
         });
 
-    stubPlugin.plugStubReader(READER_NAME, TransmissionMode.CONTACTLESS, false);
+    stubPlugin.plugReader(READER_NAME, true, false);
     lock.await(2, TimeUnit.SECONDS);
     Assert.assertEquals(0, lock.getCount());
   }
 
   /** Unplug one reader and wait for event */
   @Test
-  public void unplugOneReaderAsync_success() throws InterruptedException, KeypleReaderException {
+  public void unplug_oneReader_asynchronously_withObserver_success()
+      throws InterruptedException, KeypleReaderException {
     final CountDownLatch connectedLock = new CountDownLatch(1);
     final CountDownLatch disconnectedLock = new CountDownLatch(1);
     final String READER_NAME = "unplugOneReaderAsync_success";
@@ -103,21 +104,23 @@ public class StubPluginAsyncTest extends BaseStubTest {
     stubPlugin.addObserver(disconnected_obs);
 
     // plug a reader
-    stubPlugin.plugStubReader(READER_NAME, false);
+    stubPlugin.plugReader(READER_NAME, false);
 
     connectedLock.await(2, TimeUnit.SECONDS);
 
     // unplug reader
-    stubPlugin.unplugStubReader(READER_NAME, false);
+    stubPlugin.unplugReader(READER_NAME, false);
 
     // wait for event to be raised
     disconnectedLock.await(2, TimeUnit.SECONDS);
     Assert.assertEquals(0, disconnectedLock.getCount());
+    Assert.assertEquals(0, stubPlugin.getReaders().size());
   }
 
   /** Plug many readers at once async Check : check event, count event */
   @Test
-  public void plugMultiReadersAsync_success() throws InterruptedException, KeypleReaderException {
+  public void plug_multiReader_asynchronously_withObserver_success()
+      throws InterruptedException, KeypleReaderException {
     final Set<String> READERS =
         new HashSet<String>(Arrays.asList("E_Reader1", "E_Reader2", "E_Reader3"));
 
@@ -141,7 +144,7 @@ public class StubPluginAsyncTest extends BaseStubTest {
         });
 
     // connect readers
-    stubPlugin.plugStubReaders(READERS, false);
+    stubPlugin.plugReaders(READERS, false);
 
     // wait for event to be raised
     readerConnected.await(2, TimeUnit.SECONDS);
@@ -150,7 +153,7 @@ public class StubPluginAsyncTest extends BaseStubTest {
 
   /** Plug and unplug many readers at once asynchronously Check : event and count events */
   @Test
-  public void plugUnplugMultiReadersAsync_success()
+  public void unplug_multiReader_asynchronously_withObserver_success()
       throws InterruptedException, KeypleReaderException {
     final Set<String> READERS =
         new HashSet<String>(Arrays.asList("F_Reader1", "F_Reader2", "F_Reader3"));
@@ -185,19 +188,14 @@ public class StubPluginAsyncTest extends BaseStubTest {
     stubPlugin.addObserver(assertDisconnect);
 
     // connect reader
-    stubPlugin.plugStubReaders(READERS, false);
+    stubPlugin.plugReaders(READERS, true);
 
     Assert.assertTrue(connectedLock.await(2, TimeUnit.SECONDS));
 
-    Thread.sleep(1000);
-
-    stubPlugin.unplugStubReaders(READERS, false);
+    stubPlugin.unplugReaders(READERS, false);
 
     Assert.assertTrue(disconnectedLock.await(2, TimeUnit.SECONDS));
 
-    // Thread.sleep(1000);
-
-    Thread.sleep(1000);
     logger.debug("Stub Readers connected {}", stubPlugin.getReaderNames());
     Assert.assertEquals(0, stubPlugin.getReaders().size());
     Assert.assertEquals(0, connectedLock.getCount());
