@@ -33,10 +33,10 @@ If you are interested in a synchronous protocol, checkout the webservice example
 ## Packaging and running the application
 
 The application can be packaged using `./gradlew quarkusBuild`.
-It produces the `UseCase1_ReaderClientSide_Websocket-1.0.0-SNAPSHOT-runner.jar` file in the `build` directory.
+It produces the `UseCase1_ReaderClientSide_Websocket-1.0.0-runner.jar` file in the `build` directory.
 Be aware that it is a _über-jar_ as the dependencies are copied inside the jar.
 
-The application is now runnable using `java -jar build/UseCase1_ReaderClientSide_Websocket-1.0.0-SNAPSHOT-runner.jar`.
+The application is now runnable using `java -jar build/UseCase1_ReaderClientSide_Websocket-1.0.0-runner.jar`.
 
 ## Creating a native executable
 
@@ -44,7 +44,7 @@ You can create a native executable using: `./gradlew build -Dquarkus.package.typ
 
 Or, if you don't have GraalVM installed, you can run the native executable build in a container using: `./gradlew build -Dquarkus.package.type=native -Dquarkus.native.container-build=true`.
 
-You can then execute your native executable with: `./build/UseCase1_ReaderClientSide_Websocket-1.0.0-SNAPSHOT-runner`
+You can then execute your native executable with: `./build/UseCase1_ReaderClientSide_Websocket-1.0.0-runner`
 
 If you want to learn more about building native executables, please consult https://quarkus.io/guides/gradle-tooling#building-a-native-executable.
 

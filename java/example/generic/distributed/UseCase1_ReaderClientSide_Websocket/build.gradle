@@ -48,7 +48,7 @@ dependencies {
 }
 
 group 'org.eclipse.keyple.example.calypso.remote'
-version '1.0.0-SNAPSHOT'
+version '1.0.0'
 
 compileJava {
     options.encoding = 'UTF-8'
