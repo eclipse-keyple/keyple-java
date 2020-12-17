@@ -1,21 +1,23 @@
 # Keyple - Release Notes
 
 ## Releases:
- - [Master - Keyple Java 20/12](#keyple-java-java-2012)
- - [Master - Keyple Java 20/09](#keyple-java-java-2009)
- - [Patch - Keyple Java 20/05](#patch---keyple-java-2005)
- - [Master - Keyple Java 20/01](#master---keyple-java-2001)
- - [Master - Keyple Java 19/07](#master---keyple-java-1907)
+* [Master - Keyple Java 20/12](#master---keyple-java-2012)
+* [Master - Keyple Java 20/09](#master---keyple-java-2009)
+* [Patch - Keyple Java 20/05](#patch---keyple-java-2005)
+* [Master - Keyple Java 20/01](#master---keyple-java-2001)
+* [Master - Keyple Java 19/07](#master---keyple-java-1907)
 
-## Keyple Java 20/12
+## Master - Keyple Java 20/12
 Release train components:
- - [keyple-java-core 1.0](#keyple-java-core-10)
- - [keyple-java-calypso 1.0](#keyple-java-calypso-10)
- - [keyple-java-plugin-pcsc 1.0](#keyple-java-plugin-pcsc-10)
- - [keyple-java-plugin-stub 1.0](#keyple-java-plugin-stub-10)
- - [keyple-java-plugin-remotese 1.0](#keyple-java-plugin-remotese-10)
- - [keyple-android-plugin-android-nfc 1.0](#keyple-android-plugin-android-nfc-10)
- - [keyple-android-plugin-android-omapi 1.0](#keyple-android-plugin-android-omapi-10)
+* [keyple-java-core 1.0](#keyple-java-core-10)
+* [keyple-java-distributed-local 1.0](#keyple-java-distributed-local-10)
+* [keyple-java-distributed-network 1.0](#keyple-java-distributed-network-10)
+* [keyple-java-distributed-remote 1.0](#keyple-java-distributed-remote-10)
+* [keyple-java-calypso 1.0](#keyple-java-calypso-10)
+* [keyple-java-plugin-pcsc 1.0](#keyple-java-plugin-pcsc-10)
+* [keyple-java-plugin-stub 1.0](#keyple-java-plugin-stub-10)
+* [keyple-android-plugin-android-nfc 1.0](#keyple-android-plugin-android-nfc-10)
+* [keyple-android-plugin-android-omapi 1.0](#keyple-android-plugin-android-omapi-10)
 
 ### keyple-java-core 1.0
 * KEYP-346,370 : reorganization and renaming of many packages and classes, all "SE" have been changed to "Card". 
@@ -27,6 +29,15 @@ Release train components:
 * various other refactorings and improvements
 * fixed issues raised by Sonarqube
 * improved Javadoc
+
+### keyple-java-distributed-local 1.0
+* KEYP-41 : add first version of "Keyple Distributed Local" component as part of the "Keyple Distributed" solution for distributed systems.
+
+### keyple-java-distributed-network 1.0
+* KEYP-41 : add first version of "Keyple Distributed Network" component as part of the "Keyple Distributed" solution for distributed systems.
+
+### keyple-java-distributed-remote 1.0
+* KEYP-41 : add first version of "Keyple Distributed Remote" component as part of the "Keyple Distributed" solution for distributed systems.
 
 ### keyple-java-calypso 1.0
 * KEYP-346,370 : reorganization and renaming of many packages and classes, all "SE" have been changed to "Card", removed ProxyElement internal interface. 
@@ -45,12 +56,16 @@ Release train components:
 * KEYP-305 : update observation mechanisms 
 * various other refactorings and improvements
 
-
-### keyple-java-plugin-remote 1.0
 ### keyple-android-plugin-android-nfc 1.0
-### keyple-android-plugin-android-omapi 1.0
+* KEYP-305 : update observation mechanisms, added specific settings
+* KEYP-336 : revised protocol identification management
+* various other refactorings and improvements
 
-## Keyple Java 20/09
+### keyple-android-plugin-android-omapi 1.0
+* KEYP-336 : revised protocol identification management
+* various other refactorings and improvements
+
+## Master - Keyple Java 20/09
 Release train components:
  - [keyple-java-core 0.9](#keyple-java-core-09)
  - [keyple-java-calypso 0.9](#keyple-java-calypso-09)
