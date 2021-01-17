@@ -16,7 +16,7 @@ buildscript {
     dependencies {
         classpath "com.diffplug.spotless:spotless-plugin-gradle:3.14.0"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.31"
-        classpath 'org.eclipse.keyple:keyple-gradle:0.1.0-SNAPSHOT'
+        classpath 'org.eclipse.keyple:keyple-gradle:0.1.0'
         classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.2"
         classpath "org.jacoco:org.jacoco.core:0.8.5"
         classpath "org.jacoco:org.jacoco.agent:0.8.5"
