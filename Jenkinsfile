@@ -47,8 +47,9 @@ pipeline {
                     script {
                         keypleVersion = sh(script: 'grep version java/component/keyple-core/gradle.properties | cut -d= -f2 | tr -d "[:space:]"', returnStdout: true).trim()
                         echo "Building version ${keypleVersion}"
+                        alreadyDeployed = sh(script: "git rev-parse ${keypleVersion} 2>/dev/null", returnStatus: true)
                         deploySnapshot = env.GIT_URL == 'https://github.com/eclipse/keyple-java.git' && env.GIT_BRANCH == "develop" && env.CHANGE_ID == null && keypleVersion ==~ /.*-SNAPSHOT$/
-                        deployRelease = env.GIT_URL == 'https://github.com/eclipse/keyple-java.git' && (env.GIT_BRANCH == "master" || env.GIT_BRANCH.startsWith('release-')) && env.CHANGE_ID == null && keypleVersion ==~ /\d+\.\d+.\d+$/
+                        deployRelease = env.GIT_URL == 'https://github.com/eclipse/keyple-java.git' && (env.GIT_BRANCH == "master" || env.GIT_BRANCH.startsWith('release-')) && env.CHANGE_ID == null && keypleVersion ==~ /\d+\.\d+.\d+$/ && !alreadyDeployed
                     }
                 }
             }
