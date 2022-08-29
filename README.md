@@ -1,3 +1,9 @@
+# Keyple development has moved to other repositories.
+
+This repository will no longer see any active work
+
+See https://github.com/eclipse/keyple
+
 # 'Eclipse Keyple' Java implementation
 
 This is the repository for the Java implementation of the 'Eclipse Keyple' API. 
